@@ -1933,7 +1933,7 @@ class StockDetailPage extends StatelessWidget {
     final changeColor = isUp ? Colors.redAccent : Colors.blue[200];
 
     return DefaultTabController(
-      length: 4,
+      length: 5,
       child: Scaffold(
         backgroundColor: const Color(0xFF05060A),
         body: SafeArea(
@@ -1992,6 +1992,7 @@ class StockDetailPage extends StatelessWidget {
                   Tab(text: '차트'),
                   Tab(text: '호가'),
                   Tab(text: '내 주식'),
+                  Tab(text: '종목정보'),
                   Tab(text: '커뮤니티'),
                 ],
               ),
@@ -2002,6 +2003,7 @@ class StockDetailPage extends StatelessWidget {
                     _ChartTab(cardColor: cardColor),
                     _HogaTab(cardColor: cardColor),
                     _MyStockTab(cardColor: cardColor),
+                    _StockInfoTab(cardColor: cardColor),
                     _CommunityTab(cardColor: cardColor),
                   ],
                 ),
@@ -2134,39 +2136,112 @@ class _HogaTab extends StatelessWidget {
   Widget build(BuildContext context) {
     final grey = Colors.grey[400];
 
+    // 위가 매도호가(빨간쪽), 아래가 매수호가(파란쪽)라고 생각하면 됨
+    final rows = <_OrderBookRowData>[
+      // 매도 호가들 (현재가 위쪽)
+      _OrderBookRowData(askQty: "9,408",  price: "588,000", change: "+3.88%"),
+      _OrderBookRowData(askQty: "5,693",  price: "587,000", change: "+3.71%"),
+      _OrderBookRowData(askQty: "6,004",  price: "586,000", change: "+3.53%"),
+      // 현재가
+      _OrderBookRowData(
+        bidQty: "10,256",
+        price: "585,000",
+        change: "+3.35%",
+        isCurrent: true,
+      ),
+      // 매수 호가들 (현재가 아래쪽)
+      _OrderBookRowData(bidQty: "14,417", price: "584,000", change: "+3.18%"),
+      _OrderBookRowData(bidQty: "17,171", price: "583,000", change: "+3.01%"),
+      _OrderBookRowData(bidQty: "29,358", price: "582,000", change: "+2.84%"),
+      _OrderBookRowData(bidQty: "19,381", price: "581,000", change: "+2.67%"),
+      _OrderBookRowData(bidQty: "13,101", price: "580,000", change: "+2.49%"),
+      _OrderBookRowData(bidQty: "12,965", price: "579,000", change: "+2.32%"),
+      _OrderBookRowData(bidQty: "11,936", price: "578,000", change: "+2.14%"),
+      _OrderBookRowData(bidQty: "9,023",  price: "577,000", change: "+1.96%"),
+      _OrderBookRowData(bidQty: "4,423",  price: "576,000", change: "+1.76%"),
+    ];
+
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        // 매도/매수 바
+        // 체결강도 + 오른쪽 간단 정보
         Container(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           decoration: BoxDecoration(
             color: cardColor,
             borderRadius: BorderRadius.circular(12),
           ),
-          child: Column(
+          child: Row(
             children: [
-              Row(
-                children: [
-                  Expanded(child: Container(height: 4, color: Colors.redAccent)),
-                  Expanded(child: Container(height: 4, color: Colors.blue)),
-                ],
+              Text(
+                "체결강도 144.8%",
+                style: TextStyle(color: grey, fontSize: 12),
               ),
-              const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: const [
-                  Text("판매대기 550,299주"),
-                  Text("구매대기 157,556주"),
+              const Spacer(),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text("전일 종가 568,000원",
+                      style: TextStyle(color: grey, fontSize: 11)),
+                  const SizedBox(height: 2),
+                  Text("고가 590,000원 · 저가 570,000원",
+                      style: TextStyle(color: grey, fontSize: 11)),
                 ],
               ),
             ],
           ),
         ),
 
-        const SizedBox(height: 24),
+        const SizedBox(height: 8),
 
-        // 왜 올랐을까?
+        // 실제 호가 테이블
+        Container(
+          decoration: BoxDecoration(
+            color: cardColor,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Column(
+            children: [
+              // 헤더
+              Padding(
+                padding:
+                const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                child: Row(
+                  children: [
+                    Expanded(
+                      flex: 3,
+                      child: Text("매수잔량",
+                          style: TextStyle(color: grey, fontSize: 11)),
+                    ),
+                    Expanded(
+                      flex: 3,
+                      child: Center(
+                        child: Text("호가",
+                            style: TextStyle(color: grey, fontSize: 11)),
+                      ),
+                    ),
+                    Expanded(
+                      flex: 3,
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: Text("매도잔량",
+                            style: TextStyle(color: grey, fontSize: 11)),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Divider(height: 1, color: Colors.white10),
+
+              for (final r in rows) _OrderBookRow(data: r),
+            ],
+          ),
+        ),
+
+        const SizedBox(height: 16),
+
+        // 아래쪽 “왜 올랐을까?” 카드
         Text("왜 올랐을까?", style: TextStyle(color: grey)),
         const SizedBox(height: 6),
         Container(
@@ -2187,11 +2262,11 @@ class _HogaTab extends StatelessWidget {
           ),
         ),
 
-        const SizedBox(height: 24),
+        const SizedBox(height: 16),
 
-        // 주문내역
+        // 주문내역 보기
         Container(
-          padding: const EdgeInsets.symmetric(vertical: 14),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           decoration: BoxDecoration(
             color: cardColor,
             borderRadius: BorderRadius.circular(12),
@@ -2200,20 +2275,144 @@ class _HogaTab extends StatelessWidget {
             children: const [
               Text("주문내역 보기"),
               Spacer(),
-              Icon(Icons.chevron_right),
+              Icon(Icons.chevron_right, size: 18),
             ],
           ),
         ),
+
+        const SizedBox(height: 24),
       ],
     );
   }
 }
 
+/// 호가 한 줄에 들어갈 데이터
+class _OrderBookRowData {
+  final String? bidQty;   // 왼쪽(매수잔량) – 없으면 null
+  final String  price;    // 가운데 가격
+  final String  change;   // 등락률
+  final String? askQty;   // 오른쪽(매도잔량) – 없으면 null
+  final bool    isCurrent;
 
-class _MyStockTab extends StatelessWidget {
+  const _OrderBookRowData({
+    this.bidQty,
+    required this.price,
+    required this.change,
+    this.askQty,
+    this.isCurrent = false,
+  });
+}
+
+/// 호가 한 줄 UI
+class _OrderBookRow extends StatelessWidget {
+  final _OrderBookRowData data;
+
+  const _OrderBookRow({required this.data});
+
+  @override
+  Widget build(BuildContext context) {
+    final bidColor = const Color(0xFF1E3A8A); // 파란 느낌
+    final askColor = const Color(0xFF7F1D1D); // 빨간 느낌
+    final isUp = !data.change.startsWith('-');
+    final Color priceColor = isUp ? Colors.redAccent : Colors.blue[200]!;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4), // ← 높이 대신 여백만
+      child: Row(
+        children: [
+          // 매수잔량(왼쪽)
+          Expanded(
+            flex: 3,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: data.bidQty == null
+                  ? const SizedBox.shrink()
+                  : Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 6,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  color: bidColor.withOpacity(0.8),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Text(
+                  data.bidQty!,
+                  style: const TextStyle(
+                    fontSize: 11,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          // 가격 + 등락률(가운데)
+          Expanded(
+            flex: 3,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,          // ← 필요한 만큼만
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  data.price,
+                  style: TextStyle(
+                    color: priceColor,
+                    fontWeight:
+                    data.isCurrent ? FontWeight.bold : FontWeight.w500,
+                    fontSize: 13,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  data.change,
+                  style: TextStyle(
+                    color: priceColor.withOpacity(0.9),
+                    fontSize: 10,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // 매도잔량(오른쪽)
+          Expanded(
+            flex: 3,
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: data.askQty == null
+                  ? const SizedBox.shrink()
+                  : Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 6,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  color: askColor.withOpacity(0.9),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Text(
+                  data.askQty!,
+                  style: const TextStyle(
+                    fontSize: 11,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
+
+class _StockInfoTab extends StatelessWidget {
   final Color cardColor;
 
-  const _MyStockTab({required this.cardColor});
+  const _StockInfoTab({required this.cardColor});
 
   @override
   Widget build(BuildContext context) {
@@ -2321,4 +2520,98 @@ class _FakeChartPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_) => false;
+}
+
+class _MyStockTab extends StatelessWidget {
+  final Color cardColor;
+
+  const _MyStockTab({required this.cardColor});
+
+  @override
+  Widget build(BuildContext context) {
+    final grey = Colors.grey[400];
+
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        // 상단 2개 버튼 (주식 모으기 / 조건 주문)
+        Container(
+          decoration: BoxDecoration(
+            color: const Color(0xFF1F2025),
+            borderRadius: BorderRadius.circular(24),
+          ),
+          padding: const EdgeInsets.all(4),
+          child: Row(
+            children: [
+              // 선택된 탭: 주식 모으기
+              Expanded(
+                child: Container(
+                  padding:
+                  const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.white12,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  alignment: Alignment.center,
+                  child: const Text(
+                    '주식 모으기',
+                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 4),
+              // 비선택 탭: 조건 주문
+              Expanded(
+                child: Container(
+                  padding:
+                  const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+                  alignment: Alignment.center,
+                  child: Text(
+                    '조건 주문',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: grey,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+
+        const SizedBox(height: 24),
+
+        // "주문 내역  ·  취소 포함"
+        Row(
+          children: [
+            const Text(
+              '주문 내역',
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+            ),
+            const Spacer(),
+            Text(
+              '취소 포함',
+              style: TextStyle(color: grey, fontSize: 12),
+            ),
+          ],
+        ),
+
+        const SizedBox(height: 60),
+
+        // 비어 있는 상태
+        Column(
+          children: [
+            Icon(Icons.receipt_long,
+                size: 40, color: Colors.white.withOpacity(0.2)),
+            const SizedBox(height: 12),
+            Text(
+              '주문한 내역이 없어요.',
+              style: TextStyle(color: grey, fontSize: 13),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
 }
