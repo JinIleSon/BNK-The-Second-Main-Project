@@ -1,0 +1,143 @@
+<th:block th:fragment="corpHeader">
+
+    <!-- ====================== 스타일 ====================== -->
+    <style>
+        /* 공통 글꼴 */
+        body { margin: 0; font-family: "Noto Sans KR", sans-serif; }
+
+        /* 햄버거 버튼 */
+        .hamburger {
+            position: fixed;
+            top: 26px;
+            left: 18px;
+            width: 32px;
+            height: 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            cursor: pointer;
+            border: none;
+            background: none;
+            padding: 0;
+            z-index: 3000; /* 페이지보다 항상 위 */
+        }
+        .hamburger span {
+            display: block;
+            height: 4px;
+            width: 100%;
+            background: #333;
+            border-radius: 2px;
+            transition: all .35s ease;
+        }
+        .hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(6px,7px); }
+        .hamburger.active span:nth-child(2) { opacity: 0; }
+        .hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(7px,-7px); }
+
+        /* 사이드바 */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -280px;
+            width: 280px;
+            height: 100vh;
+            background: #fff;
+            box-shadow: 3px 0 15px rgba(0,0,0,0.18);
+            z-index: 2500;
+            display: flex;
+            flex-direction: column;
+            padding: 22px;
+            transition: left .45s cubic-bezier(0.4,0,0.2,1);
+        }
+        .sidebar.active { left: 0; }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0 0 0;
+        }
+        .sidebar-menu li {
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 15px;
+            color: #5B6270;
+            transition: .15s;
+        }
+        .sidebar-menu li:hover,
+        .sidebar-menu li.selected {
+            background: #D81921;
+            color: #fff;
+        }
+        .sidebar-menu a {
+            text-decoration: none;
+            color: inherit;
+        }
+    </style>
+
+    <!-- ====================== 햄버거 버튼 ====================== -->
+    <button class="hamburger" id="hamburgerBtn">
+        <span></span><span></span><span></span>
+    </button>
+
+    <!-- ====================== 사이드바 ====================== -->
+    <aside class="sidebar" id="sidebar">
+
+        <a th:href="@{/main/main}">
+            <img th:src="@{/images/BNK_english.png}" alt="BNK 로고"
+            style="width: 80px;
+                    height: 25px;
+                    margin-top: 2px;
+                    margin-left: 48px;">
+        </a>
+        <p style="margin:0px; font-size:12px; margin-left: 49px;">
+            부산은행 기업뱅킹
+        </p>
+
+        <ul class="sidebar-menu">
+            <li data-key="main"><a th:href="@{/corporate/main}">🏠 기업 메인</a></li>
+            <li data-key="employee"><a th:href="@{/corporate/employee/list}">👥 직원 관리</a></li>
+            <li data-key="detail"><a th:href="@{/corporate/employee/detail/1}">📑 직원 상세</a></li>
+            <li data-key="cs"><a th:href="@{/corporate/cs}">❓ 고객센터</a></li>
+        </ul>
+    </aside>
+
+    <!-- ====================== 스크립트 ====================== -->
+    <script>
+        (function () {
+            const hamburger = document.getElementById("hamburgerBtn");
+            const sidebar = document.getElementById("sidebar");
+            let selected = null;
+
+            // 열기 닫기
+            hamburger.addEventListener("click", () => {
+                sidebar.classList.toggle("active");
+                hamburger.classList.toggle("active");
+            });
+
+            // 바깥 클릭 시 닫기
+            document.addEventListener("click", (e) => {
+
+                // ★ 폼 내부 클릭은 절대 가로채지 않음 (submit 보호)
+                if (e.target.closest("form")) {
+                    return;
+                }
+
+                // 사이드바 바깥 영역 클릭 시 닫기
+                if (!sidebar.contains(e.target) && !hamburger.contains(e.target)) {
+                    sidebar.classList.remove("active");
+                    hamburger.classList.remove("active");
+                }
+            });
+
+
+            // 메뉴 활성화
+            window.initCorporateHeader = function(key) {
+                if (selected) selected.classList.remove("selected");
+                selected = sidebar.querySelector(`li[data-key="${key}"]`);
+                if (selected) selected.classList.add("selected");
+            };
+        })();
+    </script>
+
+</th:block>

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>영업점 등록</title>
+    <link rel="stylesheet" th:href="@{/components/button.css}">
+    <style>
+        body {
+            font-family: 'Pretendard','Noto Sans KR',sans-serif;
+            margin: 0;
+            background-color: #F6F6F8;
+            color: #111827;
+        }
+        input, textarea {
+            font-family: inherit;
+            font-size: 15px;
+            line-height: 1.4;
+        }
+        input::placeholder, textarea::placeholder {
+            color:#9CA3AF;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div id="header" th:replace="~{layouts/admin_header.html}"></div>
+</header>
+
+<main style="background-color:#F6F6F8; display:flex; justify-content:center;">
+    <div id="printRoot" style="width:1200px;">
+
+        <!-- ================== 제목/상단바 ================== -->
+        <div style="margin-top:20px;">
+            <div style="display:flex; font-size:24px; color:#4B5563;">
+                <div>영업점 등록</div>
+            </div>
+            <div style="display:flex; margin-top:4px;">
+                <div style="font-size:16px; color:#4B5563;">
+                    영업점(찾기) 메뉴에 노출될 영업점 정보를 등록합니다.
+                </div>
+                <div style="display:flex; margin-left:auto; margin-right:10px;">
+                    <button type="button"
+                            class="btn-pressable btn-sheen"
+                            th:onclick="|location.href='@{/admin/cs(group=${group},type=${type})}'|"
+                            style="box-sizing:border-box; width:150px; height:42.5px; border:none;
+                         border-radius:8px; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,.05);
+                         border:1px solid #E5E7EB; background-color:white;">
+                        목록으로 돌아가기
+                    </button>
+                </div>
+                <div style="display:flex; justify-content:center; align-items:center; font-size:14px;
+                    background-color:white; width:165px; height:40px; border-radius:8px;
+                    box-shadow:0 2px 8px rgba(0,0,0,.05); border:1px solid #E5E7EB;">
+                    <div style="display:flex; align-items:center;">
+                        <div style="margin-left:10px;">관리자: Admin</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================== 폼 시작 ================== -->
+        <form th:action="@{/admin/cs/register}"
+              method="post"
+              th:object="${branch}"
+              style="margin-top:25px;">
+
+            <!-- group/type은 그대로 POST로 넘겨서 컨트롤러 @RequestParam으로 받기 -->
+            <input type="hidden" name="group" th:value="${group}">
+            <input type="hidden" name="type"  th:value="${type}">
+
+            <!-- ===== 카드: 기본 정보 ===== -->
+            <div style="padding:25px; background-color:white; border-radius:16px;
+                  box-shadow:0 2px 8px rgba(0,0,0,.05); border:1px solid #E5E7EB;">
+                <div style="font-size:20px; color:#2B2F36;">기본 정보</div>
+
+                <!-- 영업점명 -->
+                <div style="margin-top:20px;">
+                    <div style="display:flex; align-items:center;">
+                        <div style="margin-right:2px;">영업점명</div><div style="color:red;">*</div>
+                    </div>
+                    <input th:field="*{brname}"
+                           type="text"
+                           placeholder="예) 서울역지점"
+                           style="margin-top:10px; box-sizing:border-box; outline:none; padding-left:15px;
+                        width:100%; height:42px; border:1px solid #D1D5DB; border-radius:6px;">
+                </div>
+
+                <!-- 주소 -->
+                <div style="margin-top:20px;">
+                    <div style="display:flex; align-items:center;">
+                        <div style="margin-right:2px;">주소</div><div style="color:red;">*</div>
+                    </div>
+                    <input th:field="*{braddr}"
+                           type="text"
+                           placeholder="예) 부산광역시 중구 중앙대로 123"
+                           style="margin-top:10px; box-sizing:border-box; outline:none; padding-left:15px;
+                        width:100%; height:42px; border:1px solid #D1D5DB; border-radius:6px;">
+                </div>
+
+                <!-- 전화번호 / 팩스번호 -->
+                <div style="display:flex; gap:25px; margin-top:20px;">
+                    <div style="flex:1;">
+                        <div>전화번호</div>
+                        <input th:field="*{brtel}"
+                               type="text"
+                               placeholder="예) 051-123-4567"
+                               style="margin-top:10px; box-sizing:border-box; outline:none; padding-left:15px;
+                          width:100%; height:42px; border:1px solid #D1D5DB; border-radius:6px;">
+                    </div>
+                    <div style="flex:1;">
+                        <div>팩스번호</div>
+                        <input th:field="*{brfax}"
+                               type="text"
+                               placeholder="예) 051-987-6543"
+                               style="margin-top:10px; box-sizing:border-box; outline:none; padding-left:15px;
+                          width:100%; height:42px; border:1px solid #D1D5DB; border-radius:6px;">
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ===== 카드: 버튼 영역 ===== -->
+            <div style="padding:25px; margin-top:25px; background-color:white; border-radius:16px;
+                  box-shadow:0 2px 8px rgba(0,0,0,.05); border:1px solid #E5E7EB;">
+                <div style="display:flex; justify-content:flex-end; gap:10px;">
+                    <button type="button"
+                            class="btn-pressable btn-sheen"
+                            th:onclick="|location.href='@{/admin/cs(group=${group},type=${type})}'|"
+                            style="box-sizing:border-box; width:65px; height:42px; border:none;
+                         border-radius:8px; cursor:pointer; border:1px solid #D1D5DB;
+                         background-color:white;">
+                        취소
+                    </button>
+                    <button type="submit"
+                            class="btn-register"
+                            style="box-sizing:border-box; width:120px; height:42px;
+                         background-color:#D91A1A; color:white; border:none;
+                         border-radius:8px; cursor:pointer;">
+                        등록하기
+                    </button>
+                </div>
+            </div>
+
+        </form>
+        <!-- ===== 폼 끝 ===== -->
+
+    </div>
+</main>
+
+<footer>
+    <div th:replace="~{layouts/footer.html}"></div>
+</footer>
+
+</body>
+</html>

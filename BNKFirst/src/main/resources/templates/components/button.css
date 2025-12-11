@@ -1,0 +1,131 @@
+/*          */
+/* 빨간 버튼 */
+/*          */
+/* class="btn-register" */
+.btn-register {
+    --bg1: #D91A1A;
+    --bg2: #F03A3A;
+    --shadow: rgba(217,26,26,.45);
+    position: relative;
+    box-sizing: border-box;
+    width: 90px; height: 42px;
+    border: none; border-radius: 8px;
+    color: #fff; cursor: pointer;
+    background: linear-gradient(180deg, var(--bg2), var(--bg1));
+    outline: none;
+    box-shadow: 0 6px 14px -10px var(--shadow);
+    transition:
+    background .18s ease,
+    box-shadow .18s ease,
+    transform .12s ease; /* 프레스만 사용할 예정 */
+    will-change: background, box-shadow, transform;
+}
+
+/* Hover: 컬러와 섀도우만 아주 미세하게 (리프트 없음) */
+.btn-register:hover {
+    background: linear-gradient(180deg, #f24a4a, #d61a1a);
+    box-shadow: 0 8px 18px -12px var(--shadow);
+    transform: none; /* 확실하게 떠오르지 않도록 고정 */
+}
+
+/* Active: 살짝 눌리는 프레스 효과만 */
+.btn-register:active {
+    transform: scale(.98);
+    box-shadow: 0 4px 10px -10px var(--shadow);
+}
+
+/* 키보드 포커스 접근성 */
+.btn-register:focus-visible {
+    outline: 3px solid rgba(240,58,58,.55);
+    outline-offset: 2px;
+}
+
+/* 모션 최소화 존중 */
+@media (prefers-reduced-motion: reduce) {
+    .btn-register { transition: none !important; }
+}
+
+@media (prefers-color-scheme: dark) {
+    .btn-register { --shadow: rgba(240,58,58,.35); }
+}
+
+
+
+
+
+/*          */
+/* 하얀 버튼 */
+/*          */
+/* class="btn-pressable btn-sheen" */
+.btn-pressable {
+  position: relative;
+  transition: box-shadow .18s ease, transform .12s ease, background .18s ease;
+  will-change: box-shadow, transform, background;
+  --btn-shadow: rgba(0,0,0,.12);
+  --btn-shadow-hover: rgba(0,0,0,.18);
+  --btn-shadow-active: rgba(0,0,0,.22);
+}
+.btn-pressable:hover { box-shadow: 0 8px 18px -12px var(--btn-shadow-hover); }
+.btn-pressable:active { transform: scale(.98); box-shadow: 0 4px 10px -10px var(--btn-shadow-active); }
+.btn-pressable:focus-visible { outline: 3px solid rgba(240,58,58,.55); outline-offset: 2px; }
+/* 공통 설정 */
+.btn-sheen {
+  position: relative;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+/* hover 시 아랫부분에 회색빛 음영이 은은하게 비침 */
+.btn-sheen::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+
+  /* 아래쪽 중심부에서 위로 번지는 부드러운 그라디언트 */
+  background: radial-gradient(
+    130% 90% at 50% 125%,           /* 중심을 버튼 아래쪽으로 이동 */
+    rgba(150,150,150,0.25) 0%,      /* 가장 아래: 옅은 회색빛 */
+    rgba(180,180,180,0.18) 28%,     /* 중간: 은은하게 퍼짐 */
+    rgba(200,200,200,0.08) 45%,     /* 상단으로 갈수록 흐려짐 */
+    rgba(255,255,255,0) 70%         /* 위로 갈수록 완전 투명 */
+  );
+
+  opacity: 0;
+  transition: opacity .22s ease;
+}
+
+.btn-sheen:hover::before {
+  opacity: 0.9; /* hover 시 부드럽게 나타남 */
+}
+
+/* 위쪽 경계선이 약간 밝아 보이도록 (살짝 반사 느낌) */
+.btn-sheen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+
+  background: linear-gradient(
+    to top,
+    rgba(255,255,255,0.12) 0%,
+    rgba(255,255,255,0) 40%
+  );
+
+  opacity: 0;
+  transition: opacity .22s ease;
+}
+
+.btn-sheen:hover::after {
+  opacity: 1;
+}
+
+/* 모션 최소화 존중 */
+@media (prefers-reduced-motion: reduce) {
+  .btn-sheen::before,
+  .btn-sheen::after {
+    transition: none !important;
+  }
+}

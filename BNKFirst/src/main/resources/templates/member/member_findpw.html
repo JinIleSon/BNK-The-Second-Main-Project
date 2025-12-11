@@ -1,0 +1,434 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>비밀번호 찾기</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+</head>
+<body>
+    <div th:replace="~{layouts/header.html}"></div>
+<div id="bnk-chatbot-container" style="position: fixed; right: 20px; bottom: 20px; z-index: 9999;">
+<div id="bnk-chatbot-slot"></div>
+</div>
+<main>
+  <div class="container">
+    <!-- 폼 -->
+    <section style="width: 650px; margin: 0 auto; margin-top: 30px;">
+
+      <!-- 감싸기 -->
+      <div class="form-card" style="height: 800px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; line-height: 1.6;">
+
+        <!-- 검색 아이콘 -->
+        <div class="search-icon-wrapper">
+            <div class="search-icon">
+                <span class="material-symbols-outlined">search</span>
+            </div>
+        </div>
+
+        <!-- 비밀번호 찾기 제목 -->
+        <table class="login-table">
+          <tr style="font-size: 25px;">
+            <td>비밀번호 찾기</td>
+          </tr>
+          <tr>
+            <td style="padding: 0 0 12px;">가입 시 입력한 정보를 통해 비밀번호를 확인하세요</td>
+          </tr>
+        </table>
+
+        <!-- 인증 방식 스위치 -->
+        <div class="method-switch" role="tablist" aria-label="비밀번호 찾기 인증 방식">
+          <button type="button" class="method-btn active" role="tab" aria-selected="true" aria-controls="panel-phone" id="tab-phone">휴대전화로 인증</button>
+          <button type="button" class="method-btn" role="tab" aria-selected="false" aria-controls="panel-email" id="tab-email">이메일로 인증</button>
+        </div>
+
+        <!-- 입력 테이블 -->
+        <table class="login-table" style="margin-top: 12px;">
+          <!-- 휴대전화 인증 패널 -->
+          <tbody id="panel-phone" class="method-panel" role="tabpanel" aria-labelledby="tab-phone">
+            <tr class="field-row">
+              <td class="field-label">아이디</td>
+            </tr>
+            <tr class="field-row">
+              <td style="margin-bottom: 19px;">
+                <input type="text" name="member_id_phone" placeholder="아이디를 입력해 주세요" autocomplete="username">
+              </td>
+            </tr>
+            <tr class="field-row">
+              <td class="field-label">휴대폰 번호</td>
+            </tr>
+            <tr class="field-row">
+                <td style="margin-bottom: 19px;">
+                    <div style="display: flex; align-items: center; gap: 12px; max-width: 522px">
+                        <input type="text" name="member_phone"
+                               placeholder="010-1234-5678" autocomplete="tel"
+                               style="width: 200px; height: 40px; border:1px solid #bbb; border-radius:10px; padding:0 10px;">
+                        <button type="button" class="btn-register btn-certify" id="send-sms"
+                                style="height: 40px;">인증요청</button>
+                        <input type="text" name="sms_code"
+                               placeholder="인증번호 입력" autocomplete="one-time-code"
+                               style="width: 100px; height: 40px; border:1px solid #bbb; border-radius:10px; padding:0 10px;">
+                        <button type="button" class="btn-register" id="check-sms"
+                                style="height: 40px;">확인</button>
+                    </div>
+                </td>
+            </tr>
+          </tbody>
+
+          <!-- 이메일 인증 패널 -->
+          <tbody id="panel-email" class="method-panel hidden" role="tabpanel" aria-labelledby="tab-email" aria-hidden="true">
+            <tr class="field-row">
+              <td class="field-label">아이디</td>
+            </tr>
+            <tr class="field-row">
+              <td style="margin-bottom: 19px;">
+                <input type="text" name="member_id_mail" placeholder="아이디를 입력해 주세요" autocomplete="username">
+              </td>
+            </tr>
+            <tr class="field-row">
+              <td class="field-label">이메일 주소</td>
+            </tr>
+            <tr class="field-row">
+                <td style="margin-bottom: 19px;">
+                    <div style="display: flex; align-items: center; gap: 12px; max-width: 522px">
+                        <input type="text" name="member_email"
+                               placeholder="example@email.com" autocomplete="email"
+                               style="width: 230px; height: 40px; border:1px solid #bbb; border-radius:10px; padding:0 10px;">
+                        <button type="button" class="btn-register btn-certify" id="send-mail"
+                                style="height: 40px;">인증요청</button>
+                        <input type="text" name="mail_code"
+                               placeholder="인증번호 입력" autocomplete="one-time-code"
+                               style="width: 80px; height: 40px; border:1px solid #bbb; border-radius:10px; padding:0 10px;">
+                        <button type="button" class="btn-register" id="check-mail"
+                                style="height: 40px;">확인</button>
+                    </div>
+                </td>
+            </tr>
+          </tbody>
+
+          <tr>
+            <td class="field-td">
+                <button class="btn-register" style="width: 500px;" id="btn-find">찾기</button>
+            </td>
+          </tr>
+        </table>
+
+        <!-- 버튼 -->
+        <div class="btns" style="padding-top: 20px; border-top: 1px solid #D1D5DB;">
+          <a th:href="@{/member/main}" class="btn-pressable"
+            style="display:inline-block; box-sizing:border-box; width: 500px; height:42px; line-height:42px; border-radius:8px; border:1px solid #D1D5DB; background-color:white; text-align:center; color:#111; text-decoration:none;">
+            홈으로
+          </a>          
+        </div>     
+      </div>
+    </section>
+  </div>
+</main>
+
+<!-- 모달: 비밀번호 결과 -->
+<div id="pw-result-modal" class="id-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="pw-modal-title">
+  <div class="id-modal-backdrop" data-dismiss="modal"></div>
+  <div class="id-modal-dialog" role="document">
+    <div class="id-modal-header">
+      <h3 id="pw-modal-title" style="margin:0;">비밀번호 확인</h3>
+      <button type="button" class="id-modal-close" aria-label="닫기" data-dismiss="modal">×</button>
+    </div>
+      <div class="id-modal-body">
+          <p>임시 비밀번호가 발급되었습니다.<br>
+              <strong id="found-pw">1234</strong><br>
+              로그인 후 반드시 비밀번호를 변경해주세요.
+          </p>
+      </div>
+    <div class="id-modal-footer">
+      <button type="button" class="btn-register" style="width:120px;" data-dismiss="modal">확인</button>
+    </div>
+  </div>
+</div>
+
+<script>
+    (function(){
+        /* ===== 인증 방식 전환 ===== */
+        const tabPhone  = document.getElementById('tab-phone');
+        const tabEmail  = document.getElementById('tab-email');
+        const panelPhone = document.getElementById('panel-phone');
+        const panelEmail = document.getElementById('panel-email');
+
+        function setActive(which){
+            const isPhone = which === 'phone';
+            tabPhone.classList.toggle('active', isPhone);
+            tabEmail.classList.toggle('active', !isPhone);
+
+            panelPhone.classList.toggle('hidden', !isPhone);
+            panelEmail.classList.toggle('hidden', isPhone);
+
+            panelPhone.setAttribute('aria-hidden', !isPhone);
+            panelEmail.setAttribute('aria-hidden', isPhone);
+        }
+
+        tabPhone.addEventListener('click', ()=> setActive('phone'));
+        tabEmail.addEventListener('click', ()=> setActive('email'));
+        setActive('phone');
+
+        /* ===== 모달 ===== */
+        const modal = document.getElementById('pw-result-modal');
+        let lastFocused = null;
+
+        function openPwModal(pw){
+            lastFocused = document.activeElement;
+            document.getElementById('found-pw').textContent = pw;
+            modal.classList.add('open');
+            modal.setAttribute('aria-hidden', 'false');
+        }
+        function closePwModal(){
+            modal.classList.remove('open');
+            modal.setAttribute('aria-hidden', 'true');
+            if (lastFocused?.focus) lastFocused.focus();
+        }
+        modal.addEventListener('click', (e)=>{
+            if (e.target.matches('[data-dismiss="modal"], .id-modal-backdrop')) {
+                closePwModal();
+            }
+        });
+
+        /* ===== 인증 상태 ===== */
+        let phoneVerified = false;
+        let emailVerified = false;
+
+        // ===== 휴대폰 인증번호 발송 =====
+        document.getElementById('send-sms')?.addEventListener('click', async () => {
+            const phone = document.querySelector('input[name="member_phone"]').value.replace(/\D/g, '');
+
+            if (!/^01\d{8,9}$/.test(phone)) {
+                return alert("올바른 휴대폰 번호를 입력해 주세요.");
+            }
+
+            const res = await fetch('/BNK/api/verification/sms/send', {
+                method: 'POST',
+                headers: { 'Content-Type':'application/json' },
+                body: JSON.stringify({ phoneNumber: phone })
+            });
+
+            const data = await res.json();
+            if (data.ok) alert('인증번호가 발송되었습니다.');
+            else alert(data.message || '전송 실패');
+        });
+
+        // ===== 휴대폰 인증번호 확인 =====
+        document.getElementById('check-sms')?.addEventListener('click', async () => {
+            const phone = document.querySelector('input[name="member_phone"]').value.replace(/\D/g, '');
+            const code  = document.querySelector('input[name="sms_code"]').value.trim();
+
+            const res = await fetch('/BNK/api/verification/sms/verify', {
+                method: 'POST',
+                headers: { 'Content-Type':'application/json' },
+                body: JSON.stringify({ phoneNumber: phone, code: code })
+            });
+
+            const data = await res.json();
+
+            if (data.ok || data.matched || data.success) {
+                phoneVerified = true;
+                alert("휴대폰 인증 성공!");
+            } else {
+                phoneVerified = false;
+                alert(data.message || "인증 실패");
+            }
+        });
+
+        // ===== 이메일 인증번호 발송 =====
+        document.getElementById('send-mail')?.addEventListener('click', async () => {
+            const email = document.querySelector('input[name="member_email"]').value.trim();
+
+            if (!/^\S+@\S+\.\S+$/.test(email)) {
+                return alert("올바른 이메일을 입력해 주세요.");
+            }
+
+            const res = await fetch('/BNK/api/verification/email/send', {
+                method: 'POST',
+                headers: { 'Content-Type':'application/json' },
+                body: JSON.stringify({ email })
+            });
+
+            const data = await res.json();
+
+            if (data.send) alert("이메일로 인증번호가 발송되었습니다.");
+            else alert("메일 발송 실패");
+        });
+
+        // ===== 이메일 인증번호 확인 =====
+        document.getElementById('check-mail')?.addEventListener('click', async () => {
+            const code = document.querySelector('input[name="mail_code"]').value.trim();
+            const email = document.querySelector('input[name="member_email"]').value.trim();
+
+            const res = await fetch('/BNK/api/verification/email/verify', {
+                method: 'POST',
+                headers: { 'Content-Type':'application/json' },
+                body: JSON.stringify({ email, code })
+            });
+
+            const data = await res.json();
+
+            if (data.matched) {
+                emailVerified = true;
+                alert("이메일 인증 성공!");
+            } else {
+                emailVerified = false;
+                alert("이메일 인증 실패");
+            }
+        });
+
+        // ===== 비밀번호 찾기 버튼 =====
+        document.getElementById('btn-find').addEventListener('click', async () => {
+            const isPhone = tabPhone.classList.contains('active');
+
+            if (isPhone) {
+                // ---- 휴대폰 방식 ----
+                if (!phoneVerified) return alert("휴대폰 인증을 완료하세요.");
+
+                const mid   = document.querySelector('input[name="member_id_phone"]').value.trim();
+                const phone = document.querySelector('input[name="member_phone"]').value.replace(/\D/g, '');
+
+                if (!mid) return alert("아이디를 입력해 주세요.");
+
+                const res = await fetch('/BNK/member/findpw/phone', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        mid: mid,
+                        phone: phone
+                    })
+                });
+
+                const data = await res.json();
+
+                if (!data.ok) return alert(data.message || "일치하는 회원이 없습니다.");
+
+                openPwModal(data.tempPw);
+
+            } else {
+                // ---- 이메일 방식 ----
+                if (!emailVerified) return alert("이메일 인증을 완료하세요.");
+
+                const mid   = document.querySelector('input[name="member_id_mail"]').value.trim();
+                const email = document.querySelector('input[name="member_email"]').value.trim();
+
+                if (!mid) return alert("아이디를 입력해 주세요.");
+
+                const res = await fetch('/BNK/member/findpw/email', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        mid: mid,
+                        email: email
+                    })
+                });
+
+                const data = await res.json();
+
+                if (!data.ok) return alert(data.message || "일치하는 회원이 없습니다.");
+
+                openPwModal(data.tempPw);
+            }
+        });
+    })();
+</script>
+
+
+  <footer><div th:replace="~{layouts/footer.html}"></div></footer>
+</body>
+
+<style>
+  main {
+    width: 1200px;
+    background-color: #F6F6F8;
+    padding: 80px 20px;
+    margin: 0 auto;
+  }
+  body {
+    font-family: 'Noto Sans KR', '맑은 고딕', sans-serif;
+    background: #F6F6F8;
+    color: #111827;
+    line-height: 1.5;
+  }
+  .container { max-width: 1200px; margin: 0 auto; padding: 28px 16px 40px; }  
+ 
+  /* 버튼 */
+  .btns { display: flex; justify-content: center; gap: 10px; margin: 10px 0 20px; }  
+
+  a { text-decoration: none; color: inherit; }
+
+  /* 감싸는 */
+  .form-card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 20px;
+    box-shadow: 0 10px 20px rgba(2,6,23,.06);
+    padding: 28px 30px;
+    margin-bottom: 24px;
+  }
+
+  .field-td { text-align: center; padding: 10px; }
+  .field-td input {
+    width: 400px; height: 44px; border: 1px solid #e5e7eb; border-radius: 10px; box-sizing: border-box; padding: 0 12px; outline: none;
+  }
+
+  .field-row { display: flex; }
+  .field-row input { width: 500px; height: 25px; border: 1px solid #bbb; padding: 10px; border-radius: 10px; }
+  .field-label { font-size: 18px; } 
+
+  /* 검색 아이콘 */
+  .search-icon-wrapper { display: flex; justify-content: center; align-items: center; margin-bottom: 15px; }
+  .search-icon { width: 70px; height: 70px; border-radius: 50%; background-color: #fff5f5; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+  .search-icon span { font-size: 32px; color: #D91A1A; }
+
+  .phone-certify-row { display: flex; align-items: center; gap: 10px; }
+  .btn-certify { width: 100px; height: 44px; font-size: 14px; flex-shrink: 0; }
+
+  /*  방식 스위치 */
+  .method-switch {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    max-width: 520px;
+    width: 100%;
+    margin: 8px auto 0;
+  }
+  .method-btn {
+    appearance: none;
+    border: 1px solid #E5E7EB;
+    background: #fff;
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: box-shadow .15s, border-color .15s;
+  }
+  .method-btn.active {
+    border: 2px solid #D6001C;
+    box-shadow: 0 6px 16px rgba(214,0,28,.12);
+  }
+
+  /* 패널 토글 */
+  .method-panel.hidden { display: none; }
+
+  /* 모달 스타일 (아이디/비번 공통) */
+  .id-modal { position: fixed; inset: 0; display: none; z-index: 10000; }
+  .id-modal.open { display: block; }
+  .id-modal-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,.35); }
+  .id-modal-dialog {
+    position: relative; margin: 8vh auto 0; max-width: 420px;
+    background: #fff; border: 1px solid #e5e7eb; border-radius: 16px;
+    box-shadow: 0 20px 40px rgba(2,6,23,.25); overflow: hidden;
+  }
+  .id-modal-header { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; border-bottom: 1px solid #eee; }
+  .id-modal-close { appearance: none; background: transparent; border: none; font-size: 20px; line-height: 1; cursor: pointer; }
+  .id-modal-body { padding: 18px; color: #374151; }
+  .id-modal-footer { padding: 14px 18px 20px; display: flex; justify-content: center; }
+
+  .form-card input:focus {
+      outline: none;
+      border-color: #d1d5db;
+      box-shadow: 0 0 0 3px rgba(214, 0, 28, .12);
+  }
+</style>
+</html>

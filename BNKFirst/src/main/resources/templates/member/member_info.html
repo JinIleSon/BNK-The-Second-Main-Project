@@ -1,0 +1,527 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>정보입력</title>
+    <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+</head>
+<body>
+<div th:replace="~{layouts/header.html}"></div>
+
+<div id="bnk-chatbot-container" style="position: fixed; right: 20px; bottom: 20px; z-index: 9999;">
+    <div id="bnk-chatbot-slot"></div>
+</div>
+<main>
+    <div class="container">
+        <h1 style="text-align: center;">신규가입</h1>
+        <div class="stepper">
+            <div class="step"><span class="dot">1</span>약관동의</div>
+            <div class="sep"></div>
+            <div class="step"><span class="dot">2</span>본인인증</div>
+            <div class="sep"></div>
+            <div class="step  active"><span class="dot">3</span>정보입력</div>
+            <div class="sep"></div>
+            <div class="step"><span class="dot">4</span>가입완료</div>
+        </div>
+        <!-- 제목/설명 -->
+        <h2 style="margin: 18px 130px 0; font-size: 28px;">정보입력</h2>
+        <p style="color: #6b7280; margin: 5px 130px 10px;">기본정보를 입력해주세요.</p>
+
+        <!-- 감싸기 -->
+        <div class="form-card">
+            <form id="memberForm" th:action="@{/member/insert}" method="post">
+                <input type="hidden" name="mname" th:value="${auth?.mname}">
+                <input type="hidden" name="mbirth" th:value="${auth?.mbirth}">
+                <input type="hidden" name="mgender" th:value="${auth?.mgender}">
+                <input type="hidden" name="mcarrier" th:value="${auth?.mcarrier}">
+                <input type="hidden" name="mphone" th:value="${auth?.mphone}">
+                <table class="form-table">
+                    <tbody>
+                    <!-- 아이디 -->
+                    <tr class="field">
+                        <th><label for="idInput">아이디<span class="reqdot">*</span></label></th>
+                        <td>
+                            <div class="field-row">
+                                <input id="idInput" name="mid" type="text" class="input" placeholder="아이디를 입력해주세요" required>
+                                <button id="idCheckBtn" type="button" class="btn-register">중복확인</button>
+                            </div>
+                            <div id="idHint" class="idhint">영문, 숫자 조합 5~15자</div>
+                        </td>
+                    </tr>
+                    <!-- 비밀번호 & 비밀번호 확인 -->
+                    <tr class="field">
+                        <th><label for="pwInput">비밀번호<span class="reqdot">*</span></label></th>
+                        <td style="display:flex; align-items:center; gap:12px;">
+                            <div style="flex:1;">
+                                <input id="pwInput" name="mpw" type="password" class="input" placeholder="비밀번호를 입력해주세요" required>
+                                <div id="pwHint" class="hint">영문, 숫자, 특수문자 포함 5~15자</div>
+                            </div>
+
+                            <div style="flex:1;">
+                                <input id="pw2Input" type="password" class="input" placeholder="비밀번호를 다시 입력해주세요" required>
+                                <div id="pw2Hint" class="hint"></div>
+                            </div>
+                        </td>
+                    </tr>
+                    <!-- 주민등록번호 -->
+                    <tr class="field">
+                        <th scope="row"><label class="field-label" for="rrnInput">주민등록번호<span class="reqdot">*</span></label></th>
+                        <td>
+                            <input id="rrnInput" name="mjumin" type="text" class="input"
+                                   placeholder="예) 900101-1234567"
+                                   maxlength="14" pattern="\d{6}-\d{7}" required>
+                        </td>
+                    </tr>
+                    <!-- 주소 정보-->
+                    <tr class="field">
+                        <th><label for="zipInput">주소 정보<span class="reqdot">*</span></label></th>
+                        <td>
+                            <div class="field-row">
+                                <input id="zipInput" type="text" class="input" placeholder="우편번호" readonly>
+                                <button id="addrSearchBtn" type="button"
+                                        style="width:90px; height:42px; border-radius:8px; border:1px solid #D1D5DB; background-color:white; cursor:pointer;">
+                                    주소검색
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="field">
+                        <th><label for="baseAddrInput">기본주소<span class="reqdot">*</span></label></th>
+                        <td><input id="baseAddrInput" type="text" class="input" placeholder="기본주소" readonly></td>
+                    </tr>
+                    <tr class="field">
+                        <th><label for="detailAddrInput">상세주소<span class="reqdot">*</span></label></th>
+                        <td><input id="detailAddrInput" type="text" class="input" placeholder="상세주소를 입력해주세요"></td>
+                    </tr>
+                    <!-- 이메일 & 인증번호 -->
+                    <tr class="field">
+                        <th scope="row">
+                            <label class="field-label" for="emailInput">
+                                이메일<span class="reqdot">*</span>
+                            </label>
+                        </th>
+
+                        <td style="display:flex; align-items:center; gap:12px;">
+                            <input id="emailInput" name="memail" type="text" class="input" placeholder="example@email.com" style="flex:1;">
+                            <button id="emailReqBtn" type="button" class="btn-register" style="width:90px;">
+                                인증요청
+                            </button>
+                            <input id="emailCodeInput" type="text" class="input" placeholder="6자리 입력" maxlength="6" style="width:100px;">
+                            <button id="emailChkBtn" type="button"
+                                    class="btn-register" style="width:80px;">
+                                확인
+                            </button>
+                        </td>
+                    </tr>
+
+                    <!-- 실제 주소 전송용 hidden input -->
+                    <input type="hidden" name="maddress" id="fullAddress">
+                    <!-- 버튼 -->
+                    <tr>
+                        <td colspan="2">
+                            <div class="btns" style="display:flex; justify-content:space-between; gap:8px;">
+                                <a th:href="@{/member/main}" class="btn-pressable"
+                                   style="flex:1; height:42px; line-height:42px; border-radius:8px; border:1px solid #D1D5DB; background:#fff; text-align:center;">취소</a>
+                                <button id="nextBtn" type="submit" class="btn-register"
+                                        style="flex:1; height:42px; border-radius:8px;">다음</button>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </form>
+        </div>
+    </div>
+</main>
+<script>
+    // 아이디 관련 요소
+    const idInput = document.getElementById('idInput');
+    const idCheckBtn = document.getElementById('idCheckBtn');
+    const idHint = document.getElementById('idHint');
+
+    // 모달 요소 (아이디 중복확인 결과용)
+    const idCheckModal = document.createElement("div");
+    idCheckModal.classList.add("modal");
+    idCheckModal.innerHTML = `
+  <div class="modal-content">
+    <h3 id="idCheckTitle"></h3>
+    <p id="idCheckMsg"></p>
+    <div class="modal-btns">
+        <button id="modalClose" class="btn-register" style="width:100%;">확인</button>
+    </div>
+  </div>`;
+    document.body.appendChild(idCheckModal);
+
+    const idCheckTitle = document.getElementById("idCheckTitle");
+    const idCheckMsg = document.getElementById("idCheckMsg");
+    const modalClose = document.getElementById("modalClose");
+
+    // 아이디 형식 검사
+    function validateIdFormat(value) {
+        const regex = /^[a-zA-Z0-9]{5,15}$/;
+        return regex.test(value);
+    }
+
+    // 입력 중 (5자 미만이면 경고 표시)
+    idInput.addEventListener("input", () => {
+        const value = idInput.value.trim();
+
+        if (value.length > 0 && value.length < 5) {
+            idHint.textContent = "영문과 숫자 조합 5~15자로 입력해주세요.";
+            idHint.style.color = "#d6001c";
+        } else {
+            idHint.textContent = "";
+        }
+    });
+
+    // 중복확인 버튼 클릭 시
+    idCheckBtn.addEventListener("click", async () => {
+        const mid = idInput.value.trim();
+
+        if (!mid) {
+            showModal("입력 오류", "아이디를 입력해주세요.", "#d6001c");
+            idInput.focus();
+            return;
+        }
+
+        if (!validateIdFormat(mid)) {
+            showModal("형식 오류", "영문과 숫자 조합 5~15자로 입력해주세요.", "#d6001c");
+            return;
+        }
+
+        try {
+            const res = await fetch(`${window.location.origin}/BNK/member/id-check?mid=${encodeURIComponent(mid)}`)
+            const duplicated = await res.json();
+
+            if (duplicated) {
+                showModal("중복확인 결과", "이미 사용 중인 아이디입니다.", "#d6001c");
+            } else {
+                showModal("중복확인 결과", "사용 가능한 아이디입니다.", "#059669");
+            }
+        } catch (err) {
+            console.error(err);
+            showModal("서버 오류", "서버 오류가 발생했습니다. 다시 시도해주세요.", "#d6001c");
+        }
+    });
+
+    // 모달 표시 함수
+    function showModal(title, msg, color) {
+        idCheckTitle.textContent = title;
+        idCheckMsg.textContent = msg;
+        idCheckMsg.style.color = color;
+        idCheckModal.style.display = "flex";
+    }
+
+    modalClose.addEventListener("click", () => {
+        idCheckModal.style.display = "none";
+    });
+
+    // ESC 또는 외부 클릭 시 닫기
+    window.addEventListener("click", (e) => {
+        if (e.target === idCheckModal) {
+            idCheckModal.style.display = "none";
+        }
+    });
+
+    // 주소검색 (카카오)
+    document.getElementById("addrSearchBtn").addEventListener("click", function () {
+        new daum.Postcode({
+            oncomplete: function (data) {
+                let addr = '';
+                let extraAddr = '';
+
+                if (data.userSelectedType === 'R') {
+                    addr = data.roadAddress;
+                } else {
+                    addr = data.jibunAddress;
+                }
+
+                if (data.userSelectedType === 'R') {
+                    if (data.bname !== '' && /[동|로|가]$/g.test(data.bname)) {
+                        extraAddr += data.bname;
+                    }
+                    if (data.buildingName !== '' && data.apartment === 'Y') {
+                        extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
+                    }
+                    if (extraAddr !== '') {
+                        addr += ' (' + extraAddr + ')';
+                    }
+                }
+
+                // 대괄호 제거한 우편번호, 기본주소 입력
+                document.getElementById('zipInput').value = data.zonecode;
+                document.getElementById('baseAddrInput').value = addr;
+                document.getElementById('detailAddrInput').focus();
+
+                // 기본주소까지만 입력해도 hidden 필드 자동 채움 (콤마 구분)
+                const fullAddr = `${data.zonecode},${addr},`;
+                document.getElementById('fullAddress').value = fullAddr;
+            }
+        }).open();
+    });
+
+    // 상세주소 입력 시 fullAddress 갱신 (콤마로 구분)
+    document.getElementById('detailAddrInput').addEventListener('input', function () {
+        const zip = document.getElementById('zipInput').value.trim();
+        const base = document.getElementById('baseAddrInput').value.trim();
+        const detail = document.getElementById('detailAddrInput').value.trim();
+
+        // 우편번호, 기본주소, 상세주소 순으로 하나의 문자열 구성
+        document.getElementById('fullAddress').value = `${zip},${base},${detail}`;
+    });
+
+    // 폼 제출 직전에도 강제 갱신 (안전)
+    document.getElementById('memberForm').addEventListener('submit', function () {
+        const zip = document.getElementById('zipInput').value.trim();
+        const base = document.getElementById('baseAddrInput').value.trim();
+        const detail = document.getElementById('detailAddrInput').value.trim();
+
+        document.getElementById('fullAddress').value = `${zip},${base},${detail}`;
+    });
+
+    // 비밀번호 유효성 검사 정규식: 8~16자, 영문+숫자+특수문자 포함
+    const pwInput = document.getElementById('pwInput');
+    const pw2Input = document.getElementById('pw2Input');
+    const pwHint = document.getElementById('pwHint');
+    const pw2Hint = document.getElementById('pw2Hint');
+
+    function validatePasswordStrength(value) {
+        const regex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>/?]).{5,15}$/;
+        return regex.test(value);
+    }
+
+    function checkPasswords() {
+        const pw = pwInput.value.trim();
+        const pw2 = pw2Input.value.trim();
+
+        // 강도 검사
+        if (!pw) {
+            pwHint.textContent = "비밀번호를 입력해주세요.";
+            pwHint.style.color = "#6b7280";
+        } else if (!validatePasswordStrength(pw)) {
+            pwHint.textContent = "특수문자, 영문, 숫자 모두 포함해야 합니다.";
+            pwHint.style.color = "#d6001c";
+        } else {
+            if (pw2 && pw === pw2) {
+                // 형식도 맞고 두 번째 비밀번호도 일치할 때
+                pwHint.textContent = "비밀번호가 일치합니다.";
+                pwHint.style.color = "#059669";
+            } else {
+                // 형식은 맞지만 아직 일치하지 않거나 입력 전
+                pwHint.textContent = "사용 가능한 비밀번호입니다.";
+                pwHint.style.color = "#059669";
+            }
+        }
+
+        // 일치 여부 검사
+        if (!pw2) {
+            pw2Hint.textContent = "";
+        } else if (pw !== pw2) {
+            pw2Hint.textContent = "비밀번호가 일치하지 않습니다.";
+            pw2Hint.style.color = "#d6001c";
+        } else {
+            pw2Hint.textContent = "비밀번호가 일치합니다.";
+            pw2Hint.style.color = "#059669";
+        }
+    }
+
+    // 입력 시마다 실시간 검사
+    pwInput.addEventListener('input', checkPasswords);
+    pw2Input.addEventListener('input', checkPasswords);
+
+    // 폼 제출 시 최종 유효성 검사
+    document.getElementById('memberForm').addEventListener('submit', (e) => {
+        const pw = pwInput.value.trim();
+        const pw2 = pw2Input.value.trim();
+        if (!validatePasswordStrength(pw)) {
+            e.preventDefault();
+            alert('비밀번호 형식이 올바르지 않습니다. (영문, 숫자, 특수문자 포함 5~15자)');
+            pwInput.focus();
+            return;
+        }
+        if (pw !== pw2) {
+            e.preventDefault();
+            alert('비밀번호가 일치하지 않습니다.');
+            pw2Input.focus();
+        }
+    });
+
+    // 이메일 인증번호 요청
+    document.getElementById("emailReqBtn").addEventListener("click", async () => {
+        const email = document.getElementById("emailInput").value.trim();
+
+        if (!email) {
+            showModal("입력 오류", "이메일을 입력해주세요.", "#d6001c");
+            return;
+        }
+
+        try {
+            const res = await fetch("/BNK/api/verification/email/send", {   // ★ 수정됨
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email })
+            });
+
+            const data = await res.json();
+            console.log("📧 이메일 발송 응답:", data);
+
+            if (data.send === true) {
+                showModal("발송 완료", "인증번호가 이메일로 전송되었습니다.", "#059669");
+            } else {
+                showModal("발송 실패", data.error || "메일 발송에 실패했습니다.", "#d6001c");
+            }
+
+        } catch (err) {
+            console.error(err);
+            showModal("서버 오류", "이메일 발송 중 오류가 발생했습니다.", "#d6001c");
+        }
+    });
+
+    // 이메일 인증번호 확인
+    let emailVerified = false;
+
+    document.getElementById("emailChkBtn").addEventListener("click", async () => {
+        const code = document.getElementById("emailCodeInput").value.trim();
+
+        if (!code) {
+            showModal("입력 오류", "인증번호를 입력해주세요.", "#d6001c");
+            return;
+        }
+
+        try {
+            const res = await fetch("/BNK/api/verification/email/verify", { // ★ 수정됨
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ code })
+            });
+
+            const data = await res.json();
+            console.log("📧 이메일 인증 응답:", data);
+
+            if (data.matched === true) {
+                emailVerified = true;
+                showModal("인증 완료", "이메일 인증이 완료되었습니다!", "#059669");
+            } else {
+                emailVerified = false;
+                showModal("인증 실패", "인증번호가 올바르지 않습니다.", "#d6001c");
+            }
+
+        } catch (err) {
+            console.error(err);
+            showModal("서버 오류", "인증 처리 중 오류가 발생했습니다.", "#d6001c");
+        }
+    });
+</script>
+<footer><div th:replace="~{layouts/footer.html}"></div></footer>
+</body>
+<style>
+    main {
+        width: 1200px;
+        background-color: #F6F6F8;
+        padding: 80px 20px;
+        margin: 0 auto;
+    }
+    body {
+        font-family: 'Noto Sans KR', '맑은 고딕', sans-serif;
+        background: #F6F6F8;
+        color: #111827;
+        line-height: 1.5;
+    }
+    .container { max-width: 1000px; margin: 0 auto; padding: 28px 16px 40px; }
+    .stepper {
+        width: 800px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #f7f7f9;
+        border: 1px solid #e5e7eb;
+        border-radius: 999px;
+        padding: 10px 20px;
+    }
+    .step { display: flex; align-items: center; gap: 8px; color: #6b7280; font-weight: 600; }
+    .step .dot {
+        width: 28px; height: 28px; border-radius: 999px; display: grid; place-items: center;
+        border: 1px solid #d1d5db; background: #fff; color: #6b7280; font-weight: 700;
+    }
+    .step.active { color: #111; }
+    .step.active .dot { background: #d6001c; border-color: #d6001c; color: #fff; }
+    .sep { width: 28px; height: 2px; background: #e5e7eb; border-radius: 2px; }
+
+    /* --- 폼 레이아웃 --- */
+    .field { margin-bottom: 14px; }
+    .field-label { display:block; font-weight:700; margin-bottom:8px;}
+    .reqdot { color:#d6001c; margin-left:4px; }
+
+    .input {
+        width:100%; height:44px; box-sizing:border-box;
+        border:1px solid #e5e7eb; border-radius:10px; background:#fff;
+        padding: 10px 12px; font-size:14px; color:#111827;
+        outline:none; transition: box-shadow .15s ease, border-color .15s ease;
+    }
+    .input:focus {
+        border-color:#d1d5db;
+        box-shadow: 0 0 0 3px rgba(214,0,28,.12);
+    }
+
+    .field-row { display:flex; gap:8px; align-items:center; }
+    .hint { font-size: 12px; color: #6b7280; margin-top: 6px; min-height: 18px; }
+    .idhint { font-size: 12px; color: #6b7280; margin-top: 6px; min-height: 18px; }
+
+    /* 버튼 */
+    .btns { display: flex; justify-content: center; gap: 10px; margin-top: 22px; }
+
+    a { text-decoration: none; color: inherit; }
+
+    /* 카드 */
+    .form-card {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 20px;
+        box-shadow: 0 10px 20px rgba(2,6,23,.06);
+        padding: 28px 20px;
+        max-width: 700px;
+        margin: 0 auto;
+    }
+
+    /* 테이블 레이아웃 */
+    .form-table { width: 650px; border-collapse: separate; border-spacing: 0 12px; margin: 0 auto;}
+    .form-table th { width: 110px; text-align: left; vertical-align: top;}
+    .form-table td { vertical-align: top; }
+
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 2000;
+        left: 0; top: 0;
+        width: 100%; height: 100%;
+        background: rgba(0,0,0,0.4);
+        justify-content: center;
+        align-items: center;
+    }
+
+    .modal-content {
+        background: #fff;
+        border-radius: 16px;
+        padding: 30px 24px;
+        width: 360px;
+        text-align: center;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+
+    .modal h3 {
+        margin-bottom: 12px;
+        font-size: 18px;
+        font-weight: 700;
+        color: #111827;
+    }
+    .modal p {
+        color: #6b7280;
+        margin-bottom: 20px;
+        font-size: 14px;
+    }
+    .modal-btns { display: flex; justify-content: center; gap: 8px; }
+</style>
+</html>

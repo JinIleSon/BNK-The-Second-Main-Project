@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.bnkfirst.mapper.MypageMapper">
+
+    <!-- 아이디로 회원 조회 -->
+    <select id="findById" resultType="kr.co.bnkfirst.dto.UsersDTO">
+        select * from users where mid = #{mid}
+    </select>
+
+    <select id="findByDeal" resultType="kr.co.bnkfirst.dto.mypage.DealDTO">
+        select * from deal where mid = #{mid} order by ddate desc fetch first 1 rows only
+    </select>
+
+<!--    회원이 가진 펀드, IRP, DC 계좌 조회    -->
+    <select id="findByFund" resultType="kr.co.bnkfirst.dto.product.FundDTO">
+        SELECT * FROM PCONTRACT p LEFT JOIN fund f ON f.fid = p.PCPID
+                                  LEFT JOIN product pr
+                                            ON pr.pid = p.pcpid
+        WHERE pcuid = #{pcuid} AND (p.pcpid LIKE '%FD%' or p.type like '%TD%')
+    </select>
+
+
+    <select id="findByBalance" resultType="java.lang.Integer">
+        SELECT sum(c.PBALANCE) FROM PCONTRACT c JOIN PRODUCT p ON c.pcpid = p.pid WHERE pcuid = #{mid}
+    </select>
+
+<!--    펀드 계좌들의 합-->
+    <select id="findByFundBalance" resultType="java.lang.Integer">
+        SELECT sum(pbalance) FROM PCONTRACT WHERE pcuid = #{mid} AND pcpid LIKE '%FD%'
+    </select>
+
+<!--    계좌 찾기-->
+    <select id="findByContract" resultType="kr.co.bnkfirst.dto.product.PcontractDTO">
+        SELECT * FROM PCONTRACT c JOIN PRODUCT p ON c.pcpid = p.pid WHERE pcuid = #{pcuid} and (c.type not like '%TD%' and c.type != 'FUND')
+    </select>
+
+<!--    IRP 계좌 찾기-->
+    <select id="findByIRP" resultType="kr.co.bnkfirst.dto.product.PcontractDTO">
+        select * from pcontract c JOIN PRODUCT p ON c.pcpid = p.pid where pcuid = #{pcuid} and type = 'IRP'
+    </select>
+
+
+<!--    펀드 계좌 찾기-->
+    <select id="findByFundContract" resultType="kr.co.bnkfirst.dto.product.PcontractDTO">
+        SELECT * FROM PCONTRACT p LEFT JOIN fund f ON f.fid = p.PCPID
+                                  LEFT JOIN product pr
+                                            ON pr.pid = p.pcpid
+        WHERE pcuid = #{pcuid} AND (p.type like '%TD%' or p.type = 'FUND')
+    </select>
+
+    <select id="findByDocumentList" resultType="kr.co.bnkfirst.dto.DocumentDTO">
+        SELECT * FROM DOCUMENT d JOIN USERS u ON d.MID = u.MID WHERE d.MID = #{mid} and doctype = 'Q&amp;A' ORDER BY d.DOCUPDATE desc
+    </select>
+
+<!-- 거래 한 번에 두 번 사용 -->
+    <insert id="registerDeal">
+        insert into deal (mid, dbalance, dwho) values(#{mid}, #{dbalance}, #{dwho})
+    </insert>
+<!--  거래 한 번에 두 번 사용  -->
+    <update id="updateContract">
+        update pcontract set pbalance=#{pbalance} where pacc=#{pacc}
+    </update>
+<!--계좌이체용 계좌 찾기-->
+    <select id="findByOneContract" resultType="kr.co.bnkfirst.dto.product.PcontractDTO">
+        SELECT * FROM PCONTRACT c JOIN PRODUCT p ON c.pcpid = p.pid WHERE pacc=#{pacc}
+    </select>
+
+<!--    최근 거래-->
+    <select id="findByDealList" resultType="kr.co.bnkfirst.dto.mypage.DealDTO">
+        SELECT * FROM deal WHERE mid = #{mid} ORDER BY ddate desc FETCH FIRST 3 ROWS ONLY
+    </select>
+
+<!--    이번 달 입금 및 출금-->
+    <select id="findBySumPlusDbalance" resultType="java.lang.Integer">
+        SELECT sum(dbalance)
+        FROM deal
+        WHERE mid = #{mid}
+          AND dbalance > 0
+          AND ddate >= trunc(sysdate, 'MM')
+        ORDER BY ddate DESC
+    </select>
+    <select id="findBySumMinusDbalance" resultType="java.lang.Integer">
+        SELECT sum(dbalance)
+        FROM deal
+        WHERE mid = #{mid}
+          AND dbalance &lt; 0
+          AND ddate >= trunc(sysdate, 'MM')
+        ORDER BY ddate DESC
+    </select>
+
+<!--    상품 해지 과정-->
+    <update id="updateRecvContract">
+        update pcontract set pbalance=pbalance+#{pbalance} where pacc=#{pacc} and type='IRP'
+    </update>
+    <delete id="deleteContract">
+        delete from pcontract where pcuid = #{pcuid} and pcpid = #{pcpid}
+    </delete>
+
+<!--    ETF 상품 불러오기-->
+    <select id="selectEtf" resultType="kr.co.bnkfirst.dto.product.PcontractDTO">
+        select
+            pcuid,
+            pstock,
+            pprice,
+            psum,
+            pname,
+            pacc,
+            code,
+            'ETF' AS ptype          -- DTO의 ptype 필드에 ETF 고정 주입
+            from etf where pcuid = #{pcuid}
+    </select>
+
+    <select id="findByUidAndType" parameterType="string">
+        SELECT * FROM PCONTRACT p
+        LEFT JOIN PRODUCT p2
+            ON p.PCPID = p2.PID
+        LEFT JOIN FUND f
+            ON p.PCPID = f.FID
+        WHERE p.PCUID = 'a123'
+          AND
+            (p."TYPE" = 'FUND'
+                OR p."TYPE" LIKE '%TD')
+    </select>
+</mapper>

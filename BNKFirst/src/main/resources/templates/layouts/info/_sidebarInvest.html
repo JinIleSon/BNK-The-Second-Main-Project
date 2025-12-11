@@ -1,0 +1,261 @@
+<!-- ===== 사이드바 ===== -->
+<aside class="sidebar">
+    <h3>투자자정보</h3>
+
+    <div class="menu-item">
+        <div class="menu-title">경영정보</div>
+        <div class="submenu">
+            <a th:href="@{/info/invest}">경영공시</a>
+            <a th:href="@{/info/invest}">바젤3 자본공시</a>
+            <a th:href="@{/info/invest}">지배구조 관련공시</a>
+            <a th:href="@{/info/invest}">커버드본드</a>
+            <a th:href="@{/info/invest}">기타공시</a>
+            <a th:href="@{/Sinfo/invest}">재무제표</a>
+            <a th:href="@{/info/invest}">손익계산서</a>
+        </div>
+    </div>
+
+    <div class="menu-item">
+        <div class="menu-title">공고</div>
+    </div>
+
+    <div class="menu-title">신용등급</div>
+    <div class="submenu">
+        <a th:href="@{/info/invest}">신용등급현황</a>
+        <a th:href="@{/info/invest}">등급변동 내역</a>
+    </div>
+
+    <div class="menu-item">
+        <div class="menu-title">BNK금융지주</div>
+    </div>
+
+    <div class="menu-item">
+        <div class="menu-title">IR정보</div>
+        <div class="submenu">
+            <a th:href="@{/info/invest}">IR자료</a>
+            <a th:href="@{/info/invest}">IR NEWS</a>
+            <a th:href="@{/info/invest}">주가정보</a>
+            <a th:href="@{/info/invest}">IR CONTACT</a>
+
+        </div>
+    </div>
+</aside>
+
+<script>
+
+    // Sidebar toggle
+    const titles = document.querySelectorAll(".menu-title");
+    titles.forEach(title => {
+        title.addEventListener("click", () => {
+            const isActive = title.classList.contains("active");
+            titles.forEach(t => {
+                t.classList.remove("active");
+                const next = t.nextElementSibling;
+                if (next && next.classList.contains("submenu")) {
+                    next.style.maxHeight = null;
+                }
+            });
+            if (!isActive) {
+                title.classList.add("active");
+                const submenu = title.nextElementSibling;
+                if (submenu && submenu.classList.contains("submenu")) {
+                    submenu.style.maxHeight = submenu.scrollHeight + "px";
+                }
+            }
+        });
+    });
+</script>
+
+
+<style>
+    :root {
+        --bnk-red: #DE0000;
+        --bnk-gray: #444;
+        --bnk-border: #ddd;
+        --bnk-gradient: linear-gradient(90deg, #5B6BF2, #D34F9B);
+    }
+
+    body {
+        font-family: "Noto Sans KR", sans-serif;
+        margin: 0px;
+        background-color: #fafafa;
+        color: #222;
+    }
+
+    header {
+        border-bottom: 5px solid var(--bnk-red);
+        padding: 16px 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #fff;
+    }
+
+
+    main {
+        display: flex;
+        justify-content: center;
+        gap: 40px;
+        width: 80%;
+        margin: 100px auto;
+
+    }
+
+    /* ========== 사이드 메뉴 ========== */
+    .sidebar {
+        width: 260px;
+        background: #fff;
+        border: 1px solid var(--bnk-border);
+        border-radius: 4px;
+    }
+
+    .sidebar h3 {
+        font-size: 18px;
+        font-weight: 600;
+        padding: 16px;
+        border-bottom: 1px solid var(--bnk-border);
+    }
+
+    .menu-item {
+        border-bottom: 0px solid var(--bnk-border);
+    }
+
+    .menu-title {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 14px 16px;
+        cursor: pointer;
+        color: var(--bnk-gray);
+        font-weight: 500;
+        transition: all 0.2s;
+        text-decoration: none;
+        /* 밑줄 제거 */
+    }
+
+    .menu-title:hover {
+        background-color: #fff5f5;
+        color: var(--bnk-red);
+    }
+
+    .menu-title.active {
+        background-color: #fff5f5;
+        color: var(--bnk-red);
+        font-weight: 600;
+    }
+
+    .menu-title::after {
+        content: ">";
+        color: var(--bnk-gray);
+        transition: transform 0.2s;
+    }
+
+    .menu-title.active::after {
+        transform: rotate(90deg);
+        color: var(--bnk-red);
+    }
+
+    .submenu {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+        background-color: #fafafa;
+    }
+
+    .submenu a {
+        display: block;
+        padding: 10px 24px;
+        text-decoration: none;
+        color: var(--bnk-gray);
+        font-size: 14px;
+        border-left: 2px solid transparent;
+        transition: all 0.2s;
+    }
+
+    .submenu a:hover {
+        color: var(--bnk-red);
+        border-left: 2px solid var(--bnk-red);
+        background-color: #fff;
+    }
+
+    .submenu a.active {
+        font-weight: 600;
+        color: var(--bnk-red);
+        border-left: 2px solid var(--bnk-red);
+    }
+
+    /* ========== 본문 ========== */
+    .content {
+        flex: 1;
+    }
+
+    .page-title {
+        text-align: left;
+        margin-bottom: 40px;
+        border-bottom: 2px solid var(--bnk-red);
+        padding-bottom: 10px;
+    }
+
+    .page-title h1 {
+        font-size: 26px;
+        margin: 0;
+    }
+
+    .strategy-block {
+        margin-bottom: 40px;
+        text-align: center;
+    }
+
+    .strategy-block h2 {
+        font-size: 20px;
+        margin-bottom: 16px;
+        color: var(--bnk-gray);
+    }
+
+    .strategy-card {
+        background: #fff;
+        border: 1px solid var(--bnk-border);
+        border-radius: 16px;
+        padding: 40px 20px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        display: inline-block;
+        width: 80%;
+        transition: transform 0.2s;
+    }
+
+    .strategy-card:hover {
+        transform: translateY(-4px);
+    }
+
+    .strategy-card p {
+        font-size: 22px;
+        line-height: 1.6;
+    }
+
+    .strategy-card strong {
+        color: var(--bnk-red);
+        font-weight: 700;
+    }
+
+    .gradient-text {
+        background: var(--bnk-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-weight: 700;
+    }
+
+    @media (max-width: 1024px) {
+        main {
+            flex-direction: column;
+            width: 90%;
+        }
+
+        .sidebar {
+            width: 100%;
+        }
+
+        .strategy-card {
+            width: 100%;
+        }
+    }
+</style>

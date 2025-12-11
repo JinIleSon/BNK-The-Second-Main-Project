@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>IRP 계좌개설 - 인증 완료</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Pretendard','Noto Sans KR',sans-serif;
+            background: #F6F6F8;
+            color: #222;
+        }
+        .page-wrap {
+            max-width: 420px;
+            margin: 40px auto 40px;
+            padding: 0 20px;
+            text-align: center;
+        }
+        h1 {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+        .msg {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 18px;
+            line-height: 1.6;
+        }
+        .card {
+            background: #fff;
+            border-radius: 18px;
+            padding: 26px 18px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            font-size: 13px;
+        }
+        .icon {
+            font-size: 34px;
+            margin-bottom: 8px;
+        }
+        .error {
+            color: #D91A1A;
+        }
+    </style>
+</head>
+<body>
+<div class="page-wrap" th:if="${success}">
+    <h1>본인 인증이 완료되었습니다</h1>
+    <div class="msg">
+        PC 화면에서 다음 단계로 자동 진행됩니다.<br>
+        화면이 전환되지 않으면 새로고침 후 다시 시도해 주세요.
+    </div>
+    <div class="card">
+        <div class="icon">✅</div>
+        인증이 정상적으로 처리되었습니다.
+    </div>
+</div>
+
+<div class="page-wrap" th:if="${!success}">
+    <h1 class="error">인증 처리 중 오류가 발생했습니다</h1>
+    <div class="msg">
+        PC 화면에서 QR 코드를 다시 생성한 후<br>
+        재시도해 주세요.
+    </div>
+    <div class="card">
+        <div class="icon">⚠️</div>
+        <span th:text="${message}">오류가 발생했습니다.</span>
+    </div>
+</div>
+</body>
+</html>

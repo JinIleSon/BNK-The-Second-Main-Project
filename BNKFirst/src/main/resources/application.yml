@@ -1,0 +1,176 @@
+# ===== common (local/prod 공통) =====
+spring:
+  application:
+    name: BUSANBANK
+  profiles:
+    active: prod
+  devtools:
+    restart:
+      enabled: false
+
+jwt:
+  issuer: eternalsoul0635@gmail.com
+  secret: VocTZgnEgUFRxItL6Dv1q36dfDAX8t4H2
+
+mybatis:
+  mapper-locations: classpath:/mapper/**/*.xml
+
+  configuration:
+    map-underscore-to-camel-case: false
+
+server:
+  port: 8080
+  address: 0.0.0.0   # 외부에서 접속 가능하도록
+  forward-headers-strategy: framework   # Spring Boot 2.6+ 권장
+  servlet:
+    context-path: /BNK
+
+# 어드민 로고 업로드 경로
+app:
+  upload:
+    dir: upload
+
+kiwoom:
+  appkey: ${KIWOOM_APPKEY}
+  secret: ${KIWOOM_SECRET}
+  token-url: https://api.kiwoom.com/oauth2/token
+
+db:
+  appkey: ${DBSEC_API_KEY}
+  secret: ${DBSEC_API_SECRET}
+  token-url: https://openapi.dbsec.co.kr:8443/oauth2/token
+  scope: "oob"
+
+koreaexim:
+  base-url: https://oapi.koreaexim.go.kr/site/program/financial/exchangeJSON
+  auth-key: ${KOREAEXIM_API_KEY}
+
+kftc:
+  base-url: https://developers.kftc.or.kr/proxy
+  api-key: ${KFTC_API_KEY}
+  access-token: "temp"
+
+
+# ===== local =====
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+  datasource:
+    url: jdbc:oracle:thin:@localhost:1521/xe
+    username: BNK
+    password: 1234
+  jpa:
+    hibernate:
+      ddl-auto: update            # 로컬 개발은 편하게 update
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    open-in-view: false
+    properties:
+      hibernate.format_sql: true
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          timeout: 5000
+          starttls:
+            required: true
+            enable: true
+          ssl:
+            trust: smtp.gmail.com
+
+logging:
+  level:
+    org.hibernate.SQL: info
+    org.hibernate.orm.jdbc.bind: trace
+    org.mybatis: info
+solapi:
+  enabled: true           # 로컬에서 실제 문자 테스트할 거면 true
+  # api.key/secret/number는 환경변수에서 주입 (없으면 빈 문자열)
+  api:
+    key: ${SOLAPI_API_KEY:}
+    secret: ${SOLAPI_API_SECRET:}
+    number: ${SOLAPI_NUMBER:}
+  mock: false # 통신사 인증 작동시 false로 하면 됨
+
+
+# ===== prod (운영) =====
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    url: jdbc:oracle:thin:@//3.39.247.70:1522/XEPDB1   # Service name 방식
+    username: BNK
+    password: 1234         # 환경변수로 주입
+  jpa:
+    hibernate:
+      ddl-auto: none              # ★ 스키마 올리기 전엔 none
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    open-in-view: false
+    properties:
+      hibernate.format_sql: true
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          timeout: 5000
+          starttls:
+            required: true
+            enable: true
+          ssl:
+            trust: smtp.gmail.com
+# sms 인증 ( 모든API허용했기때문에 보안유지!!)
+# Solapi 공통키 정의는 하지 않고, 프로필 별로 enabled 플래그만 사용
+solapi:
+  enabled: true    # 기본은 꺼둠(테스트 안전)
+  api:
+    key: ${SOLAPI_API_KEY:}
+    secret: ${SOLAPI_API_SECRET:}
+    number: ${SOLAPI_NUMBER:}
+  mock: false # 통신사 인증 작동시 false로 하면 됨
+app:
+  upload:
+    dir: upload
+  #base-url: http://43.200.69.114:8080/NICHIYA
+
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: false
+# =====test(CI)===========
+---
+spring:
+  config:
+    activate:
+      on-profile: test
+  datasource:
+    url: jdbc:h2:mem:testdb;MODE=Oracle;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=true
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+#    open-in-view: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+
+solapi:
+  enabled: false
+

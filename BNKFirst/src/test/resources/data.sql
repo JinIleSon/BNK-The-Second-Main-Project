@@ -1,0 +1,21 @@
+insert into product (id, pid, ptype, pname, pbirate, phirate, pcprd, pelgbl, prmthd, pprfcrt, pirinfo, pcond, pupdate) values
+                                                                                                                                            (1,'BNK-TD-1','예금','저탄소 실천 예금',2.05,3.45,'3~36개월','개인,기업,개인사업자','인터넷,영업점,스마트폰','비과세',null,'활성',timestamp '2025-11-09 00:00:00'),
+                                                                                                                                            (2,'BNK-TD-2','예금','ESG 실천 예금',2.05,1.45,'3~36개월','개인,기업,개인사업자','인터넷,영업점,스마트폰','비과세',null,'대기',timestamp '2025-11-15 00:00:00'),
+                                                                                                                                            (3,'BNK-TD-3','적금','아이사랑 적금',2.05,1.45,'3~36개월','개인,기업,개인사업자','인터넷,영업점,스마트폰','비과세',null,'활성',timestamp '2025-11-10 00:00:00'),
+                                                                                                                                            (4,'BNK-TD-4','펀드','위험제로 펀드',2.05,2.25,'3~36개월','개인,기업,개인사업자','인터넷,영업점,스마트폰','비과세',null,'활성',timestamp '2025-10-30 00:00:00'),
+                                                                                                                                            (5,'BNK-TD-5','펀드','퇴직연금 펀드',2.05,2.45,'3~36개월','개인,기업,개인사업자','인터넷,영업점,스마트폰','비과세',null,'종료',timestamp '2025-11-01 00:00:00'),
+                                                                                                                                            (6,'BNK-TD-6','펀드','적금 플러스 펀드',2.05,2.45,'3~36개월','개인,기업,개인사업자','인터넷,영업점,스마트폰','비과세',null,'종료',timestamp '2025-11-01 00:00:00'),
+                                                                                                                                            (7,'BNK-TD-7','펀드','적금 플러스 펀드',2.05,2.45,'3~36개월','개인,기업,개인사업자','인터넷,영업점,스마트폰','비과세',null,'종료',timestamp '2025-11-01 00:00:00'),
+                                                                                                                                            (9,'BNK-TD-9','펀드','적금 플러스 펀드',2.05,2.45,'3~36개월','개인,기업,개인사업자','인터넷,영업점,스마트폰','비과세',null,'종료',timestamp '2025-11-01 00:00:00'),
+                                                                                                                                            (10,'BNK-TD-10','펀드','적금 플러스 펀드',2.05,2.45,'3~36개월','개인,기업,개인사업자','인터넷,영업점,스마트폰','비과세',null,'종료',timestamp '2025-11-01 00:00:00'),
+                                                                                                                                            (11,'BNK-TD-11','펀드','적금 플러스 펀드',2.05,2.45,'3~36개월','개인,기업,개인사업자','인터넷,영업점,스마트폰','비과세',null,'종료',timestamp '2025-11-01 00:00:00');
+
+insert into product (id, pid, ptype, pname, pbirate, phirate, pcprd, pelgbl, prmthd, pprfcrt, pirinfo, pcond, pupdate) values
+    (12,'BNK-TD-12','펀드','적금 플러스 펀드',2.05,2.45,'3~36개월','개인,기업,개인사업자','인터넷,영업점,스마트폰','비과세',null,'종료',timestamp'2025-11-01 00:00:00');
+
+update product set pjnfee = '월 2만원~50만원' where pid = 'BNK-TD-1';
+update product set pterms = '[{"title":"예금거래기본약관","link":"https://www.busanbank.co.kr/SSPCTS/DPOST/169/1/%EC%98%88%EA%B8%88%EA%B1%B0%EB%9E%98%EA%B8%B0%EB%B3%B8%EC%95%BD%EA%B4%80(1).pdf"},{"title":"거치식예금약관","link":"https://www.busanbank.co.kr/SSPCTS/DPOST/1252/1/%EA%B1%B0%EC%B9%98%EC%8B%9D%20%EC%98%88%EA%B8%88%20%EC%95%BD%EA%B4%80.pdf"},{"title":"저탄소 실천 예금 특약","link":"https://www.busanbank.co.kr/SSPCTS/DPOST/1095/1/%EC%A0%80%ED%83%84%EC%86%8C%EC%8B%A4%EC%B2%9C%EC%98%88%EA%B8%88%ED%8A%B9%EC%95%BD(%EA%B0%9C%EC%A0%95%ED%9B%84%EC%A0%84%EB%AC%B8).pdf"},{"title":"저탄소 실천 예금 상품설명서","link":"https://www.busanbank.co.kr/SSPCTS/DPOST/1096/4/(%EA%B1%B0%EC%B9%98%EC%8B%9D)%EC%A0%80%ED%83%84%EC%86%8C%EC%8B%A4%EC%B2%9C%EC%98%88%EA%B8%88_%EC%83%81%ED%92%88%EC%84%A4%EB%AA%85%EC%84%9C(2025.05.14).pdf"}]'
+    where pid = 'BNK-TD-1';
+
+update product set pdirate = '{"maximum":0.40,"content:["저탄소 실천 적금 보유 0.10%","비대면 채널 가입 또는 종이통장 미발행 0.10%","대중교통 이용실적(개인형) 0.10%","탄소포인트제 참여 (개인형) 0.10%","친환경 차량 보유(기업형) 0.10%","찬환경 기업 인증(기업형) 0.10%"]}'
+    where pid = 'BNK-TD-1';

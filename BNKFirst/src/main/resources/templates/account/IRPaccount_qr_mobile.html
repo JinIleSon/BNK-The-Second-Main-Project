@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>IRP 계좌개설 - 모바일 본인확인</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Pretendard','Noto Sans KR',sans-serif;
+            background: #F6F6F8;
+            color: #222;
+        }
+        .page-wrap {
+            max-width: 420px;
+            margin: 30px auto 40px;
+            padding: 0 20px;
+        }
+        h1 {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+        .sub {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 18px;
+        }
+        .card {
+            background: #fff;
+            border-radius: 18px;
+            padding: 20px 18px 22px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        .row {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-bottom: 10px;
+            font-size: 12px;
+        }
+        .row label {
+            color: #555;
+        }
+        .row input {
+            border: 1px solid #D4D7E2;
+            border-radius: 8px;
+            padding: 8px 10px;
+            font-size: 13px;
+            outline: none;
+        }
+        .row input:focus {
+            border-color: #3F7FFB;
+        }
+        .agree {
+            font-size: 11px;
+            color: #666;
+            margin: 10px 0 14px;
+        }
+        .agree input {
+            margin-right: 4px;
+        }
+        .btn-primary {
+            width: 100%;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 0;
+            font-size: 14px;
+            font-weight: 600;
+            background: #3F7FFB;
+            color: #fff;
+            cursor: pointer;
+        }
+        .btn-primary:disabled {
+            background: #D0D6F0;
+            cursor: default;
+        }
+        .error-box {
+            text-align: center;
+            padding: 40px 16px;
+            font-size: 14px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+<div class="page-wrap">
+    <div th:if="${invalid}">
+        <h1>유효하지 않은 QR 코드입니다</h1>
+        <div class="sub">
+            QR 코드가 만료되었거나 잘못된 요청입니다.<br>
+            PC 화면에서 다시 QR 코드를 생성해 주세요.
+        </div>
+        <div class="card error-box">
+            다시 시도해 주세요.
+        </div>
+    </div>
+
+    <div th:if="${!invalid}">
+        <h1>본인 정보를 입력해 주세요</h1>
+        <div class="sub">
+            IRP 계좌 개설을 위해 휴대폰에서 본인 확인을 진행합니다.
+        </div>
+
+        <div class="card">
+            <form th:action="@{/auth/qr/verify}" method="post" id="verifyForm">
+                <!-- QR 토큰 전달 -->
+                <input type="hidden" name="token" th:value="${token}"/>
+
+                <div class="row">
+                    <label for="name">이름</label>
+                    <input type="text" id="name" name="name" placeholder="홍길동">
+                </div>
+                <div class="row">
+                    <label for="birth">생년월일</label>
+                    <input type="text" id="birth" name="birth" placeholder="19990101">
+                </div>
+                <div class="row">
+                    <label for="phone">휴대폰 번호</label>
+                    <input type="text" id="phone" name="phone" placeholder="01012345678">
+                </div>
+
+                <div class="agree">
+                    <label>
+                        <input type="checkbox" id="agree">
+                        본인확인을 위한 개인정보 수집·이용에 동의합니다.
+                    </label>
+                </div>
+
+                <button type="submit" class="btn-primary" id="submitBtn">
+                    신분증 인증 완료
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 간단한 앞단 검증 (이름/생년월일/전화/동의 체크)
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('verifyForm');
+        if (!form) return;
+
+        form.addEventListener('submit', function (e) {
+            const name  = document.getElementById('name').value.trim();
+            const birth = document.getElementById('birth').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const agree = document.getElementById('agree').checked;
+
+            if (!name) {
+                alert('이름을 입력해 주세요.');
+                e.preventDefault();
+                return;
+            }
+            if (!birth || birth.length !== 8) {
+                alert('생년월일 8자리를 입력해 주세요. (예: 19990101)');
+                e.preventDefault();
+                return;
+            }
+            if (!phone || phone.length < 10) {
+                alert('휴대폰 번호를 정확히 입력해 주세요.');
+                e.preventDefault();
+                return;
+            }
+            if (!agree) {
+                alert('개인정보 수집·이용에 동의해 주세요.');
+                e.preventDefault();
+            }
+        });
+    });
+</script>
+</body>
+</html>

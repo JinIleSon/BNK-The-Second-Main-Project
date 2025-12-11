@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>로그인 메인</title>
+</head>
+<body>
+<div th:replace="~{layouts/header.html}"></div>
+
+<div id="bnk-chatbot-container" style="position: fixed; right: 20px; bottom: 20px; z-index: 9999;">
+    <div id="bnk-chatbot-slot"></div>
+</div>
+<main>
+    <div class="container">
+        <!-- 로그인 폼 -->
+        <section style="width: 580px; margin: 0 auto; margin-top: 30px;">
+
+            <!-- 감싸기 -->
+            <div class="form-card" style="height: 600px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; line-height: 1.6;">
+
+                <form th:action="@{/member/login}" method="post">
+                    <!-- 로그인 테이블 -->
+                    <table class="login-table">
+                        <tr style="font-size: 25px;">
+                            <td>로그인</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 0 0 9px;">BNK 부산은행은 고객님의 정보를 소중히 보호합니다</td>
+                        </tr>
+                        <tr class="field-row">
+                            <td class="field-label">아이디</td>
+                        </tr>
+                        <tr class="field-row">
+                            <td style="margin-bottom: 9px;">
+                                <input type="text" name="mid" placeholder="아이디를 입력하세요" autocomplete="username">
+                            </td>
+                        </tr>
+                        <tr class="field-row">
+                            <td class="field-label">비밀번호</td>
+                        </tr>
+                        <tr class="field-row">
+                            <td>
+                                <input type="password" name="mpw" placeholder="비밀번호를 입력하세요" autocomplete="current-password">
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="field-td" style="border-bottom: 1px solid #ddd;">
+                                <button id="loginBtn" type="submit" class="btn-register" style="width: 520px">
+                                    로그인
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="field-td">
+                                <a th:href="@{/member/findid}">아이디 찾기</a>
+                                <span class="sep-dot">·</span>
+                                <a th:href="@{/member/findpw}">비밀번호 찾기</a>
+                                <span class="sep-dot">·</span>
+                                <a th:href="@{/member/terms}">신규가입</a>
+                            </td>
+                        </tr>
+
+                        <tr class="notice">
+                            <td style="text-align: left; color: #444; font-size: 15px; line-height: 1.6;">
+                                <span>🔒 보안 안내</span><br>
+                                • 개인정보 보호를 위해 공용 PC에서는 로그인 상태 유지를 해제하세요.<br>
+                                • 비밀번호는 정기적으로 변경하시기 바랍니다.
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+        </section>
+    </div>
+</main>
+<footer><div th:replace="~{layouts/footer.html}"></div></footer>
+<!-- alert 내용 추가 (이준우 2025.12.02) -->
+<!-- 로그인 실패 알림 -->
+<th:block th:if="${loginErrorMsg}">
+    <script th:inline="javascript">
+        alert('[[${loginErrorMsg}]]');
+    </script>
+</th:block>
+<!-- 회원 탈퇴 완료 / 기타 메시지 알림 -->
+<th:block th:if="${msg}">
+    <script th:inline="javascript">
+        alert('[[${msg}]]');
+    </script>
+</th:block>
+</body>
+
+<style>
+    main {
+        width: 1200px;
+        background-color: #F6F6F8;
+        padding: 80px 20px;
+        margin: 0 auto;
+    }
+    body {
+        font-family: 'Noto Sans KR', '맑은 고딕', sans-serif;
+        background: #F6F6F8;
+        color: #111827;
+        line-height: 1.5;
+    }
+    .container { max-width: 1200px; margin: 0 auto; padding: 28px 16px 40px; }
+
+    a { text-decoration: none; color: inherit; }
+
+    .input:focus,
+    .field-row input:focus,
+    .field-td input:focus {
+        border-color: #d1d5db;
+        box-shadow: 0 0 0 3px rgba(214,0,28,.12);
+        outline: none;
+    }
+
+    /* 감싸는 */
+    .form-card {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 20px;
+        box-shadow: 0 10px 20px rgba(2,6,23,.06);
+        padding: 28px 30px;
+        margin-bottom: 24px;
+    }
+
+    .field-td {
+        text-align: center;
+        padding: 20px 0 20px 0;
+    }
+
+    .field-td input {
+        width: 400px;
+        height: 44px;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        box-sizing: border-box;
+        padding: 0 12px;
+        outline: none;
+    }
+    .sep-dot{ margin: 0 8px; }
+
+    .notice {
+        margin-top: 15px;
+        background: #eef4ff;
+        border: 1px solid #c7d7ff;
+        color: #1f3b8f;
+        border-radius: 12px;
+        padding: 20px 30px;
+        display: flex;
+        gap: 8px;
+    }
+
+    .field-row {
+        display: flex;
+        margin: 5px;
+    }
+
+    .field-row input {
+        width: 500px;
+        height: 25px;
+        border: 1px solid #bbb;
+        padding: 10px;
+        border-radius: 10px;
+    }
+
+    .field-label {
+        font-size: 18px;
+    }
+</style>
+</html>

@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>금융소비자보호>민원접수 및 처리프로세스</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        /*----------------------------------*/
+        /*--전체 페이지--*/
+        /*----------------------------------*/
+        body {
+            font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+            background: #F6F6F8;
+            margin: 0;
+            color: #222;
+            padding-top: 100px;
+        }
+
+
+        .consultation-page{
+            display:flex;
+            gap:40px;
+            width: 1200px;
+            margin: 60px auto;
+            padding: 40px 20px;
+            background: #F6F6F8;
+            border-radius: 8px;
+            margin-bottom: 100px;
+        }
+
+
+
+        /*----------------------------------*/
+        /*--왼쪽 사이드바--*/
+        /*----------------------------------*/
+        .all-sidebar{
+            width: 250px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        .all-sidebar h2{
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .sidebar-menu {
+            list-style:none;
+            padding: 20px;
+            margin: 0 0 40px 0;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            background: #fff;
+            box-shadow: 0 4px 4px rgba(0,0,0,0.08);
+        }
+
+        .sidebar-menu h2{
+            font-size: 17px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 16px;
+        }
+
+        .sidebar-menu li{
+            padding: 12px 16px;
+            border-radius:  6px;
+            color: #555;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .sidebar-menu li:hover {
+            background: #f2f2f2;
+        }
+
+        .sidebar-menu li.active{
+            background: #ffe6e6;
+            border-left: 4px solid #d91a1a;
+            color: #d91a1a;;
+            font-weight:  600;
+            padding-left: 12px;
+        }
+
+        .sidebar-menu li:last-child{
+            border-bottom: none;
+        }
+
+        /*----------------------------------*/
+        /*--추가 도움--*/
+        /*----------------------------------*/
+        .all-help{
+            background: linear-gradient(135deg,#e62b2b, #7e2020);
+            color: #fff;
+            border-radius: 12px;
+            padding: 24px 20px;
+            text-align: center;
+            box-shadow: 0 4px 4px rgba(0,0,0,0.08);
+        }
+
+        .help-box h3{
+            font-size: 17px;
+            margin-bottom: 6px;
+        }
+
+        .help-box p{
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        .help-buttons{
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-call, .btn-chat{
+            padding: 8px 14px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-call{
+            background: #fff;
+            color: #d91a1a;
+        }
+
+        .btn-chat{
+            background:  transparent;
+            border: 1px solid #fff;
+            color: #fff;
+        }
+
+        /*----------------------------------*/
+        /*--메인 컨텐츠--*/
+        /*----------------------------------*/
+
+        .consultation-content{
+            flex: 1;
+        }
+
+        .consultation-header h1{
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .consultation-header p{
+            color: #666;
+            margin-bottom:  20px;
+        }
+
+
+        .complaint-section {
+            background: #fff;
+            border: 1px solid #eee;
+            border-radius: 10px;
+            padding: 40px;
+            margin-top: 40px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.05);
+        }
+
+        .section-title {
+            font-size: 18px;
+            color: #d91a1a;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .complaint-info {
+            list-style: none;
+            padding-left: 0;
+            font-size: 15px;
+            line-height: 1.8;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .complaint-info li {
+            margin-bottom: 4px;
+        }
+
+        .complaint-info a {
+            color: #d91a1a;
+            text-decoration: underline;
+        }
+
+        .sub-info {
+            margin-left: 16px;
+            margin-top: 4px;
+            color: #555;
+            font-size: 14px;
+        }
+
+        .process-box {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+            gap: 20px;
+        }
+
+        .step {
+            flex: 1;
+            min-width: 220px;
+            background: #fafafa;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            text-align: left;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+        }
+
+        .step h4 {
+            font-size: 16px;
+            color: #333;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .step h4 span {
+            color: #d91a1a;
+            font-weight: 700;
+        }
+
+        .step ul {
+            list-style: none;
+            padding-left: 0;
+            font-size: 14px;
+            color: #555;
+            line-height: 1.7;
+            text-align: center;
+        }
+
+        .btn-area {
+            text-align: center;
+        }
+
+        .btn-red {
+            background: #d91a1a;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            padding: 12px 36px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-red:hover {
+            background: #b50f0f;
+        }
+    </style>
+</head>
+<body>
+<!--헤더-->
+<div th:replace="~{layouts/header}"></div>
+    
+    <div class="consultation-page">
+        <!--왼쪽 사이드바-->
+        <aside class="all-sidebar">
+            <ul class="sidebar-menu">
+                <h2>금융소비자보호</h2>
+                <li><a href="./financialProtection">금융소비자보호헌장</a></li>
+                <li class="active"><a href="./complaintProcessing">민원접수 및 처리프로세스</a></li>
+                <li><a href="./protectionInformation">소비자보호필수안내사항</a></li>
+                <li><a href="./agencyGuide">금융소비자권리행사안내</a></li>
+            </ul>
+
+            <!--추가 도움 영역-->
+            <section class="all-help">
+                <div class="help-box">
+                    <h3>추가 도움이 필요하신가요?</h3>
+                    <p>전문 상담원이 친절하게 도와드리겠습니다.</p>
+                    <div class="help-buttons">
+                        <button class="btn-call">전화상담</button>
+                        <button class="btn-chat">Talk상담</button>
+                    </div>
+                </div>
+            </section>
+        </aside>
+
+        <!--메인 컨텐츠-->
+        <main class="consultation-content">
+            <div class="consultation-header">
+                <h1>민원접수 및 처리프로세스</h1>
+                <p>BNK부산은행 민원접수 및 처리프로세스에 대한 안내입니다.</p>
+            </div>
+
+
+            <section class="complaint-section">
+
+  <h3 class="section-title">◆ 민원접수 채널 안내</h3>
+  <ul class="complaint-info">
+    <li><strong>인터넷접수:</strong> 홈페이지(<a href="https://www.busanbank.co.kr" target="_blank">www.busanbank.co.kr</a>) ▶ 소비자정보포털 ▶ 전자민원접수</li>
+    <li><strong>모바일뱅킹 접수:</strong> BNK부산은행 모바일뱅킹 ▶ 소비자정보포털 ▶ 민원신청</li>
+    <li><strong>전화(팩스)접수:</strong> ☎ 051-644-8738, 080-522-2200 / FAX 0502-769-5551</li>
+    <li><strong>방문접수:</strong> 부산은행 본점 또는 영업점 민원상담창구</li>
+    <ul class="sub-info">
+      <li>- 본인 방문시: 신분확인증표(주민등록증, 운전면허증, 여권 등)</li>
+      <li>- 대리인 방문시: 본인의 위임장(민원요청서식) 및 인감증명서 등 본인서명확인서류</li>
+    </ul>
+    <li><strong>우편접수:</strong> (48400) 부산광역시 남구 문현금융로 30, 금융소비자보호부(부산은행 본점 6층)</li>
+    <li><strong>고객센터 방문:</strong> 영업점 비치된 “고객의 말씀” 엽서 활용 (우편요금 수취인 후납부담)</li>
+    <li><strong>이메일접수:</strong> consumer@busanbank.co.kr</li>
+  </ul>
+
+  <h3 class="section-title">◆ 민원처리프로세스</h3>
+
+  <div class="process-box">
+    <div class="step">
+      <h4>Step 1<br><span>민원접수</span></h4>
+      <ul>
+        <li>인터넷 페이지</li>
+        <li>전화, 팩스, 방문, E-mail</li>
+        <li>외부기관 이첩 등</li>
+      </ul>
+    </div>
+    <div class="step">
+      <h4>Step 2<br><span>통지/사실확인</span></h4>
+      <ul>
+        <li>금융소비자보호시스템 접수</li>
+        <li>수사 확인 통지 (SMS, E-mail)</li>
+        <li>사건경위 확인 및 원인규명</li>
+      </ul>
+    </div>
+    <div class="step">
+      <h4>Step 3<br><span>처리결과</span></h4>
+      <ul>
+        <li>처리결과 통지 (서면, 전화 또는 E-mail)</li>
+        <li>필요 시 손실 보상</li>
+      </ul>
+    </div>
+    <div class="step">
+      <h4>Step 4<br><span>종결</span></h4>
+      <ul>
+        <li>민원일반 활동</li>
+        <li>민원발생원인 분석/대책 수립</li>
+        <li>제도 개선</li>
+        <li>금융소비자보호 교육</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="btn-area">
+    <button class="btn-red">민원접수</button>
+  </div>
+</section>
+
+        </main>
+    </div>
+
+<!--푸터-->
+<div th:replace="~{layouts/footer}"></div>
+</body>
+</html>
+<script>
+    // header 불러오기
+    fetch(`${contextPath}/layouts/header.html`)
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('header').innerHTML = data;
+        })
+        .catch(err => console.error('[Header load failed]', err));
+
+    // chatbot import 기능
+    async function importHtmlWithAssets(url, mountSelector) {
+        try {
+            const res = await fetch(url, { credentials: 'same-origin' });
+            if (!res.ok) throw new Error(`Failed to load ${url}`);
+            const html = await res.text();
+
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+
+            doc.querySelectorAll('link[rel="stylesheet"]').forEach(link => {
+                const href = link.getAttribute('href');
+                const exists = [...document.head.querySelectorAll('link[rel="stylesheet"]')]
+                    .some(l => l.getAttribute('href') === href);
+                if (!exists && href) document.head.appendChild(link.cloneNode(true));
+            });
+
+            doc.querySelectorAll('style').forEach(styleEl => {
+                const clone = document.createElement('style');
+                clone.textContent = styleEl.textContent;
+                [...styleEl.attributes].forEach(a => clone.setAttribute(a.name, a.value));
+                document.head.appendChild(clone);
+            });
+
+            const mount = document.querySelector(mountSelector);
+            const frag = document.createDocumentFragment();
+            [...doc.body.children].forEach(node => {
+                if (node.tagName.toLowerCase() !== 'script') frag.appendChild(node.cloneNode(true));
+            });
+            mount.appendChild(frag);
+
+            const scripts = [...doc.querySelectorAll('script')];
+            for (const oldScript of scripts) {
+                const newScript = document.createElement('script');
+                [...oldScript.attributes].forEach(attr => newScript.setAttribute(attr.name, attr.value));
+                if (oldScript.src) {
+                    await new Promise(resolve => {
+                        newScript.onload = resolve;
+                        newScript.onerror = resolve;
+                        document.body.appendChild(newScript);
+                    });
+                } else {
+                    newScript.textContent = oldScript.textContent || '';
+                    document.body.appendChild(newScript);
+                }
+            }
+        } catch (err) {
+            console.error('[Chatbot load failed]', err);
+        }
+    }
+
+    // chatbot 불러오기
+    importHtmlWithAssets('/components/chatbot_test.html', '#bnk-chatbot-slot');
+
+    // footer 불러오기
+    fetch(`${contextPath}/layouts/footer.html`)
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('footer').innerHTML = data;
+        })
+        .catch(err => console.error('[Footer load failed]', err));
+
+</script>

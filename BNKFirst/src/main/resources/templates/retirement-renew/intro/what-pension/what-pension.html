@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>고객상담>FAQ</title>
+    <link rel="stylesheet" href="./cs_faq.style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+    <!--푸터-->
+    <header><div id="header"></div></header>
+    
+    <div class="consultation-page">
+        <!--왼쪽 사이드바-->
+        <aside class="all-sidebar">
+            <ul class="sidebar-menu">
+                <h2>고객상담</h2>
+                <li class="active">FAQ</li>
+                <li>필요서류 안내</li>
+                <li>전화상담</li>
+                <li>영업점 찾기</li>
+            </ul>
+
+            <!--추가 도움 영역-->
+            <section class="all-help">
+                <div class="help-box">
+                    <h3>추가 도움이 필요하신가요?</h3>
+                    <p>전문 상담원이 친절하게 도와드리겠습니다.</p>
+                    <div class="help-buttons">
+                        <button class="btn-call">전화상담</button>
+                        <button class="btn-chat">Talk상담</button>
+                    </div>
+                </div>
+            </section>
+        </aside>
+
+        <!--메인 컨텐츠-->
+        <main class="consultation-content">
+            <div class="consultation-header">
+                <h1>자주 묻는 질문</h1>
+                <p>빠르게 답을 찾으세요. 원하는 질문을 바로 검색할 수 있어요</p>
+
+                <div class="consultation-search">
+                    <input type="text" placeholder="검색어를 입력하세요">
+                    <button class="search-btn">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="consultation-tags">
+                <button>#예금</button>
+                <button>#대출</button>
+                <button>#카드</button>
+                <button>#펀드</button>
+                <button>#공동인증서</button>
+            </div>
+
+            <div class="consultation-list">
+                <details>
+                    <summary>통장재발급은 어떻게 하나요?</summary>
+                    <p>가까운 영업점을 방문해 신분증을 제시하고 재발급 받을수 있습니다.</p>
+                </details>
+                <details>
+                    <summary>디지털 OTP 를 재설치 했는데 사용할 수 없어요.</summary>
+                    <p>고객센처를 통해 본인 인증 후 재등록해 주세요.</p>
+                </details>
+            </div>
+
+            <button class="consultation-more">더 많은 질문 보기</button>
+        </main>
+    </div>
+
+    <!--푸터-->
+    <footer><div id="footer"></div></footer>
+</body>
+</html>
+<script src="./cs_faq.js"></script>

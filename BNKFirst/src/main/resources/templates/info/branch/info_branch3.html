@@ -1,0 +1,538 @@
+<div style="margin-top:10px;"></div>
+<header>
+    <div th:replace="~{layouts/info/_header.html}"></div>
+    <meta name="theme-color" content="#E60012"/>
+    <link rel="icon"
+          href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23E60012'/%3E%3Ctext x='50' y='58' font-size='56' text-anchor='middle' fill='white' font-family='Arial, Helvetica, sans-serif'%3EB%3C/text%3E%3C/svg%3E"/>
+    <style>
+        body {
+
+            font-family: "Noto Sans KR", sans-serif;
+            margin-top: 60px;
+            background-color: #F6F6F8;
+            color: #222;
+            padding: 0;
+            line-height: 1.7;
+        }
+
+
+        header,
+        nav,
+        main {
+            max-width: 1200px;
+            background-color: #F6F6F8;
+            margin: 0 auto;
+            padding: 20px 20px;
+        }
+
+
+        h2 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin: 40px 0 10px;
+            border-bottom: 2px solid #d91a1a;
+            display: inline-block;
+            padding-bottom: 5px;
+        }
+
+
+        .branch-section {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            justify-content: space-between;
+        }
+
+        .branch-text {
+            flex: 1 1 60%;
+        }
+
+        /*
+
+            .tab-menu {
+                display: flex;
+                gap: 6px;
+                margin: 20px 0;
+            }
+
+            .tab-menu button {
+                border: 1px solid #ddd;
+                background: #fff;
+                padding: 8px 16px;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+
+            .tab-menu button.active {
+                background-color: #d91a1a;
+                color: #fff;
+                border-color: #d91a1a;
+            }*/
+
+        /* ------------------------------- */
+        /* 탭 메뉴 레이아웃 */
+        /* ------------------------------- */
+        .tab-menu {
+            display: flex;
+            gap: 8px;
+            margin: 20px 0;
+        }
+
+        /* ------------------------------- */
+        /* 기본 탭 스타일 (pension-tab 스타일 기반) */
+        /* ------------------------------- */
+        .tab-menu button {
+            padding: 10px 10px;
+            border: 1px solid #ddd;
+            background: #fff;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+            color: #555;
+            transition: all 0.18s ease;
+        }
+
+        /* hover */
+        .tab-menu button:hover {
+            background: #fafafa;
+            border-color: #d91a1a;
+            color: #d91a1a;
+        }
+
+        /******************************************/
+        /* 탭 메뉴 */
+        /******************************************/
+        .pension-tab {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+
+        /* ------------------------------- */
+        /* 활성(active) 스타일 */
+        /* ------------------------------- */
+        .tab-menu button.active {
+            background: #ffe6e6;
+            border-color: #D91A1A;
+            color: #D91A1A;
+            font-weight: 600;
+        }
+
+
+        select,
+        input[type="text"] {
+            width: 20%;
+            box-sizing: border-box;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            background: #fff;
+            padding: 10px 12px;
+            font-size: 14px;
+            color: #111827;
+            outline: none;
+            transition: box-shadow .15s ease, border-color .15s ease;
+        }
+
+
+        button.search {
+            background-color: #d91a1a;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 8px 20px;
+            cursor: pointer;
+        }
+
+        .result {
+            border-top: 1px solid #ddd;
+            margin-top: 30px;
+            padding-top: 20px;
+        }
+
+        .branch-item {
+            border-left: 3px solid #d91a1a;
+            padding-left: 10px;
+            margin-bottom: 15px;
+        }
+
+        .branch-item strong {
+            display: block;
+            margin-bottom: 4px;
+            font-size: 1.1rem;
+        }
+
+        .branch-item span {
+            display: inline-block;
+            margin-top: 4px;
+            font-size: 0.9rem;
+        }
+
+        .btn-register {
+            --bg1: #D91A1A;
+            --bg2: #F03A3A;
+            --shadow: rgba(217, 26, 26, .45);
+            position: relative;
+            box-sizing: border-box;
+            width: 90px;
+            height: 42px;
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            cursor: pointer;
+            background: linear-gradient(180deg, var(--bg2), var(--bg1));
+            outline: none;
+            box-shadow: 0 6px 14px -10px var(--shadow);
+            transition: background .18s ease,
+            box-shadow .18s ease,
+            transform .12s ease;
+            /* 프레스만 사용할 예정 */
+            will-change: background, box-shadow, transform;
+        }
+
+        /* Hover: 컬러와 섀도우만 아주 미세하게 (리프트 없음) */
+        .btn-register:hover {
+            background: linear-gradient(180deg, #f24a4a, #d61a1a);
+            box-shadow: 0 8px 18px -12px var(--shadow);
+            transform: none;
+            /* 확실하게 떠오르지 않도록 고정 */
+        }
+
+        /* Active: 살짝 눌리는 프레스 효과만 */
+        .btn-register:active {
+            transform: scale(.98);
+            box-shadow: 0 4px 10px -10px var(--shadow);
+        }
+
+        /* 키보드 포커스 접근성 */
+        .btn-register:focus-visible {
+            outline: 3px solid rgba(240, 58, 58, .55);
+            outline-offset: 2px;
+        }
+
+        /* 모션 최소화 존중 */
+        @media (prefers-reduced-motion: reduce) {
+            .btn-register {
+                transition: none !important;
+            }
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .btn-register {
+                --shadow: rgba(240, 58, 58, .35);
+            }
+        }
+
+        .branch-layout {
+            display: flex;
+            gap: 30px;
+            margin-top: 30px;
+            width: 100%;
+            height: 780px; /* 전체 높이 */
+        }
+
+        /* 왼쪽: 메뉴 + 검색 + 리스트 */
+        .branch-left {
+            flex: 1 1 45%;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: hidden;
+            padding-right: 6px;
+        }
+
+        /* 오른쪽 지도 */
+        .branch-map-area {
+            flex: 1 1 55%;
+            background: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 검색 UI */
+        .branch-search-wrapper {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .branch-select {
+            border: 1.5px solid #ddd;
+            border-radius: 10px;
+            padding: 10px 12px;
+            font-size: 15px;
+            background: #fff;
+            cursor: pointer;
+            width: 140px;
+        }
+
+        .branch-search-box {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 8px;
+            background: #fafafa;
+        }
+
+        .branch-search-box input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .branch-search-box button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            color: #D91A1A;
+        }
+
+        /* 리스트 스크롤 */
+        .branch-list-box {
+            flex: 1;
+            margin-top: 15px;
+            overflow-y: auto;
+            padding-right: 8px;
+        }
+
+        /* 카드형 리스트 */
+        .branch-result-item {
+            background: #fff;
+            border-radius: 8px;
+            border: 1px solid #eee;
+            padding: 18px 20px;
+            margin-bottom: 14px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            cursor: pointer;
+        }
+
+        .branch-result-item:hover {
+            background: #fff6f6;
+        }
+
+        .branch-result-item h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #d91a1a;
+            margin-bottom: 6px;
+        }
+
+        .branch-result-item .info {
+            font-size: 15px;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .branch-result-item .waiting {
+            font-size: 15px;
+            margin-top: 8px;
+            color: #d91a1a;
+            font-weight: 600;
+        }
+
+
+    </style>
+</header>
+
+<main>
+
+    <!-- 전체 레이아웃 -->
+    <div class="branch-layout">
+
+        <!-- ⭐ 왼쪽 : 메뉴검색 + 검색박스 + 리스트 -->
+        <div class="branch-left">
+
+            <!-- 메뉴 탭 -->
+            <div class="tab-menu">
+                <button class="active">영업점</button>
+                <button>365코너</button>
+                <button>24/365코너</button>
+                <button>대여금고</button>
+                <button>외화ATM</button>
+            </div>
+
+            <!-- 검색 조건 -->
+            <div class="branch-search-wrapper">
+                <select id="citySelect" class="branch-select">
+                    <option value="">시/도 선택</option>
+                </select>
+
+
+                <select id="districtSelect" class="branch-select">
+                    <option value="">구/군 선택</option>
+                </select>
+
+
+                <div class="branch-search-box">
+                    <input type="text" id="keywordInput" placeholder="지점명 또는 주소 검색">
+                    <button id="searchBtn"><i class="fas fa-search"></i></button>
+                </div>
+            </div>
+
+            <!-- 검색 결과 -->
+            <div class="branch-count">
+                총 <strong id="branchTotal">0</strong> 건
+            </div>
+
+            <!-- 리스트 -->
+            <div id="branchList" class="branch-list-box"></div>
+
+        </div>
+
+        <!-- ⭐ 오른쪽 : 지도 -->
+        <div class="branch-map-area">
+            <iframe id="branchMap"
+                    src="https://map.kakao.com/?q=부산은행%20본점"
+                    width="100%" height="100%" style="border:0;" loading="lazy"></iframe>
+        </div>
+
+    </div>
+
+</main>
+
+<footer style="margin-top: 50px;">
+    <div th:replace="~{layouts/footer.html}"></div>
+</footer>
+<script>
+    document.addEventListener("DOMContentLoaded", async () => {
+
+        let branchData = [];
+
+        // 1) API 호출
+        try {
+            const res = await fetch('/BNK/api/branch');
+            branchData = await res.json();
+        } catch (e) {
+            alert("지점 정보를 불러올 수 없습니다.");
+            return;
+        }
+
+        const city = document.getElementById("citySelect");
+        const district = document.getElementById("districtSelect");
+        const keyword = document.getElementById("keywordInput");
+        const searchBtn = document.getElementById("searchBtn");
+
+        const listBox = document.getElementById("branchList");
+        const mapIframe = document.getElementById("branchMap");
+        const totalBox = document.getElementById("branchTotal");
+
+        /* ⭐ 전국 시/도 목록 (행정안전부 기준 17개) */
+        const cities = [
+            "서울특별시", "부산광역시", "대구광역시", "인천광역시", "광주광역시",
+            "대전광역시", "울산광역시", "세종특별자치시",
+            "경기도", "강원도", "충청북도", "충청남도",
+            "전라북도", "전라남도", "경상북도", "경상남도", "제주특별자치도"
+        ];
+
+        /* ⭐ 시/도 select 채우기 */
+        cities.forEach(cityName => {
+            const opt = document.createElement("option");
+            opt.value = cityName;
+            opt.textContent = cityName;
+            city.appendChild(opt);
+        });
+
+        /* ⭐ 기본값을 부산광역시로 고정 */
+        city.value = "부산광역시";
+
+
+        /* ⭐ 부산 전체 구군 동적 추가 */
+        const districts = [
+            "중구", "서구", "동구", "영도구", "부산진구", "동래구",
+            "남구", "북구", "해운대구", "사하구", "금정구",
+            "강서구", "연제구", "수영구", "사상구", "기장군"
+        ];
+        districts.forEach(name => {
+            const opt = document.createElement("option");
+            opt.value = name;
+            opt.textContent = name;
+            district.appendChild(opt);
+        });
+        /* ⭐ 끝 */
+
+        /* ⭐ 탭 메뉴 이벤트 */
+        const tabButtons = document.querySelectorAll(".tab-menu button");
+        let currentType = "영업점";
+
+        tabButtons.forEach(btn => {
+            btn.addEventListener("click", () => {
+                tabButtons.forEach(b => b.classList.remove("active"));
+                btn.classList.add("active");
+                currentType = btn.textContent;
+                filter();
+            });
+        });
+
+        function renderList(data) {
+            totalBox.textContent = data.length;
+            listBox.innerHTML = "";
+
+            if (data.length === 0) {
+                listBox.innerHTML = `<div style="padding:20px;color:#999;">검색 결과가 없습니다.</div>`;
+                return;
+            }
+
+            data.forEach(b => {
+                const html = `
+            <div class="branch-result-item" data-name="${b.brname}">
+                <h3>${b.brname}</h3>
+                <div class="info">
+                    ☎ ${b.brtel}<br>
+                    ${b.braddr}
+                </div>
+                <div class="service-icons">
+                    서비스: ${b.service || "정보 없음"}
+                </div>
+                <div class="waiting">
+                    대기고객: ${b.wait || 0}명
+                </div>
+            </div>`;
+                listBox.insertAdjacentHTML("beforeend", html);
+            });
+
+            document.querySelectorAll(".branch-result-item").forEach(item => {
+                item.addEventListener("click", () => {
+                    const q = encodeURIComponent(`부산은행 ${item.dataset.name}`);
+                    mapIframe.src = `https://map.kakao.com/?q=${q}`;
+                });
+            });
+        }
+
+        function filter() {
+            let fd = [...branchData];
+
+            if (currentType !== "영업점") {
+                fd = fd.filter(b => b.type === currentType);
+            }
+
+            const c = city.value;
+            const d = district.value;
+            const k = keyword.value.trim();
+
+            fd = fd.filter(b => {
+                const addr = b.braddr || "";
+                const okCity = c ? addr.includes(c) : true;
+                const okDist = d ? addr.includes(d) : true;
+                const okKeyword = k ? (b.brname.includes(k) || addr.includes(k)) : true;
+                return okCity && okDist && okKeyword;
+            });
+
+            renderList(fd);
+        }
+
+        city.addEventListener("change", filter);
+        district.addEventListener("change", filter);
+        searchBtn.addEventListener("click", filter);
+        keyword.addEventListener("keydown", e => {
+            if (e.key === "Enter") filter();
+        });
+
+        renderList(branchData);
+    });
+</script>

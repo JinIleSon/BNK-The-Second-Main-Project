@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>상품공시실>서비스이용수수료</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        /*----------------------------------*/
+        /*--전체 페이지--*/
+        /*----------------------------------*/
+        body {
+            font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+            background: #F6F6F8;
+            margin: 0;
+            color: #222;
+            padding-top: 100px;
+        }
+
+
+        .productsRoom-page{
+            display:flex;
+            gap:40px;
+            width: 1200px;
+            margin: 60px auto;
+            padding: 40px 20px;
+            background: #F6F6F8;
+            border-radius: 8px;
+            margin-bottom: 100px;
+        }
+
+
+
+        /*----------------------------------*/
+        /*--왼쪽 사이드바--*/
+        /*----------------------------------*/
+        .all-sidebar{
+            width: 250px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        .all-sidebar h2{
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .sidebar-menu {
+            list-style:none;
+            padding: 20px;
+            margin: 0 0 40px 0;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            background: #fff;
+            box-shadow: 0 4px 4px rgba(0,0,0,0.08);
+        }
+
+        .sidebar-menu h2{
+            font-size: 17px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 16px;
+        }
+
+        .sidebar-menu li{
+            padding: 12px 16px;
+            border-radius:  6px;
+            color: #555;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .sidebar-menu li:hover {
+            background: #f2f2f2;
+        }
+
+        .sidebar-menu li.active{
+            background: #ffe6e6;
+            border-left: 4px solid #d91a1a;
+            color: #d91a1a;;
+            font-weight:  600;
+            padding-left: 12px;
+        }
+
+        .sidebar-menu li:last-child{
+            border-bottom: none;
+        }
+
+        /*----------------------------------*/
+        /*--추가 도움--*/
+        /*----------------------------------*/
+        .all-help{
+            background: linear-gradient(135deg,#e62b2b, #7e2020);
+            color: #fff;
+            border-radius: 12px;
+            padding: 24px 20px;
+            margin-top: 0;
+            text-align: center;
+            box-shadow: 0 4px 4px rgba(0,0,0,0.08);
+        }
+
+        .help-box h3{
+            font-size: 17px;
+            margin-bottom: 6px;
+        }
+
+        .help-box p{
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        .help-buttons{
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-call, .btn-chat{
+            padding: 8px 14px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-call{
+            background: #fff;
+            color: #d91a1a;
+        }
+
+        .btn-chat{
+            background:  transparent;
+            border: 1px solid #fff;
+            color: #fff;
+        }
+
+        /*----------------------------------*/
+        /*--메인 컨텐츠--*/
+        /*----------------------------------*/
+
+        .howUse-content{
+            flex: 1;
+        }
+
+        .howUse-header h1{
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .howUse-header p{
+            color: #666;
+            margin-bottom:  20px;
+        }
+
+        .howUse-search {
+            display: flex;
+            align-items: center;
+            border: 1px solid #ddd;
+            border-radius: 30px;
+            padding: 6px 12px;
+            background: #fafafa;
+        }
+
+        /*----------------------------------*/
+        /*-- 비밀번호 안내 페이지 --*/
+        /*----------------------------------*/
+        .password-section {
+            margin-bottom: 50px;
+        }
+
+        .password-section h2 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #d91a1a;
+            padding-bottom: 6px;
+        }
+
+        .password-section p {
+            color: #555;
+            font-size: 15px;
+            line-height: 1.7;
+            margin-bottom: 6px;
+        }
+
+        /* Case Box */
+        .case-box {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #f9f9f9;
+            margin-top: 20px;
+            margin-bottom: 16px;
+            padding: 16px;
+        }
+
+        .case-box h3 {
+            background: #eef2ff;
+            border-left: 4px solid #f73c3c;
+            padding: 8px 12px;
+            font-size: 16px;
+            font-weight: 600;
+            margin: -16px -16px 12px -16px;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+        }
+
+        .case-box h3 span {
+            margin-left: 10px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .case-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fff;
+            border-radius: 6px;
+            border: 1px solid #eee;
+            padding: 12px 16px;
+            font-size: 15px;
+            color: #333;
+        }
+
+        .btn-small {
+            background: #d91a1a;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 14px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-small:hover {
+            background: #b50f0f;
+        }
+
+        /*----------------------------------*/
+        /*-- 가입절차 탭 버튼 --*/
+        /*----------------------------------*/
+        .join-type-btns {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0 30px 0;
+        }
+
+        .join-btn {
+            border: 1px solid #ccc;
+            background: #fff;
+            color: #333;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .join-btn.active {
+            background: #d91a1a;
+            color: #fff;
+            border-color: #d91a1a;
+        }
+
+        /*----------------------------------*/
+        /*-- 가입절차 콘텐츠 --*/
+        /*----------------------------------*/
+        .join-section {
+            display: none;
+        }
+
+        .join-section.active {
+            display: block;
+        }
+
+        .info-box {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin-bottom: 20px;
+            line-height: 1.6;
+            font-size: 15px;
+        }
+
+        /* Step Box */
+        .step-box {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #fafafa;
+            margin-bottom: 18px;
+            overflow: hidden;
+        }
+
+        .step-box h3 {
+            background: #f4f4f4;
+            border-bottom: 1px solid #ddd;
+            padding: 10px 16px;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .step-content {
+            padding: 16px 20px;
+            background: #fff;
+        }
+
+        .step-content h4 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #333;
+        }
+
+        .step-content p {
+            font-size: 14.5px;
+            color: #555;
+            line-height: 1.7;
+            margin-bottom: 10px;
+        }
+
+        /* 버튼 그룹 */
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-small {
+            background: #d91a1a;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 14px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-small:hover {
+            background: #b50f0f;
+        }
+
+
+        /*----------------------------------*/
+        /*-- 상위 탭 (예금/신탁 / 이체 / 조회) --*/
+        /*----------------------------------*/
+        .main-tab-btns {
+            display: flex;
+            border-bottom: 2px solid #d91a1a;
+            margin-bottom: 20px;
+        }
+
+        .main-btn {
+            flex: 1;
+            background: #fff;
+            border: none;
+            border-bottom: 3px solid transparent;
+            font-size: 16px;
+            padding: 12px 0;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .main-btn.active {
+            color: #d91a1a;
+            border-bottom: 3px solid #d91a1a;
+            font-weight: 600;
+        }
+
+        /*----------------------------------*/
+        /*-- 하위 탭 (개인 / 기업) --*/
+        /*----------------------------------*/
+        .sub-tab-btns {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .sub-btn {
+            padding: 10px 20px;
+            border: none;
+            background: #f6f6f6;
+            color: #333;
+            border-radius: 6px 6px 0 0;
+            cursor: pointer;
+            margin-right: 6px;
+        }
+
+        .sub-btn.active {
+            background: #d91a1a;
+            color: #fff;
+        }
+
+        /*----------------------------------*/
+        /*-- 표 --*/
+        /*----------------------------------*/
+        .service-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            border: 1px solid #ddd;
+            text-align: center;
+            font-size: 15px;
+        }
+
+        .service-table th {
+            background: #fafafa;
+            border-bottom: 2px solid #d91a1a;
+            padding: 12px;
+            font-weight: 600;
+        }
+
+        .service-table td {
+            border: 1px solid #eee;
+            padding: 10px;
+            color: #333;
+        }
+
+        .service-table tr:nth-child(even) {
+            background: #fcfcfc;
+        }
+
+        /*----------------------------------*/
+        /*-- 공통 섹션 토글 --*/
+        /*----------------------------------*/
+        .main-section,
+        .sub-section {
+            display: none;
+        }
+
+        .main-section.active,
+        .sub-section.active {
+            display: block;
+        }
+
+        /*----------------------------------*/
+        /*-- 빈 영역 안내 박스 --*/
+        /*----------------------------------*/
+        .empty-box {
+            background: #fff;
+            border: 1px solid #ddd;
+            padding: 40px;
+            text-align: center;
+            color: #777;
+            border-radius: 8px;
+        }
+
+
+
+
+
+
+
+
+
+        .sub-table-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #c41e20;
+            border-bottom: 2px solid #c41e20;
+            display: inline-block;
+            margin-top: 40px;
+            margin-bottom: 15px;
+            padding-bottom: 4px;
+        }
+
+        .service-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            border: 1px solid #ddd;
+            margin-bottom: 40px;
+        }
+
+        .service-table th, .service-table td {
+            border: 1px solid #ddd;
+            text-align: center;
+            padding: 10px 8px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .service-table th {
+            background: #fafafa;
+            font-weight: 600;
+        }
+
+        .service-table tr:nth-child(even) {
+            background: #fcfcfc;
+        }
+    </style>
+</head>
+<body>
+    <!--헤더-->
+    <div th:replace="~{layouts/header}"></div>
+    
+    <div class="productsRoom-page">
+        <!--왼쪽 사이드바-->
+        <aside class="all-sidebar">
+            <ul class="sidebar-menu">
+                <h2>상품공시실</h2>
+                <li><a href="./bankManual">은행상품공시이용매뉴얼</a></li>
+                <li><a href="./depositProduct">예금상품</a></li>
+                <li><a href="./AnyProduct">기타상품</a></li>
+                <li class="active"><a href="./serviceFee">서비스이용수수료</a></li>
+            </ul>
+
+            <!--추가 도움 영역-->
+            <section class="all-help">
+                <div class="help-box">
+                    <h3>추가 도움이 필요하신가요?</h3>
+                    <p>전문 상담원이 친절하게 도와드리겠습니다.</p>
+                    <div class="help-buttons">
+                        <button class="btn-call">전화상담</button>
+                        <button class="btn-chat">Talk상담</button>
+                    </div>
+                </div>
+            </section>
+        </aside>
+
+        <!-- 메인 콘텐츠 -->
+        <main class="howUse-content">
+            <div class="howUse-header">
+                <h1>서비스이용수수료</h1>
+                <p>서비스 이용시간 안내입니다.<br>
+                    이용시에 불편함이 없도록 각 서비스 별 이용시간을 확인해주세요.
+                </p>
+            </div>
+
+            <!-- 1단계 상위 탭 -->
+            <div class="main-tab-btns">
+                <button class="main-btn active" onclick="showMainTab('deposit')">송금관련수수료</button>
+                <button class="main-btn" onclick="showMainTab('transfer')">예금관련수수료</button>
+                <button class="main-btn" onclick="showMainTab('inquiry')">기타수수료</button>
+            </div>
+
+            <!-- 송금관련수수료 -->
+            <section id="deposit" class="main-section active">
+            <div class="sub-tab-btns">
+                <button class="sub-btn active" onclick="showSubTab('deposit-personal', this)">창구/자동화기기 송금</button>
+                <button class="sub-btn" onclick="showSubTab('deposit-corporate', this)">인터넷/텔레뱅킹 송금</button>
+            </div>
+
+            <!-- 창구/자동화기기 송금 -->
+            <div id="deposit-personal" class="sub-section active">
+                <h4 class="sub-table-title">창구에서 보내실 때</h4>
+                <p class="table-date">(2025년 11월 6일 기준, 단위: 원)</p>
+
+                <table class="service-table">
+                <thead>
+                    <tr>
+                    <th>송금금액</th>
+                    <th>부산은행으로 보낼 때</th>
+                    <th>다른 은행으로 보낼 때</th>
+                    <th>비고</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>10만원 이하</td><td>면제</td><td>1,000</td><td rowspan="4" style="text-align:left;">
+                    기초생활수급자, 장애인, 국가유공자, 독립유공자 및 유족, 5·18민주화운동부상자, 고엽제후유의증환자, 소년소녀가장, 차상위계층 면제<br>
+                    만65세 이상, 만18세 미만 20% 감면
+                    </td></tr>
+                    <tr><td>100만원 이하</td><td>면제</td><td>2,000</td></tr>
+                    <tr><td>100만원 초과</td><td>면제</td><td>3,500</td></tr>
+                    <tr><td>500만원 초과</td><td>면제</td><td>4,000</td></tr>
+                </tbody>
+                </table>
+
+                <h4 class="sub-table-title">자동화기기 이용 시</h4>
+                <table class="service-table">
+                <thead>
+                    <tr>
+                    <th>구분</th>
+                    <th>고객구분</th>
+                    <th>징수기준</th>
+                    <th>비고</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>입금</td><td>—</td><td>면제</td><td>경남은행 계좌로 입금 시 면제</td></tr>
+                    <tr><td rowspan="3">출금</td><td>영업시간 중 일반</td><td>면제</td><td>경남은행 계좌에서 출금 시 면제</td></tr>
+                    <tr><td>영업시간 외 일반</td><td>건당 600원</td><td rowspan="2" style="text-align:left;">
+                    부산은행 고객에 한함<br>
+                    기초생활수급자·차상위계층·장애인·국가유공자·독립유공자·고엽제후유증환자·5·18민주화운동부상자·소년소녀가장·다문화가정·한부모가정·탈북새터민 면제<br>
+                    만18세 미만, 만65세 이상 건당 480원<br>
+                    1일 2회 이상 출금 시 2회분부터 건당 300원<br>
+                    1회 1만원 출금은 면제
+                    </td></tr>
+                    <tr><td>—</td><td>—</td></tr>
+                </tbody>
+                </table>
+
+                <h4 class="sub-table-title">자동화기기 이체 수수료</h4>
+                <table class="service-table">
+                <thead>
+                    <tr>
+                    <th>구분</th>
+                    <th>징수기준</th>
+                    <th>비고</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>이체 (자행/타행)</td><td>면제</td><td>경남은행 계좌로 이체 시 면제</td></tr>
+                    <tr><td>타행 이체 (영업시간 중)</td><td>건당 800원</td><td>경남은행 기기 이용 시 면제</td></tr>
+                    <tr><td>타행 이체 (영업시간 외)</td><td>건당 1,000원</td><td>경남은행 기기 이용 시 건당 600원</td></tr>
+                    <tr><td>타행 CD/ATM 이용</td><td>제휴업체 개별 계약에 따름</td><td>영업시간 중 08:30~17:00</td></tr>
+                </tbody>
+                </table>
+            </div>
+
+            <!-- 인터넷/텔레뱅킹 송금 -->
+            <div id="deposit-corporate" class="sub-section">
+                <p class="table-date">(2025년 11월 6일 기준)</p>
+
+                <h4 class="sub-table-title">인터넷/모바일뱅킹</h4>
+                <table class="service-table">
+                <thead>
+                    <tr>
+                    <th>구분</th>
+                    <th>수수료</th>
+                    <th>비고</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>부산은행 및 경남은행으로 송금</td><td>면제</td><td>—</td></tr>
+                    <tr><td>다른 은행으로 송금 (개인뱅킹)</td><td>면제</td><td>—</td></tr>
+                    <tr><td>다른 은행으로 송금 (기업뱅킹)</td><td>건당 500원</td><td>국가기관·지자체, 만18세 미만, 만65세 이상, 기초생활수급자, 차상위계층, 장애인, 국가유공자, 독립유공자 등 면제</td></tr>
+                </tbody>
+                </table>
+
+                <h4 class="sub-table-title">텔레뱅킹</h4>
+                <table class="service-table">
+                <thead>
+                    <tr>
+                    <th>구분</th>
+                    <th>수수료</th>
+                    <th>비고</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>부산은행 및 경남은행으로 송금</td><td>면제</td><td>—</td></tr>
+                    <tr><td>다른 은행으로 송금</td><td>건당 500원</td><td>국가기관·지자체, 만18세 미만, 만65세 이상, 기초생활수급자, 차상위계층, 장애인, 국가유공자, 독립유공자 등 면제</td></tr>
+                </tbody>
+                </table>
+
+                <h4 class="sub-table-title">송금 한도</h4>
+                <table class="service-table">
+                <thead>
+                    <tr>
+                    <th>서비스 구분</th>
+                    <th>송금 한도</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>창구</td><td>부산은행: 무제한 / 타행: 1회 1억원 이하</td></tr>
+                    <tr><td>자동화기기</td><td>1회 600만원 이하, 1일 10회 (최대 3천만원)</td></tr>
+                    <tr><td>텔레뱅킹</td><td>신청금액 범위 내 (타행 1회 1억원 이하)</td></tr>
+                    <tr><td>인터넷/모바일뱅킹</td><td>신청금액 범위 내 (타행 1회 10억원 이하)</td></tr>
+                </tbody>
+                </table>
+            </div>
+            </section>
+
+
+            <!-- 예금관련수수료 -->
+            <section id="transfer" class="main-section">
+                <div class="sub-tab-btns">
+                    <button class="sub-btn active" onclick="showSubTab('transfer-personal', this)">수신부문수수료</button>
+                    <button class="sub-btn" onclick="showSubTab('transfer-corporate', this)">대여금여 임차보증금 및 수수료</button>
+                </div>
+
+                <!-- 수신부문수수료 -->
+               <section id="transfer-personal" class="sub-section active">
+                    <p class="table-date">(2025년 11월 6일 기준, 단위: 원)</p>
+
+                    <table class="service-table">
+                        <thead>
+                        <tr>
+                            <th>구분</th>
+                            <th>대상항목</th>
+                            <th>징수금액</th>
+                            <th>비고</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td rowspan="5">수표·어음융자교부 수수료</td>
+                            <td>가계수표용지교부 수수료</td>
+                            <td>권당(20매) 10,000</td>
+                            <td>—</td>
+                        </tr>
+                        <tr><td>당좌수표용지교부 수수료</td><td>권당(20매) 10,000</td><td>—</td></tr>
+                        <tr><td>약속어음용지교부 수수료</td><td>권당(10매) 10,000</td><td>—</td></tr>
+                        <tr><td>영문당좌수표용지교부 수수료</td><td>권당(20매) 10,000</td><td>—</td></tr>
+                        <tr><td>영문당좌수표용지교부 수수료(특정거래처)</td><td>권당 제조단가+2,000 (50매 1권 기준)</td><td>—</td></tr>
+
+                        <tr>
+                            <td rowspan="3">제 증명서 발급 수수료</td>
+                            <td>(예금신탁) 잔액증명서</td>
+                            <td>장당 3,000</td>
+                            <td>기초생활수급자, 장애인, 국가유공자 등 면제 / 만65세 이상, 만18세 미만 20% 감면</td>
+                        </tr>
+                        <tr>
+                            <td>거래실적증명서</td>
+                            <td>부당 2,000 (10매 초과 시 장당 100원 추가, 최고 20,000원)</td>
+                            <td>—</td>
+                        </tr>
+                        <tr><td>은행거래조회서</td><td>부당 30,000</td><td>—</td></tr>
+
+                        <tr>
+                            <td rowspan="2">사고신고 수수료</td>
+                            <td>—</td>
+                            <td>장당 1,000</td>
+                            <td>기초생활수급자, 장애인, 국가유공자 등 면제 / 만65세 이상, 만18세 미만 20% 감면</td>
+                        </tr>
+
+                        <tr>
+                            <td>증서재발급 수수료</td>
+                            <td>건당 2,000</td>
+                            <td>사고신고로 인한 재발행 / 동일 감면규정 적용</td>
+                        </tr>
+
+                        <tr>
+                            <td rowspan="2">부도처리 수수료</td>
+                            <td>당좌·약속어음·가계수표</td>
+                            <td>장당 10,000</td>
+                            <td>—</td>
+                        </tr>
+                        <tr><td>자기앞수표</td><td>장당 5,000</td><td>—</td></tr>
+
+                        <tr>
+                            <td>납부자 자동이체 수수료</td>
+                            <td>타행 건당 300</td>
+                            <td>기초생활수급자 등 면제 / 만65세 이상·만18세 미만 20% 감면</td>
+                        </tr>
+
+                        <tr>
+                            <td>예약입금 수수료</td>
+                            <td>타행 건당 700</td>
+                            <td>수취계좌가 경남은행 계좌인 경우 면제</td>
+                        </tr>
+
+                        <tr>
+                            <td>단체급여이체 수수료</td>
+                            <td>타행 건당 500</td>
+                            <td>수취계좌가 경남은행 계좌인 경우 면제</td>
+                        </tr>
+
+                        <tr>
+                            <td>수표조회 수수료</td>
+                            <td>—</td>
+                            <td>장당 1,000</td>
+                            <td>면제 및 감면 규정 동일</td>
+                        </tr>
+
+                        <tr>
+                            <td>보관어음 수탁 수수료</td>
+                            <td>—</td>
+                            <td>장당 2,000</td>
+                            <td>면제 및 감면 규정 동일</td>
+                        </tr>
+
+                        <tr><td>가계당좌예금 개설 수수료</td><td>—</td><td>계좌당 30,000</td><td>—</td></tr>
+
+                        <tr><td>미사용 자기앞수표 반환 수수료</td><td>—</td><td>일일반환수표 20매 초과 시 장당 100</td><td>—</td></tr>
+
+                        <tr><td>납품대금 지급대행 수수료</td><td>—</td><td>장당 1,000</td><td>—</td></tr>
+
+                        <tr>
+                            <td>타행발행 자기앞수표 대지급 수수료</td>
+                            <td>—</td>
+                            <td>장당 1,000</td>
+                            <td>면제 및 감면 규정 동일</td>
+                        </tr>
+
+                        <tr>
+                            <td>금융거래 정보제공 수수료</td>
+                            <td>—</td>
+                            <td>통보인원당 2,000</td>
+                            <td>면제 규정 동일</td>
+                        </tr>
+
+                        <tr><td>주식납입금 업무대행 수수료</td><td>—</td><td>건당 20,000</td><td>—</td></tr>
+
+                        <tr>
+                            <td>사채 원리금 지급대행 수수료</td>
+                            <td>1년 이하 100,000<br>1~3년 이하 200,000<br>3년 초과 300,000</td>
+                            <td>대행기간별 차등징구</td>
+                        </tr>
+
+                        <tr><td>IC현금카드 발급 수수료</td><td>매당 2,000</td><td>면제대상: 고교생, 65세 이상, 장애인, 국가유공자 등</td></tr>
+
+                        <tr><td>아이즐거운카드 재발급 수수료</td><td>매당 1,000</td><td>면제대상 동일</td></tr>
+
+                        <tr><td>질권설정 수수료</td><td>—</td><td>건당 5,000</td><td>—</td></tr>
+
+                        <tr><td>명의변경 수수료</td><td>—</td><td>건당 5,000</td><td>—</td></tr>
+                        </tbody>
+                    </table>
+                </section>
+
+                <!-- 대여금고 임차보증금 및 수수료 -->
+                <div id="transfer-corporate" class="sub-section">
+
+                    <!-- 열쇠식 -->
+                    <h4 class="sub-table-title">열쇠식</h4>
+                    <table class="service-table">
+                        <thead>
+                        <tr>
+                            <th rowspan="2">종별</th>
+                            <th colspan="3">규격</th>
+                            <th rowspan="2">임차보증금(원)</th>
+                            <th rowspan="2">수수료(1년기준)</th>
+                        </tr>
+                        <tr>
+                            <th>높이</th>
+                            <th>폭</th>
+                            <th>길이</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>1호</td><td>100</td><td>150</td><td>550</td><td>20,000</td><td>20,000</td>
+                        </tr>
+                        <tr>
+                            <td>2호</td><td>150</td><td>150</td><td>550</td><td>40,000</td><td>20,000</td>
+                        </tr>
+                        <tr>
+                            <td>3호</td><td>100</td><td>300</td><td>550</td><td>70,000</td><td>20,000</td>
+                        </tr>
+                        <tr>
+                            <td>4호</td><td>150</td><td>300</td><td>550</td><td>130,000</td><td>30,000</td>
+                        </tr>
+                        <tr>
+                            <td>5호</td><td>300</td><td>300</td><td>550</td><td>200,000</td><td>30,000</td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- 지문식 -->
+                    <h4 class="sub-table-title">지문식</h4>
+                    <table class="service-table">
+                        <thead>
+                        <tr>
+                            <th rowspan="2">종별</th>
+                            <th colspan="3">규격</th>
+                            <th rowspan="2">임차보증금(원)</th>
+                            <th rowspan="2">수수료(1년기준)</th>
+                        </tr>
+                        <tr>
+                            <th>높이</th>
+                            <th>폭</th>
+                            <th>길이</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>소형</td><td>65</td><td>250</td><td>530</td><td>150,000</td><td>20,000</td>
+                        </tr>
+                        <tr>
+                            <td>중형</td><td>115</td><td>250</td><td>530</td><td>200,000</td><td>30,000</td>
+                        </tr>
+                        <tr>
+                            <td>대형</td><td>240</td><td>250</td><td>530</td><td>250,000</td><td>50,000</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+
+            
+                <!-- 기타수수료 -->
+                <div id="inquiry" class="main-section active">
+                <p class="table-date">(2025년 11월 6일 기준)</p>
+
+                <!-- 공동인증서 발급 수수료 -->
+                <h4 class="sub-table-title">공동인증서(구 공인인증서) 발급수수료</h4>
+                <table class="service-table">
+                    <thead>
+                    <tr>
+                        <th>용도 구분</th>
+                        <th>징수기준</th>
+                        <th>비고</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr><td>은행/신용카드/보험용</td><td>개인: 면제<br>법인/개인사업자: 4,400원</td><td>면제대상: 국가기관, 지방자치단체</td></tr>
+                    <tr><td>전자세금계산서용</td><td>법인/개인사업자: 4,400원</td><td>—</td></tr>
+                    <tr><td>범용</td><td>개인: 4,400원<br>법인/개인사업자: 110,000원</td><td>—</td></tr>
+                    </tbody>
+                </table>
+
+                <!-- 전자상거래 관련 수수료 -->
+                <h4 class="sub-table-title">전자상거래 관련 수수료</h4>
+                <table class="service-table">
+                    <thead>
+                    <tr>
+                        <th>구분</th>
+                        <th>징수기준</th>
+                        <th>비고</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr><td>전자상거래결제대행수수료</td><td>개별 제휴계약에 따름</td><td>—</td></tr>
+                    <tr><td>일반전자채권발행수수료(구매기업)</td><td>건당 500원 (발행일 선취)</td><td>—</td></tr>
+                    <tr><td>보증전자채권발행수수료(구매기업)</td><td>건당 1,000원 (발행일 선취)</td><td>—</td></tr>
+                    <tr><td>전자채권보관수수료(판매기업)</td><td>건당 500원 (채권만기 후취)<br>보관은행 변경 시 20,000원</td><td>—</td></tr>
+                    </tbody>
+                </table>
+
+                <!-- 기타업무 관련 수수료 -->
+                <h4 class="sub-table-title">기타업무 관련 수수료</h4>
+                <table class="service-table">
+                    <thead>
+                    <tr>
+                        <th>구분</th>
+                        <th>징수기준</th>
+                        <th>비고</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td rowspan="2">거래내역통지 서비스수수료 (모바일통지서비스)</td>
+                        <td>계좌별/휴대폰 대수별 월 1,000원 (신청일 선취)<br>신청 당일 해지 시 미징수</td>
+                        <td>면제: 국가·지자체, 기초생활수급자, 차상위계층, 장애인, 국가유공자, 독립유공자, 소년소녀가장, 다문화가정, 한부모가정, 탈북새터민</td>
+                    </tr>
+                    <tr><td>건별 30원 (익월 10일 후취)</td><td>—</td></tr>
+                    </tbody>
+                </table>
+
+                <!-- 유료부가서비스 수수료 -->
+                <h4 class="sub-table-title">유료부가서비스 수수료</h4>
+                <table class="service-table">
+                    <thead>
+                    <tr>
+                        <th>용도</th>
+                        <th>서비스명</th>
+                        <th>징수기준</th>
+                        <th>비고</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr><td>공동인증서 저장서비스</td><td>휴대폰인증서보관서비스</td><td>월 900원 (부가세 별도)</td><td rowspan="3">통신사 제공 부가서비스로, 해지 시 통신사에 요청 필요</td></tr>
+                    <tr><td>USIM스마트인증서비스</td><td>—</td><td>월 900원</td></tr>
+                    <tr><td>안심로그인서비스</td><td>도용방지 안심로그인</td><td>월 1,000원</td></tr>
+                    </tbody>
+                </table>
+
+                <!-- 보안매체 관련 수수료 -->
+                <h4 class="sub-table-title">보안매체 관련 수수료</h4>
+                <table class="service-table">
+                    <thead>
+                    <tr>
+                        <th>구분</th>
+                        <th>징수기준</th>
+                        <th>비고</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr><td>토큰형 OTP 신규발급</td><td>건당 5,000원</td><td>면제: 국가기관 및 지자체, 기기장애(2년 미만) 등</td></tr>
+                    <tr><td>토큰형 OTP 재발급/갱신</td><td>보증기간 1년 이상~2년 미만: 2,500원<br>1년 미만: 면제</td><td>—</td></tr>
+                    <tr><td>카드형 OTP 신규발급</td><td>건당 10,000원</td><td>면제: 국가기관 및 지자체, 기기장애(2년 미만) 등</td></tr>
+                    <tr><td>카드형 OTP 재발급/갱신</td><td>보증기간 1년 이상~2년 미만: 5,000원<br>1년 미만: 면제</td><td>—</td></tr>
+                    <tr><td>음성 OTP</td><td>신규·재발급·갱신: 면제</td><td>시각장애인 대상</td></tr>
+                    </tbody>
+                </table>
+
+                <!-- 전자어음 관련 수수료 -->
+                <h4 class="sub-table-title">전자어음 관련 수수료</h4>
+                <table class="service-table">
+                    <thead>
+                    <tr>
+                        <th>구분</th>
+                        <th>징수기준</th>
+                        <th>비고</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr><td>전자어음발행수수료</td><td>장당 1,000원</td><td>—</td></tr>
+                    <tr><td>전자어음배서수수료</td><td>장당 1,500원</td><td>—</td></tr>
+                    <tr><td>전자어음지급제시수수료</td><td>장당 2,500원</td><td>—</td></tr>
+                    <tr><td>전자어음보증수수료</td><td>장당 1,500원</td><td>—</td></tr>
+                    </tbody>
+                </table>
+                </div>
+
+            </section>
+        </main>
+    </div>
+
+    <!--푸터-->
+    <div th:replace="~{layouts/footer}"></div>
+</body>
+</html>
+<script>
+    // header 불러오기
+    fetch(`${contextPath}/layouts/header.html`)
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('header').innerHTML = data;
+        })
+        .catch(err => console.error('[Header load failed]', err));
+
+    // chatbot import 기능
+    async function importHtmlWithAssets(url, mountSelector) {
+        try {
+            const res = await fetch(url, { credentials: 'same-origin' });
+            if (!res.ok) throw new Error(`Failed to load ${url}`);
+            const html = await res.text();
+
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+
+            doc.querySelectorAll('link[rel="stylesheet"]').forEach(link => {
+                const href = link.getAttribute('href');
+                const exists = [...document.head.querySelectorAll('link[rel="stylesheet"]')]
+                    .some(l => l.getAttribute('href') === href);
+                if (!exists && href) document.head.appendChild(link.cloneNode(true));
+            });
+
+            doc.querySelectorAll('style').forEach(styleEl => {
+                const clone = document.createElement('style');
+                clone.textContent = styleEl.textContent;
+                [...styleEl.attributes].forEach(a => clone.setAttribute(a.name, a.value));
+                document.head.appendChild(clone);
+            });
+
+            const mount = document.querySelector(mountSelector);
+            const frag = document.createDocumentFragment();
+            [...doc.body.children].forEach(node => {
+                if (node.tagName.toLowerCase() !== 'script') frag.appendChild(node.cloneNode(true));
+            });
+            mount.appendChild(frag);
+
+            const scripts = [...doc.querySelectorAll('script')];
+            for (const oldScript of scripts) {
+                const newScript = document.createElement('script');
+                [...oldScript.attributes].forEach(attr => newScript.setAttribute(attr.name, attr.value));
+                if (oldScript.src) {
+                    await new Promise(resolve => {
+                        newScript.onload = resolve;
+                        newScript.onerror = resolve;
+                        document.body.appendChild(newScript);
+                    });
+                } else {
+                    newScript.textContent = oldScript.textContent || '';
+                    document.body.appendChild(newScript);
+                }
+            }
+        } catch (err) {
+            console.error('[Chatbot load failed]', err);
+        }
+    }
+
+    // chatbot 불러오기
+    importHtmlWithAssets('/components/chatbot_test.html', '#bnk-chatbot-slot');
+
+    // footer 불러오기
+    fetch(`${contextPath}/layouts/footer.html`)
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('footer').innerHTML = data;
+        })
+        .catch(err => console.error('[Footer load failed]', err));
+
+</script>

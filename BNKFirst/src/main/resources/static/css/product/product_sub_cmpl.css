@@ -1,0 +1,1170 @@
+:root {
+    --bg: #f5f7fa;
+    --card: #fff;
+    --g50: #f9fafb;
+    --g100: #f3f4f6;
+    --g200: #e5e7eb;
+    --g300: #d1d5db;
+    --g400: #9ca3af;
+    --g500: #6b7280;
+    --g600: #4b5563;
+    --g700: #374151;
+    --g900: #111827;
+    --red: #dc2626;
+    --red50: #fef2f2;
+    --green: #16a34a;
+    --green50: #ecfdf5;
+    --green100: #d1fae5;
+    --blue: #2563eb;
+    --blue50: #eff6ff;
+    --amber: #f59e0b;
+    --amber50: #fffbeb;
+    --radius: 16px;
+    --focus: rgba(37, 99, 235, .12);
+}
+
+* {
+    box-sizing: border-box
+}
+
+/* .container {
+    max-width: 1100px;
+    margin: 28px auto;
+    padding: 0 20px
+} */
+
+body {
+    background-color: #F6F6F8;
+}
+
+main {
+    width: 1200px;
+    background-color: #F6F6F8;
+    padding: 80px 20px;
+    margin: 0 auto;
+}
+
+.btn-red {
+    --bg1: #D91A1A;
+    --bg2: #F03A3A;
+    --shadow: rgba(217, 26, 26, .45);
+    position: relative;
+    box-sizing: border-box;
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    cursor: pointer;
+    background: linear-gradient(180deg, var(--bg2), var(--bg1));
+    outline: none;
+    box-shadow: 0 6px 14px -10px var(--shadow);
+    transition:
+        background .18s ease,
+        box-shadow .18s ease,
+        /* 프레스만 사용할 예정 */
+        transform .12s ease;
+    will-change: background, box-shadow, transform;
+}
+
+.btn-red svg path {
+    fill: white;
+}
+
+/* Hover: 컬러와 섀도우만 아주 미세하게 (리프트 없음) */
+.btn-red:hover {
+    background: linear-gradient(180deg, #f24a4a, #d61a1a);
+    box-shadow: 0 8px 18px -12px var(--shadow);
+    /* 확실하게 떠오르지 않도록 고정 */
+    transform: none;
+}
+
+/* Active: 살짝 눌리는 프레스 효과만 */
+.btn-red:active {
+    transform: scale(.98);
+    box-shadow: 0 4px 10px -10px var(--shadow);
+}
+
+/* 키보드 포커스 접근성 */
+.btn-red:focus-visible {
+    outline: 3px solid rgba(240, 58, 58, .55);
+    outline-offset: 2px;
+}
+
+/* 모션 최소화 존중 */
+@media (prefers-reduced-motion: reduce) {
+    .btn-red {
+        transition: none !important;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    .btn-red {
+        --shadow: rgba(240, 58, 58, .35);
+    }
+}
+
+.btn-white {
+    --bg1: #ffffff;
+    --bg2: #f9f9f9;
+    --shadow: rgba(0, 0, 0, .08);
+    position: relative;
+    box-sizing: border-box;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    color: #111827;
+    cursor: pointer;
+    background: var(--bg1);
+    outline: none;
+    box-shadow: 0 4px 10px -8px var(--shadow);
+    transition:
+        background .18s ease,
+        box-shadow .18s ease,
+        transform .12s ease;
+    will-change: background, box-shadow, transform;
+}
+
+.btn-white svg path {
+    fill: #111827;
+}
+
+/* Hover: 살짝 강조된 밝은 회색 */
+.btn-white:hover {
+    background: linear-gradient(180deg, var(--bg1), var(--bg2));
+    box-shadow: 0 6px 14px -10px var(--shadow);
+    transform: none;
+}
+
+/* Active: 프레스 효과 */
+.btn-white:active {
+    transform: scale(.98);
+    box-shadow: 0 3px 8px -8px var(--shadow);
+}
+
+/* 포커스 */
+.btn-white:focus-visible {
+    outline: 3px solid rgba(0, 0, 0, .15);
+    outline-offset: 2px;
+}
+
+/* 모션 최소화 */
+@media (prefers-reduced-motion: reduce) {
+    .btn-white {
+        transition: none !important;
+    }
+}
+
+/* 다크모드 대응 */
+@media (prefers-color-scheme: dark) {
+    .btn-white {
+        --bg1: #f3f4f6;
+        --bg2: #e5e7eb;
+        --shadow: rgba(0, 0, 0, .25);
+        color: #111;
+        border-color: #d1d5db;
+    }
+}
+
+/* 헤더 */
+.success-hero {
+    max-width: 560px;
+    /* 스샷 폭 느낌 */
+    margin: 28px auto;
+    text-align: center;
+    color: var(--g900);
+    padding: 0 16px;
+}
+
+.success-hero .mark {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    margin: 0 auto 12px;
+    display: grid;
+    place-items: center;
+    background: var(--green);
+    box-shadow: 0 8px 22px rgba(22, 163, 74, .25), inset 0 0 0 2px var(--green-100);
+}
+
+.success-hero .mark svg {
+    stroke: #fff
+}
+
+.success-hero h1 {
+    margin: 6px 0 6px;
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -.2px;
+    color: var(--g900);
+}
+
+.success-hero .desc {
+    margin: 0 0 14px;
+    color: var(--g500);
+    font-size: 14px;
+}
+
+/* 상단 헤더 메타 캡슐을 스샷처럼(연회색 배경, 테두리 없음) */
+.success-hero .meta {
+    /* 캡슐 간 간격 */
+    gap: 8px;
+}
+
+.success-hero .pill {
+    /* gray-100 */
+    background: #F3F4F6;
+    /* 테두리 제거 */
+    border: 0;
+    /* 캡슐 형태 */
+    border-radius: 9999px;
+    /* 스샷 높이 느낌 */
+    padding: 6px 12px;
+    font-size: 12px;
+    /* gray-600 */
+    color: #4B5563;
+    line-height: 1.3;
+}
+
+/* 숫자/강조 부분은 조금 더 진하게 */
+.success-hero .pill b {
+    font-weight: 600;
+    /* gray-900 */
+    color: #111827;
+}
+
+
+/* 레이아웃 */
+.grid {
+    display: grid;
+    grid-template-columns: 2.2fr 1fr;
+    gap: 20px
+}
+
+@media (max-width:980px) {
+    .grid {
+        grid-template-columns: 1fr
+    }
+}
+
+.cards {
+    display: grid;
+    /*grid-template-columns: repeat(2, 1fr);*/
+    gap: 14px
+}
+
+@media (max-width:980px) {
+    .cards {
+        grid-template-columns: 1fr
+    }
+}
+
+.card {
+    background: var(--card);
+    border: 1px solid var(--g200);
+    border-radius: var(--radius);
+    padding: 16px
+}
+
+.card h3 {
+    margin: 0 0 10px;
+    font-size: 15px;
+    font-weight: 800
+}
+
+.kv {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    row-gap: 10px;
+    column-gap: 8px
+}
+
+.k {
+    color: var(--g500);
+    font-size: 13px
+}
+
+.v {
+    color: var(--g700);
+    font-weight: 600;
+    text-align: right;
+}
+
+/* 상품 요약 */
+.tableish {
+    border: 1px solid var(--g200);
+    border-radius: 12px;
+    overflow: hidden
+}
+
+.row {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 0;
+    border-top: 1px solid var(--g200)
+}
+
+.row:first-child {
+    border-top: none
+}
+
+.cell {
+    padding: 10px 12px
+}
+
+.cell.k {
+    background: var(--g50);
+    color: var(--g600);
+    font-weight: 600
+}
+
+/* 금액 요약 포맷 */
+.amount {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px
+}
+
+.amount .box {
+    border: 1px solid var(--g200);
+    border-radius: 12px;
+    padding: 12px;
+    background: #fff
+}
+
+.amount .box h4 {
+    margin: 0 0 6px;
+    font-size: 13px;
+    color: var(--g600)
+}
+
+.amount .big {
+    font-size: 20px;
+    font-weight: 800
+}
+
+.amount .em-red {
+    color: var(--red)
+}
+
+.amount .muted {
+    color: var(--g500);
+    font-size: 12px
+}
+
+/* 배지/토글 */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border-radius: 999px;
+    font-size: 12px;
+    padding: 2px 8px;
+    border: 1px solid var(--g200);
+    background: var(--g50);
+    color: var(--g700)
+}
+
+.badge.green {
+    border-color: #a7f3d0;
+    background: var(--green50);
+    color: #047857
+}
+
+/* 버튼/아이콘 타일 */
+.tile-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 10px
+}
+
+.tile {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+    height: 44px;
+    border: 1px solid var(--g200);
+    border-radius: 12px;
+    background: #fff;
+    color: var(--g700);
+    font-size: 14px
+}
+
+.tile svg {
+    width: 18px;
+    height: 18px;
+}
+
+.side-note {
+    background: #fff;
+    border: 1px solid var(--g200);
+    border-radius: var(--radius);
+    padding: 14px
+}
+
+.side-note h4 {
+    margin: 0 0 8px;
+    font-size: 14px;
+    font-weight: 800
+}
+
+.side-note li {
+    font-size: 13px;
+    color: var(--g600);
+    margin: 6px 0
+}
+
+.side-note .tel {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--red);
+    font-weight: 700
+}
+
+/* 타임라인 */
+/* ===== 납입/이자 타임라인 (사진 스타일) ===== */
+.timeline {
+    --dot: 48px;
+    /* 아이콘 원 크기 */
+    --line: #E5E7EB;
+    /* 연결 라인 색 */
+    background: #fff;
+    border: 1px solid #EEF2F7;
+    border-radius: 16px;
+    padding: 16px 18px;
+}
+
+.timeline h3 {
+    margin: 2px 0 14px;
+    font-size: 15px;
+    font-weight: 800;
+    color: #111827;
+}
+
+/* 가로 3등분 */
+.timeline .steps {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0;
+    padding: 6px 8px;
+}
+
+.timeline .steps>div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* 각 스텝 */
+.timeline .step {
+    position: relative;
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    min-width: 0;
+}
+
+/* 점(아이콘) */
+.timeline .dot {
+    width: var(--dot);
+    height: var(--dot);
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    margin-bottom: 10px;
+}
+
+.timeline .dot svg {
+    width: 22px;
+    height: 22px;
+}
+
+/* 점 색상 */
+.timeline .dot.play {
+    background: #16A34A;
+}
+
+/* 초록 */
+.timeline .dot.play svg {
+    stroke: #fff;
+}
+
+/* 중앙 회색 */
+.timeline .dot.mid {
+    background: #E5E7EB;
+    border: 1px solid #E5E7EB;
+}
+
+.timeline .dot.mid svg {
+    overflow: visible;
+}
+
+/* 빨강 */
+.timeline .dot.stop {
+    background: #DC2626;
+}
+
+.timeline .dot.stop svg {
+    overflow: visible;
+}
+
+/* 아이콘 사이 연결 라인 */
+.timeline .step:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    top: calc(var(--dot)/2 + 0px);
+    left: calc(50% + var(--dot)/2 + 16px);
+    right: 0;
+    height: 3px;
+    background: var(--line);
+    transform: translateY(-50%);
+    border-radius: 999px;
+}
+
+.timeline .step:not(:first-child)::before {
+    content: "";
+    position: absolute;
+    top: calc(var(--dot)/2 + 0px);
+    left: 0;
+    right: calc(50% + var(--dot)/2 + 16px);
+    height: 3px;
+    background: var(--line);
+    transform: translateY(-50%);
+    border-radius: 999px;
+}
+
+/* 텍스트 톤 */
+.timeline .step b {
+    color: #374151;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.timeline .step small {
+    display: block;
+    margin-top: 2px;
+    color: #9CA3AF;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.timeline .steps small {
+    color: #9CA3AF;
+}
+
+.timeline .step .amt {
+    margin-top: 6px;
+    color: #111827;
+    font-weight: 800;
+}
+
+/* 모바일 여백 */
+@media (max-width:640px) {
+    .timeline {
+        padding: 14px;
+    }
+}
+
+
+/* 우대이율 리스트 */
+.benefit {
+    background: #fff;
+    border: 1px solid var(--g200);
+    border-radius: var(--radius);
+    padding: 14px
+}
+
+.benefit h3 {
+    margin: 0 0 10px
+}
+
+.b-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid var(--g200);
+    border-radius: 12px;
+    padding: 10px 12px;
+    background: #fff
+}
+
+.b-row+.b-row {
+    margin-top: 8px
+}
+
+.dot2 {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #22c55e;
+    margin-right: 8px
+}
+
+.b-left {
+    display: flex;
+    align-items: center;
+    color: var(--g700)
+}
+
+.b-right {
+    color: #10b981;
+    font-weight: 700
+}
+
+/* 헤더형 섹션 제목 */
+.sec h3 .em {
+    color: var(--g600);
+    font-weight: 600
+}
+
+/* 유틸 */
+.muted {
+    color: var(--g600)
+}
+
+.small {
+    font-size: 12px;
+    color: var(--g600)
+}
+
+.list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px
+}
+
+.list .row {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 8px 10px;
+    border: 1px solid var(--g200);
+    border-radius: 10px;
+    background: #fff
+}
+
+.list .row .k {
+    color: var(--g600)
+}
+
+.list .row .v {
+    font-weight: 700
+}
+
+/* 공통 카드 헤더 간격 */
+.card h3 {
+    margin: 2px 0 12px;
+    font-size: 15px;
+    font-weight: 800;
+    color: #111827
+}
+
+/* 가입자 확인 카드 */
+.card.card-confirm {
+    background: #fff;
+    border: 1px solid #EEF2F7;
+    /* 아주 옅은 테두리 */
+    border-radius: 14px;
+    padding: 14px 18px;
+}
+
+/* 제목 */
+.card.card-confirm h3 {
+    margin: 0 0 10px;
+    font-size: 15px;
+    font-weight: 800;
+    color: #111827;
+}
+
+/* 2열 표 레이아웃: 라벨/값 */
+.card.card-confirm .kv {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    /* 값은 내용폭 만큼 */
+    row-gap: 10px;
+}
+
+/* 라벨/값 스타일 */
+.card.card-confirm .kv .k {
+    color: #6B7280;
+    /* gray-500 */
+    font-size: 13px;
+}
+
+.card.card-confirm .kv .v {
+    color: #111827;
+    /* 진한 글씨 */
+    font-weight: 600;
+    justify-self: end;
+    /* 카드 오른쪽 정렬 */
+}
+
+/* 혹시 이전 규칙에서 경계선/패딩을 줬다면 제거 */
+.card.card-confirm .kv .k,
+.card.card-confirm .kv .v {
+    padding: 0;
+    border-top: none !important;
+}
+
+/* 모바일 여백 살짝 줄이기 */
+@media (max-width:640px) {
+    .card.card-confirm {
+        padding: 12px 14px;
+    }
+}
+
+
+/* ==== 상품 요약 (사진 스타일) ==== */
+.card.card-product {
+    background: #fff;
+    border: 1px solid #EEF2F7;
+    border-radius: 14px;
+    padding: 14px 16px;
+}
+
+.card.card-product h3 {
+    margin: 2px 0 12px;
+    font-size: 15px;
+    font-weight: 800;
+    color: #111827;
+}
+
+/* 테이블 형태를 단일 컬럼으로 전환 */
+.card.card-product .tableish {
+    border: none;
+    /* 바깥 테두리 제거 */
+    border-radius: 0;
+    overflow: visible;
+}
+
+.card.card-product .row {
+    display: block;
+    /* 1열로 */
+    padding: 8px 0;
+    border-top: 1px solid #F1F5F9;
+}
+
+.card.card-product .row:first-child {
+    border-top: 0;
+}
+
+/* 라벨(위) */
+.card.card-product .cell.k {
+    background: transparent;
+    padding: 0;
+    color: #6B7280;
+    /* gray-500 */
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+/* 값(아래) */
+.card.card-product .row .cell:not(.k) {
+    display: flex;
+    justify-content: right;
+    padding: 0;
+    margin-top: 4px;
+    /* 라벨과 간격 */
+    color: #111827;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.55;
+    word-break: keep-all;
+}
+
+/* 마지막 항목(신규계좌) 값은 빨간색 강조 */
+.card.card-product .row:last-child .cell:not(.k) {
+    color: #DC2626;
+}
+
+/* 카드 모서리 느낌(사진처럼 라운드 강조) */
+.card.card-product {
+    box-shadow: 0 1px 0 rgba(0, 0, 0, .02);
+    background-clip: padding-box;
+}
+
+/* 모바일 여백 보정 */
+@media (max-width:640px) {
+    .card.card-product {
+        padding: 12px 14px;
+    }
+}
+
+
+/* 신규계좌 빨강 */
+
+/* 금액 요약 — 라인 아이템, 오른쪽 정렬, 강조 컬러 */
+.card.card-amount {
+    background: #fff;
+    border: 1px solid #EEF2F7;
+    border-radius: 14px;
+    padding: 14px 16px;
+}
+
+.card.card-amount h3 {
+    margin: 2px 0 12px;
+    font-size: 15px;
+    font-weight: 800;
+    color: #111827;
+}
+
+/* 리스트를 세로 1열로 */
+.card.card-amount .money-list {
+    display: block
+}
+
+.card.card-amount .money-list .li {
+    /* ← 세로 쌓기 */
+    display: block;
+    padding: 10px 0;
+}
+
+.card.card-amount .money-list .li:first-child {
+    border-top: 0
+}
+
+/* 라벨(위) */
+.card.card-amount .money-list .k {
+    display: block;
+    /* gray-400  */
+    color: #9CA3AF;
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+/* 값(아래) */
+.card.card-amount .money-list .v {
+    display: block;
+    color: #111827;
+    font-weight: 700;
+    line-height: 1.45;
+    text-align: right;
+}
+
+/* 각 값별 톤 */
+/* 최초불입금 */
+.card.card-amount .money-list .v.big {
+    font-size: 22px;
+    font-weight: 800;
+}
+
+/* 예상이자(세전) */
+.card.card-amount .money-list .v.green {
+    color: #16A34A;
+}
+
+/* 예상만기금액 */
+.card.card-amount .money-list .v.red {
+    color: #DC2626;
+    font-size: 20px;
+    font-weight: 800;
+}
+
+/* 세후와 만기 사이 구분선 */
+.card.card-amount .money-list .li:nth-child(3) {
+    padding-bottom: 12px;
+    margin-bottom: 6px;
+    border-top: 1px solid #EEF2F7;
+}
+
+/* (i) 정보 점 아이콘 */
+.card.card-amount .info-dot {
+    display: inline-grid;
+    place-items: center;
+    width: 16px;
+    height: 16px;
+    margin-left: 6px;
+    border-radius: 999px;
+    font-size: 10px;
+    /* 글자 회색 */
+    color: #6B7280;
+    /* 배경 연회색 */
+    background: #F3F4F6;
+    /* 테두리 연한 회색 */
+    border: 1px solid #E5E7EB;
+    vertical-align: middle;
+}
+
+
+/* 자동이체/알림 — 상태 링크/배지/보조 버튼 */
+.card.card-auto {
+    background: #fff;
+    border: 1px solid #EEF2F7;
+    border-radius: 16px;
+    padding: 16px 18px;
+}
+
+.card.card-auto h3 {
+    margin: 2px 0 14px;
+    font-size: 15px;
+    font-weight: 800;
+    color: #111827;
+}
+
+/* 라벨 위 / 값 아래 단일 컬럼 */
+.card.card-auto .kv {
+    display: block;
+}
+
+.card.card-auto .kv .k {
+    display: block;
+    /* 항목 간 간격 */
+    margin-top: 16px;
+    /* gray-400 */
+    color: #9CA3AF;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.card.card-auto .kv .k:first-child {
+    margin-top: 0;
+}
+
+.card.card-auto .kv .v {
+    display: block;
+    /* 라벨과 값 간격 */
+    margin-top: 4px;
+    color: #111827;
+    font-size: 14px;
+    font-weight: 700;
+    text-align: left;
+}
+
+/* 상태 톤 */
+.card.card-auto .kv .v .link-green,
+.card.card-auto .link-green {
+    /* 신청완료 */
+    color: #16A34A;
+    text-decoration: none;
+    font-weight: 800;
+}
+
+/* 만기 알림 '미설정' 배지 */
+.card.card-auto .tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 8px;
+    border-radius: 8px;
+    /* amber-200 */
+    border: 1px solid #FDE68A;
+    /* amber-50 */
+    background: #FFFBEB;
+    /* amber-700 */
+    color: #B45309;
+    font-size: 12px;
+    font-weight: 700;
+    vertical-align: middle;
+}
+
+/* 하단 회색 캡슐 버튼 2개 */
+.card.card-auto .chip-rows {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.card.card-auto .btn-pill {
+    height: 40px;
+    padding: 0 11px;
+    border-radius: 12px;
+    border: 1px solid #E5E7EB;
+    /* 연회색 캡슐 */
+    background: #F3F4F6;
+    /* gray-500 */
+    color: #6B7280;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    user-select: none;
+    transition: background .15s, border-color .15s, box-shadow .15s;
+}
+
+.card.card-auto .btn-pill:hover {
+    background: #EEF2F7;
+    border-color: #E5E7EB;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .04);
+}
+
+
+/* ===== 카드 그리드 레이아웃 ===== */
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    /* 3열 균등 */
+    gap: 14px;
+    align-items: stretch;
+    /* 같은 줄 카드 높이 맞춤 */
+}
+
+/* 공통 카드 프레임(스샷 톤) */
+.summary-grid>.card {
+    background: #fff;
+    border: 1px solid #EEF2F7;
+    /* 아주 옅은 테두리 */
+    border-radius: 14px;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    /* 내용 높이 변화에도 늘어남 */
+}
+
+/* 상단 '가입자 확인'은 한 줄 전체 사용 */
+.summary-grid .card-confirm {
+    grid-column: 1 / -1;
+    padding: 14px 18px;
+    /* 스샷처럼 좌우 살짝 여유 */
+}
+
+/* 타이틀 간격 통일 */
+.summary-grid .card h3 {
+    margin: 2px 0 12px;
+    font-size: 15px;
+    font-weight: 800;
+    color: #111827;
+}
+
+/* 반응형: 모바일은 1열로 */
+@media (max-width: 980px) {
+    .summary-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .summary-grid .card-confirm {
+        grid-column: auto;
+    }
+}
+
+/* ====== [다음 단계] 카드 ====== */
+.card.next {
+    background: #fff;
+    border: 1px solid #EEF2F7;
+    border-radius: 16px;
+    padding: 16px 18px;
+}
+
+/* 숨겨 둔 sr-only 제목을 보이게 (마크업 바꾸지 않고 적용) */
+.card.next .sr-only {
+    position: static !important;
+    width: auto !important;
+    height: auto !important;
+    clip: auto !important;
+    white-space: normal !important;
+}
+
+.card.next h3 {
+    margin: 2px 0 14px;
+    font-size: 15px;
+    font-weight: 800;
+    color: #111827;
+}
+
+.card.next .cta {
+    display: block;
+    width: 100%;
+    height: 54px;
+    border-radius: 12px;
+    font-weight: 800;
+    font-size: 15px;
+    margin-bottom: 14px;
+}
+
+/* 타일 그리드: 상단 4개는 2열 회색 캡슐, 하단 2개는 가로 전체 아웃라인 버튼 */
+.tile-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+/* 공통 타일 */
+.tile-grid .tile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    text-align: center;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #374151;
+}
+
+/* 타일 아이콘이 잘리지 않도록 */
+.tile-grid .tile svg {
+    /* UA의 overflow:hidden을 덮어씀 */
+    overflow: visible;
+}
+
+/* 1~4번째: 회색 캡슐 */
+.tile-grid .tile:nth-child(-n+4) {
+    height: 86px;
+    background: #F3F4F6;
+    border: 1px solid #E5E7EB;
+}
+
+.tile-grid .tile:nth-child(-n+4) svg {
+    width: 26px;
+    height: 26px;
+}
+
+/* 5~6번째: 가로 전체 아웃라인 버튼 */
+.tile-grid .tile:nth-child(n+5) {
+    grid-column: 1 / -1;
+    height: 46px;
+    flex-direction: row;
+    gap: 10px;
+    color: #111827;
+    justify-content: center;
+}
+
+.tile-grid .tile:nth-child(n+5) svg {
+    width: 18px;
+    height: 18px;
+}
+
+/* ====== [보안 안내] 박스 ====== */
+.side-note {
+    /* 연회색 배경 */
+    background: #F8FAFC;
+    border: 1px solid #EEF2F7;
+    border-radius: 16px;
+    padding: 16px 18px;
+}
+
+.side-note h4 {
+    margin: 2px 0 10px;
+    font-size: 15px;
+    font-weight: 800;
+    color: #111827;
+}
+
+.side-note ul {
+    margin: 0 0 8px;
+    padding-left: 18px;
+    color: #4B5563;
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.side-note li {
+    margin: 4px 0;
+}
+
+.side-note .tel {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #DC2626;
+    font-weight: 800;
+    margin-top: 6px;
+}
+
+.side-note .tel svg {
+    width: 14px;
+    height: 14px;
+}

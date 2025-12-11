@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BNK부산은행 | 보도자료</title>
+</head>
+
+<body>
+<header>
+    <div th:replace="~{layouts/info/_header.html}"></div>
+</header>
+
+  <main>
+    <div class="page-title" style="border-bottom:2px solid var(--bnk-red);margin-bottom:40px;">
+      <h1 style="font-size:26px;margin:0;">보도자료</h1>
+    </div>
+
+    <section class="press-grid">
+      <!-- 왼쪽 -->
+      <div class="card press">
+        <div class="press-main"><a href="#">
+            <div>
+                <img th:src="@{/images/assets/img/press-hero.jpg}" alt="BNK부산은행 타이틀스폰서 조인식">
+            </div>
+        </a>
+
+            <div>
+
+                <a href="#" class="mini" style="margin-bottom: 10px;">
+                    <img th:src="@{/images/assets/img/press-1.jpg}" alt="">
+                    <div>
+                        <div style="font-size:12px;color:#666">2025-11-10</div>
+                        <div style="font-size:13px">WKL 여자프로농구 후원</div>
+                    </div>
+                </a>
+
+                <a href="#" class="mini" style="margin-bottom: 10px;">
+                    <img th:src="@{/images/assets/img/press-2.jpg}" alt="">
+                    <div>
+                        <div style="font-size:12px;color:#666">2025-11-08</div>
+                        <div style="font-size:13px">지역 상생 금융 발표</div>
+                    </div>
+                </a>
+
+                <a href="#" class="mini">
+                    <img th:src="@{/images/assets/img/press-3.jpg}" alt="">
+                    <div>
+                        <div style="font-size:12px;color:#666">2025-11-05</div>
+                        <div style="font-size:13px">청년 창업 금융패키지</div>
+                    </div>
+                </a>
+
+            </div>
+
+        </div>
+        <h3>BNK부산은행 WKL 여자프로농구 2025~2026 타이틀 스폰서 조인식</h3>
+        <div class="subtitle">BNK금융그룹, 여자프로농구 2025~2026시즌 타이틀 스폰서 체결</div>
+        <div class="date">2025-11-10</div>
+      </div>
+
+      <!-- 가운데 -->
+      <div class="stack" style="display:flex;flex-direction:column;gap:20px;">
+        <div class="card">
+          <div class="headline"><div class="bar"></div><h2 class="section-title">공지사항</h2></div>
+            <ul class="notice" style="list-style:none;margin:0;padding:0;">
+
+                <li>
+                    <a href="#" style="text-decoration:none;color:inherit;">
+                        <span class="muted">2025-11-11</span>
+                        <span>영업시간 변경 공지 <span class="new"></span></span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="#" style="text-decoration:none;color:inherit;">
+                        <span class="muted">2025-11-10</span>
+                        <span>홈페이지 점검 안내 <span class="new"></span></span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="#" style="text-decoration:none;color:inherit;">
+                        <span class="muted">2025-11-09</span>
+                        <span>인터넷뱅킹 일시 중단 <span class="new"></span></span>
+                    </a>
+                </li>
+
+            </ul>
+
+        </div>
+
+        <div class="card">
+          <div class="headline"><div class="bar"></div><h2 class="section-title">이벤트</h2></div>
+          <div class="slider" id="eventSlider">
+            <div class="slides">
+              <div class="slide"><img th:src="@{/images/assets/img/event-1.png}" alt=""></div>
+              <div class="slide"><img th:src="@{/images/assets/img/event-2.png}" alt=""></div>
+              <div class="slide"><img th:src="@{/images/assets/img/event-3.png}" alt=""></div>
+            </div>
+            <div class="nav">
+              <button type="button" data-dir="-1">‹</button>
+              <button type="button" data-dir="1">›</button>
+            </div>
+            <div style="position:absolute;right:10px;bottom:8px;display:flex;"><div class="dot active"></div><div class="dot"></div><div class="dot"></div></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="headline"><div class="bar"></div><h2 class="section-title">소식지(행보)</h2></div>
+          <div class="mag}">
+            <img th:src="@{/images/assets/img/mag-2025-07.jpg}" alt="">
+            <div>
+              <div style="font-size:14px;color:#666;">2025.07 월호</div>
+              <div style="font-weight:600;">디지털 전환과 지역 상생</div>
+              <a href="#" style="color:var(--bnk-red);font-weight:700;">PDF 다운로드</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="headline"><div class="bar"></div><h2 class="section-title">홍보동영상</h2></div>
+          <a href="https://www.youtube.com/watch?v=5g_YaIO8X6M" onclick="window.open(this.href); return false;" class="video"><img th:src="@{/images/assets/img/video-thumb.png}" alt=""></a>
+          <div style="font-size:14px;color:#666;margin-top:6px;">2022년 부산은행 홍보영상</div>
+        </div>
+
+        <div class="card">
+          <div class="headline"><div class="bar"></div><h2 class="section-title">포토앨범</h2></div>
+          <div class="gallery">
+            <img th:src="@{/images/assets/img/photo-1.jpg}" alt="">
+            <img th:src="@{/images/assets/img/photo-2.png}" alt="">
+            <img th:src="@{/images/assets/img/photo-3.jpg}" alt="">
+            <img th:src="@{/images/assets/img/photo-4.jpg}" alt="">
+            <img th:src="@{/images/assets/img/photo-5.jpg}" alt="">
+            <img th:src="@{/images/assets/img/photo-6.png}" alt="">
+          </div>
+        </div>
+      </div>
+
+      <!-- 오른쪽 -->
+      <aside class="sns">
+        <div class="headline"><div class="bar"></div><h2 class="section-title">SNS & 소식안내</h2></div>
+        <div class="fb-embed" style="">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+            <img th:src="@{/images/BNK_english.png}" width="36" height="13" style="">
+            <div style="font-weight:700;">BNK 부산은행</div>
+          </div>
+          <img th:src="@{/images/assets/img/fb-post.jpg}" alt="">
+          <div style="margin-top:6px;font-size:13px;color:#2b6cb0;"><a href="#">좋아요</a> · <a href="#">공유하기</a></div>
+        </div>
+        <div style="height:12px;"></div>
+        <div class="ticker">
+            <a href="#" class="tick-item">
+                <div style="font-size:12px;color:#666;">2025-11-10</div>
+                채용설명 드로잉
+            </a>
+
+            <a href="#" class="tick-item">
+                <div style="font-size:12px;color:#666;">2025-11-09</div>
+                사회공헌 스쿨 2기 모집
+            </a>
+
+            <a href="#" class="tick-item">
+                <div style="font-size:12px;color:#666;">2025-11-08</div>
+                청년금융 아카데미 안내
+            </a>
+</div>
+      </aside>
+    </section>
+  </main>
+
+  <button class="mascot" title="도움이 필요하신가요?">Boogi</button>
+
+  <script>
+
+    // 슬라이더
+    (()=>{
+      const slider=document.getElementById('eventSlider');
+      if(!slider)return;
+      const slides=slider.querySelector('.slides');
+      const dots=[...slider.querySelectorAll('.dot')];
+      let i=0;
+      function go(n){i=(n+3)%3;slides.style.transform=`translateX(${-100*i}%)`;dots.forEach((d,k)=>d.classList.toggle('active',k===i));}
+      slider.querySelector('[data-dir="-1"]').onclick=()=>go(i-1);
+      slider.querySelector('[data-dir="1"]').onclick=()=>go(i+1);
+      setInterval(()=>go(i+1),4000);
+    })();
+  </script>
+
+  <style>
+    :root{
+      --bnk-red:#DE0000;
+      --bnk-gray:#444;
+      --bnk-border:#ddd;
+      --bnk-panel:#f9f9f9;
+      --shadow:0 4px 12px rgba(0,0,0,.06);
+      --radius:12px;
+      --maxw:1200px;
+    }
+    body {
+        font-family: "Noto Sans KR", sans-serif;
+        margin-top: 150px;
+        background-color: #fafafa;
+        color: #222;
+    }
+    main{width:80%;max-width:var(--maxw);margin:80px auto;}
+    a{text-decoration:none;color:inherit;}
+    img{max-width:100%;display:block;}
+
+    /* 공통 */
+    .section-title{font-size:20px;font-weight:700;margin:0 0 14px;}
+    .headline{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+    .headline .bar{width:6px;height:18px;background:var(--bnk-red);border-radius:3px;}
+
+    /* 페이지 레이아웃 */
+    .press-grid{display:grid;grid-template-columns:2fr 1.3fr 1.1fr;gap:24px;}
+    .card{background:#fff;border:1px solid var(--bnk-border);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;}
+
+    /* ① 보도자료 */
+    .press-main{display:grid;grid-template-columns:1fr 220px;gap:16px;margin-bottom:14px;}
+    .mini{display:grid;grid-template-columns:80px 1fr;gap:8px;padding:8px;border:1px solid #eee;border-radius:8px;}
+    .mini img{border-radius:6px;}
+    .press h3{font-size:16px;margin:8px 0 4px;}
+    .press .subtitle{font-size:13px;color:#444;}
+    .press .date{font-size:12px;color:#666;}
+
+    /* ② 공지/이벤트/소식지/영상/앨범 */
+    .notice li{display:flex;justify-content:space-between;border-bottom:1px dashed #eee;padding:6px 0;}
+    .notice .new{width:8px;height:8px;background:var(--bnk-red);border-radius:50%;margin-left:6px;}
+    .slider{position:relative;overflow:hidden;border-radius:10px;border:1px solid #ddd;}
+    .slides{display:flex;transition:transform .3s;}
+    .slide{min-width:100%;display:flex;align-items:center;justify-content:center;background:#fff;}
+    .nav{position:absolute;inset:0;display:flex;align-items:center;justify-content:space-between;padding:0 8px;}
+    .nav button{background:#fff;border:1px solid #ddd;border-radius:50%;width:32px;height:32px;cursor:pointer;}
+    .dot{width:8px;height:8px;border-radius:50%;background:#ccc;margin:0 3px;}
+    .dot.active{background:#444;}
+    .mag{display:flex;gap:10px;align-items:center;}
+    .mag img{border:1px solid #ddd;border-radius:8px;width:150px;}
+    .video{position:relative;border-radius:12px;overflow:hidden;border:1px solid #ddd;}
+    .video::after{content:"▶";position:absolute;inset:0;margin:auto;width:64px;height:64px;border-radius:50%;background:rgba(0,0,0,.4);color:#fff;display:grid;place-items:center;font-size:28px;}
+    .gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
+    .gallery img{aspect-ratio:4/3;object-fit:cover;border-radius:6px;}
+
+    /* ③ SNS */
+    .sns{background:var(--bnk-panel);border:1px solid var(--bnk-border);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);}
+    .fb-embed{background:#fff;border:1px solid #ddd;border-radius:10px;padding:10px;}
+    .ticker{background:#fff;border:1px solid #ddd;border-radius:10px;max-height:320px;overflow:auto;}
+    .tick-item{padding:8px 10px;border-bottom:1px dashed #eee;}
+    .tick-item:last-child{border-bottom:0;}
+    .mascot{position:fixed;right:22px;bottom:22px;width:56px;height:56px;border-radius:50%;background:#fff;border:1px solid #ddd;box-shadow:var(--shadow);display:grid;place-items:center;font-weight:700;color:var(--bnk-red);cursor:pointer;}
+
+    @media(max-width:1024px){
+      .press-grid{grid-template-columns:1fr;}
+      main{width:90%;margin:40px auto;}
+    }
+    .tick-item {
+        display: block;
+        text-decoration: none;
+        color: #111;
+        margin-bottom: 10px;
+        padding: 4px 0;
+        transition: color 0.2s ease;
+    }
+
+    /* hover 시 글자 빨간색 */
+    .tick-item:hover {
+        color: #DE0000;
+    }
+
+    .notice li a:hover {
+        color: #DE0000;
+    }
+
+    .notice li a {
+        display: block;
+        padding: 6px 0;
+        text-decoration: none;
+        color: #111;
+        transition: color 0.2s ease-in-out;
+    }
+
+    .notice li a:hover {
+        color: #DE0000; /* BNK 레드 */
+    }
+
+
+
+
+
+  </style>
+</body>
+<footer>
+    <div th:replace="~{layouts/footer.html}"></div>
+</footer>
+</html>

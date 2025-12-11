@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>mypage_main</title>
+    <style>
+        main {
+            background-color: #F6F6F8;
+            padding: 10px 20px 80px;
+        }
+        body {
+            background-color: #F6F6F8;
+        }
+        /* 공통 링크(카드 전체 클릭) */
+        .menu-link{ text-decoration:none; color:inherit; display:block; }
+
+        /* 카드 기본 */
+        .menu-card{
+            background:#fff; width:280px; height:200px; border-radius:16px;
+            border:1px solid #E5E7EB; box-shadow:0 2px 8px rgba(0,0,0,.05);
+            transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease, background-color .22s ease;
+            cursor:pointer; will-change: transform;
+        }
+
+        /* Hover: 살짝 떠오르고 그림자 강화, 보더 강조 */
+        .menu-card:hover{
+            transform: translateY(-4px);
+            box-shadow:0 10px 24px rgba(0,0,0,.10);
+            border-color:#D1D5DB;        /* 더 선명한 테두리 */
+            background-color:#FCFCFD;    /* 아주 미세한 톤 변화 */
+        }
+
+        /* Active(눌렀을 때): 프레스 느낌 */
+        .menu-card:active{
+            transform: translateY(-1px) scale(.995);
+            box-shadow:0 6px 16px rgba(0,0,0,.08);
+        }
+
+        /* 키보드 포커스 접근성: 트렌디한 링 */
+        .menu-link:focus-visible .menu-card{
+            outline:none;
+            box-shadow:0 0 0 2px #fff, 0 0 0 4px rgba(59,130,246,.55); /* 흰색-파랑 이중링 */
+            transform: translateY(-2px);
+        }
+
+        /* 모션 최소화 선호 사용자 배려 */
+        @media (prefers-reduced-motion: reduce){
+            .menu-card, .menu-card:hover, .menu-card:active{
+            transition:none; transform:none; box-shadow:0 2px 8px rgba(0,0,0,.05);
+            }
+            .menu-link:focus-visible .menu-card{ box-shadow:0 0 0 3px rgba(59,130,246,.55); }
+        }
+        </style>
+        <style>
+            .btn-register {
+            --bg1: #D91A1A;
+            --bg2: #F03A3A;
+            --shadow: rgba(217,26,26,.45);
+            position: relative;
+            box-sizing: border-box;
+            width: 90px; height: 42px;
+            border: none; border-radius: 8px;
+            color: #fff; cursor: pointer;
+            background: linear-gradient(180deg, var(--bg2), var(--bg1));
+            outline: none;
+            box-shadow: 0 6px 14px -10px var(--shadow);
+            transition:
+                background .18s ease,
+                box-shadow .18s ease,
+                transform .12s ease; /* 프레스만 사용할 예정 */
+            will-change: background, box-shadow, transform;
+            }
+            
+            /* Hover: 컬러와 섀도우만 아주 미세하게 (리프트 없음) */
+            .btn-register:hover {
+            background: linear-gradient(180deg, #f24a4a, #d61a1a);
+            box-shadow: 0 8px 18px -12px var(--shadow);
+            transform: none; /* 확실하게 떠오르지 않도록 고정 */
+            }
+            
+            /* Active: 살짝 눌리는 프레스 효과만 */
+            .btn-register:active {
+            transform: scale(.98);
+            box-shadow: 0 4px 10px -10px var(--shadow);
+            }
+            
+            /* 키보드 포커스 접근성 */
+            .btn-register:focus-visible {
+            outline: 3px solid rgba(240,58,58,.55);
+            outline-offset: 2px;
+            }
+            
+            /* 모션 최소화 존중 */
+            @media (prefers-reduced-motion: reduce) {
+            .btn-register { transition: none !important; }
+            }
+            
+            @media (prefers-color-scheme: dark) {
+            .btn-register { --shadow: rgba(240,58,58,.35); }
+            }
+        </style>
+    <style>
+          /* 공통 링크(카드 전체 클릭) */
+          .menu-link{ text-decoration:none; color:inherit; display:block; }
+
+          /* 카드 기본 */
+          .menu-card{
+            background:#fff; width:280px; height:200px; border-radius:16px;
+            border:1px solid #E5E7EB; box-shadow:0 2px 8px rgba(0,0,0,.05);
+            transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease, background-color .22s ease;
+            cursor:pointer; will-change: transform;
+          }
+
+          /* Hover: 살짝 떠오르고 그림자 강화, 보더 강조 */
+          .menu-card:hover{
+            transform: translateY(-4px);
+            box-shadow:0 10px 24px rgba(0,0,0,.10);
+            border-color:#D1D5DB;        /* 더 선명한 테두리 */
+            background-color:#FCFCFD;    /* 아주 미세한 톤 변화 */
+          }
+
+          /* Active(눌렀을 때): 프레스 느낌 */
+          .menu-card:active{
+            transform: translateY(-1px) scale(.995);
+            box-shadow:0 6px 16px rgba(0,0,0,.08);
+          }
+
+          /* 키보드 포커스 접근성: 트렌디한 링 */
+          .menu-link:focus-visible .menu-card{
+            outline:none;
+            box-shadow:0 0 0 2px #fff, 0 0 0 4px rgba(59,130,246,.55); /* 흰색-파랑 이중링 */
+            transform: translateY(-2px);
+          }
+
+          /* 모션 최소화 선호 사용자 배려 */
+          @media (prefers-reduced-motion: reduce){
+            .menu-card, .menu-card:hover, .menu-card:active{
+              transition:none; transform:none; box-shadow:0 2px 8px rgba(0,0,0,.05);
+            }
+            .menu-link:focus-visible .menu-card{ box-shadow:0 0 0 3px rgba(59,130,246,.55); }
+          }
+        </style>
+</head>
+<body>
+    <header>
+        <div th:replace="~{layouts/header.html}"></div>
+    </header>
+    
+    <main style=" display: flex; justify-content: center;">
+        <div style="width: 1200px; ">
+            <div style="margin-top:25px; padding:30px; box-sizing: border-box; background-color: #D91A1A; width: 100%; height: 272px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); border: 1px solid #E5E7EB;">
+                <div style="display: flex;">
+                    <div>
+                        <div style="color: white; font-size: 30px; font-weight: 300;"><span th:text="${usersList.mname}"></span> 고객님, 안녕하세요!</div>
+                        <div style="color: white; font-size: 20px; font-weight: 300;">BNK부산은행과 함께하는 마이뱅킹</div>
+                    </div>
+                    <div style="padding: 20px; margin-left: auto; width: 300px; height: 208px; background-color: white; box-sizing: border-box; border-radius: 16px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); border: 1px solid #E5E7EB;">
+                        <div>
+                            <div style="font-size: 18px; color: #D91A1A; margin-bottom: 20px;">접속현황</div>
+                            <div style="display: flex; margin-bottom: 13px;">
+                                <div style="font-size: 14px; color: #4A4A4A;">최근 접속일시</div>
+                                <div style="margin-left: auto;font-size: 14px;"><span th:text="${#temporals.format(usersList.maccess, 'yyyy-MM-dd HH:mm:ss')}"></span></div>
+                            </div>
+                            <div style="display: flex; margin-bottom: 13px;">
+                                <div style="font-size: 14px; color: #4A4A4A;">접속 IP</div>
+                                <div id="ip" style="margin-left: auto; font-size: 14px;"></div>
+                            </div>
+                            <div style="display: flex; margin-bottom: 13px;">
+                                <div style="font-size: 14px; color: #4A4A4A;">최근 거래일시</div>
+                                <div style="margin-left: auto; font-size: 14px;">
+                                    <span th:if="${dealList != null}"
+                                          th:text="${#temporals.format(dealList.ddate, 'yyyy.MM.dd HH:mm')}"></span>
+
+                                    <span th:if="${dealList == null}">
+                                        최근 거래가 없습니다.
+                                    </span>
+                                </div>
+                            </div>
+                            <div style="display: flex;">
+                                <div style="font-size: 14px; color: #4A4A4A;">인증서 만료일</div>
+                                <div style="margin-left: auto; font-size: 14px;">2026.12.01</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="display: flex; gap:25px;">
+                <div style="margin-top:25px; padding:30px; box-sizing: border-box; background-color: white; width: 800px; height: 272px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); border: 1px solid #E5E7EB;">
+                    <div>
+                        <div style="display: flex; margin-bottom: 10px;">
+                            <div style="font-size: 20px; color: #111827; margin-right: 20px;"><span th:text="${usersList.mname}"></span></div>
+                            <div style="margin-top: 1px;">
+                                <div class="status-badge" style=""><span th:text="${usersList.mgrade}"></span></div>
+                            </div>
+                        </div>
+                        <div style="display: grid; grid-template-columns: max-content 13ch 1fr; margin-bottom: 5px;">
+                            <div style="font-size: 14px; color: #4B5563;">고객번호:&nbsp;&nbsp;</div>
+                            <div id="custNo" class="maskable" data-type="custno" th:attr="data-raw=${usersList.mnum}" style="font-size: 14px; color: #4B5563; width: 120px;"></div>
+                            <button class="eye-btn" data-target="custNo" aria-label="고객번호 보기/가리기" style="margin-left: 30px; width:16px;background:none; border:none; padding:0; cursor:pointer;">
+                                <svg width="16" height="20" viewBox="0 0 16 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <g clip-path="url(#clip0_185_295)">
+                                    <path d="M7.8748 5.9375C6.09199 5.9375 4.62637 6.74688 3.50254 7.78867C2.44981 8.76758 1.72246 9.92969 1.35059 10.75C1.72246 11.5703 2.4498 12.7324 3.4998 13.7113C4.62637 14.7531 6.09199 15.5625 7.8748 15.5625C9.65762 15.5625 11.1232 14.7531 12.2471 13.7113C13.2998 12.7324 14.0271 11.5703 14.399 10.75C14.0271 9.92969 13.2998 8.76758 12.2498 7.78867C11.1232 6.74688 9.65762 5.9375 7.8748 5.9375ZM2.6084 6.82891C3.89629 5.63125 5.66543 4.625 7.8748 4.625C10.0842 4.625 11.8533 5.63125 13.1412 6.82891C14.4209 8.01836 15.2768 9.4375 15.6842 10.4137C15.7744 10.6297 15.7744 10.8703 15.6842 11.0863C15.2768 12.0625 14.4209 13.4844 13.1412 14.6711C11.8533 15.8687 10.0842 16.875 7.8748 16.875C5.66543 16.875 3.89629 15.8687 2.6084 14.6711C1.32871 13.4844 0.472852 12.0625 0.0681641 11.0863C-0.0220703 10.8703 -0.0220703 10.6297 0.0681641 10.4137C0.472852 9.4375 1.32871 8.01562 2.6084 6.82891ZM7.8748 12.9375C9.0834 12.9375 10.0623 11.9586 10.0623 10.75C10.0623 9.54141 9.0834 8.5625 7.8748 8.5625C7.85566 8.5625 7.83926 8.5625 7.82012 8.5625C7.85566 8.70195 7.8748 8.84961 7.8748 9C7.8748 9.96523 7.09004 10.75 6.1248 10.75C5.97441 10.75 5.82676 10.7309 5.6873 10.6953C5.6873 10.7145 5.6873 10.7309 5.6873 10.75C5.6873 11.9586 6.66621 12.9375 7.8748 12.9375ZM7.8748 7.25C8.80306 7.25 9.6933 7.61875 10.3497 8.27513C11.0061 8.9315 11.3748 9.82174 11.3748 10.75C11.3748 11.6783 11.0061 12.5685 10.3497 13.2249C9.6933 13.8813 8.80306 14.25 7.8748 14.25C6.94655 14.25 6.05631 13.8813 5.39993 13.2249C4.74355 12.5685 4.3748 11.6783 4.3748 10.75C4.3748 9.82174 4.74355 8.9315 5.39993 8.27513C6.05631 7.61875 6.94655 7.25 7.8748 7.25Z" fill="#9CA3AF"/>
+                                    </g>
+                                    <defs>
+                                    <clipPath id="clip0_185_295">
+                                    <path d="M0 3.75H15.75V17.75H0V3.75Z" fill="white"/>
+                                    </clipPath>
+                                    </defs>
+                                </svg>
+                            </button>
+                        </div>
+                        <div style="display: grid; grid-template-columns: max-content 14.4ch 1fr; margin-bottom: 5px;">
+                            <div style="font-size: 14px; color: #4B5563;">이메일:&nbsp;&nbsp;</div>
+                            <div id="email" class="maskable" data-type="email" th:attr="data-raw=${usersList.memail}" style="font-size: 14px; color: #4B5563; width: 150px;"></div>
+                            <button class="eye-btn" data-target="email" aria-label="이메일 보기/가리기" style="margin-left:30px; width:16px; background:none; border:none; padding:0; cursor:pointer;">
+                                <svg width="16" height="20" viewBox="0 0 16 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <g clip-path="url(#clip0_185_295)">
+                                    <path d="M7.8748 5.9375C6.09199 5.9375 4.62637 6.74688 3.50254 7.78867C2.44981 8.76758 1.72246 9.92969 1.35059 10.75C1.72246 11.5703 2.4498 12.7324 3.4998 13.7113C4.62637 14.7531 6.09199 15.5625 7.8748 15.5625C9.65762 15.5625 11.1232 14.7531 12.2471 13.7113C13.2998 12.7324 14.0271 11.5703 14.399 10.75C14.0271 9.92969 13.2998 8.76758 12.2498 7.78867C11.1232 6.74688 9.65762 5.9375 7.8748 5.9375ZM2.6084 6.82891C3.89629 5.63125 5.66543 4.625 7.8748 4.625C10.0842 4.625 11.8533 5.63125 13.1412 6.82891C14.4209 8.01836 15.2768 9.4375 15.6842 10.4137C15.7744 10.6297 15.7744 10.8703 15.6842 11.0863C15.2768 12.0625 14.4209 13.4844 13.1412 14.6711C11.8533 15.8687 10.0842 16.875 7.8748 16.875C5.66543 16.875 3.89629 15.8687 2.6084 14.6711C1.32871 13.4844 0.472852 12.0625 0.0681641 11.0863C-0.0220703 10.8703 -0.0220703 10.6297 0.0681641 10.4137C0.472852 9.4375 1.32871 8.01562 2.6084 6.82891ZM7.8748 12.9375C9.0834 12.9375 10.0623 11.9586 10.0623 10.75C10.0623 9.54141 9.0834 8.5625 7.8748 8.5625C7.85566 8.5625 7.83926 8.5625 7.82012 8.5625C7.85566 8.70195 7.8748 8.84961 7.8748 9C7.8748 9.96523 7.09004 10.75 6.1248 10.75C5.97441 10.75 5.82676 10.7309 5.6873 10.6953C5.6873 10.7145 5.6873 10.7309 5.6873 10.75C5.6873 11.9586 6.66621 12.9375 7.8748 12.9375ZM7.8748 7.25C8.80306 7.25 9.6933 7.61875 10.3497 8.27513C11.0061 8.9315 11.3748 9.82174 11.3748 10.75C11.3748 11.6783 11.0061 12.5685 10.3497 13.2249C9.6933 13.8813 8.80306 14.25 7.8748 14.25C6.94655 14.25 6.05631 13.8813 5.39993 13.2249C4.74355 12.5685 4.3748 11.6783 4.3748 10.75C4.3748 9.82174 4.74355 8.9315 5.39993 8.27513C6.05631 7.61875 6.94655 7.25 7.8748 7.25Z" fill="#9CA3AF"/>
+                                    </g>
+                                    <defs>
+                                    <clipPath id="clip0_185_295">
+                                    <path d="M0 3.75H15.75V17.75H0V3.75Z" fill="white"/>
+                                    </clipPath>
+                                    </defs>
+                                </svg>
+                            </button>
+                        </div>
+                        <div style="display: grid; grid-template-columns: max-content 14.4ch 1fr;">
+                            <div style="font-size: 14px; color: #4B5563;">휴대폰:&nbsp;&nbsp;</div>
+                            <div id="mobile" class="maskable" data-type="mobile" th:attr="data-raw=${usersList.mphone}"  style="font-size: 14px; color: #4B5563;"></div>
+                            <button class="eye-btn" data-target="mobile" aria-label="휴대폰 보기/가리기" style="margin-left:30px; width: 16px; background:none; border:none; padding:0; cursor:pointer;">
+                                <svg width="16" height="20" viewBox="0 0 16 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <g clip-path="url(#clip0_185_295)">
+                                    <path d="M7.8748 5.9375C6.09199 5.9375 4.62637 6.74688 3.50254 7.78867C2.44981 8.76758 1.72246 9.92969 1.35059 10.75C1.72246 11.5703 2.4498 12.7324 3.4998 13.7113C4.62637 14.7531 6.09199 15.5625 7.8748 15.5625C9.65762 15.5625 11.1232 14.7531 12.2471 13.7113C13.2998 12.7324 14.0271 11.5703 14.399 10.75C14.0271 9.92969 13.2998 8.76758 12.2498 7.78867C11.1232 6.74688 9.65762 5.9375 7.8748 5.9375ZM2.6084 6.82891C3.89629 5.63125 5.66543 4.625 7.8748 4.625C10.0842 4.625 11.8533 5.63125 13.1412 6.82891C14.4209 8.01836 15.2768 9.4375 15.6842 10.4137C15.7744 10.6297 15.7744 10.8703 15.6842 11.0863C15.2768 12.0625 14.4209 13.4844 13.1412 14.6711C11.8533 15.8687 10.0842 16.875 7.8748 16.875C5.66543 16.875 3.89629 15.8687 2.6084 14.6711C1.32871 13.4844 0.472852 12.0625 0.0681641 11.0863C-0.0220703 10.8703 -0.0220703 10.6297 0.0681641 10.4137C0.472852 9.4375 1.32871 8.01562 2.6084 6.82891ZM7.8748 12.9375C9.0834 12.9375 10.0623 11.9586 10.0623 10.75C10.0623 9.54141 9.0834 8.5625 7.8748 8.5625C7.85566 8.5625 7.83926 8.5625 7.82012 8.5625C7.85566 8.70195 7.8748 8.84961 7.8748 9C7.8748 9.96523 7.09004 10.75 6.1248 10.75C5.97441 10.75 5.82676 10.7309 5.6873 10.6953C5.6873 10.7145 5.6873 10.7309 5.6873 10.75C5.6873 11.9586 6.66621 12.9375 7.8748 12.9375ZM7.8748 7.25C8.80306 7.25 9.6933 7.61875 10.3497 8.27513C11.0061 8.9315 11.3748 9.82174 11.3748 10.75C11.3748 11.6783 11.0061 12.5685 10.3497 13.2249C9.6933 13.8813 8.80306 14.25 7.8748 14.25C6.94655 14.25 6.05631 13.8813 5.39993 13.2249C4.74355 12.5685 4.3748 11.6783 4.3748 10.75C4.3748 9.82174 4.74355 8.9315 5.39993 8.27513C6.05631 7.61875 6.94655 7.25 7.8748 7.25Z" fill="#9CA3AF"/>
+                                    </g>
+                                    <defs>
+                                    <clipPath id="clip0_185_295">
+                                    <path d="M0 3.75H15.75V17.75H0V3.75Z" fill="white"/>
+                                    </clipPath>
+                                    </defs>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div style="margin-top:27px; padding: 15px; background-color: #F0FDF4; border:1px solid #BBF7D0; border-radius: 12px;">
+                        <div style="display: flex;">
+                            <div>
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <g clip-path="url(#clip0_185_227)">
+                                    <path d="M4.89062 13.9906L4.49687 14.9125C3.9125 14.6156 3.375 14.25 2.8875 13.8219L3.59687 13.1125C3.9875 13.4531 4.42188 13.75 4.89062 13.9906ZM1.26875 8.5H0.265625C0.309375 9.1625 0.434375 9.80313 0.63125 10.4094L1.5625 10.0375C1.40937 9.54688 1.30625 9.03125 1.26875 8.5ZM1.26875 7.5C1.3125 6.9125 1.43125 6.34375 1.61563 5.80937L0.69375 5.41563C0.459375 6.07188 0.3125 6.77187 0.265625 7.5H1.26875ZM2.00938 4.89062C2.25313 4.425 2.54688 3.99062 2.8875 3.59375L2.17812 2.88438C1.75 3.37188 1.38125 3.90938 1.0875 4.49375L2.00938 4.89062ZM12.4062 13.1125C11.9719 13.4875 11.4875 13.8094 10.9656 14.0625L11.3375 14.9937C11.9844 14.6844 12.5813 14.2875 13.1156 13.8188L12.4062 13.1125ZM3.59375 2.8875C4.02813 2.5125 4.5125 2.19062 5.03438 1.9375L4.6625 1.00625C4.01562 1.31562 3.41875 1.7125 2.8875 2.18125L3.59375 2.8875ZM13.9906 11.1094C13.7469 11.575 13.4531 12.0094 13.1125 12.4062L13.8219 13.1156C14.25 12.6281 14.6188 12.0875 14.9125 11.5063L13.9906 11.1094ZM14.7312 8.5C14.6875 9.0875 14.5687 9.65625 14.3844 10.1906L15.3062 10.5844C15.5406 9.925 15.6875 9.225 15.7312 8.49687H14.7312V8.5ZM10.0375 14.4375C9.54688 14.5938 9.03125 14.6937 8.5 14.7312V15.7344C9.1625 15.6906 9.80313 15.5656 10.4094 15.3687L10.0375 14.4375ZM7.5 14.7312C6.9125 14.6875 6.34375 14.5687 5.80937 14.3844L5.41563 15.3062C6.075 15.5406 6.775 15.6875 7.50313 15.7312V14.7312H7.5ZM14.4375 5.9625C14.5938 6.45312 14.6937 6.96875 14.7312 7.5H15.7344C15.6906 6.8375 15.5656 6.19687 15.3687 5.59062L14.4375 5.9625ZM2.8875 12.4062C2.5125 11.9719 2.19062 11.4875 1.9375 10.9656L1.00625 11.3375C1.31562 11.9844 1.7125 12.5813 2.18125 13.1156L2.8875 12.4062ZM8.5 1.26875C9.0875 1.3125 9.65312 1.43125 10.1906 1.61563L10.5844 0.69375C9.92813 0.459375 9.22812 0.3125 8.5 0.265625V1.26875ZM5.9625 1.5625C6.45312 1.40625 6.96875 1.30625 7.5 1.26875V0.265625C6.8375 0.309375 6.19687 0.434375 5.59062 0.63125L5.9625 1.5625ZM13.8219 2.88438L13.1125 3.59375C13.4875 4.02813 13.8094 4.5125 14.0656 5.03438L14.9969 4.6625C14.6875 4.01562 14.2906 3.41875 13.8219 2.88438ZM12.4062 2.8875L13.1156 2.17812C12.6281 1.75 12.0906 1.38125 11.5063 1.0875L11.1125 2.00938C11.575 2.25313 12.0125 2.54688 12.4062 2.8875Z" fill="#16A34A"/>
+                                    <path d="M8 12.25C8.48325 12.25 8.875 11.8582 8.875 11.375C8.875 10.8918 8.48325 10.5 8 10.5C7.51675 10.5 7.125 10.8918 7.125 11.375C7.125 11.8582 7.51675 12.25 8 12.25Z" fill="#16A34A"/>
+                                    <path d="M8.24069 9.75H7.74069C7.53444 9.75 7.36569 9.58125 7.36569 9.375C7.36569 7.15625 9.78444 7.37812 9.78444 6.00625C9.78444 5.38125 9.22819 4.75 7.99069 4.75C7.08132 4.75 6.60632 5.05 6.14069 5.64687C6.01882 5.80312 5.79382 5.83438 5.63444 5.72188L5.22507 5.43437C5.05007 5.3125 5.00944 5.06562 5.14382 4.89687C5.80632 4.04687 6.59382 3.5 7.99382 3.5C9.62819 3.5 11.0376 4.43125 11.0376 6.00625C11.0376 8.11875 8.61882 7.99062 8.61882 9.375C8.61569 9.58125 8.44694 9.75 8.24069 9.75Z" fill="#16A34A"/>
+                                    </g>
+                                    <defs>
+                                    <clipPath id="clip0_185_227">
+                                    <path d="M0 0H16V16H0V0Z" fill="white"/>
+                                    </clipPath>
+                                    </defs>
+                                </svg>
+                            </div>
+                            <div style="color:#28b85f; font-size: 14px; margin-left: 13px;">
+                                간편인증 사용 중
+                            </div>
+                            <div style="color: #6B7280; font-size: 14px; margin-left: 10px;">·</div>
+                            <div style="color: #4B5563; font-size: 14px; margin-left: 10px;">최근 접속 : <span th:text="${#temporals.format(usersList.maccess, 'yyyy년MM월dd일 HH:mm')}"></span></div>
+                        </div>
+                    </div>
+                </div>
+                <div style="margin-top:25px; padding:30px; box-sizing: border-box; background-color: white; width: 370px; height: 272px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); border: 1px solid #E5E7EB;">
+                    <div style="color: #111827; font-size: 18px;margin-bottom: 10px;">빠른 서비스</div>
+                    <div style="display: flex; gap: 10px;">
+                        <a th:href="@{/mypage/setup}" style="text-decoration: none;" class="menu-link">
+                            <div class="menu-card" style="height:10px; display: flex; justify-content: center; align-items: center; width: 150px; height: 84px; box-sizing: border-box; background-color: #F9FAFB; border-radius: 10px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); border: 1px solid #E5E7EB;">
+                                <div style="">
+                                    <div style="height: 24px;">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <g clip-path="url(#clip0_185_201)">
+                                            <path d="M23.2455 7.80938C23.3955 8.21719 23.269 8.67188 22.9455 8.9625L20.9158 10.8094C20.9674 11.1984 20.9955 11.5969 20.9955 12C20.9955 12.4031 20.9674 12.8016 20.9158 13.1906L22.9455 15.0375C23.269 15.3281 23.3955 15.7828 23.2455 16.1906C23.0393 16.7484 22.7908 17.2828 22.5049 17.7984L22.2846 18.1781C21.9752 18.6937 21.6283 19.1812 21.2486 19.6406C20.9721 19.9781 20.5127 20.0906 20.1002 19.9594L17.4893 19.1297C16.8611 19.6125 16.1674 20.0156 15.4268 20.3203L14.8408 22.9969C14.7471 23.4234 14.419 23.7609 13.9877 23.8312C13.3408 23.9391 12.6752 23.9953 11.9955 23.9953C11.3158 23.9953 10.6502 23.9391 10.0033 23.8312C9.57208 23.7609 9.24396 23.4234 9.15021 22.9969L8.56427 20.3203C7.82365 20.0156 7.1299 19.6125 6.50177 19.1297L3.89552 19.9641C3.48302 20.0953 3.02364 19.9781 2.74708 19.6453C2.36739 19.1859 2.02052 18.6984 1.71114 18.1828L1.49083 17.8031C1.20489 17.2875 0.956457 16.7531 0.750207 16.1953C0.600207 15.7875 0.72677 15.3328 1.05021 15.0422L3.0799 13.1953C3.02833 12.8016 3.00021 12.4031 3.00021 12C3.00021 11.5969 3.02833 11.1984 3.0799 10.8094L1.05021 8.9625C0.72677 8.67188 0.600207 8.21719 0.750207 7.80938C0.956457 7.25156 1.20489 6.71719 1.49083 6.20156L1.71114 5.82187C2.02052 5.30625 2.36739 4.81875 2.74708 4.35938C3.02364 4.02187 3.48302 3.90937 3.89552 4.04062L6.50646 4.87031C7.13458 4.3875 7.82833 3.98438 8.56896 3.67969L9.1549 1.00312C9.24865 0.576562 9.57677 0.239062 10.008 0.16875C10.6549 0.05625 11.3205 0 12.0002 0C12.6799 0 13.3455 0.05625 13.9924 0.164062C14.4236 0.234375 14.7518 0.571875 14.8455 0.998437L15.4315 3.675C16.1721 3.97969 16.8658 4.38281 17.494 4.86563L20.1049 4.03594C20.5174 3.90469 20.9768 4.02187 21.2533 4.35469C21.633 4.81406 21.9799 5.30156 22.2893 5.81719L22.5096 6.19687C22.7955 6.7125 23.044 7.24687 23.2502 7.80469L23.2455 7.80938ZM12.0002 15.75C12.9948 15.75 13.9486 15.3549 14.6519 14.6517C15.3551 13.9484 15.7502 12.9946 15.7502 12C15.7502 11.0054 15.3551 10.0516 14.6519 9.34835C13.9486 8.64509 12.9948 8.25 12.0002 8.25C11.0056 8.25 10.0518 8.64509 9.34856 9.34835C8.6453 10.0516 8.25021 11.0054 8.25021 12C8.25021 12.9946 8.6453 13.9484 9.34856 14.6517C10.0518 15.3549 11.0056 15.75 12.0002 15.75Z" fill="#4B5563"/>
+                                            </g>
+                                            <defs>
+                                            <clipPath id="clip0_185_201">
+                                            <path d="M0 0H24V24H0V0Z" fill="white"/>
+                                            </clipPath>
+                                            </defs>
+                                        </svg>
+                                    </div>
+                                    <div style="font-size: 14px; color: #374151;">설정</div>
+                                </div>
+                            </div>
+                        </a>
+                        <a th:href="@{/cs/main}" style="text-decoration: none;" class="menu-link">
+                            <div class="menu-card" style="display: flex; justify-content: center; align-items: center; width: 150px; height: 84px; box-sizing: border-box; background-color: #F9FAFB; border-radius: 10px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); border: 1px solid #E5E7EB;">
+                                <div style="">
+                                    <div>
+                                        <div style="display: flex; justify-content: center;">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <g clip-path="url(#clip0_185_217)">
+                                                    <path d="M12 2.25C6.61406 2.25 2.25 6.61406 2.25 12V13.875C2.25 14.4984 1.74844 15 1.125 15C0.501562 15 0 14.4984 0 13.875V12C0 5.37188 5.37188 0 12 0C18.6281 0 24 5.37188 24 12V18.7547C24 21.0328 22.1531 22.8797 19.8703 22.8797L14.7 22.875C14.3109 23.5453 13.5844 24 12.75 24H11.25C10.0078 24 9 22.9922 9 21.75C9 20.5078 10.0078 19.5 11.25 19.5H12.75C13.5844 19.5 14.3109 19.9547 14.7 20.625L19.875 20.6297C20.9109 20.6297 21.75 19.7906 21.75 18.7547V12C21.75 6.61406 17.3859 2.25 12 2.25ZM6.75 9.75H7.5C8.32969 9.75 9 10.4203 9 11.25V16.5C9 17.3297 8.32969 18 7.5 18H6.75C5.09531 18 3.75 16.6547 3.75 15V12.75C3.75 11.0953 5.09531 9.75 6.75 9.75ZM17.25 9.75C18.9047 9.75 20.25 11.0953 20.25 12.75V15C20.25 16.6547 18.9047 18 17.25 18H16.5C15.6703 18 15 17.3297 15 16.5V11.25C15 10.4203 15.6703 9.75 16.5 9.75H17.25Z" fill="#4B5563"/>
+                                                </g>
+                                                <defs>
+                                                    <clipPath id="clip0_185_217">
+                                                        <path d="M0 0H24V24H0V0Z" fill="white"/>
+                                                    </clipPath>
+                                                </defs>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <div style="font-size: 14px; color: #374151;">고객센터</div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div style="display: flex; gap: 10px; margin-top: 10px;">
+                        <a th:href="@{/mypage/calc}" style="text-decoration: none;" class="menu-link">
+                            <div class="menu-card" style="display: flex; justify-content: center; align-items: center; width: 150px; height: 84px; box-sizing: border-box; background-color: #F9FAFB; border-radius: 10px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); border: 1px solid #E5E7EB;">
+                                <div style="margin-top:3px;">
+                                    <div style="display: flex; justify-content: center;">
+                                        <svg width="20" height="22" viewBox="0 0 20 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <mask id="mask0_848_11" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0" width="20" height="22">
+                                                <path d="M18 1H2C1.73478 1 1.48043 1.10536 1.29289 1.29289C1.10536 1.48043 1 1.73478 1 2V20C1 20.2652 1.10536 20.5196 1.29289 20.7071C1.48043 20.8946 1.73478 21 2 21H18C18.2652 21 18.5196 20.8946 18.7071 20.7071C18.8946 20.5196 19 20.2652 19 20V2C19 1.73478 18.8946 1.48043 18.7071 1.29289C18.5196 1.10536 18.2652 1 18 1Z" fill="white" stroke="white" stroke-width="2" stroke-linejoin="round"/>
+                                                <path d="M15.5 4H4.5V8.5H15.5V4Z" fill="black" stroke="black" stroke-width="2" stroke-linejoin="round"/>
+                                                <path d="M4 13L7.5 16.5M7.5 13L4 16.5M12 16.5H16M12 13.5H16" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            </mask>
+                                            <g mask="url(#mask0_848_11)">
+                                                <path d="M-2 -1H22V23H-2V-1Z" fill="#4B5563"/>
+                                            </g>
+                                        </svg>
+
+                                    </div>
+                                    <div style="font-size: 11px; color: #374151; margin-top: 1px;">퇴직연금</div>
+                                    <div style="font-size: 11px; color: #374151; margin-top:-3px; text-align: center;">계산기</div>
+                                </div>
+                            </div>
+                        </a>
+                        <a th:href="@{/mypage/mydata}" style="text-decoration: none;" class="menu-link">
+                            <div class="menu-card"
+                                 style="display: flex; justify-content: center; align-items: center; width: 150px; height: 84px;
+                box-sizing: border-box; background-color: #F9FAFB; border-radius: 10px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.05); border: 1px solid #E5E7EB;">
+                                <div style="text-align: center;">
+                                    <div style="display: flex; justify-content: center; margin-bottom: 4px;">
+                                        <!-- 계좌/은행 아이콘 -->
+                                        <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+                                            <path d="M3 10H21M5 14H19M7 18H17M12 2L21 7H3L12 2Z"
+                                                  stroke="#4B5563" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </div>
+
+                                    <div style="font-size: 14px; color: #374151;">
+                                        타행 보유계좌
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div style="margin-top:25px;border-radius: 16px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); border: 1px solid #E5E7EB; overflow: hidden;">
+                <div>
+                    <div style="height: 70px; display: flex; justify-content: end; background-color: white; align-items: flex-end;">
+                        <div style="color: #13263A; font-size: 20px; margin-bottom: 20px; margin-left: 30px;">보유계좌 목록</div>
+                        <button th:onclick="|location.href='@{/product/main}'|" class="btn-register" style="margin-left:auto; height: 35px !important; width: 100px !important; margin-bottom: 17px; margin-right: 40px;">
+                            <div style="display: flex; justify-content: center;">
+                                <div style="margin-top: 2.5px; margin-right: 5px;">
+                                    <svg width="13" height="14" viewBox="0 0 13 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M7 2.1875C7 1.70352 6.60898 1.3125 6.125 1.3125C5.64102 1.3125 5.25 1.70352 5.25 2.1875V6.125H1.3125C0.828516 6.125 0.4375 6.51602 0.4375 7C0.4375 7.48398 0.828516 7.875 1.3125 7.875H5.25V11.8125C5.25 12.2965 5.64102 12.6875 6.125 12.6875C6.60898 12.6875 7 12.2965 7 11.8125V7.875H10.9375C11.4215 7.875 11.8125 7.48398 11.8125 7C11.8125 6.51602 11.4215 6.125 10.9375 6.125H7V2.1875Z" fill="white"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    계좌추가
+                                </div>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+                <table id="accounts-table" style="border-collapse: collapse; width: 100%;border-top: 1px #E5E7EB solid;">
+                <tr style="color: #2B2F36; font-size: 14px; height: 52px; border-bottom: 1px #E5E7EB; ">
+                    <th style="width: 200px;">상품명</th>
+                    <th style="width: 290px;">계좌번호</th>
+                    <th style="width: 160px;">개설일</th>
+                    <th style="width: 160px;">만기일</th>
+                    <th style="width: 200px;">잔액(원)</th>
+                    <th style="">작업</th>
+                </tr>
+                <tr style="font-size: 14px; text-align: center; height: 63.5px; background-color: white;" th:each="contract:${contractList}">
+                    <td>[[${contract.pname}]]</td>
+                    <td>[[${contract.pacc} ?: '-']]</td>
+                    <td><span th:text="${#temporals.format(contract.pnew, 'yyyy.MM.dd')}"></span></td>
+                    <td><span th:text="${#temporals.format(contract.pend, 'yyyy.MM.dd')}"></span></td>
+                    <td><span th:text="${#numbers.formatInteger(contract.pbalance, '3', 'COMMA')}"></span></td>
+                    <td style="vertical-align: middle; text-align: center;">
+                        <button th:onclick="|location.href='@{/mypage/prod}'|" class="btn-register" style="width: 55px !important; height: 30px !important;">조회</button>
+                    </td>
+                </tr>
+            </table>
+            </div>
+            <div style="margin-top:25px;border-radius: 16px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); border: 1px solid #E5E7EB; overflow: hidden;">
+                <div>
+                    <div style="height: 70px; display: flex; justify-content: end; background-color: white; align-items: flex-end;">
+                        <div style="color: #13263A; font-size: 20px; margin-bottom: 20px; margin-left: 30px;">나의 상품</div>
+                        <button th:onclick="|location.href='@{/product/main}'|" class="btn-register" style="margin-left:auto; height: 35px !important; width: 100px !important; margin-bottom: 17px; margin-right: 40px;">
+                            <div style="display: flex; justify-content: center;">
+                                <div style="margin-top: 2.5px; margin-right: 5px;">
+                                    <svg width="13" height="14" viewBox="0 0 13 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M7 2.1875C7 1.70352 6.60898 1.3125 6.125 1.3125C5.64102 1.3125 5.25 1.70352 5.25 2.1875V6.125H1.3125C0.828516 6.125 0.4375 6.51602 0.4375 7C0.4375 7.48398 0.828516 7.875 1.3125 7.875H5.25V11.8125C5.25 12.2965 5.64102 12.6875 6.125 12.6875C6.60898 12.6875 7 12.2965 7 11.8125V7.875H10.9375C11.4215 7.875 11.8125 7.48398 11.8125 7C11.8125 6.51602 11.4215 6.125 10.9375 6.125H7V2.1875Z" fill="white"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    상품추가
+                                </div>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+                <table id="accounts-table" style="border-collapse: collapse; width: 100%;border-top: 1px #E5E7EB solid;">
+                <tr style="color: #2B2F36; font-size: 14px; height: 52px; border-bottom: 1px #E5E7EB; "
+                >
+                    <th style="width: 290px;">상품명</th>
+                    <th style="width: 290px;">계좌번호</th>
+                    <th style="width: 130px;">개설일</th>
+                    <th style="width: 130px;">만기일</th>
+                    <th style="width: 170px;">잔액(원)</th>
+                    <th style="">작업</th>
+                </tr>
+                <tr style="font-size: 14px; text-align: center; height: 63.5px; background-color: white;" th:each="fund:${fundList}">
+                    <td>[[${!#strings.isEmpty(fund.fname) ? fund.fname : fund.pname}]]</td>
+                    <td>[[${fund.pacc} ?: '-']]</td>
+                    <td><span th:text="${#temporals.format(fund.pnew, 'yyyy.MM.dd')}"></span></td>
+                    <td><span th:text="${#temporals.format(fund.pend, 'yyyy.MM.dd')}"></span></td>
+                    <td><span th:text="${#numbers.formatInteger(fund.pbalance, '3', 'COMMA')}"></span></td>
+                    <td style="vertical-align: middle; text-align: center;">
+                        <button th:onclick="|location.href='@{/mypage/prod}'|" class="btn-register" style="width: 55px !important; height: 30px !important;">조회</button>
+                    </td>
+                </tr>
+            </table>
+            </div>
+            <div style="margin-top:25px;border-radius: 16px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); border: 1px solid #E5E7EB; overflow: hidden;">
+                <div>
+                    <div style="height: 70px; display: flex; justify-content: end; background-color: white; align-items: flex-end;">
+                        <div style="color: #13263A; font-size: 20px; margin-bottom: 20px; margin-left: 30px;">나의 ETF</div>
+                        <button th:onclick="|location.href='@{/stock/mainEtf}'|" class="btn-register" style="margin-left:auto; height: 35px !important; width: 100px !important; margin-bottom: 17px; margin-right: 40px;">
+                            <div style="display: flex; justify-content: center;">
+                                <div style="margin-top: 2.5px; margin-right: 5px;">
+                                    <svg width="13" height="14" viewBox="0 0 13 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M7 2.1875C7 1.70352 6.60898 1.3125 6.125 1.3125C5.64102 1.3125 5.25 1.70352 5.25 2.1875V6.125H1.3125C0.828516 6.125 0.4375 6.51602 0.4375 7C0.4375 7.48398 0.828516 7.875 1.3125 7.875H5.25V11.8125C5.25 12.2965 5.64102 12.6875 6.125 12.6875C6.60898 12.6875 7 12.2965 7 11.8125V7.875H10.9375C11.4215 7.875 11.8125 7.48398 11.8125 7C11.8125 6.51602 11.4215 6.125 10.9375 6.125H7V2.1875Z" fill="white"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    투자하기
+                                </div>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+                <table id="accounts-table" style="border-collapse: collapse; width: 100%;border-top: 1px #E5E7EB solid;">
+                <tr style="color: #2B2F36; font-size: 14px; height: 52px; border-bottom: 1px #E5E7EB; "
+                >
+                    <th style="width: 200px;">종목명</th>
+                    <th style="width: 290px;">총 금액</th>
+                    <th style="width: 160px;">평가금액</th>
+                    <th style="width: 160px;">현재 수익</th>
+                    <th style="width: 200px;">수익률</th>
+                    <th style="">작업</th>
+                </tr>
+                <tr th:attr="data-pname=${ETF.pname},
+                             data-pstock=${ETF.pstock},
+                             data-pprice=${ETF.pprice},
+                             data-psum=${ETF.psum}"
+                    style="font-size: 14px; text-align: center; height: 63.5px; background-color: white;" th:each="ETF:${ETFList}">
+                    <!-- 종목명 -->
+                    <td class="etf-name">
+                        [[${ETF.pname}]]
+                    </td>
+
+                    <!-- 총 금액(매수금액) -->
+                    <td class="etf-total-amount"></td>
+
+                    <!-- 평가금액 -->
+                    <td class="etf-current-amount"></td>
+
+                    <!-- 현재 수익 -->
+                    <td class="etf-profit"></td>
+
+                    <!-- 수익률 -->
+                    <td class="etf-profit-rate"></td>
+
+                    <!-- 조회 버튼 -->
+                    <td style="vertical-align: middle; text-align: center;">
+                        <button
+                                th:onclick="|location.href='@{/stock/orderEtf(code=${ETF.code}, name=${ETF.pname})}'|"
+                                class="btn-register"
+                                style="width: 55px !important; height: 30px !important;">
+                            조회
+                        </button>
+                    </td>
+                </tr>
+            </table>
+            </div>
+            <div style="margin-top:25px;border-radius: 16px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); border: 1px solid #E5E7EB; overflow: hidden;">
+                <div>
+                    <div style="height: 70px; display: flex; justify-content: end; background-color: white; align-items: flex-end;">
+                        <div style="color: #13263A; font-size: 20px; margin-bottom: 20px; margin-left: 30px;">나의 문의내역</div>
+                        <button class="btn-register" th:onclick="|location.href='@{/cs/consultation/Q&A}'|" style="margin-left:auto; height: 35px !important; width: 100px !important; margin-bottom: 17px; margin-right: 40px;">
+                            <div style="display: flex; justify-content: center;">
+                                <div style="margin-top: 2.5px; margin-right: 5px;">
+                                    <svg width="13" height="14" viewBox="0 0 13 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M7 2.1875C7 1.70352 6.60898 1.3125 6.125 1.3125C5.64102 1.3125 5.25 1.70352 5.25 2.1875V6.125H1.3125C0.828516 6.125 0.4375 6.51602 0.4375 7C0.4375 7.48398 0.828516 7.875 1.3125 7.875H5.25V11.8125C5.25 12.2965 5.64102 12.6875 6.125 12.6875C6.60898 12.6875 7 12.2965 7 11.8125V7.875H10.9375C11.4215 7.875 11.8125 7.48398 11.8125 7C11.8125 6.51602 11.4215 6.125 10.9375 6.125H7V2.1875Z" fill="white"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    문의하기
+                                </div>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+                <table id="accounts-table" style="border-collapse: collapse; width: 100%;border-top: 1px #E5E7EB solid;">
+                <tr style="color: #2B2F36; font-size: 14px; height: 52px; border-bottom: 1px #E5E7EB; ">
+                    <th style="width: 200px;">ID</th>
+                    <th style="width: 290px;">글 제목</th>
+                    <th style="width: 160px;">작성자</th>
+                    <th style="width: 160px;">유형</th>
+                    <th style="width: 200px;">등록일</th>
+                    <th style="">글 보기</th>
+                </tr>
+                <tr style="font-size: 14px; text-align: center; height: 63.5px; background-color: white;"
+                th:each="document, stat:${documentList}">
+                    <td><span th:text="${documentList.size() - stat.index}"></span></td>
+                    <td><span th:text="${document.doctitle}"></span></td>
+                    <td><span th:text="${document.mname}"></span></td>
+                    <td><span th:text="${document.docgroup}"></span></td>
+                    <td><span th:text="${#temporals.format(document.docupdate, 'yyyy.MM.dd')}"></span></td>
+                    <td style="vertical-align: middle; text-align: center;">
+                        <button th:onclick="|location.href='@{/mypage/prod}'|" class="btn-register" style="width: 55px !important; height: 30px !important;">조회</button>
+                    </td>
+                </tr>
+            </table>
+            </div>
+            <div id="summary-cards" style="display: flex; margin-top: 25px;">
+            <div class="menu-card" style="background-color: white; width: 280px; height: 130px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); border: 1px solid #E5E7EB;">
+              <div style="padding: 21px;">
+                <div>
+                  <div style="display: flex;">
+                    <div style="">
+                      <div style="display: flex; justify-content: center;">
+                        <div style="display: flex; justify-content: center; align-items: center; border-radius: 8px; background-color: #f8e6e6; width: 48px; height: 48px;">
+                          <svg width="23" height="20" viewBox="0 0 23 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <g clip-path="url(#clip0_192_132)">
+                            <path d="M11.875 9.375V0.648438C11.875 0.296875 12.1484 0 12.5 0C17.332 0 21.25 3.91797 21.25 8.75C21.25 9.10156 20.9531 9.375 20.6016 9.375H11.875ZM1.25 10.625C1.25 5.88672 4.76953 1.96484 9.33594 1.33984C9.69531 1.28906 10 1.57812 10 1.94141V11.25L16.1133 17.3633C16.375 17.625 16.3555 18.0547 16.0547 18.2656C14.5234 19.3594 12.6484 20 10.625 20C5.44922 20 1.25 15.8047 1.25 10.625ZM21.8125 11.25C22.1758 11.25 22.4609 11.5547 22.4141 11.9141C22.1133 14.0977 21.0625 16.0391 19.5273 17.4727C19.293 17.6914 18.9258 17.6758 18.6992 17.4453L12.5 11.25H21.8125Z" fill="#D71920"/>
+                            </g>
+                            <defs>
+                            <clipPath id="clip0_192_132">
+                            <path d="M0 0H22.5V20H0V0Z" fill="white"/>
+                            </clipPath>
+                            </defs>
+                        </svg>
+                        </div>
+                        <div style="margin-left: 15px;">
+                            <div style="color: #2B2F36; font-size: 16px;">총 보유 자산</div>
+                            <div style="color: #6B7280; font-size: 14px;">총 자산 및 분석</div>
+                        </div>
+                      </div>
+                      <div style="margin-top: 10px; font-size: 24px; height: 35px">
+                        <span th:text="${#numbers.formatInteger(balance, '3', 'COMMA')}"></span>원
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="menu-card" style="margin-left:25px; background-color: white; width: 280px; height: 130px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); border: 1px solid #E5E7EB;">
+              <div style="padding: 21px;">
+                <div>
+                  <div style="display: flex;">
+                    <div style="">
+                      <div style="display: flex; justify-content: center;">
+                        <div style="display: flex; justify-content: center; align-items: center; border-radius: 8px; background-color: #f8e6e6; width: 48px; height: 48px;">
+                          <svg width="20" height="28" viewBox="0 0 20 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <g clip-path="url(#clip0_192_80)">
+                            <path d="M2.92969 7.42969L1.60156 6.10156C1.01172 5.51172 0 5.92969 0 6.76172V11.0625C0 11.582 0.417969 12 0.9375 12H5.23828C6.07422 12 6.49219 10.9883 5.90234 10.3984L4.69922 9.19531C6.05469 7.83984 7.92969 7 10 7C14.1406 7 17.5 10.3594 17.5 14.5C17.5 18.6406 14.1406 22 10 22C8.40625 22 6.92969 21.5039 5.71484 20.6562C5.14844 20.2617 4.37109 20.3984 3.97266 20.9648C3.57422 21.5312 3.71484 22.3086 4.28125 22.707C5.90625 23.8359 7.87891 24.5 10 24.5C15.5234 24.5 20 20.0234 20 14.5C20 8.97656 15.5234 4.5 10 4.5C7.23828 4.5 4.73828 5.62109 2.92969 7.42969ZM10 9.5C9.48047 9.5 9.0625 9.91797 9.0625 10.4375V14.5C9.0625 14.75 9.16016 14.9883 9.33594 15.1641L12.1484 17.9766C12.5156 18.3438 13.1094 18.3438 13.4727 17.9766C13.8359 17.6094 13.8398 17.0156 13.4727 16.6523L10.9336 14.1133V10.4375C10.9336 9.91797 10.5156 9.5 9.99609 9.5H10Z" fill="#D71920"/>
+                            </g>
+                            <defs>
+                            <clipPath id="clip0_192_80">
+                            <path d="M0 4.5H20V24.5H0V4.5Z" fill="white"/>
+                            </clipPath>
+                            </defs>
+                          </svg>
+
+                        </div>
+                        <div style="margin-left: 15px;">
+                            <div style="color: #2B2F36; font-size: 16px;">최근 거래 내역</div>
+                            <div style="color: #6B7280; font-size: 14px;">거래내역 조회</div>
+                        </div>
+                      </div>
+                      <div style="margin-top: 10px; font-size: 14px; height: 35px; display: flex; align-items: center; justify-content: center;">
+                          <div th:if="${dealList != null}">
+                            <span th:text="${#temporals.format(dealList.ddate, 'MM.dd')}"></span>&nbsp;
+                              <span th:text="${dealList.dwho.substring(0, 1) + #strings.repeat('○', #strings.length(dealList.dwho) - 1)}"></span>님께&nbsp;
+                              <span th:text="${#numbers.formatInteger(dealList.dbalance, 3, 'COMMA')}"></span>원
+                          </div>
+                          <div th:if="${dealList == null}">
+                                거래 없음
+                          </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div><div class="menu-card" style="margin-left:25px; background-color: white; width: 280px; height: 130px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); border: 1px solid #E5E7EB;">
+              <div style="padding: 21px;">
+                <div>
+                  <div style="display: flex;">
+                    <div style="">
+                      <div style="display: flex; justify-content: center;">
+                        <div style="display: flex; justify-content: center; align-items: center; border-radius: 8px; background-color: #f8e6e6; width: 48px; height: 48px;">
+                          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <g clip-path="url(#clip0_192_138)">
+                            <path d="M7.44141 2.6875L8.80078 5H8.75H5.9375C5.07422 5 4.375 4.30078 4.375 3.4375C4.375 2.57422 5.07422 1.875 5.9375 1.875H6.02344C6.60547 1.875 7.14844 2.18359 7.44141 2.6875ZM2.5 3.4375C2.5 4 2.63672 4.53125 2.875 5H1.25C0.558594 5 0 5.55859 0 6.25V8.75C0 9.44141 0.558594 10 1.25 10H18.75C19.4414 10 20 9.44141 20 8.75V6.25C20 5.55859 19.4414 5 18.75 5H17.125C17.3633 4.53125 17.5 4 17.5 3.4375C17.5 1.53906 15.9609 0 14.0625 0H13.9766C12.7305 0 11.5742 0.660156 10.9414 1.73438L10 3.33984L9.05859 1.73828C8.42578 0.660156 7.26953 0 6.02344 0H5.9375C4.03906 0 2.5 1.53906 2.5 3.4375ZM15.625 3.4375C15.625 4.30078 14.9258 5 14.0625 5H11.25H11.1992L12.5586 2.6875C12.8555 2.18359 13.3945 1.875 13.9766 1.875H14.0625C14.9258 1.875 15.625 2.57422 15.625 3.4375ZM1.25 11.25V18.125C1.25 19.1602 2.08984 20 3.125 20H8.75V11.25H1.25ZM11.25 20H16.875C17.9102 20 18.75 19.1602 18.75 18.125V11.25H11.25V20Z" fill="#D71920"/>
+                            </g>
+                            <defs>
+                            <clipPath id="clip0_192_138">
+                            <path d="M0 0H20V20H0V0Z" fill="white"/>
+                            </clipPath>
+                            </defs>
+                          </svg>
+                        </div>
+                        <div style="margin-left: 15px;">
+                            <div style="color: #2B2F36; font-size: 16px;">우대혜택</div>
+                            <div style="color: #6B7280; font-size: 14px;">맞춤 혜택 확인</div>
+                        </div>
+                      </div>
+                      <div style="margin-top: 10px; font-size: 14px; color: #D71920; height: 35px; display: flex; align-items: center;">
+                        신규 이벤트 3건
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div><div class="menu-card" style="margin-left:25px; background-color: white; width: 280px; height: 130px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); border: 1px solid #E5E7EB;">
+              <div style="padding: 21px;">
+                <div>
+                  <div style="display: flex;">
+                    <div style="">
+                      <div style="display: flex; justify-content: center;">
+                        <div style="display: flex; justify-content: center; align-items: center; border-radius: 8px; background-color: #f8e6e6; width: 48px; height: 48px;">
+                          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <g clip-path="url(#clip0_192_141)">
+                            <path d="M10 0C10.1797 0 10.3594 0.0390625 10.5235 0.113281L17.8789 3.23438C18.7383 3.59766 19.3789 4.44531 19.375 5.46875C19.3555 9.34375 17.7617 16.4336 11.0313 19.6562C10.3789 19.9688 9.62111 19.9688 8.96877 19.6562C2.2383 16.4336 0.644549 9.34375 0.625018 5.46875C0.621112 4.44531 1.26174 3.59766 2.12111 3.23438L9.48049 0.113281C9.64064 0.0390625 9.82033 0 10 0ZM10 2.60938V17.375C15.3906 14.7656 16.8399 8.98828 16.875 5.52344L10 2.60938Z" fill="#D71920"/>
+                            </g>
+                            <defs>
+                            <clipPath id="clip0_192_141">
+                            <path d="M0 0H20V20H0V0Z" fill="white"/>
+                            </clipPath>
+                            </defs>
+                          </svg>
+                        </div>
+                        <div style="margin-left: 15px;">
+                            <div style="color: #2B2F36; font-size: 16px;">이체한도</div>
+                            <div style="color: #6B7280; font-size: 14px;">한도 설정 및 관리</div>
+                        </div>
+                      </div>
+                      <div style="margin-top: 10px; font-size: 14px; height: 35px; display: flex; align-items: center;">
+                        1일&nbsp;<span th:text="${#numbers.formatInteger(usersList.mlimit, 3, 'COMMA')}"></span>원
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+    </div>
+    </main>
+
+    <footer>
+        <div th:replace="~{layouts/footer.html}"></div>
+    </footer>
+    <div id="bnk-chatbot-container" style="position: fixed; right: 20px; bottom: 20px; z-index: 9999;">
+    <div id="bnk-chatbot-slot"></div>
+  </div>
+  <script>
+  /**
+   * 외부 HTML을 불러와서:
+   *  - <link rel="stylesheet">, <style>는 <head>로 옮기고
+   *  - <script>는 실행되도록 새로 만들어 붙이고 (src/inline, module 모두 지원)
+   *  - 나머지 DOM(예: <flowise-chatbot> / <flowise-embed>)은 mount에 삽입
+   */
+  async function importHtmlWithAssets(url, mountSelector) {
+    const res = await fetch(url, { credentials: 'same-origin' });
+    if (!res.ok) throw new Error(`Failed to load ${url}`);
+    const html = await res.text();
+
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+
+    // 1) <link rel="stylesheet"> 들을 <head>로
+    doc.querySelectorAll('link[rel="stylesheet"]').forEach(link => {
+      // 중복 로드 방지
+      const href = link.getAttribute('href');
+      if (href && ![...document.head.querySelectorAll('link[rel="stylesheet"]')]
+        .some(l => l.getAttribute('href') === href)) {
+        document.head.appendChild(link.cloneNode(true));
+      }
+    });
+
+    // 2) <style> 들을 <head>로
+    doc.querySelectorAll('style').forEach(styleEl => {
+      const clone = document.createElement('style');
+      // CSS 텍스트 보존
+      clone.textContent = styleEl.textContent;
+      // (가능한 속성 복사)
+      [...styleEl.attributes].forEach(a => clone.setAttribute(a.name, a.value));
+      document.head.appendChild(clone);
+    });
+
+    // 3) 본문 콘텐츠를 mount에 붙임 (스크립트 제외)
+    const mount = document.querySelector(mountSelector);
+    // fragment 구성
+    const frag = document.createDocumentFragment();
+    [...doc.body.children].forEach(node => {
+      if (node.tagName.toLowerCase() !== 'script') frag.appendChild(node.cloneNode(true));
+    });
+    mount.appendChild(frag);
+
+    // 4) 스크립트 실행 (src/inline/module 지원, 순서 보장)
+    const scripts = [...doc.querySelectorAll('script')];
+    for (const oldScript of scripts) {
+      const newScript = document.createElement('script');
+      // type/module/defer 등 속성 복사
+      [...oldScript.attributes].forEach(attr => newScript.setAttribute(attr.name, attr.value));
+      if (oldScript.src) {
+        // 네트워크 로드를 기다려 실행 순서 유지
+        await new Promise((resolve, reject) => {
+          newScript.onload = resolve;
+          newScript.onerror = resolve;   // 실패해도 진행(브랜딩 제거 같은 선택 기능 보호)
+          document.body.appendChild(newScript);
+        });
+      } else {
+        // inline 코드 복사
+        newScript.textContent = oldScript.textContent || '';
+        document.body.appendChild(newScript);
+      }
+    }
+  }
+
+  // 실제 호출: 기존 chatbot.html(또는 chatbot_test.html) 경로로 바꿔도 됩니다.
+  importHtmlWithAssets('/components/chatbot_test.html', '#bnk-chatbot-slot')
+    .catch(err => console.error('[Chatbot load failed]', err));
+  </script>
+  <script>
+    fetch('https://api.ipify.org?format=json')
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById('ip').textContent = `${data.ip}`;
+      })
+      .catch(err => {
+        document.getElementById('ip').textContent = 'IP를 가져오지 못했습니다.';
+        console.error(err);
+      });
+  </script>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+        const BADGE = {
+            'Royal VIP': { color:'white', bg:'#3c4249', w:57, h:22 },
+            'Gold VIP'  : { color:'#B8860B', bg:'#FFF6DC', w:46, h:24 },
+            'Silver VIP': { color:'#6B7280', bg:'#F3F4F6', w:46, h:24 },
+            'Green VIP' : { color:'#15803D', bg:'#DCFCE7', w:46, h:24 },
+            'Family'    : { color:'#2563EB', bg:'#DBEAFE', w:46, h:24 },
+        };
+
+        document.querySelectorAll('.status-badge').forEach(el => {
+            const key = el.textContent.trim();
+            const s = BADGE[key];
+            if (!s) return;
+
+            Object.assign(el.style, {
+            display: 'inline-flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            padding: '0 8px',
+            fontSize: '12px',
+            fontWeight: '500',
+            lineHeight: '1',
+            color: s.color,
+            backgroundColor: s.bg,
+            borderRadius: '20px',
+            height: s.h + 'px',
+            minWidth: s.w + 'px',
+            boxSizing: 'border-box',
+            });
+        });
+        });
+    </script>
+    <script>
+        // ---- 마스킹 규칙 ----
+        function maskCustomerNo(raw) {
+            // 숫자만 추출 후 4-4-나머지 형태로 다시 묶고, 앞 8자리는 ****-****
+            const digits = raw.replace(/\D/g, "");
+            const a = digits.slice(0, 4);
+            const b = digits.slice(4, 8);
+            const rest = digits.slice(8); // 나머지
+            const last = rest ? rest : "";
+            return `****-****-${last}`;
+        }
+
+        function maskEmail(raw) {
+            const [local, domain = ""] = raw.split("@");
+            const shown = (local || "").slice(0, 3);
+            const maskedLen = Math.max((local || "").length - 3, 0);
+            const masked = "*".repeat(maskedLen);
+            return `${shown}${masked}${domain ? "@" + domain : ""}`;
+        }
+
+        function normalizePhoneDigits(raw) {
+            // 숫자만 추출 후 한국형 기본 포맷(3-4-4 or 2-3-4 등)으로 리턴
+            const d = raw.replace(/\D/g, "");
+            // 02로 시작(서울) 케이스
+            if (d.startsWith("02")) {
+            const a = d.slice(0, 2);
+            const b = d.length === 9 ? d.slice(2, 5) : d.slice(2, 6);
+            const c = d.slice(2 + b.length);
+            return [a, b, c];
+            }
+            // 그 외(010, 011 등)
+            const a = d.slice(0, 3);
+            const b = d.length >= 10 ? d.slice(3, d.length - 4) : d.slice(3, d.length - 4); // 중간 전부
+            const c = d.slice(-4);
+            return [a, b, c];
+        }
+
+        function formatPhone(groups) {
+            return groups.filter(Boolean).join("-");
+        }
+
+        function maskPhone(raw) {
+            const groups = normalizePhoneDigits(raw);
+            // 가운데 그룹만 **** 고정
+            if (groups.length >= 2) groups[1] = "****";
+            return formatPhone(groups);
+        }
+
+        // ---- 렌더링 & 토글 ----
+        function renderMasked(el) {
+            const type = el.dataset.type;
+            const raw = el.dataset.raw || "";
+            let masked = raw;
+            if (type === "custno") masked = maskCustomerNo(raw);
+            else if (type === "email") masked = maskEmail(raw);
+            else if (type === "mobile") masked = maskPhone(raw);
+            el.textContent = masked;
+            el.dataset.state = "masked";
+        }
+
+        function renderRaw(el) {
+            el.textContent = el.dataset.raw || "";
+            el.dataset.state = "visible";
+        }
+
+        function toggleVisibility(targetId) {
+            const el = document.getElementById(targetId);
+            if (!el) return;
+            if (el.dataset.state === "visible") renderMasked(el);
+            else renderRaw(el);
+        }
+
+        // 초기 마스킹
+        document.querySelectorAll(".maskable").forEach(renderMasked);
+
+        // 눈 아이콘 클릭 핸들러
+        document.querySelectorAll(".eye-btn").forEach(btn => {
+            btn.addEventListener("click", () => toggleVisibility(btn.dataset.target));
+            // 키보드 접근성(Enter/Space)
+            btn.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                toggleVisibility(btn.dataset.target);
+            }
+            });
+        });
+    </script>
+    <script>
+  // "보유계좌 목록" 테이블의 5번째 열(잔액)만 3자리 콤마 적용
+  document.addEventListener('DOMContentLoaded', function () {
+    const table = document.getElementById('accounts-table');
+    if (!table) return;
+
+    // 헤더를 제외한 모든 행의 5번째 셀(td:nth-child(5)) 대상
+    table.querySelectorAll('tr td:nth-child(5)').forEach(td => {
+      const raw = (td.textContent || '').trim();
+      if (/^\d+$/.test(raw)) { // 숫자만 있는 경우에만 포맷
+        td.textContent = Number(raw).toLocaleString('ko-KR');
+      }
+    });
+  });
+</script>
+<script>
+  // 요약 카드(#summary-cards) 안의 텍스트만 가공
+  document.addEventListener('DOMContentLoaded', () => {
+    const root = document.getElementById('summary-cards');
+    if (!root) return;
+
+    // 텍스트 노드만 순회
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+      acceptNode(node) {
+        const t = node.nodeValue;
+        return (!t || !t.trim()) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT;
+      }
+    });
+
+    const nodes = [];
+    for (let n = walker.nextNode(); n; n = walker.nextNode()) nodes.push(n);
+
+    nodes.forEach(node => {
+      let text = node.nodeValue;
+
+      // 1) 이름 마스킹: '김철수님/님께' → '김○○님/님께'
+      text = text.replace(/([가-힣])([가-힣]{1,3})(?=님(?:께)?)/g,
+        (_, s, rest) => s + '○'.repeat(rest.length)
+      );
+
+      // 2) 금액 3자리 콤마: '16480000원', '3000000 원' 등
+      // - '원' 앞의 모든 공백(일반/개행/NBSP 등)을 허용
+      // - 이미 콤마가 있어도 정상화
+      text = text.replace(/(\d[\d,]{3,})(?=(?:\s|\u00A0)*원)/g, (m) => {
+        const num = m.replace(/,/g, '');
+        return Number(num).toLocaleString('ko-KR');
+      });
+
+      node.nodeValue = text;
+    });
+  });
+</script>
+<script>
+    // ETF 테이블 행 1개 업데이트
+    function updateEtfTableRow(tr, nowPrice) {
+        const psum   = Number(tr.dataset.psum   || 0); // 총 매수금액(DB)
+        const pprice = Number(tr.dataset.pprice || 0); // 매수 단가
+        const pstock = Number(tr.dataset.pstock || 0); // 수량(주)
+
+        const buyAmount     = psum || (pprice * pstock);
+        const currentAmount = nowPrice * pstock;
+        const profit        = currentAmount - buyAmount;
+        const profitRate    = buyAmount ? (profit / buyAmount) * 100 : 0;
+
+        const totalEl   = tr.querySelector('.etf-total-amount');
+        const currentEl = tr.querySelector('.etf-current-amount');
+        const profitEl  = tr.querySelector('.etf-profit');
+        const rateEl    = tr.querySelector('.etf-profit-rate');
+
+        // 총 금액 / 평가금액
+        if (totalEl)   totalEl.textContent   = buyAmount.toLocaleString('ko-KR') + '원';
+        if (currentEl) currentEl.textContent = currentAmount.toLocaleString('ko-KR') + '원';
+
+        // 현재 수익
+        if (profitEl) {
+            const abs  = Math.abs(profit);
+            const sign = profit > 0 ? '+' : (profit < 0 ? '-' : '');
+            profitEl.textContent = sign + abs.toLocaleString('ko-KR') + '원';
+            profitEl.style.color =
+                profit > 0 ? '#b91c1c' :
+                    profit < 0 ? '#1d4ed8' :
+                        '#6b7280';
+        }
+
+        // 수익률
+        if (rateEl) {
+            const sign    = profitRate > 0 ? '+' : (profitRate < 0 ? '-' : '');
+            const absRate = Math.abs(profitRate).toFixed(2);
+            rateEl.textContent = `${sign}${absRate}%`;
+            rateEl.style.color =
+                profitRate > 0 ? '#b91c1c' :
+                    profitRate < 0 ? '#1d4ed8' :
+                        '#6b7280';
+        }
+    }
+</script>
+<script>
+    // /BNK/api/etf 에서 실시간 현재가 가져와서 ETF 카드들 갱신 (pname 기준 매칭)
+    async function refreshEtfCardsFromApi() {
+        console.log('[ETF] refresh 호출', new Date().toLocaleTimeString());
+
+        try {
+            const res = await fetch('/BNK/api/etf', { cache: 'no-store' });
+            if (!res.ok) {
+                console.error('/BNK/api/etf 실패', res.status);
+                return;
+            }
+
+            const list = await res.json();
+            if (!Array.isArray(list)) return;
+
+            const mapByName = new Map();
+            list.forEach(item => {
+                const n = item.pname || item.name;
+                if (!n) return;
+                mapByName.set(n.trim(), item);
+            });
+
+            // 1) 카드 업데이트
+            document
+                .querySelectorAll('.menu-card[data-product-type="ETF"]')
+                .forEach(card => {
+                    const pname = (card.dataset.pname || '').trim();
+                    if (!pname) return;
+
+                    const item = mapByName.get(pname);
+                    if (!item) return;
+
+                    const nowPrice = Number(item.price);
+                    if (isNaN(nowPrice)) return;
+
+                    console.log('[ETF] 카드:', pname, '현재가:', nowPrice);
+                    updateEtfCardMetrics(card, nowPrice);
+                });
+
+            // 2) 상단 보유 ETF 테이블 업데이트
+            document
+                .querySelectorAll('#accounts-table tr[data-pname]')
+                .forEach(tr => {
+                    const pname = (tr.dataset.pname || '').trim();
+                    if (!pname) return;
+
+                    const item = mapByName.get(pname);
+                    if (!item) return;
+
+                    const nowPrice = Number(item.price);
+                    if (isNaN(nowPrice)) return;
+
+                    console.log('[ETF] 테이블 행:', pname, '현재가:', nowPrice);
+                    updateEtfTableRow(tr, nowPrice);
+                });
+
+        } catch (e) {
+            console.error('refreshEtfCardsFromApi 에러', e);
+        }
+    }
+</script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // 페이지 로드되면 한 번 ETF 데이터 반영
+            refreshEtfCardsFromApi();
+
+            // 선택: 주기적으로 갱신하고 싶으면 (예: 1.5초마다)
+            setInterval(refreshEtfCardsFromApi, 1500);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.bnkfirst.mapper.AdminMapper">
+
+<!--상품 목록 출력-->
+    <!-- 예적금 상품 목록 (페이지 단위) -->
+    <select id="selectProductPage"
+            resultType="kr.co.bnkfirst.dto.product.ProductDTO">
+        SELECT
+        *
+        FROM product
+        ORDER BY pupdate DESC
+        OFFSET #{offset} ROWS
+        FETCH NEXT #{limit} ROWS ONLY
+    </select>
+
+    <!-- 예적금 상품 총 개수 -->
+    <select id="selectProductTotal" resultType="int">
+        SELECT COUNT(*)
+        FROM product
+    </select>
+
+    <!-- 펀드 목록 (페이지 단위) -->
+    <select id="selectFundPage"
+            resultType="kr.co.bnkfirst.dto.product.FundDTO">
+        SELECT
+        *
+        FROM fund
+        ORDER BY fsetdt DESC NULLS LAST
+        OFFSET #{offset} ROWS
+        FETCH NEXT #{limit} ROWS ONLY
+    </select>
+
+    <!-- 펀드 총 개수 -->
+    <select id="selectFundTotal" resultType="int">
+        SELECT COUNT(*)
+        FROM fund
+    </select>
+<!--상품 목록 출력-->
+<!--    예적금 상품 추가-->
+    
+    <insert id="insertDeposit">
+        INSERT INTO
+        PRODUCT(pid, ptype, pname, PBIRATE, phirate, pcprd, pelgbl, prmthd, pprfcrt, pirinfo, pcond, pjnfee, pwtpi, pterms, pdirate, psubtitle, pinfo)
+        VALUES(#{pid},#{ptype},#{pname},#{pbirate},#{phirate},#{pcprd},#{pelgbl},#{prmthd},#{pprfcrt},#{pirinfo},#{pcond},#{pjnfee},#{pwtpi},#{pterms},#{pdirate},#{psubtitle},#{pinfo})
+    </insert>
+    
+<!--    예적금 상품 추가-->
+<!--    펀드 상품 추가-->
+    <insert id="insertFund">
+        INSERT INTO
+        fund(fid, fname, famc, frlvl, ftype, frefpr, fsetdt, ftc, fm1pr, fm3pr, fm6pr, fm12pr, facmpr)
+        VALUES(#{fid}, #{fname}, #{famc}, #{frlvl}, #{ftype}, #{frefpr}, #{fsetdt}, #{ftc}, #{fm1pr}, #{fm3pr}, #{fm6pr}, #{fm12pr}, #{facmpr})
+    </insert>
+<!--    펀드 상품 추가-->
+
+<!--    예적금 상품 찾기(수정용)-->
+    <select id="selectByProduct" resultType="kr.co.bnkfirst.dto.product.ProductDTO">
+        SELECT * FROM product where pid = #{pid}
+    </select>
+<!--    예적금 상품 찾기(수정용)-->
+
+    <!--    펀드 상품 찾기(수정용)-->
+    <select id="selectByFund" resultType="kr.co.bnkfirst.dto.product.FundDTO">
+        SELECT * FROM fund where fid = #{fid}
+    </select>
+<!--    펀드 상품 찾기(수정용)-->
+
+<!--    예적금 상품 수정-->
+    <update id="updateProduct">
+        UPDATE product SET
+        pid = #{pid},
+        ptype = #{ptype},
+        pname = #{pname},
+        pbirate = #{pbirate},
+        phirate = #{phirate},
+        pcprd = #{pcprd},
+        pelgbl = #{pelgbl},
+        prmthd = #{prmthd},
+        pprfcrt = #{pprfcrt},
+        pirinfo = #{pirinfo},
+        pcond = #{pcond},
+        pjnfee = #{pjnfee},
+        pwtpi = #{pwtpi},
+        pterms = #{pterms},
+        pdirate = #{pdirate},
+        psubtitle = #{psubtitle},
+        pinfo = #{pinfo}
+        WHERE pid = #{pid}
+    </update>
+
+<!--    예적금 상품 수정-->
+
+    <!--    펀드 상품 수정-->
+    <update id="updateFund">
+        UPDATE fund SET
+        fname = #{fname},
+        famc = #{famc},
+        frlvl = #{frlvl},
+        ftype = #{ftype},
+        frefpr = #{frefpr},
+        fsetdt = #{fsetdt},
+        ftc = #{ftc},
+        fm1pr = #{fm1pr},
+        fm3pr = #{fm3pr},
+        fm6pr = #{fm6pr},
+        fm12pr = #{fm12pr},
+        facmpr = #{facmpr}
+        WHERE fid = #{fid}
+    </update>
+
+<!--    펀드 상품 수정-->
+
+<!--    예적금 상품 삭제-->
+    <delete id="deleteByProduct">
+        delete from product where pid = #{pid}
+    </delete>
+
+    <!--    예적금 상품 삭제-->
+    <!--    펀드 상품 삭제-->
+    <delete id="deleteByFund">
+        delete from fund where fid = #{fid}
+    </delete>
+
+<!--유저 목록 출력-->
+    <sql id="searchWhereUsers">
+        <where>
+            <if test="pageRequestDTO.mname != null and pageRequestDTO.mname != ''">
+                AND mname LIKE '%' || #{pageRequestDTO.mname} || '%'
+            </if>
+            <if test="pageRequestDTO.memail != null and pageRequestDTO.memail != ''">
+                AND memail LIKE '%' || #{pageRequestDTO.memail} || '%'
+            </if>
+            <if test="pageRequestDTO.mcond != null and pageRequestDTO.mcond != 'all' and pageRequestDTO.mcond != ''">
+                AND mcond LIKE '%' || #{pageRequestDTO.mcond} || '%'
+            </if>
+        </where>
+    </sql>
+
+    <select id="selectAllUsers" resultType="kr.co.bnkfirst.dto.UsersDTO">
+        SELECT
+        *
+        FROM users
+        <include refid="searchWhereUsers"/>
+        ORDER BY uid DESC
+        OFFSET #{pageRequestDTO.offset} ROWS
+        FETCH NEXT #{pageRequestDTO.size} ROWS ONLY
+    </select>
+
+
+    <select id="selectCountTotalUsers" resultType="int">
+        SELECT COUNT(*) FROM users
+        <include refid="searchWhereUsers"/>
+    </select>
+
+<!--    전체회원 수 출력-->
+    <select id="countAllUsers" resultType="int">
+        SELECT count(*) FROM users
+    </select>
+
+<!--    신규가입 수 출력(현재 시간으로부터 6개월까지)-->
+    <select id="countSixMonthUsers" resultType="int">
+        SELECT count(*) FROM USERS WHERE mdate > ADD_MONTHS(sysdate, -6)
+    </select>
+
+<!--    상태가 휴면인 회원 수 출력-->
+    <select id="countWait" resultType="int">
+        SELECT count(*) FROM users WHERE mcond = '휴면'
+    </select>
+
+<!--    상태가 탈퇴인 회원 수 출력-->
+    <select id="countWithdrawal" resultType="int">
+        SELECT count(*) FROM users WHERE mcond = '탈퇴'
+    </select>
+
+    <!--    IRP, DC, DB 상품 개수 출력-->
+    <select id="countByItem" resultType="Integer">
+        SELECT count(*) FROM product where pelgbl = #{pelgbl}
+    </select>
+
+    <!--    Fund 상품 개수 출력-->
+    <select id="countByFund" resultType="Integer">
+        SELECT count(*) FROM fund
+    </select>
+
+<!--  막대그래프용 pbirate(IRP, DC, DB) -->
+    <select id="avgByItem" resultType="Double">
+        SELECT round(avg(pbirate),2) FROM product WHERE pelgbl = #{pelgbl}
+    </select>
+
+<!--    파이차트용 fund 위험등급 (1~6등급) -->
+    <select id="countByDanger" resultType="Integer">
+        SELECT count(*) FROM fund WHERE frlvl = #{frlvl}
+    </select>
+</mapper>

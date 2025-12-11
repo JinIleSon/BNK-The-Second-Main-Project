@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../../static/components/button.css">
+    <title>admin_fundRegister</title>
+    <style>
+        .input-suffix {
+            position: relative;
+            display: inline-block;
+            width: 557px;            /* 원래 쓰시던 너비로 */
+            height: 42px;
+        }
+        .input-suffix input {
+            box-sizing: border-box;
+            width: 100%;
+            height: 100%;
+            padding-left: 15px;
+            padding-right: 36px;     /* ← %가 겹치지 않도록 여백 확보 */
+            font-size: 16px;
+            border: 1px solid #D1D5DB;
+            border-radius: 6px;
+            outline: none;
+        }
+        .input-suffix .suffix {
+            position: absolute;
+            right: 12px;             /* 우측 고정 위치 */
+            top: 47%;
+            transform: translateY(-50%);
+            color: #6B7280;
+            pointer-events: none;    /* 클릭 막아 입력에만 포커스 가도록 */
+            font-size: 18px;
+        }
+
+        /* (선택) number 스핀 버튼 제거 (크롬/엣지) */
+        .input-suffix input[type="number"]::-webkit-outer-spin-button,
+        .input-suffix input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        /* (선택) 파이어폭스 */
+        .input-suffix input[type="number"] {
+            -moz-appearance: textfield;
+        }
+    </style>
+    <style>
+        /* 기간(시작일~마감일) */
+        .date-range {
+            margin-top: 13px;
+            width: 557px;       /* 기존 인풋 폭과 동일 */
+            height: 42px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .date-field {
+            position: relative;
+            flex: 1 1 0;
+            height: 42px;
+        }
+        .date-input {
+            box-sizing: border-box;
+            width: 557px;
+            height: 42px;
+            padding: 0 40px 0 12px; /* 아이콘 공간 확보 */
+            font-size: 14px;
+            border: 1px solid #D1D5DB;
+            border-radius: 6px;
+            outline: none;
+            background-color: #fff;
+            color: #111827;
+        }
+        .date-input:focus {
+            border-color: #9CA3AF;
+            box-shadow: 0 0 0 3px rgba(156,163,175,.2);
+        }
+        .calendar-btn {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 28px;
+            height: 28px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            color: #6B7280;
+        }
+        .calendar-btn:focus-visible {
+            outline: 3px solid rgba(240,58,58,.55);
+            border-radius: 6px;
+            outline-offset: 2px;
+        }
+        .date-sep {
+            color: #6B7280;
+            font-size: 14px;
+            user-select: none;
+        }
+
+        /* 다크 모드 살짝 */
+        @media (prefers-color-scheme: dark) {
+            .date-input {
+                background: #111417;
+                color: #E5E7EB;
+                border-color: #2C3140;
+            }
+        }
+    </style>
+    <style>
+        /* 기본 date 인풋 아이콘/컨트롤 제거 */
+        .date-input::-webkit-calendar-picker-indicator { display: none; }
+        .date-input::-webkit-clear-button,
+        .date-input::-webkit-inner-spin-button { display: none; }
+
+        /* (선택) placeholder 톤 통일 */
+        .date-input::placeholder { color:#9CA3AF; }
+    </style>
+    <style>
+        input,
+        textarea {
+            font-family: 'Noto Sans KR', 'Segoe UI', sans-serif; /* input 기본 폰트에 맞춤 */
+            font-size: 16px;
+            font-weight: 400;
+            line-height: 1.4;
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            font-weight: 400;   /* 동일 두께 */
+            font-size: 16px;    /* 동일 크기 */
+            line-height: 1.4;   /* 동일 행간 */
+            opacity: 1;         /* 투명도 제거 */
+        }
+    </style>
+    <style>
+        .upload-card{
+            margin-top: 13px;
+            border:1px dashed #D1D5DB;
+            border-radius:10px;
+            background:#FBFBFD;
+            min-height:200px;
+            display:flex; align-items:center; justify-content:center;
+            cursor:pointer;
+            transition: background .18s ease, border-color .18s ease, box-shadow .18s ease;
+        }
+        .upload-card:hover{ background:#F8FAFC; border-color:#C7CED6; }
+        .upload-card.is-dragover{
+            background:#F3F4F6;
+            border-color:#94A3B8;
+            box-shadow:0 0 0 3px rgba(148,163,184,.15) inset;
+        }
+        .upload-inner{ text-align:center; padding:24px 16px; color:#6B7280; }
+        .upload-title{ margin-top:8px; font-size:14px; color:#6B7280; }
+        .upload-sub{ margin-top:4px; font-size:12px; color:#9CA3AF; }
+
+        .upload-result{ margin-top:10px; font-size:14px; }
+        .file-chip{
+            display:inline-flex; align-items:center; gap:8px;
+            padding:8px 10px; border:1px solid #E5E7EB; border-radius:8px;
+            background:#FFFFFF; color:#374151;
+        }
+        .file-chip .size{ color:#6B7280; font-size:12px; }
+        .file-remove{
+            border:none; background:transparent; cursor:pointer; color:#9CA3AF;
+        }
+        .file-remove:hover{ color:#6B7280; }
+        .error{ color:#B91C1C; margin-top:6px; }
+    </style>
+    <style>
+        @page { size: A4; margin: 12mm; }
+
+        @media print {
+            /* 인쇄에 딱 맞는 폭으로 고정 (A4 내부 여백 감안) */
+            #printRoot { width: 185mm !important; max-width: none !important; margin: 0 auto !important; }
+
+            /* 화면 레이아웃/배경 해제 */
+            main { display:block !important; margin:0 !important; padding:0 !important; }
+            html, body { overflow: visible !important; background:#fff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            [style*="background-color: #F6F6F8"] { background:#fff !important; }
+
+            /* 카드가 페이지 중간에서 잘리지 않게 + 잘림 유발하는 overflow 해제 */
+            [style*="padding: 25px"][style*="background-color: white"] {
+                break-inside: avoid !important;
+                page-break-inside: avoid !important;
+                overflow: visible !important;   /* ← 핵심 */
+            }
+            [style*="overflow: hidden"] { overflow: visible !important; } /* 혹시 남아있을 때 전역 방지 */
+
+            /* 그림자 제거, 테두리만 유지 */
+            * { box-shadow:none !important; }
+            [style*="border: 1px solid #E5E7EB"] { border-color:#D1D5DB !important; }
+
+            /* 불필요 UI 숨김 */
+            .no-print, #header, #footer, #bnk-chatbot-container { display:none !important; }
+
+            /* 링크 주소 출력 방지 */
+            a[href]:after { content:""; }
+        }
+        @page { size: A4 portrait; margin: 0; } /* 여백 살짝 줄이기 */
+
+        @media print {
+            /* A4 안전 여백 안쪽으로 살짝 줄여 버퍼 확보 */
+            #printRoot {
+                width: auto !important;
+                max-width: 180mm !important;   /* 186mm → 180mm로 여유 */
+                margin: 0 auto !important;
+            }
+
+            /* 화면용 고정폭/px 폭을 인쇄에서는 가변으로 */
+            .date-range,
+            .input-suffix,
+            input, select, textarea {
+                width: 100% !important;
+            }
+
+            /* 카드 잘림 방지 + overflow 해제 */
+            [style*="padding: 25px"][style*="background-color: white"] {
+                break-inside: avoid !important;
+                page-break-inside: avoid !important;
+                overflow: visible !important;
+                border-radius: 8px;         /* 모서리는 유지해도 무방 */
+            }
+            [style*="overflow: hidden"] { overflow: visible !important; }
+
+            /* 필요 시 카드 안쪽 여백도 살짝 줄여 1페이지에 더 담기 */
+            /* 주석 해제해서 사용
+            [style*="padding: 25px"][style*="background-color: white"] {
+              padding: 18px !important;
+            }
+            */
+
+            /* 섹션 경계에서 확실히 넘기고 싶다면: '상세 설명' 앞에서 강제 개행 */
+            /* 주석 해제해서 사용
+            #printRoot > div:nth-of-type(2) {  page-break-before: always !important; }
+            */
+
+            /* 기타 */
+            html, body { -webkit-print-color-adjust: exact; print-color-adjust: exact; background:#fff !important; }
+            * { box-shadow: none !important; }
+            a[href]:after { content: ""; }
+            .no-print, #header, #footer, #bnk-chatbot-container { display: none !important; }
+            /* 폰트/기본 컬러 */
+            body { font: 12pt 'Noto Sans KR', sans-serif; color:#111827; }
+
+            /* 폼 컨트롤을 화면처럼 */
+            input, select, textarea {
+                width: 100% !important;
+                height: 10mm !important;       /* 통일된 높이 */
+                line-height: 10mm !important;
+                padding: 0 10px !important;
+                border: 1px solid #D1D5DB !important;
+                background: #fff !important;
+                color:#111827 !important;
+                box-shadow: none !important;
+                appearance: none !important;    /* OS 기본 화살표/그림자 제거 */
+                -webkit-appearance: none !important;
+            }
+            textarea {
+                min-height: 35mm !important;    /* 텍스트영역 너무 작아 보이는 것 보완 */
+                line-height: 1.5 !important;
+                padding: 10px !important;
+            }
+            select::-ms-expand { display:none; }
+
+            /* % 접미사 위치 유지 */
+            .input-suffix .suffix { right: 10px; top: 50%; transform: translateY(-50%); }
+
+            /* 업로드 드롭존은 인쇄에서 숨기고, 선택 결과만 보이게 */
+            #termsDropzone { display:none !important; }
+            #termsResult { display:block !important; }
+
+            /* 카드 모양/여백 안정화 */
+            [style*="padding: 25px"][style*="background-color: white"] {
+                padding: 18px !important;
+                break-inside: avoid !important;
+                page-break-inside: avoid !important;
+                overflow: visible !important;
+                border-radius: 8px !important;
+            }
+            html, body { margin:0 !important; background:#fff !important; }
+            #printRoot {
+                max-width: 200mm !important;   /* 180 → 200mm (거의 꽉 차게) */
+                width: auto !important;
+                margin: 0 auto !important;
+                padding: 0 !important;
+            }
+        }
+        @media print {
+            /* 폼 컨트롤은 카드 안쪽 가로폭 100%로 */
+            #printRoot input,
+            #printRoot select,
+            #printRoot textarea {
+                width: 100% !important;
+                max-width: none !important;
+                box-sizing: border-box !important;
+            }
+
+            /* 두 칼럼 행(라벨/필드 묶음)에서 각 칼럼을 균등 분할 + 줄바꿈 방지 */
+            #printRoot [style*="display: flex"][style*="gap: 25px"] > div {
+                flex: 1 1 0 !important;
+                min-width: 0 !important;
+            }
+
+            /* 금리 % 접미사 케이스 */
+            #printRoot .input-suffix { width: 100% !important; }
+            #printRoot .input-suffix input { width: 100% !important; padding-right: 32px !important; }
+
+            /* 기간(날짜 범위) 인풋도 한 줄 가득 */
+            #printRoot .date-range { width: 100% !important; }
+            #printRoot .date-field { flex: 1 1 0 !important; min-width: 0 !important; }
+        }
+        @media print {
+            /* 상세 설명 카드 textarea를 카드 폭 100%로 강제 */
+            #printRoot textarea {
+                display: block !important;
+                width: 100% !important;
+                max-width: none !important;
+                box-sizing: border-box !important;
+                padding: 10px 14px !important;
+            }
+
+            /* 인라인 width:1147px 무력화(명시적으로 매치) */
+            #printRoot textarea[style*="width: 1147px"] {
+                width: 100% !important;
+            }
+
+            /* textarea를 담는 flex-row에서도 칸을 꽉 채우도록 */
+            #printRoot [style*="display: flex"][style*="margin-top: 20px"] > div {
+                width: 100% !important;
+                flex: 1 1 0 !important;
+                min-width: 0 !important;
+            }
+        }
+    </style>
+
+</head>
+<body>
+<header>
+    <<div th:replace="~{layouts/admin_header.html}"></div>
+</header>
+<script>
+    async function includeWithScripts(targetSelector, url) {
+        const res = await fetch(url, { credentials: 'same-origin' });
+        if (!res.ok) throw new Error(`Failed to load ${url}`);
+        const html = await res.text();
+
+        const target = document.querySelector(targetSelector);
+        target.innerHTML = html;
+
+        // 삽입된 영역 안의 <script>들을 실행되도록 교체
+        const scripts = target.querySelectorAll('script');
+        for (const oldScript of scripts) {
+            const newScript = document.createElement('script');
+
+            // type, src, async, defer 등 속성 복사
+            for (const { name, value } of [...oldScript.attributes]) {
+                newScript.setAttribute(name, value);
+            }
+            // inline 스크립트라면 코드 복사
+            if (!oldScript.src) newScript.text = oldScript.textContent;
+
+            // 실행을 위해 문서에 부착
+            // (src가 있으면 네트워크 로드, 없으면 즉시 실행)
+            oldScript.replaceWith(newScript);
+
+            // src 스크립트 로드를 기다려야 한다면:
+            if (newScript.src) {
+                await new Promise((res) => {
+                    newScript.addEventListener('load', res, { once: true });
+                    newScript.addEventListener('error', res, { once: true });
+                });
+            }
+        }
+    }
+
+    // (2) includeWithScripts - 올바른 방법
+    includeWithScripts('#header', '/layouts/admin_header.html')
+        .then(() => {
+            // 환경설정 메뉴 활성화
+            window.initAdminHeader && window.initAdminHeader('product');
+        })
+        .catch(console.error);
+    document.addEventListener('DOMContentLoaded', () => {
+        if (window.initAdminHeader) window.initAdminHeader('product');
+    });
+</script>
+
+
+<main style="background-color: #F6F6F8; display: flex; justify-content: center;">
+    <div id="printRoot" style="width: 1200px; ">
+        <div>
+            <div style="display: flex; font-size: 24px; color: #4B5563;">
+                <div>펀드 상품등록</div>
+            </div>
+            <div style="display: flex;">
+                <div style="font-size: 16px; color: #4B5563;">은행 펀드 상품을 등록하고 금리 및 상태를 설정할 수 있습니다.</div>
+                <div style="display: flex; margin-left: auto; margin-right: 10px;">
+                    <button th:onclick="|location.href='@{/admin/prod}'|" class="btn-pressable btn-sheen" style="box-sizing: border-box; width: 150px; height: 42.5px; border:none; border-radius: 8px; cursor: pointer; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); border: 1px solid #E5E7EB; background-color: white;">
+                        <div style="display: flex; gap: 8px; justify-content: center; align-content: center;">
+                            <div style="margin-top: 2px;">
+                                <svg width="14" height="16" viewBox="0 0 14 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <g clip-path="url(#clip0_454_42)">
+                                        <path d="M0.293701 7.29365C-0.0969238 7.68428 -0.0969238 8.31865 0.293701 8.70928L5.2937 13.7093C5.68433 14.0999 6.3187 14.0999 6.70933 13.7093C7.09995 13.3187 7.09995 12.6843 6.70933 12.2937L3.41245 8.9999H13C13.5531 8.9999 14 8.55303 14 7.9999C14 7.44678 13.5531 6.9999 13 6.9999H3.41558L6.7062 3.70615C7.09683 3.31553 7.09683 2.68115 6.7062 2.29053C6.31558 1.8999 5.6812 1.8999 5.29058 2.29053L0.290576 7.29053L0.293701 7.29365Z" fill="#374151"/>
+                                    </g>
+                                    <defs>
+                                        <clipPath id="clip0_454_42">
+                                            <path d="M0 0H14V16H0V0Z" fill="white"/>
+                                        </clipPath>
+                                    </defs>
+                                </svg>
+                            </div>
+                            <div>
+                                목록으로 돌아가기
+                            </div>
+                        </div>
+                    </button>
+                </div>
+                <div style="display: flex; justify-content: center; align-items: center; font-size: 14px; background-color: white; width: 165px; height: 40px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); border: 1px solid #E5E7EB;">
+                    <div style="display: flex; align-items: center;">
+                        <svg width="20" height="16" viewBox="0 0 20 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <g clip-path="url(#clip0_194_44)">
+                                <path d="M7 8C8.06087 8 9.07828 7.57857 9.82843 6.82843C10.5786 6.07828 11 5.06087 11 4C11 2.93913 10.5786 1.92172 9.82843 1.17157C9.07828 0.421427 8.06087 0 7 0C5.93913 0 4.92172 0.421427 4.17157 1.17157C3.42143 1.92172 3 2.93913 3 4C3 5.06087 3.42143 6.07828 4.17157 6.82843C4.92172 7.57857 5.93913 8 7 8ZM5.57188 9.5C2.49375 9.5 0 11.9937 0 15.0719C0 15.5844 0.415625 16 0.928125 16H13.0719C13.1281 16 13.1813 15.9938 13.2375 15.9844C10.8531 14.2625 10.1187 11.5781 10.0156 9.72812C9.5125 9.57812 8.98125 9.5 8.43125 9.5H5.57188ZM15.2219 7.05312L11.4719 8.55313C11.1875 8.66875 11 8.94375 11 9.25C11 11.2281 11.8094 14.525 15.2125 15.9438C15.3969 16.0219 15.6062 16.0219 15.7906 15.9438C19.1906 14.525 20 11.2281 20 9.25C20 8.94375 19.8125 8.66875 19.5281 8.55313L15.7781 7.05312C15.6 6.98125 15.4 6.98125 15.2219 7.05312ZM18.4813 9.75C18.3594 11.3344 17.6312 13.3969 15.5 14.4281V8.55625L18.4813 9.75Z" fill="#E6002D"/>
+                            </g>
+                            <defs>
+                                <clipPath id="clip0_194_44">
+                                    <path d="M0 0H20V16H0V0Z" fill="white"/>
+                                </clipPath>
+                            </defs>
+                        </svg>
+                        <div style="margin-left: 10px;">관리자: Admin</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <form th:action="@{/admin/fund/register}" method="post">
+            <div style="padding: 25px; margin-top:25px; padding-bottom: 32px; background-color: white; border-radius: 16px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); border: 1px solid #E5E7EB; overflow: hidden;">
+                <div style="font-size:20px; color:#2B2F36;">
+                    기본 정보
+                </div>
+                <div>
+                    <div style="display: flex; margin-top: 20px; gap: 25px;">
+                        <div>
+                            <div style="display: flex;"><div style="margin-right: 2px;">상품명</div><div style="color: red;">*</div></div>
+                            <div>
+                                <input name="fname" type="text" placeholder="상품명을 입력하세요" style="margin-top: 13px; box-sizing: border-box; outline:none; padding-left:15px; font-size: 16px; width: 557px; height: 42px; border:1px solid #D1D5DB; border-radius: 6px;">
+                            </div>
+                        </div>
+                        <div>
+                            <div>상품ID<span style="color: red;margin-left: 2px;">*</span></div>
+                            <div>
+                                <input name="fid" placeholder="BNK-FD-1" type="text" style="margin-top: 13px; box-sizing: border-box; outline:none; padding-left:15px; font-size: 16px; width: 557px; height: 42px; border:1px solid #D1D5DB; border-radius: 6px;">
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display: flex; margin-top: 20px; gap: 25px;">
+                        <div>
+                            <div>위험등급<span style="color: red;margin-left: 2px;">*</span></div>
+                            <div>
+                                <input name="frlvl" placeholder="1~6 입력" type="text" style="margin-top: 13px; box-sizing: border-box; outline:none; padding-left:15px; font-size: 16px; width: 557px; height: 42px; border:1px solid #D1D5DB; border-radius: 6px;">
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display: flex; margin-top: 20px; gap: 25px;">
+                        <div>
+                            <div style="display: flex;"><div style="margin-right: 2px;">운용사</div><div style="color: red;">*</div></div>
+                            <div>
+                                <select name="famc" id="" style="margin-top: 13px; box-sizing: border-box; outline:none; padding-left:10px; font-size: 14px; width: 557px; height: 42px; border:1px solid #D1D5DB; border-radius: 6px;">
+                                    <option value="수협은행">수협은행</option>
+                                    <option value="하나증권">하나증권</option>
+                                    <option value="수협은행(연금저축)">수협은행(연금저축)</option>
+                                    <option value="하이자산운용">하이자산운용</option>
+                                    <option value="KCGI자산운용">KCGI자산운용</option>
+                                    <option value="BNK자산운용">BNK자산운용</option>
+                                    <option value="한국투신운용">한국투신운용</option>
+                                    <option value="푸르덴셜자산운용">푸르덴셜자산운용</option>
+                                    <option value="삼성자산운용">삼성자산운용</option>
+                                    <option value="우리자산운용">우리자산운용</option>
+                                    <option value="교보악사자산운용">교보악사자산운용</option>
+                                    <option value="신영자산운용">신영자산운용</option>
+                                    <option value="신한자산운용">신한자산운용</option>
+                                    <option value="맥쿼리투자신탁운용">맥쿼리투자신탁운용</option>
+                                    <option value="한화자산운용">한화자산운용</option>
+                                    <option value="DB자산운용">DB자산운용</option>
+                                    <option value="프랭클린템플턴투신">프랭클린템플턴투신</option>
+                                    <option value="유진자산운용">유진자산운용</option>
+                                    <option value="KB자산운용">KB자산운용</option>
+                                    <option value="맵스자산운용">맵스자산운용</option>
+                                    <option value="HDC자산운용">HDC자산운용</option>
+                                    <option value="이스트스프링자산운용">이스트스프링자산운용</option>
+                                    <option value="슈로더투자신탁운용">슈로더투자신탁운용</option>
+                                    <option value="도이치자산운용">도이치자산운용</option>
+                                    <option value="NH-Amundi자산운용">NH-Amundi자산운용</option>
+                                    <option value="피델리티자산운용">피델리티자산운용</option>
+                                    <option value="미래에셋자산운용">미래에셋자산운용</option>
+                                    <option value="키움투자자산운용">키움투자자산운용</option>
+                                    <option value="IBK자산운용">IBK자산운용</option>
+                                    <option value="베어링자산운용">베어링자산운용</option>
+                                    <option value="마이다스에셋자산운용">마이다스에셋자산운용</option>
+                                    <option value="다올자산운용">다올자산운용</option>
+                                    <option value="유리자산운용">유리자산운용</option>
+                                    <option value="타임폴리오자산운용">타임폴리오자산운용</option>
+                                    <option value="트러스톤자산운용">트러스톤자산운용</option>
+                                    <option value="VIP자산운용">VIP자산운용</option>
+                                    <option value="한국투자벨류자산운용">한국투자벨류자산운용</option>
+                                    <option value="AB자산운용">AB자산운용</option>
+                                    <option value="에셋플러스자산운용(주)">에셋플러스자산운용(주)</option>
+                                    <option value="한국투자증권(사모운용)">한국투자증권(사모운용)</option>
+                                    <option value="하나금융투자(연금저축)">하나금융투자(연금저축)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div>
+                            <div style="display: flex;"><div style="margin-right: 2px;">펀드유형</div><div style="color: red;">*</div></div>
+                            <div>
+                                <select name="ftype" id="" style="margin-top: 13px; box-sizing: border-box; outline:none; padding-left:10px; font-size: 14px; width: 557px; height: 42px; border:1px solid #D1D5DB; border-radius: 6px;">
+                                    <option value="MMF">MMF</option>
+                                    <option value="채권형">채권형</option>
+                                    <option value="채권혼합형">채권혼합형</option>
+                                    <option value="주식혼합형">주식혼합형</option>
+                                    <option value="주식형">주식형</option>
+                                    <option value="파생상품형">파생상품형</option>
+                                    <option value="재간접">재간접</option>
+                                    <option value="혼합형">혼합형</option>
+                                    <option value="원자재">원자재</option>
+                                    <option value="부동산">부동산</option>
+                                    <option value="기타">기타</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display: flex; margin-top: 20px; gap: 25px;">
+                        <div>
+                            <div style="display: flex;"><div style="margin-right: 2px;">기준가</div><div style="color: red;">*</div></div>
+                            <div>
+                                <div class="input-suffix" style="margin-top:13px;">
+                                    <input type="number" name="frefpr" step="0.01" placeholder="0.00">
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div style="display: flex;"><div style="margin-right: 2px;">설정일</div><div style="color: red;">*</div></div>
+                            <div style="margin-top:13px;">
+                                <input type="date" name="fsetdt" id="startDate" class="date-input" placeholder="설정일" aria-label="시작일">
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display: flex; margin-top: 20px; gap: 25px;">
+                        <div>
+                            <div style="display: flex;"><div style="margin-right: 2px;">총 보수</div><div style="color: red;">*</div></div>
+                            <div>
+                                <div class="input-suffix" style="margin-top:13px;">
+                                    <input type="number" name="ftc" step="0.0001" placeholder="0.0000">
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div style="display: flex;"><div style="margin-right: 2px;">1개월 수익률</div><div style="color: red;">*</div></div>
+                            <div>
+                                <div class="input-suffix" style="margin-top:13px;">
+                                    <input type="number" name="fm1pr" step="0.01" placeholder="0.00">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display: flex; margin-top: 20px; gap: 25px;">
+                        <div>
+                            <div style="display: flex;"><div style="margin-right: 2px;">3개월 수익률</div><div style="color: red;">*</div></div>
+                            <div>
+                                <div class="input-suffix" style="margin-top:13px;">
+                                    <input type="number" name="fm3pr" step="0.01" placeholder="0.00">
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div style="display: flex;"><div style="margin-right: 2px;">6개월 수익률</div><div style="color: red;">*</div></div>
+                            <div>
+                                <div class="input-suffix" style="margin-top:13px;">
+                                    <input type="number" name="fm6pr" step="0.01" placeholder="0.00">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display: flex; margin-top: 20px; gap: 25px;">
+                        <div>
+                            <div style="display: flex;"><div style="margin-right: 2px;">12개월 수익률</div><div style="color: red;">*</div></div>
+                            <div>
+                                <div class="input-suffix" style="margin-top:13px;">
+                                    <input type="number" name="fm12pr" step="0.01" placeholder="0.00">
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div style="display: flex;"><div style="margin-right: 2px;">누적 수익률</div><div style="color: red;">*</div></div>
+                            <div>
+                                <div class="input-suffix" style="margin-top:13px;">
+                                    <input type="number" name="facmpr" step="0.01" placeholder="0.00">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="padding: 25px; margin-top:25px; background-color: white; border-radius: 16px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); border: 1px solid #E5E7EB; overflow: hidden;">
+                <div style="display: flex; gap: 10px; justify-content: space-between;">
+                    <div>
+                        <button type="button" class="btn-pressable btn-sheen" id="btnPrint" style="box-sizing: border-box; width: 120px; height: 42px; border:none; border-radius: 8px; cursor: pointer; border:1px solid #D1D5DB; background-color: white;">
+                            <div style="display: flex; gap: 8px; justify-content: center;">
+                                <div>
+                                    <svg width="20" height="18" viewBox="0 0 20 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M6 18C5.45 18 4.97933 17.8043 4.588 17.413C4.19667 17.0217 4.00067 16.5507 4 16V14H2C1.45 14 0.979333 13.8043 0.588 13.413C0.196667 13.0217 0.000666667 12.5507 0 12V8C0 7.15 0.291667 6.43767 0.875 5.863C1.45833 5.28833 2.16667 5.00067 3 5H17C17.85 5 18.5627 5.28767 19.138 5.863C19.7133 6.43833 20.0007 7.15067 20 8V12C20 12.55 19.8043 13.021 19.413 13.413C19.0217 13.805 18.5507 14.0007 18 14H16V16C16 16.55 15.8043 17.021 15.413 17.413C15.0217 17.805 14.5507 18.0007 14 18H6ZM16 4H4V2C4 1.45 4.196 0.979333 4.588 0.588C4.98 0.196667 5.45067 0.000666667 6 0H14C14.55 0 15.021 0.196 15.413 0.588C15.805 0.98 16.0007 1.45067 16 2V4ZM16 9.5C16.2833 9.5 16.521 9.404 16.713 9.212C16.905 9.02 17.0007 8.78267 17 8.5C16.9993 8.21733 16.9033 7.98 16.712 7.788C16.5207 7.596 16.2833 7.5 16 7.5C15.7167 7.5 15.4793 7.596 15.288 7.788C15.0967 7.98 15.0007 8.21733 15 8.5C14.9993 8.78267 15.0953 9.02033 15.288 9.213C15.4807 9.40567 15.718 9.50133 16 9.5ZM6 16H14V12H6V16Z" fill="#374151"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    인쇄하기
+                                </div>
+                            </div>
+                        </button>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <div>
+                            <button type="button"
+                                    th:onclick="|location.href='@{/admin/prod}'|"
+                                    class="btn-pressable btn-sheen" style="box-sizing: border-box; width: 65px; height: 42px; border:none; border-radius: 8px; cursor: pointer; border:1px solid #D1D5DB; background-color: white;">취소</button>
+                        </div>
+                        <div>
+                            <button type="submit" class="btn-register" style="gap:6px; box-sizing: border-box; width: 120px; height: 42px; background-color: #D91A1A; color: white; border:none; border-radius: 8px; cursor: pointer;">
+                                <div style="display: flex; justify-content: center; align-items: center; gap: 8px;">
+                                    <svg width="14" height="16" viewBox="0 0 14 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <g clip-path="url(#clip0_454_136)">
+                                            <path d="M2 1C0.896875 1 0 1.89688 0 3V13C0 14.1031 0.896875 15 2 15H12C13.1031 15 14 14.1031 14 13V5.41563C14 4.88438 13.7906 4.375 13.4156 4L11 1.58438C10.625 1.20938 10.1156 1 9.58438 1H2ZM2 4C2 3.44688 2.44688 3 3 3H9C9.55313 3 10 3.44688 10 4V6C10 6.55312 9.55313 7 9 7H3C2.44688 7 2 6.55312 2 6V4ZM7 9C7.53043 9 8.03914 9.21071 8.41421 9.58579C8.78929 9.96086 9 10.4696 9 11C9 11.5304 8.78929 12.0391 8.41421 12.4142C8.03914 12.7893 7.53043 13 7 13C6.46957 13 5.96086 12.7893 5.58579 12.4142C5.21071 12.0391 5 11.5304 5 11C5 10.4696 5.21071 9.96086 5.58579 9.58579C5.96086 9.21071 6.46957 9 7 9Z" fill="white"/>
+                                        </g>
+                                        <defs>
+                                            <clipPath id="clip0_454_136">
+                                                <path d="M0 0H14V16H0V0Z" fill="white"/>
+                                            </clipPath>
+                                        </defs>
+                                    </svg>
+                                    <div>
+                                        상품 등록
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</main>
+
+<div id="bnk-chatbot-container" style="position: fixed; right: 20px; bottom: 20px; z-index: 9999;">
+    <div id="bnk-chatbot-slot"></div>
+</div>
+<script>
+    /**
+     * 외부 HTML을 불러와서:
+     *  - <link rel="stylesheet">, <style>는 <head>로 옮기고
+     *  - <script>는 실행되도록 새로 만들어 붙이고 (src/inline, module 모두 지원)
+     *  - 나머지 DOM(예: <flowise-chatbot> / <flowise-embed>)은 mount에 삽입
+     */
+    async function importHtmlWithAssets(url, mountSelector) {
+        const res = await fetch(url, { credentials: 'same-origin' });
+        if (!res.ok) throw new Error(`Failed to load ${url}`);
+        const html = await res.text();
+
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+
+        // 1) <link rel="stylesheet"> 들을 <head>로
+        doc.querySelectorAll('link[rel="stylesheet"]').forEach(link => {
+            // 중복 로드 방지
+            const href = link.getAttribute('href');
+            if (href && ![...document.head.querySelectorAll('link[rel="stylesheet"]')]
+                .some(l => l.getAttribute('href') === href)) {
+                document.head.appendChild(link.cloneNode(true));
+            }
+        });
+
+        // 2) <style> 들을 <head>로
+        doc.querySelectorAll('style').forEach(styleEl => {
+            const clone = document.createElement('style');
+            // CSS 텍스트 보존
+            clone.textContent = styleEl.textContent;
+            // (가능한 속성 복사)
+            [...styleEl.attributes].forEach(a => clone.setAttribute(a.name, a.value));
+            document.head.appendChild(clone);
+        });
+
+        // 3) 본문 콘텐츠를 mount에 붙임 (스크립트 제외)
+        const mount = document.querySelector(mountSelector);
+        // fragment 구성
+        const frag = document.createDocumentFragment();
+        [...doc.body.children].forEach(node => {
+            if (node.tagName.toLowerCase() !== 'script') frag.appendChild(node.cloneNode(true));
+        });
+        mount.appendChild(frag);
+
+        // 4) 스크립트 실행 (src/inline/module 지원, 순서 보장)
+        const scripts = [...doc.querySelectorAll('script')];
+        for (const oldScript of scripts) {
+            const newScript = document.createElement('script');
+            // type/module/defer 등 속성 복사
+            [...oldScript.attributes].forEach(attr => newScript.setAttribute(attr.name, attr.value));
+            if (oldScript.src) {
+                // 네트워크 로드를 기다려 실행 순서 유지
+                await new Promise((resolve, reject) => {
+                    newScript.onload = resolve;
+                    newScript.onerror = resolve;   // 실패해도 진행(브랜딩 제거 같은 선택 기능 보호)
+                    document.body.appendChild(newScript);
+                });
+            } else {
+                // inline 코드 복사
+                newScript.textContent = oldScript.textContent || '';
+                document.body.appendChild(newScript);
+            }
+        }
+    }
+
+    // 실제 호출: 기존 chatbot.html(또는 chatbot_test.html) 경로로 바꿔도 됩니다.
+    importHtmlWithAssets('/components/chatbot_test.html', '#bnk-chatbot-slot')
+        .catch(err => console.error('[Chatbot load failed]', err));
+</script>
+<script>
+    const startEl = document.getElementById('startDate');
+    const endEl   = document.getElementById('endDate');
+
+    // 인풋 자체 클릭으로는 열지 않으려면 주석 해제해서 막아도 됩니다.
+    [startEl, endEl].forEach(el => {
+        if (!el) return;
+        el.setAttribute('readonly', 'readonly'); // 기본 입력 금지
+        el.addEventListener('click', (e) => {
+            e.preventDefault();
+            openPicker(el);
+        });
+    });
+
+    // 아이콘 클릭 -> 네이티브 달력 열기
+    document.querySelectorAll('.calendar-btn').forEach((btn) => {
+        const input = btn.previousElementSibling; // 바로 앞의 input[type=date]
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            openPicker(input);
+        });
+    });
+
+    // 달력 오픈 핼퍼: showPicker 지원 시 사용, 아니면 click()을 위한 임시 readonly 해제
+    function openPicker(input) {
+        if (!input) return;
+
+        const wasReadonly = input.hasAttribute('readonly');
+        if (wasReadonly) input.removeAttribute('readonly');
+
+        // 일부 브라우저는 focus 후 click이 더 안정적
+        input.focus();
+        if (typeof input.showPicker === 'function') {
+            input.showPicker();
+        } else {
+            input.click(); // Firefox/사파리 등 대안
+        }
+
+        // 잠시 뒤 다시 readonly 복구 (즉시 복구하면 UI가 막히는 브라우저가 있음)
+        if (wasReadonly) setTimeout(() => {
+            input.setAttribute('readonly', 'readonly');
+        }, 200);
+    }
+
+    // 시작일 선택 시 마감일 최소 날짜 자동 보정
+    function clampEndMin() {
+        if (!startEl || !endEl) return;
+        endEl.min = startEl.value || '';
+        if (endEl.value && startEl.value && endEl.value < startEl.value) {
+            endEl.value = startEl.value;
+        }
+    }
+    startEl && startEl.addEventListener('change', clampEndMin);
+
+    // (옵션) 오늘 이전 선택 금지
+    // const today = new Date().toISOString().slice(0,10);
+    // startEl.min = today; endEl.min = today;
+</script>
+<script>
+    (function(){
+        const MAX_BYTES = 10 * 1024 * 1024; // 10MB
+        const ALLOW = ['application/pdf',
+            'application/msword',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+        const dropzone = document.getElementById('termsDropzone');
+        const input    = document.getElementById('termsFile');
+        const result   = document.getElementById('termsResult');
+
+        // 클릭/엔터/스페이스로 파일 선택
+        dropzone.addEventListener('click', () => input.click());
+        dropzone.addEventListener('keydown', (e)=>{
+            if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); input.click(); }
+        });
+
+        // 드래그 스타일링
+        ['dragenter','dragover'].forEach(ev =>
+            dropzone.addEventListener(ev, (e)=>{ e.preventDefault(); e.dataTransfer.dropEffect='copy'; dropzone.classList.add('is-dragover'); })
+        );
+        ['dragleave','dragend','drop'].forEach(ev =>
+            dropzone.addEventListener(ev, ()=> dropzone.classList.remove('is-dragover'))
+        );
+
+        // 드롭 처리
+        dropzone.addEventListener('drop', (e)=>{
+            e.preventDefault();
+            const file = e.dataTransfer.files && e.dataTransfer.files[0];
+            if (file) setFile(file);
+        });
+
+        // 파일 선택 처리
+        input.addEventListener('change', ()=>{
+            const file = input.files && input.files[0];
+            if (file) setFile(file);
+        });
+
+        // 파일 세팅 + 검증
+        function setFile(file){
+            const err = validate(file);
+            if (err){
+                result.innerHTML = `<div class="error">${err}</div>`;
+                // 입력 초기화
+                input.value = '';
+                return;
+            }
+            // input.files 갱신(폼 제출용)
+            const dt = new DataTransfer();
+            dt.items.add(file);
+            input.files = dt.files;
+
+            result.innerHTML = renderChip(file);
+            // 제거 버튼
+            result.querySelector('.file-remove')?.addEventListener('click', ()=>{
+                input.value = '';
+                result.textContent = '';
+            });
+        }
+
+        function validate(file){
+            if (!ALLOW.includes(file.type)) {
+                // 일부 브라우저는 mime이 비어있을 수 있어 확장자로 보조검사
+                const ext = file.name.split('.').pop()?.toLowerCase();
+                if (!['pdf','doc','docx'].includes(ext)) return '허용되지 않는 파일 형식입니다. (PDF, DOC, DOCX만 가능)';
+            }
+            if (file.size > MAX_BYTES) return '파일 용량이 10MB를 초과했습니다.';
+            return '';
+        }
+
+        function renderChip(file){
+            const size = prettyBytes(file.size);
+            return `
+        <span class="file-chip">
+          <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 7a2 2 0 0 1 2-2h7l5 5v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7z"
+                  fill="none" stroke="#6B7280" stroke-width="1.4"/>
+          </svg>
+          <span>${file.name}</span>
+          <span class="size">(${size})</span>
+          <button type="button" class="file-remove" aria-label="파일 제거">✕</button>
+        </span>`;
+        }
+
+        function prettyBytes(bytes){
+            if (bytes < 1024) return `${bytes} B`;
+            if (bytes < 1024*1024) return `${(bytes/1024).toFixed(1)} KB`;
+            return `${(bytes/1024/1024).toFixed(1)} MB`;
+        }
+    })();
+</script>
+<script>
+    // 인쇄 버튼 클릭 시 브라우저 인쇄 다이얼로그 호출
+    (function(){
+        const btn = document.getElementById('btnPrint');
+        if (!btn) return;
+        btn.addEventListener('click', function(){
+            // 필요시 인쇄 전 준비 로직을 여기서 처리 (예: 임시로 펼치기 등)
+            window.print();
+        });
+    })();
+</script>
+<footer>
+    <div th:replace="~{layouts/footer.html}"></div>
+</footer>
+</body>
+</html>

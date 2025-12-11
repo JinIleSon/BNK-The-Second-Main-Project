@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>고객상담>영업점찾기</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        /*----------------------------------*/
+        /*--전체 페이지--*/
+        /*----------------------------------*/
+        body {
+            font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+            background: #F6F6F8;
+            margin: 0;
+            color: #222;
+            padding-top: 100px;
+        }
+
+
+        .consultation-page{
+            display:flex;
+            gap:40px;
+            width: 1200px;
+            margin: 60px auto;
+            padding: 40px 20px;
+            background: #F6F6F8;
+            border-radius: 8px;
+            margin-bottom: 100px;
+        }
+
+        /*----------------------------------*/
+        /*--왼쪽 사이드바--*/
+        /*----------------------------------*/
+        .all-sidebar{
+            width: 250px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        .all-sidebar h2{
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .sidebar-menu {
+            list-style:none;
+            padding: 20px;
+            margin: 0 0 40px 0;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            background: #fff;
+            box-shadow: 0 4px 4px rgba(0,0,0,0.08);
+        }
+
+        .sidebar-menu h2{
+            font-size: 17px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 16px;
+        }
+
+        .sidebar-menu li{
+            padding: 12px 16px;
+            border-radius:  6px;
+            color: #555;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .sidebar-menu li:hover {
+            background: #f2f2f2;
+        }
+
+        .sidebar-menu li.active{
+            background: #ffe6e6;
+            border-left: 4px solid #d91a1a;
+            color: #d91a1a;;
+            font-weight:  600;
+            padding-left: 12px;
+        }
+
+        .sidebar-menu li:last-child{
+            border-bottom: none;
+        }
+
+        /*----------------------------------*/
+        /*--추가 도움--*/
+        /*----------------------------------*/
+        .all-help{
+            background: linear-gradient(135deg,#e62b2b, #7e2020);
+            color: #fff;
+            border-radius: 12px;
+            padding: 24px 20px;
+            margin-top: 0px;
+            text-align: center;
+            box-shadow: 0 4px 4px rgba(0,0,0,0.08);
+        }
+
+        .help-box h3{
+            font-size: 17px;
+            margin-bottom: 6px;
+        }
+
+        .help-box p{
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        .help-buttons{
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-call, .btn-chat{
+            padding: 8px 14px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-call{
+            background: #fff;
+            color: #d91a1a;
+        }
+
+        .btn-chat{
+            background:  transparent;
+            border: 1px solid #fff;
+            color: #fff;
+        }
+
+        /*----------------------------------*/
+        /*--메인 컨텐츠--*/
+        /*----------------------------------*/
+
+        .consultation-content{
+            flex: 1;
+        }
+
+        .consultation-header h1{
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .consultation-header p{
+            color: #666;
+            margin-bottom:  20px;
+        }
+
+        .consultation-search-all{
+            display: flex;
+            gap: 10px;
+        }
+
+        .consultation-search {
+            display: flex;
+            align-items: center;
+            border: 1px solid #ddd;
+            border-radius: 35px;
+            padding: 8px 8px;
+            background: #fafafa;
+            width: 100%;
+        }
+
+        /* 검색 버튼 */
+        .search-btn {
+            background: transparent;
+            border: none;
+            color: #D91A1A;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .consultation-search input{
+            border:none;
+            flex:1;
+            background: transparent;
+            padding: 8px;
+            outline: none;
+            font-size: medium;
+        }
+
+        .consultation-search button{
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        /* 왼쪽 셀렉트박스 */
+        .category-select {
+            border: 1.5px solid #ddd;
+            border-radius: 25px;
+            background: #fff;
+            padding: 14px 30px 14px 18px;
+            font-size: 16px;
+            color: #333;
+            appearance: none;
+            cursor: pointer;
+            background-image: url("data:image/svg+xml;utf8,<svg fill='gray' height='14' viewBox='0 0 20 20' width='14' xmlns='http://www.w3.org/2000/svg'><path d='M5.516 7.548l4.484 4.484 4.484-4.484L15.516 9l-6 6-6-6z'/></svg>");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            background-size: 14px;
+            transition: border-color 0.2s ease;
+        }
+
+        .category-select:hover,
+        .category-select:focus {
+            border-color: #D91A1A;
+            outline: none;
+        }
+
+        /*----------------------------------*/
+        /*-- 필요서류 안내 표 스타일 --*/
+        /*----------------------------------*/
+        .store-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            box-sizing: border-box; /* ✅ flex 내부 폭 계산 오류 방지 */
+            margin-top: 10px;
+        }
+
+        .store-table tr {
+            border-bottom: 1px solid #eee;
+        }
+
+        .store-table td {
+            padding: 20px 20px 20px 20px;
+            font-size: 15px;
+            color: #333;
+            cursor: pointer;
+            text-align: center;
+            transition: background 0.2s ease;
+        }
+
+        .store-table td:hover {
+            background: #fff3f3;
+            color: #d91a1a;
+        }
+
+        /* 강조 링크 */
+        .store-table a {
+            color: #d91a1a;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .store-table a:hover {
+            text-decoration: underline;
+        }
+
+        .detail-btn {
+            background: transparent;
+            color: #838383;
+            border: none;
+            border-radius: 4px;
+            padding: 4px 10px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .detail-btn:hover {
+            color: #d91a1a;
+        }
+        /*----------------------------------*/
+        /*-- 페이지네이션 --*/
+        /*----------------------------------*/
+        .pagination {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+            margin-top: 20px;
+            box-sizing: border-box; /* ✅ 내부 정렬 안정화 */
+        }
+
+        .pagination button {
+            border: 1px solid #ddd;
+            background: #fff;
+            color: #333;
+            border-radius: 4px;
+            padding: 6px 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .pagination button:hover {
+            background: #ffe6e6;
+            color: #d91a1a;
+        }
+
+        .pagination button.active {
+            background: #d91a1a;
+            color: #fff;
+            border-color: #d91a1a;
+        }
+
+        .pagination button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <!--헤더-->
+    <div th:replace="~{layouts/header}"></div>
+    
+    <div class="consultation-page">
+        <!--왼쪽 사이드바-->
+        <aside class="all-sidebar">
+            <ul class="sidebar-menu">
+                <h2>고객상담</h2>
+                <li><a href="./FAQ">FAQ</a></li>
+                <li><a href="./document">필요서류 안내</a></li>
+                <li><a href="./Q&A">Q&A</a></li>
+                <li class="active"><a href="./findStore">영업점 찾기</a></li>
+            </ul>
+
+            <!--추가 도움 영역-->
+            <section class="all-help">
+                <div class="help-box">
+                    <h3>추가 도움이 필요하신가요?</h3>
+                    <p>전문 상담원이 친절하게 도와드리겠습니다.</p>
+                    <div class="help-buttons">
+                        <button class="btn-call">전화상담</button>
+                        <button class="btn-chat">Talk상담</button>
+                    </div>
+                </div>
+            </section>
+        </aside>
+
+        <!--메인 컨텐츠-->
+        <main class="consultation-content">
+            <div class="consultation-header">
+                <h1>영업점 찾기</h1>
+                <p>빠르게 답을 찾으세요. 원하는 질문을 바로 검색할 수 있어요</p>
+
+                <div class="consultation-search-all">
+                    <select class="category-select">
+                        <option>ALL</option>
+                        <option>지역명</option>
+                        <option>영업점명</option>
+                        <option>지점코드</option>
+                        <option>주소로 찾기</option>
+                    </select>
+
+                    <div class="consultation-search">
+                        <input type="text" placeholder="검색어를 입력하세요">
+                        <button class="search-btn">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="consultation-list-top">
+                    <p>총 <strong>135</strong>건 현재: <strong>1/14</strong>페이지</p>
+                </div>
+
+                <!-- 표 구조 -->
+                <table class="store-table">
+                    <thead>
+                    <tr>
+                        <th style="padding-top: 20px; padding-bottom: 20px;">영업점명</th>
+                        <th style="padding-top: 20px; padding-bottom: 20px;">주소</th>
+                        <th style="padding-top: 20px; padding-bottom: 20px;">전화번호</th>
+                        <th style="padding-top: 20px; padding-bottom: 20px;">팩스번호</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!--js 로 데이터 채워짐-->
+                    </tbody>
+                </table>
+
+
+                <!-- 페이지네이션 -->
+                <div class="pagination">
+                    <button disabled><i class="fas fa-angle-double-left"></i></button>
+                    <button class="active">1</button>
+                    <button>2</button>
+                    <button>3</button>
+                    <button>4</button>
+                    <button>5</button>
+                    <button><i class="fas fa-angle-double-right"></i></button>
+                </div>
+        </main>
+    </div>
+
+    <!--푸터-->
+    <div th:replace="~{layouts/footer}"></div>
+</body>
+</html>
+<script>
+    // header 불러오기
+    fetch(`${contextPath}/layouts/header.html`)
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('header').innerHTML = data;
+        })
+        .catch(err => console.error('[Header load failed]', err));
+
+    // chatbot import 기능
+    async function importHtmlWithAssets(url, mountSelector) {
+        try {
+            const res = await fetch(url, { credentials: 'same-origin' });
+            if (!res.ok) throw new Error(`Failed to load ${url}`);
+            const html = await res.text();
+
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+
+            doc.querySelectorAll('link[rel="stylesheet"]').forEach(link => {
+                const href = link.getAttribute('href');
+                const exists = [...document.head.querySelectorAll('link[rel="stylesheet"]')]
+                    .some(l => l.getAttribute('href') === href);
+                if (!exists && href) document.head.appendChild(link.cloneNode(true));
+            });
+
+            doc.querySelectorAll('style').forEach(styleEl => {
+                const clone = document.createElement('style');
+                clone.textContent = styleEl.textContent;
+                [...styleEl.attributes].forEach(a => clone.setAttribute(a.name, a.value));
+                document.head.appendChild(clone);
+            });
+
+            const mount = document.querySelector(mountSelector);
+            const frag = document.createDocumentFragment();
+            [...doc.body.children].forEach(node => {
+                if (node.tagName.toLowerCase() !== 'script') frag.appendChild(node.cloneNode(true));
+            });
+            mount.appendChild(frag);
+
+            const scripts = [...doc.querySelectorAll('script')];
+            for (const oldScript of scripts) {
+                const newScript = document.createElement('script');
+                [...oldScript.attributes].forEach(attr => newScript.setAttribute(attr.name, attr.value));
+                if (oldScript.src) {
+                    await new Promise(resolve => {
+                        newScript.onload = resolve;
+                        newScript.onerror = resolve;
+                        document.body.appendChild(newScript);
+                    });
+                } else {
+                    newScript.textContent = oldScript.textContent || '';
+                    document.body.appendChild(newScript);
+                }
+            }
+        } catch (err) {
+            console.error('[Chatbot load failed]', err);
+        }
+    }
+
+    // chatbot 불러오기
+    importHtmlWithAssets('/components/chatbot_test.html', '#bnk-chatbot-slot');
+
+    // footer 불러오기
+    fetch(`${contextPath}/layouts/footer.html`)
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('footer').innerHTML = data;
+        })
+        .catch(err => console.error('[Footer load failed]', err));
+
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", async () => {
+        //////////////////////////////////
+        // 서버에서 문서 목록 불러오기
+        //////////////////////////////////
+        let branchData = [];
+        try {
+            const res = await fetch('/BNK/api/branch');
+            if (!res.ok) throw new Error('서버 응답 오류');
+            branchData = await res.json();
+        } catch (err) {
+            console.error("데이터 불러오기 실패:", err);
+            alert("지점 정보를 불러오지 못했습니다. 서버 상태를 확인해주세요.");
+            return;
+        }
+
+        //////////////////////////////////
+        // pagination + 검색
+        //////////////////////////////////
+        const rowsPerPage = 5;
+        let currentPage = 1;
+        let filteredData = [...branchData]; // ✅ 수정됨
+
+        const tbody = document.querySelector(".store-table tbody");
+        const pagination = document.querySelector(".pagination");
+        const totalCount = document.querySelector(".consultation-list-top strong:first-child");
+        const pageInfo = document.querySelector(".consultation-list-top strong:last-child");
+
+        const searchBtn = document.querySelector(".search-btn");
+        const searchInput = document.querySelector(".consultation-search input");
+        const categorySelect = document.querySelector(".category-select");
+
+        // 검색 필터 함수
+        function filterData() {
+            const keyword = searchInput.value.trim().toLowerCase();
+            const category = categorySelect.value;
+
+            if (!keyword) {
+                filteredData = [...branchData]; // ✅ 수정됨
+            } else {
+                filteredData = branchData.filter(branch => { // ✅ 수정됨
+                    const name = branch.brname?.toLowerCase() || "";
+                    const addr = branch.braddr?.toLowerCase() || "";
+                    const tel = branch.brtel?.toLowerCase() || "";
+                    const fax = branch.brfax?.toLowerCase() || "";
+                    const id = branch.brid?.toString() || "";
+
+                    switch (category) {
+                        case "영업점명":
+                            return name.includes(keyword);
+                        case "주소로 찾기":
+                        case "지역명":
+                            return addr.includes(keyword);
+                        case "지점코드":
+                            return id.includes(keyword);
+                        case "ALL":
+                        default:
+                            return (
+                                name.includes(keyword) ||
+                                addr.includes(keyword) ||
+                                tel.includes(keyword) ||
+                                fax.includes(keyword) ||
+                                id.includes(keyword)
+                            );
+                    }
+                });
+            }
+
+            currentPage = 1;
+            updatePage();
+        }
+
+        // 테이블 렌더링
+        function renderTable(page) {
+            tbody.innerHTML = "";
+
+            const start = (page - 1) * rowsPerPage;
+            const end = start + rowsPerPage;
+            const pageData = filteredData.slice(start, end);
+
+            if (pageData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" style="padding:40px; color:#999;">검색 결과가 없습니다.</td></tr>`;
+            } else {
+                pageData.forEach(branch => { // ✅ 필드명 모두 수정됨
+                    const row = `
+          <tr>
+            <td>${branch.brname}<br><button class="detail-btn">상세보기</button></td>
+            <td>${branch.braddr}</td>
+            <td>${branch.brtel}</td>
+            <td>${branch.brfax}</td>
+          </tr>`;
+                    tbody.insertAdjacentHTML("beforeend", row);
+                });
+            }
+
+            totalCount.textContent = filteredData.length;
+            pageInfo.textContent = `${page}/${Math.ceil(filteredData.length / rowsPerPage) || 1}`;
+        }
+
+        // 페이지네이션 렌더링
+        function renderPagination() {
+            pagination.innerHTML = "";
+            const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+
+            const firstBtn = document.createElement("button");
+            firstBtn.innerHTML = '<i class="fas fa-angle-double-left"></i>';
+            firstBtn.disabled = currentPage === 1;
+            firstBtn.addEventListener("click", () => {
+                currentPage = 1;
+                updatePage();
+            });
+            pagination.appendChild(firstBtn);
+
+            for (let i = 1; i <= totalPages; i++) {
+                const btn = document.createElement("button");
+                btn.textContent = i;
+                if (i === currentPage) btn.classList.add("active");
+                btn.addEventListener("click", () => {
+                    currentPage = i;
+                    updatePage();
+                });
+                pagination.appendChild(btn);
+            }
+
+            const lastBtn = document.createElement("button");
+            lastBtn.innerHTML = '<i class="fas fa-angle-double-right"></i>';
+            lastBtn.disabled = currentPage === totalPages || totalPages === 0;
+            lastBtn.addEventListener("click", () => {
+                currentPage = totalPages;
+                updatePage();
+            });
+            pagination.appendChild(lastBtn);
+        }
+
+        // 페이지 업데이트
+        function updatePage() {
+            renderTable(currentPage);
+            renderPagination();
+        }
+
+        // 이벤트 연결
+        searchBtn.addEventListener("click", filterData);
+        searchInput.addEventListener("keydown", e => {
+            if (e.key === "Enter") filterData();
+        });
+
+        // 초기 실행
+        updatePage();
+    });
+</script>
+

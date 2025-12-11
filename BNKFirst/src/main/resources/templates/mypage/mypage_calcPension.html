@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>mypage_calcPension</title>
+    <style>
+        main {
+            background-color: #F6F6F8;
+            padding: 10px 20px 80px;
+        }
+        body {
+            background-color: #F6F6F8;
+        }
+        /* 공통 링크(카드 전체 클릭) */
+        .menu-link{ text-decoration:none; color:inherit; display:block; }
+
+        /* 카드 기본 */
+        .menu-card{
+            background:#fff; width:280px; height:200px; border-radius:16px;
+            border:1px solid #E5E7EB; box-shadow:0 2px 8px rgba(0,0,0,.05);
+            transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease, background-color .22s ease;
+            cursor:pointer; will-change: transform;
+        }
+
+        /* Hover: 살짝 떠오르고 그림자 강화, 보더 강조 */
+        .menu-card:hover{
+            transform: translateY(-4px);
+            box-shadow:0 10px 24px rgba(0,0,0,.10);
+            border-color:#D1D5DB;        /* 더 선명한 테두리 */
+            background-color:#FCFCFD;    /* 아주 미세한 톤 변화 */
+        }
+
+        /* Active(눌렀을 때): 프레스 느낌 */
+        .menu-card:active{
+            transform: translateY(-1px) scale(.995);
+            box-shadow:0 6px 16px rgba(0,0,0,.08);
+        }
+
+        /* 키보드 포커스 접근성: 트렌디한 링 */
+        .menu-link:focus-visible .menu-card{
+            outline:none;
+            box-shadow:0 0 0 2px #fff, 0 0 0 4px rgba(59,130,246,.55); /* 흰색-파랑 이중링 */
+            transform: translateY(-2px);
+        }
+
+        /* 모션 최소화 선호 사용자 배려 */
+        @media (prefers-reduced-motion: reduce){
+            .menu-card, .menu-card:hover, .menu-card:active{
+                transition:none; transform:none; box-shadow:0 2px 8px rgba(0,0,0,.05);
+            }
+            .menu-link:focus-visible .menu-card{ box-shadow:0 0 0 3px rgba(59,130,246,.55); }
+        }
+    </style>
+    <style>
+        .btn-register {
+            --bg1: #D91A1A;
+            --bg2: #F03A3A;
+            --shadow: rgba(217,26,26,.45);
+            position: relative;
+            box-sizing: border-box;
+            width: 90px; height: 42px;
+            border: none; border-radius: 8px;
+            color: #fff; cursor: pointer;
+            background: linear-gradient(180deg, var(--bg2), var(--bg1));
+            outline: none;
+            box-shadow: 0 6px 14px -10px var(--shadow);
+            transition:
+                    background .18s ease,
+                    box-shadow .18s ease,
+                    transform .12s ease; /* 프레스만 사용할 예정 */
+            will-change: background, box-shadow, transform;
+        }
+
+        /* Hover: 컬러와 섀도우만 아주 미세하게 (리프트 없음) */
+        .btn-register:hover {
+            background: linear-gradient(180deg, #f24a4a, #d61a1a);
+            box-shadow: 0 8px 18px -12px var(--shadow);
+            transform: none; /* 확실하게 떠오르지 않도록 고정 */
+        }
+
+        /* Active: 살짝 눌리는 프레스 효과만 */
+        .btn-register:active {
+            transform: scale(.98);
+            box-shadow: 0 4px 10px -10px var(--shadow);
+        }
+
+        /* 키보드 포커스 접근성 */
+        .btn-register:focus-visible {
+            outline: 3px solid rgba(240,58,58,.55);
+            outline-offset: 2px;
+        }
+
+        /* 모션 최소화 존중 */
+        @media (prefers-reduced-motion: reduce) {
+            .btn-register { transition: none !important; }
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .btn-register { --shadow: rgba(240,58,58,.35); }
+        }
+    </style>
+    <style>
+        /* 공통 링크(카드 전체 클릭) */
+        .menu-link{ text-decoration:none; color:inherit; display:block; }
+
+        /* 카드 기본 */
+        .menu-card{
+            background:#fff; width:280px; height:200px; border-radius:16px;
+            border:1px solid #E5E7EB; box-shadow:0 2px 8px rgba(0,0,0,.05);
+            transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease, background-color .22s ease;
+            cursor:pointer; will-change: transform;
+        }
+
+        /* Hover: 살짝 떠오르고 그림자 강화, 보더 강조 */
+        .menu-card:hover{
+            transform: translateY(-4px);
+            box-shadow:0 10px 24px rgba(0,0,0,.10);
+            border-color:#D1D5DB;        /* 더 선명한 테두리 */
+            background-color:#FCFCFD;    /* 아주 미세한 톤 변화 */
+        }
+
+        /* Active(눌렀을 때): 프레스 느낌 */
+        .menu-card:active{
+            transform: translateY(-1px) scale(.995);
+            box-shadow:0 6px 16px rgba(0,0,0,.08);
+        }
+
+        /* 키보드 포커스 접근성: 트렌디한 링 */
+        .menu-link:focus-visible .menu-card{
+            outline:none;
+            box-shadow:0 0 0 2px #fff, 0 0 0 4px rgba(59,130,246,.55); /* 흰색-파랑 이중링 */
+            transform: translateY(-2px);
+        }
+
+        /* 모션 최소화 선호 사용자 배려 */
+        @media (prefers-reduced-motion: reduce){
+            .menu-card, .menu-card:hover, .menu-card:active{
+                transition:none; transform:none; box-shadow:0 2px 8px rgba(0,0,0,.05);
+            }
+            .menu-link:focus-visible .menu-card{ box-shadow:0 0 0 3px rgba(59,130,246,.55); }
+        }
+
+        /* 전체 레이아웃 */
+        .slider-container {
+            display: flex;
+            gap: 80px;            /* 슬라이더 사이 간격 */
+            align-items: flex-start;
+            font-family: "Noto Sans KR", system-ui, -apple-system, BlinkMacSystemFont,
+            "Segoe UI", sans-serif;
+        }
+
+        /* 각 슬라이더 그룹 */
+        .slider-group {
+            width: 260px;
+        }
+
+        /* 위쪽 타이틀 + 값 */
+        .slider-title {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .slider-title span:first-child {
+            color: #555;
+        }
+
+        .slider-value {
+            font-weight: 700;
+        }
+
+        /* 아래쪽 최소/최대 값 */
+        .slider-min-max {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 6px;
+            font-size: 13px;
+            color: #888;
+        }
+
+        /* 공통 range 스타일 */
+        .age-range {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 8px;
+            border-radius: 999px;
+            background: linear-gradient(
+                    to right,
+                    #DE0000 0%,
+                    #DE0000 var(--range-progress, 50%),
+                    #e5e5e5 var(--range-progress, 50%),
+                    #e5e5e5 100%
+            );
+            outline: none;
+            cursor: pointer;
+        }
+
+        /* WebKit: 트랙 제거용 (실제 배경은 위에 background 사용) */
+        .age-range::-webkit-slider-runnable-track {
+            -webkit-appearance: none;
+            height: 8px;
+            background: transparent;
+        }
+
+        /* WebKit: 핸들 */
+        .age-range::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: #ffffff;
+            border: 1px solid #d6d6d6;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+            margin-top: -9px; /* 트랙 중앙 정렬 */
+        }
+
+        /* Firefox용 트랙/핸들 */
+        .age-range::-moz-range-track {
+            height: 8px;
+            border-radius: 999px;
+            background: transparent;
+        }
+
+        .age-range::-moz-range-progress {
+            height: 8px;
+            border-radius: 999px 0 0 999px;
+            background: #0e8a6c;
+        }
+
+        .age-range::-moz-range-thumb {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: #ffffff;
+            border: 1px solid #d6d6d6;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+        .living-btn{
+            min-width: 90px;
+            height: 40px;
+            padding: 0 16px;
+            border-radius: 8px;
+            border: 1px solid #d1d5db;
+            background-color: #ffffff;
+            font-size: 14px;
+            color: #333;
+            cursor: pointer;
+            margin-right: 8px;
+            transition: background-color .15s ease, border-color .15s ease, box-shadow .15s ease;
+        }
+        .living-btn:last-child{
+            margin-right: 0;
+        }
+        .living-btn:hover{
+            background-color: #f3f4f6;
+            border-color: #cbd5e1;
+            box-shadow: 0 1px 4px rgba(0,0,0,.08);
+        }
+        .living-btn:active{
+            box-shadow: none;
+            transform: translateY(1px);
+        }
+    </style>
+    <style>
+        .btn-outline-brand,
+        .btn-brand{
+            transition: background-color .18s ease, color .18s ease,
+            border-color .18s ease, box-shadow .22s ease,
+            transform .08s ease;
+            border-radius: 8px;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* 외곽선 버튼 기본 */
+        .btn-outline-brand{
+            background:#fff;
+            color: var(--brand);
+            border: 1px solid var(--brand);
+        }
+        /* 외곽선 버튼 :hover / :focus-visible */
+        .btn-outline-brand:hover{
+            background: var(--brand);
+            color:#fff;
+            box-shadow:
+                    0 2px 8px rgba(0,0,0,.05),   /* 메인 그림자(블러/알파↓) */
+                    0 1px 2px rgba(0,0,0,.04);  /* 살짝 입체감 */
+        }
+        .btn-outline-brand:focus-visible{
+            outline: 2px solid #fff;
+            box-shadow: 0 0 0 1px color-mix(in srgb, var(--brand) 40%, transparent);
+        }
+        .btn-outline-brand:active{ transform: translateY(1px); }
+        /* 공통 버튼 레이아웃 */
+        .pension-type-btn {
+            width: 100%;
+            font-weight: 700;
+            padding: 15px;
+            margin-top: 10px;
+            box-sizing: border-box;
+            background-color: #ffffff;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        /* 기본: 비선택 상태 (#c7c7c7) */
+        .select-btn {
+            cursor: pointer;
+            border: 1px solid #c7c7c7;
+            color: #444;;
+            transition: 0.2s;
+        }
+
+        /* 선택된 버튼 (#de0000) */
+        .select-btn.active {
+            border: 1px solid #de0000;
+            color: #de0000;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div th:replace="~{layouts/header.html}"></div>
+</header>
+
+<main style=" display: flex; justify-content: center;">
+    <div style="width: 1200px; margin-top:20px;">
+        <div style="display: flex; justify-content: center;">
+            <div>
+                <div style="color: #252525;font-size: 40px;font-weight: 700;">
+                    연금 시뮬레이션
+                </div>
+                <div style="display: flex; border-bottom:1px solid #d3d3d3; margin-bottom: 60px;">
+                    <div style="width:50%; ">
+                        <a th:href="@{/mypage/calc}" style="text-decoration: none;">
+                            <div style="text-align: center; font-size: 25px;  margin-top: 70px;font-weight: 400; padding-bottom: 20px; margin-top: 70px; color: #686868;">은퇴설계 계산기</div>
+                        </a>
+                    </div>
+                    <div style="width:50%;border-bottom:3px solid #de0000;">
+                        <a href="#" style="text-decoration: none; ">
+                            <div style="text-align: center; font-size: 25px; font-weight: 700; color:#de0000; margin-top: 70px; padding-bottom: 20px;">연금 계산기</div>
+                        </a>
+                    </div>
+                </div>
+                <div style="font-size: 32px; font-weight: 700; margin-bottom: 35px;">
+                    연금 계산기
+                </div>
+                <div style="padding:60px; box-sizing: border-box; background-color: white; width: 800px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); border: 1px solid #E5E7EB;">
+                    <div style="color: #252525; font-weight: 700; font-size: 20px;">01. 연금 계산 방법을 선택해 주세요</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap:20px; margin-top: 20px;">
+                        <div>
+                            <button class="select-btn pension-type-btn" id="btn-by-method" >
+                                연금수령방법 기준
+                            </button>
+                        </div>
+                        <div>
+                            <button class="select-btn pension-type-btn" id="btn-by-asset">
+                                현재 보유자산 기준
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <form th:action="@{/mypage/calc/pension}" method="post" th:object="${form}">
+                <div id="section-by-method">
+                    <div style="margin-top:25px; padding:60px; box-sizing: border-box; background-color: white; width: 800px; height: 272px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); border: 1px solid #E5E7EB;">
+                        <div style="color: #252525; font-weight: 700; font-size: 20px;">02. 연금 수령주기를 선택해 주세요</div>
+                        <input type="hidden"
+                        id="pension-cycle-hidden"
+                        th:field="*{paymentCycleMonths}"/>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-top: 16px; gap: 15px;">
+                            <div style="width:100%;">
+                                <button type="button" class="select-btn pension-type-btn" value="1" style="width:100%;">
+                                    1개월
+                                </button>
+                            </div>
+                            <div style="width:100%;">
+                                <button type="button" class="select-btn pension-type-btn" value="3">
+                                    3개월
+                                </button>
+                            </div>
+                            <div style="width:100%;">
+                                <button type="button" class="select-btn pension-type-btn" value="6">
+                                    6개월
+                                </button>
+                            </div>
+                            <div style="width:100%;">
+                                <button type="button" class="select-btn pension-type-btn" value="12">
+                                    1년
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-top:25px; padding:60px; box-sizing: border-box; background-color: white; width: 800px; height: 422px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); border: 1px solid #E5E7EB;">
+                        <div style="color: #252525; font-weight: 700; font-size: 20px;">03. 희망하는 수령기간과 월 수령금액을 입력해 주세요</div>
+                        <div style="border-bottom: 1px solid #b5b5b5; display: flex; align-items: center; padding-bottom: 8px; margin-top: 30px;">
+                            <div style="color: #686868; margin-right: 8px;">수령기간</div>
+                            <div style="margin-right: 4px;"><input id="year-input" type="text" th:field="*{years}" placeholder="10~50" style="border:none;font-size: 30px; text-align: end; font-weight: 700; width: 580px;"></div>
+                            <div style="color: #1f1f1f; font-weight: 700;font-size: 23px; margin-bottom: 4px;">년</div>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-top: 16px;">
+                            <div style="margin-left: auto;">
+                                <button type="button" class="year-btn living-btn btn-pressable btn-sheen" data-amount2="10" style="border-radius: 8px;">10년</button>
+                                <button type="button" class="year-btn living-btn btn-pressable btn-sheen" data-amount2="15" style="border-radius: 8px;">15년</button>
+                                <button type="button" class="year-btn living-btn btn-pressable btn-sheen" data-amount2="20" style="border-radius: 8px;">20년</button>
+                                <button type="button" class="year-btn living-btn btn-pressable btn-sheen" data-amount2="30" style="border-radius: 8px;">30년</button>
+                            </div>
+                        </div>
+                        <div style="border-bottom: 1px solid #b5b5b5; display: flex; align-items: center; padding-bottom: 8px; margin-top: 30px;">
+                            <div style="color: #686868; margin-right: 8px;">월 수령금액</div>
+                            <div style="margin-right: 4px;"><input id="month-cost-input" type="text" th:field="*{monthlyAmountMan}" placeholder="1~10,000" style="border:none;font-size: 30px; text-align: end; font-weight: 700; width: 540px;"></div>
+                            <div style="color: #1f1f1f; font-weight: 700;font-size: 23px; margin-bottom: 4px;">만원</div>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-top: 16px;">
+                            <div style="margin-left: auto;">
+                                <button type="button" class="month-living-btn living-btn btn-pressable btn-sheen" data-amount="100" style="border-radius: 8px;">100만원</button>
+                                <button type="button" class="month-living-btn living-btn btn-pressable btn-sheen" data-amount="200" style="border-radius: 8px;">200만원</button>
+                                <button type="button" class="month-living-btn living-btn btn-pressable btn-sheen" data-amount="300" style="border-radius: 8px;">300만원</button>
+                                <button type="button" class="month-living-btn living-btn btn-pressable btn-sheen" data-amount="500" style="border-radius: 8px;">500만원</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-top:25px; padding:60px; box-sizing: border-box; background-color: white; width: 800px; height: 272px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); border: 1px solid #E5E7EB;">
+                        <div style="color: #252525; font-weight: 700; font-size: 20px;">04. 예상되는 연금부리이율을 입력해 주세요</div>
+                        <div class="slider-container" style="margin-top: 30px; margin-left: 40px;">
+                            <!-- 현재나이 -->
+                            <div class="slider-group">
+                                <div class="slider-title" style="text-align: center; width: 597px;">
+                                    <span style="font-size: 16px; margin-top: 1px;">연금부리이율</span>
+                                    <span class="slider-value" id="future-age-value">1.0%</span>
+                                </div>
+                                <input
+                                        type="range"
+                                        id="future-age"
+                                        class="age-range"
+                                        min="0.0"
+                                        max="20.0"
+                                        value="1.0"
+                                        step="0.1"
+                                        style="width: 595px;"
+                                        th:field="*{annualRatePercent}"
+                                />
+                                <div class="slider-min-max" style="width: 595px;">
+                                    <span>0%</span>
+                                    <span>20%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display: flex; justify-content: center; margin-top:40px;">
+                        <button type="submit" class="btn-register">
+                            결과보기
+                        </button>
+                    </div>
+                </div>
+                </form>
+
+
+                <div id="section-by-asset" style="display:none;">
+                    <form th:action="@{/mypage/calc/pension/asset}" method="post" th:object="${assetForm}">
+                    <div style="margin-top:25px; padding:60px; box-sizing: border-box; background-color: white; width: 800px; height: 272px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); border: 1px solid #E5E7EB;">
+                        <div style="color: #252525; font-weight: 700; font-size: 20px;">02. 현재 나이와 예상되는 은퇴나이를 입력해 주세요</div>
+                            <div class="slider-container" style="display: flex; justify-content: center;margin-top: 30px;">
+                            <!-- 현재나이 -->
+                            <div class="slider-group">
+                                <div class="slider-title">
+                                    <span style="font-size: 16px; margin-top: 1px;">현재나이</span>
+                                    <span class="slider-value" id="current-age-value">35세</span>
+                                </div>
+                                <input
+                                        type="range"
+                                        id="current-age"
+                                        class="age-range"
+                                        min="20"
+                                        max="60"
+                                        value="35"
+                                        th:field="*{currentAge}"
+                                />
+                                <div class="slider-min-max">
+                                    <span>20세</span>
+                                    <span>60세</span>
+                                </div>
+                            </div>
+
+                            <!-- 은퇴나이 -->
+                            <div class="slider-group">
+                                <div class="slider-title">
+                                    <span style="font-size: 16px; margin-top: 1px;">은퇴나이</span>
+                                    <span class="slider-value" id="retire-age-value">55세</span>
+                                </div>
+                                <input
+                                        type="range"
+                                        id="retire-age"
+                                        class="age-range"
+                                        min="40"
+                                        max="80"
+                                        value="55"
+                                        th:field="*{retireAge}"
+                                />
+                                <div class="slider-min-max">
+                                    <span>40세</span>
+                                    <span>80세</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-top:25px; padding:60px; box-sizing: border-box; background-color: white; width: 800px; height: 422px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); border: 1px solid #E5E7EB;">
+                        <div style="color: #252525; font-weight: 700; font-size: 20px;">03. 연금 수령기간과 현재 보유한 자산을 입력해 주세요</div>
+                        <div style="border-bottom: 1px solid #b5b5b5; display: flex; align-items: center; padding-bottom: 8px; margin-top: 30px;">
+                            <div style="color: #686868; margin-right: 8px;">수령기간</div>
+                            <div style="margin-right: 4px;"><input id="year-input" type="text" placeholder="10~50" style="border:none;font-size: 30px; text-align: end; font-weight: 700; width: 580px;"
+                                                                   th:field="*{pensionYears}"></div>
+                            <div style="color: #1f1f1f; font-weight: 700;font-size: 23px; margin-bottom: 4px;">년</div>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-top: 16px;">
+                            <div style="margin-left: auto;">
+                                <button type="button" class="year-btn living-btn btn-pressable btn-sheen" data-amount2="10" style="border-radius: 8px;">10년</button>
+                                <button type="button" class="year-btn living-btn btn-pressable btn-sheen" data-amount2="15" style="border-radius: 8px;">15년</button>
+                                <button type="button" class="year-btn living-btn btn-pressable btn-sheen" data-amount2="20" style="border-radius: 8px;">20년</button>
+                                <button type="button" class="year-btn living-btn btn-pressable btn-sheen" data-amount2="30" style="border-radius: 8px;">30년</button>
+                            </div>
+                        </div>
+                        <div style="border-bottom: 1px solid #b5b5b5; display: flex; align-items: center; padding-bottom: 8px; margin-top: 30px;">
+                            <div style="color: #686868; margin-right: 8px;">현재 보유자산</div>
+                            <div style="margin-right: 4px;"><input id="month-cost-input" type="text" placeholder="1~5,000,000" style="border:none;font-size: 30px; text-align: end; font-weight: 700; width: 525px;"
+                                                                   th:field="*{currentAssetMan}"></div>
+                            <div style="color: #1f1f1f; font-weight: 700;font-size: 23px; margin-bottom: 4px;">만원</div>
+                        </div>
+                    </div>
+                    <div style="margin-top:25px; padding:60px; box-sizing: border-box; background-color: white; width: 800px; height: 272px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); border: 1px solid #E5E7EB;">
+                        <div style="color: #252525; font-weight: 700; font-size: 20px;">04. 예상되는 운용수익률과 연금부리이율을 입력해 주세요</div>
+                        <div class="slider-container" style="display: flex; justify-content: center;margin-top: 30px;">
+                            <!--  -->
+                            <div class="slider-group">
+                                <div class="slider-title">
+                                    <span style="font-size: 16px; margin-top: 1px;">운용수익률</span>
+                                    <span class="slider-value" id="invest-value">3.0%</span>
+                                </div>
+                                <input
+                                        type="range"
+                                        id="invest"
+                                        class="age-range"
+                                        min="0"
+                                        max="20"
+                                        step="0.1"
+                                        value="3.0"
+                                        th:field="*{investAnnualRatePercent}"
+                                />
+                                <div class="slider-min-max">
+                                    <span>0%</span>
+                                    <span>20%</span>
+                                </div>
+                            </div>
+
+                            <!--  -->
+                            <div class="slider-group">
+                                <div class="slider-title">
+                                    <span style="font-size: 16px; margin-top: 1px;">연금부리이율</span>
+                                    <span class="slider-value" id="price-value">1.0%</span>
+                                </div>
+                                <input
+                                        type="range"
+                                        id="price"
+                                        class="age-range"
+                                        min="0"
+                                        max="20"
+                                        step="0.1"
+                                        value="1.0"
+                                        th:field="*{pensionAnnualRatePercent}"
+                                />
+                                <div class="slider-min-max">
+                                    <span>0%</span>
+                                    <span>20%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display: flex; justify-content: center; margin-top:40px;">
+                        <button type="submit" class="btn-register">
+                            결과보기
+                        </button>
+                    </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+<footer>
+    <div th:replace="~{layouts/footer.html}"></div>
+</footer>
+<script>
+    /**
+     * 외부 HTML을 불러와서:
+     *  - <link rel="stylesheet">, <style>는 <head>로 옮기고
+     *  - <script>는 실행되도록 새로 만들어 붙이고 (src/inline, module 모두 지원)
+     *  - 나머지 DOM(예: <flowise-chatbot> / <flowise-embed>)은 mount에 삽입
+     */
+    async function importHtmlWithAssets(url, mountSelector) {
+        const res = await fetch(url, { credentials: 'same-origin' });
+        if (!res.ok) throw new Error(`Failed to load ${url}`);
+        const html = await res.text();
+
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+
+        // 1) <link rel="stylesheet"> 들을 <head>로
+        doc.querySelectorAll('link[rel="stylesheet"]').forEach(link => {
+            // 중복 로드 방지
+            const href = link.getAttribute('href');
+            if (href && ![...document.head.querySelectorAll('link[rel="stylesheet"]')]
+                .some(l => l.getAttribute('href') === href)) {
+                document.head.appendChild(link.cloneNode(true));
+            }
+        });
+
+        // 2) <style> 들을 <head>로
+        doc.querySelectorAll('style').forEach(styleEl => {
+            const clone = document.createElement('style');
+            // CSS 텍스트 보존
+            clone.textContent = styleEl.textContent;
+            // (가능한 속성 복사)
+            [...styleEl.attributes].forEach(a => clone.setAttribute(a.name, a.value));
+            document.head.appendChild(clone);
+        });
+
+        // 3) 본문 콘텐츠를 mount에 붙임 (스크립트 제외)
+        const mount = document.querySelector(mountSelector);
+        // fragment 구성
+        const frag = document.createDocumentFragment();
+        [...doc.body.children].forEach(node => {
+            if (node.tagName.toLowerCase() !== 'script') frag.appendChild(node.cloneNode(true));
+        });
+        mount.appendChild(frag);
+
+        // 4) 스크립트 실행 (src/inline/module 지원, 순서 보장)
+        const scripts = [...doc.querySelectorAll('script')];
+        for (const oldScript of scripts) {
+            const newScript = document.createElement('script');
+            // type/module/defer 등 속성 복사
+            [...oldScript.attributes].forEach(attr => newScript.setAttribute(attr.name, attr.value));
+            if (oldScript.src) {
+                // 네트워크 로드를 기다려 실행 순서 유지
+                await new Promise((resolve, reject) => {
+                    newScript.onload = resolve;
+                    newScript.onerror = resolve;   // 실패해도 진행(브랜딩 제거 같은 선택 기능 보호)
+                    document.body.appendChild(newScript);
+                });
+            } else {
+                // inline 코드 복사
+                newScript.textContent = oldScript.textContent || '';
+                document.body.appendChild(newScript);
+            }
+        }
+    }
+
+    // 실제 호출: 기존 chatbot.html(또는 chatbot_test.html) 경로로 바꿔도 됩니다.
+    importHtmlWithAssets('/components/chatbot_test.html', '#bnk-chatbot-slot')
+        .catch(err => console.error('[Chatbot load failed]', err));
+</script>
+<script>
+    fetch('https://api.ipify.org?format=json')
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById('ip').textContent = `${data.ip}`;
+        })
+        .catch(err => {
+            document.getElementById('ip').textContent = 'IP를 가져오지 못했습니다.';
+            console.error(err);
+        });
+</script>
+<script>
+    const currentRange = document.getElementById("current-age");
+    const currentLabel = document.getElementById("current-age-value");
+
+    const retireRange = document.getElementById("retire-age");
+    const retireLabel = document.getElementById("retire-age-value");
+
+    const futureRange = document.getElementById("future-age");
+    const futureLabel = document.getElementById("future-age-value");
+
+    const investRange = document.getElementById("invest");
+    const investLabel = document.getElementById("invest-value");
+
+    const priceRange = document.getElementById("price");
+    const priceLabel = document.getElementById("price-value");
+
+    function updateRangeUI(rangeEl, labelEl, unit) {
+        const min = Number(rangeEl.min);
+        const max = Number(rangeEl.max);
+        const val = Number(rangeEl.value);
+
+        // 채워진 비율 (0~100)
+        const percent = ((val - min) / (max - min)) * 100;
+        rangeEl.style.setProperty("--range-progress", `${percent}%`);
+
+        // 표시 값 (투자/물가만 소수 1자리)
+        let displayVal = val;
+        if (unit === '%') {
+            displayVal = val.toFixed(1);    // 0.1 단위
+            labelEl.textContent = `${displayVal}%`;
+        } else {
+            labelEl.textContent = `${displayVal}세`;
+        }
+    }
+
+    // 초기 렌더
+    updateRangeUI(currentRange, currentLabel, '세');
+    updateRangeUI(retireRange,  retireLabel,  '세');
+    updateRangeUI(futureRange,  futureLabel,  '%');
+    updateRangeUI(investRange,  investLabel,  '%');
+    updateRangeUI(priceRange,   priceLabel,   '%');
+
+    // 이벤트
+    currentRange.addEventListener("input", () => {
+        updateRangeUI(currentRange, currentLabel, '세');
+    });
+
+    retireRange.addEventListener("input", () => {
+        updateRangeUI(retireRange, retireLabel, '세');
+    });
+
+    futureRange.addEventListener("input", () => {
+        updateRangeUI(futureRange, futureLabel, '%');
+    });
+
+    investRange.addEventListener("input", () => {
+        updateRangeUI(investRange, investLabel, '%');
+    });
+
+    priceRange.addEventListener("input", () => {
+        updateRangeUI(priceRange, priceLabel, '%');
+    });
+</script>
+<script>
+    // 숫자만 뽑아내는 공통 함수
+    function parseNumber(value) {
+        const num = Number(String(value).replace(/,/g, ''));
+        return isNaN(num) ? 0 : num;
+    }
+
+    // ① 연금수령방법 기준 섹션
+    (function () {
+        const section = document.getElementById('section-by-method');
+        if (!section) return;
+
+        const yearInput  = section.querySelector('#year-input');
+        const monthInput = section.querySelector('#month-cost-input');
+
+        const yearButtons  = section.querySelectorAll('.year-btn');
+        const monthButtons = section.querySelectorAll('.month-living-btn');
+
+        yearButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const val = parseNumber(btn.dataset.amount2);
+                if (yearInput) yearInput.value = val;
+            });
+        });
+
+        monthButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const val = parseNumber(btn.dataset.amount);
+                if (monthInput) monthInput.value = val;
+            });
+        });
+    })();
+
+    // ② 현재 보유자산 기준 섹션
+    (function () {
+        const section = document.getElementById('section-by-asset');
+        if (!section) return;
+
+        const yearInput  = section.querySelector('#year-input');
+        const monthInput = section.querySelector('#month-cost-input');
+
+        const yearButtons  = section.querySelectorAll('.year-btn');
+        const monthButtons = section.querySelectorAll('.month-living-btn');
+
+        yearButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const val = parseNumber(btn.dataset.amount2);
+                if (yearInput) yearInput.value = val;
+            });
+        });
+
+        monthButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const val = parseNumber(btn.dataset.amount);
+                if (monthInput) monthInput.value = val;
+            });
+        });
+    })();
+</script>
+
+<script>
+    const btnByMethod = document.getElementById('btn-by-method');
+    const btnByAsset  = document.getElementById('btn-by-asset');
+
+    const sectionByMethod = document.getElementById('section-by-method');
+    const sectionByAsset  = document.getElementById('section-by-asset');
+
+    function setActiveButton(selected) {
+        btnByMethod.classList.remove('active');
+        btnByAsset.classList.remove('active');
+        selected.classList.add('active');
+    }
+
+    btnByMethod.addEventListener('click', () => {
+        setActiveButton(btnByMethod);
+
+        sectionByMethod.style.display = 'block';
+        sectionByAsset.style.display  = 'none';
+    });
+
+    btnByAsset.addEventListener('click', () => {
+        setActiveButton(btnByAsset);
+
+        sectionByMethod.style.display = 'none';
+        sectionByAsset.style.display  = 'block';
+    });
+
+    // 기본 선택 (원하면 바꿀 수 있음)
+    setActiveButton(btnByMethod);
+</script>
+<script>
+    const pensionCycleButtons = document.querySelectorAll(
+        '#section-by-method .pension-type-btn[value]'
+    );
+    const hiddenCycle = document.getElementById('pension-cycle-hidden');
+
+    pensionCycleButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            pensionCycleButtons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            hiddenCycle.value = btn.value;  // 폼 제출 시 cycle=값 으로 서버 전송
+        });
+    });
+
+
+</script>
+</body>
+</html>

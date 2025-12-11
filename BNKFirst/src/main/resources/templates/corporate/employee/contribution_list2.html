@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>퇴직연금 기업뱅킹 - 직원 조회</title>
+    <style>
+        /* ---------------------- 공통 레이아웃 ---------------------- */
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: "Noto Sans KR", system-ui, sans-serif;
+            background-color: #f4f5f9;
+            color: #222;
+        }
+
+        .page-container {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 24px;
+        }
+
+        h1 { margin: 0 0 16px; font-size: 24px; }
+
+        .subtitle {
+            font-size: 13px;
+            color: #777;
+            margin-bottom: 24px;
+        }
+
+        /* ---------------------- 검색/필터 영역 ---------------------- */
+        .toolbar {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .toolbar input[type="text"],
+        .toolbar select {
+            padding: 8px 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+
+        .toolbar input[type="text"] { flex: 1; }
+
+        .toolbar button {
+            padding: 8px 14px;
+            border-radius: 6px;
+            border: none;
+            font-size: 14px;
+            cursor: pointer;
+            background-color: #d91a1a;
+            color: white;
+        }
+
+        .toolbar button:hover { opacity: 0.9; }
+
+        /* ---------------------- 메인 영역 ---------------------- */
+        .content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 16px;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 16px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        thead { background-color: #fafafa; }
+
+        th, td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #eee;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        tbody tr { cursor: pointer; }
+        tbody tr:hover { background-color: #f9f1f1; }
+
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-size: 11px;
+        }
+
+        .tag-db { background-color: #ffe4e4; color: #b01010; }
+        .tag-dc { background-color: #e5f2ff; color: #0b5ebf; }
+
+        .status-active { color: #0c8a3f; font-weight: 600; }
+        .status-retired { color: #999; font-weight: 600; }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .detail-label { color: #777; }
+        .detail-value { font-weight: 500; }
+
+        .balance-box {
+            margin-top: 16px;
+            padding: 12px;
+            background: linear-gradient(135deg, #d91a1a, #ff7b6e);
+            border-radius: 8px;
+            color: white;
+        }
+
+        .balance-label { font-size: 13px; opacity: 0.9; margin-bottom: 4px; }
+        .balance-value { font-size: 20px; font-weight: 700; }
+
+        .empty-text { font-size: 13px; color: #888; }
+
+        /* 수정/삭제 버튼 */
+        .edit-btn-area {
+            margin-top: 16px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-edit, .btn-delete {
+            flex: 1;
+            padding: 10px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            color: white;
+        }
+
+        .btn-edit { background: #0b5ebf; }
+        .btn-delete { background: #b01010; }
+
+        /* 반응형 */
+        @media (max-width: 900px) {
+            .content { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+
+<body>
+<div class="page-container">
+    <h1>퇴직연금 직원 조회</h1>
+    <div class="subtitle">
+        EMPLOYEE 테이블 기반으로 직원별 제도 유형, 계좌번호, 현재 적립금을 조회하는 화면입니다.
+    </div>
+
+    <!-- 검색/필터 -->
+    <div class="toolbar">
+        <input type="text" id="searchInput" placeholder="직원 이름 또는 계좌번호 검색">
+        <select id="planFilter">
+            <option value="">전체 제도</option>
+            <option value="DB">DB 제도만</option>
+            <option value="DC">DC 제도만</option>
+        </select>
+        <button id="resetBtn">초기화</button>
+    </div>
+
+    <!-- 메인 콘텐츠 -->
+    <div class="content">
+        <div class="card">
+            <div class="card-title">직원 목록</div>
+            <table>
+                <thead>
+                <tr>
+                    <th>직원ID</th>
+                    <th>이름</th>
+                    <th>제도</th>
+                    <th>계좌번호</th>
+                    <th>재직 상태</th>
+                </tr>
+                </thead>
+                <tbody id="employeeTbody"></tbody>
+            </table>
+        </div>
+
+        <div class="card">
+            <div class="card-title">직원 상세정보</div>
+            <div id="detailArea">
+                <p class="empty-text">왼쪽 목록에서 직원을 선택하면 상세정보와 현재 적립금이 표시됩니다.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    /* 더미 데이터 */
+    const employees = [
+        {empId: 1, name: "김하늘", planType: "DB", accountNo: "123-456-789012", status: "ACTIVE",  balance: 12800000},
+        {empId: 2, name: "이준호", planType: "DC", accountNo: "987-654-321098", status: "ACTIVE",  balance: 8200000},
+        {empId: 3, name: "박민지", planType: "DB", accountNo: "110-220-330044", status: "RETIRED", balance: 27600000},
+        {empId: 4, name: "정소윤", planType: "DC", accountNo: "222-333-444555", status: "ACTIVE",  balance: 5600000},
+        {empId: 5, name: "최유진", planType: "DB", accountNo: "333-444-555666", status: "ACTIVE",  balance: 19300000}
+    ];
+
+    function formatMoney(amount) {
+        return amount.toLocaleString("ko-KR") + "원";
+    }
+
+    const tbody = document.getElementById("employeeTbody");
+    const detailArea = document.getElementById("detailArea");
+
+    /* 목록 렌더링 */
+    function renderTable(list) {
+        tbody.innerHTML = "";
+        list.forEach(emp => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td>${emp.empId}</td>
+                <td>${emp.name}</td>
+                <td><span class="tag ${emp.planType === "DB" ? "tag-db" : "tag-dc"}">${emp.planType}</span></td>
+                <td>${emp.accountNo}</td>
+                <td class="${emp.status === "ACTIVE" ? "status-active" : "status-retired"}">
+                    ${emp.status === "ACTIVE" ? "재직" : "퇴사"}
+                </td>
+            `;
+            tr.addEventListener("click", () => renderDetail(emp));
+            tbody.appendChild(tr);
+        });
+    }
+
+    /* 상세 렌더링 */
+    function renderDetail(emp) {
+        detailArea.innerHTML = `
+            <div class="detail-row"><div class="detail-label">직원 ID</div><div class="detail-value">${emp.empId}</div></div>
+            <div class="detail-row"><div class="detail-label">직원 이름</div><div class="detail-value">${emp.name}</div></div>
+            <div class="detail-row"><div class="detail-label">제도 유형</div><div class="detail-value">${emp.planType}</div></div>
+            <div class="detail-row"><div class="detail-label">계좌번호</div><div class="detail-value">${emp.accountNo}</div></div>
+            <div class="detail-row"><div class="detail-label">재직 상태</div><div class="detail-value">${emp.status === "ACTIVE" ? "재직" : "퇴사"}</div></div>
+
+            <div class="balance-box">
+                <div class="balance-label">현재 적립금</div>
+                <div class="balance-value">${formatMoney(emp.balance)}</div>
+            </div>
+
+            <!-- 수정/삭제 버튼 -->
+            <div class="edit-btn-area">
+                <button class="btn-edit" onclick="goEditPage(${emp.empId})">수정</button>
+                <button class="btn-delete" onclick="goDeletePage(${emp.empId})">삭제</button>
+            </div>
+        `;
+    }
+
+    /* 페이지 이동 함수 */
+    function goEditPage(empId) {
+        window.location.href = `/corporate/employee/edit.html?empId=` + empId;
+    }
+
+    function goDeletePage(empId) {
+        window.location.href = `/corporate/employee/delete.html?empId=` + empId;
+    }
+
+    /* 검색/필터 */
+    const searchInput = document.getElementById("searchInput");
+    const planFilter = document.getElementById("planFilter");
+    const resetBtn = document.getElementById("resetBtn");
+
+    function applyFilter() {
+        const keyword = searchInput.value.trim();
+        const plan = planFilter.value;
+
+        const filtered = employees.filter(emp => {
+            const matchPlan = plan ? emp.planType === plan : true;
+            const matchKeyword = keyword
+                ? (emp.name.includes(keyword) || emp.accountNo.includes(keyword))
+                : true;
+            return matchPlan && matchKeyword;
+        });
+
+        renderTable(filtered);
+        detailArea.innerHTML = `<p class="empty-text">왼쪽 목록에서 직원을 선택하면 상세정보가 표시됩니다.</p>`;
+    }
+
+    searchInput.addEventListener("input", applyFilter);
+    planFilter.addEventListener("change", applyFilter);
+    resetBtn.addEventListener("click", () => {
+        searchInput.value = "";
+        planFilter.value = "";
+        renderTable(employees);
+        detailArea.innerHTML = `<p class="empty-text">왼쪽 목록에서 직원을 선택하면 상세정보가 표시됩니다.</p>`;
+    });
+
+    /* 초기 렌더링 */
+    renderTable(employees);
+</script>
+</body>
+</html>

@@ -1,0 +1,414 @@
+<div style="margin-top:10px;"></div>
+<header>
+    <div th:replace="~{layouts/info/_header.html}"></div>
+<meta name="theme-color" content="#E60012" />
+<link rel="icon"
+    href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23E60012'/%3E%3Ctext x='50' y='58' font-size='56' text-anchor='middle' fill='white' font-family='Arial, Helvetica, sans-serif'%3EB%3C/text%3E%3C/svg%3E" />
+<style>
+    body {
+        font-family: 'Noto Sans KR', sans-serif;
+        background-color: #F6F6F8;
+        margin: 0;
+        padding: 0;
+        color: #222;
+        line-height: 1.7;
+    }
+
+    header,
+    nav,
+    main {
+        max-width: 1200px;
+        background-color: #F6F6F8;
+        margin: 0 auto;
+        padding: 30px 20px;
+    }
+
+
+    h2 {
+        font-size: 1.6rem;
+        font-weight: 700;
+        margin: 40px 0 10px;
+        border-bottom: 2px solid #d91a1a;
+        display: inline-block;
+        padding-bottom: 5px;
+    }
+
+
+    .branch-section {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        justify-content: space-between;
+    }
+
+    .branch-text {
+        flex: 1 1 60%;
+    }
+
+
+    .tab-menu {
+        display: flex;
+        gap: 6px;
+        margin: 20px 0;
+    }
+
+    .tab-menu button {
+        border: 1px solid #ddd;
+        background: #fff;
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .tab-menu button.active {
+        background-color: #d91a1a;
+        color: #fff;
+        border-color: #d91a1a;
+    }
+
+    select,
+    input[type="text"] {
+        width: 20%;
+        height: 44px;
+        box-sizing: border-box;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        background: #fff;
+        padding: 10px 12px;
+        font-size: 14px;
+        color: #111827;
+        outline: none;
+        transition: box-shadow .15s ease, border-color .15s ease;
+ }
+
+    
+
+    button.search {
+        background-color: #d91a1a;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        padding: 8px 20px;
+        cursor: pointer;
+    }
+
+    .result {
+        border-top: 1px solid #ddd;
+        margin-top: 30px;
+        padding-top: 20px;
+    }
+
+    .branch-item {
+        border-left: 3px solid #d91a1a;
+        padding-left: 10px;
+        margin-bottom: 15px;
+    }
+
+    .branch-item strong {
+        display: block;
+        margin-bottom: 4px;
+        font-size: 1.1rem;
+    }
+
+    .branch-item span {
+        display: inline-block;
+        margin-top: 4px;
+        font-size: 0.9rem;
+        }
+
+    .btn-register {
+        --bg1: #D91A1A;
+        --bg2: #F03A3A;
+        --shadow: rgba(217, 26, 26, .45);
+        position: relative;
+        box-sizing: border-box;
+        width: 90px;
+        height: 42px;
+        border: none;
+        border-radius: 8px;
+        color: #fff;
+        cursor: pointer;
+        background: linear-gradient(180deg, var(--bg2), var(--bg1));
+        outline: none;
+        box-shadow: 0 6px 14px -10px var(--shadow);
+        transition:
+            background .18s ease,
+            box-shadow .18s ease,
+            transform .12s ease;
+        /* 프레스만 사용할 예정 */
+        will-change: background, box-shadow, transform;
+    }
+
+    /* Hover: 컬러와 섀도우만 아주 미세하게 (리프트 없음) */
+    .btn-register:hover {
+        background: linear-gradient(180deg, #f24a4a, #d61a1a);
+        box-shadow: 0 8px 18px -12px var(--shadow);
+        transform: none;
+        /* 확실하게 떠오르지 않도록 고정 */
+    }
+
+    /* Active: 살짝 눌리는 프레스 효과만 */
+    .btn-register:active {
+        transform: scale(.98);
+        box-shadow: 0 4px 10px -10px var(--shadow);
+    }
+
+    /* 키보드 포커스 접근성 */
+    .btn-register:focus-visible {
+        outline: 3px solid rgba(240, 58, 58, .55);
+        outline-offset: 2px;
+    }
+
+    /* 모션 최소화 존중 */
+    @media (prefers-reduced-motion: reduce) {
+        .btn-register {
+            transition: none !important;
+        }
+    }
+
+    @media (prefers-color-scheme: dark) {
+        .btn-register {
+            --shadow: rgba(240, 58, 58, .35);
+        }
+    }
+
+    <style>
+     .branch-search-wrapper {
+         display: flex;
+         gap: 10px;
+         margin-top: 20px;
+     }
+
+    .branch-select {
+        border: 1.5px solid #ddd;
+        border-radius: 10px;
+        padding: 10px 12px;
+        font-size: 14px;
+        background: #fff;
+        cursor: pointer;
+        width: 160px;
+    }
+
+    .branch-search-box {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        padding: 8px;
+        background: #fafafa;
+    }
+
+    .branch-search-box input {
+        flex:1;
+        border:none;
+        background:transparent;
+        font-size:15px;
+        outline:none;
+    }
+
+    .branch-search-box button {
+        background:none;
+        border:none;
+        cursor:pointer;
+        font-size:18px;
+        color:#D91A1A;
+    }
+
+    /* 결과 리스트 */
+    .branch-result-item {
+        background:#fff;
+        border-radius:8px;
+        border:1px solid #eee;
+        padding:18px 20px;
+        margin-bottom:14px;
+        box-shadow:0 2px 4px rgba(0,0,0,0.05);
+        cursor:pointer;
+    }
+
+    .branch-result-item h3 {
+        font-size:18px;
+        font-weight:700;
+        color:#d91a1a;
+        margin-bottom:6px;
+    }
+
+    .branch-result-item .info {
+        font-size:14px;
+        color:#333;
+        line-height:1.6;
+    }
+
+    .branch-result-item .service-icons {
+        font-size:13px;
+        color:#666;
+        margin-top:8px;
+    }
+
+    .branch-result-item .waiting {
+        font-size:14px;
+        color:#d91a1a;
+        margin-top:8px;
+        font-weight:600;
+    }
+</style>
+
+    </style>
+</header>
+
+<main>
+    <!-- branch section -->
+    <section class="branch-section">
+        <div class="branch-text">
+            <h1>영업점안내</h1>
+            <div class="subtitle">가까운 곳에서 고객님을 기다리겠습니다.</div>
+        </div>
+    </section>
+
+    <div class="tab-menu">
+        <button class="active">영업점</button>
+        <button>365코너</button>
+        <button>24/365코너</button>
+        <button>해외지점</button>
+        <button>대여금고</button>
+        <button>롯데ATM</button>
+        <button>STM</button>
+        <button>외화ATM</button>
+    </div>
+
+    <!-- ⭐ 검색 UI: 지역 선택 + 키워드 검색 -->
+    <div class="branch-search-wrapper">
+
+        <select id="citySelect" class="branch-select">
+            <option value="">시/도 선택</option>
+            <option value="부산광역시">부산광역시</option>
+        </select>
+
+        <select id="districtSelect" class="branch-select">
+            <option value="">구/군 선택</option>
+            <option value="남구">남구</option>
+            <option value="중구">중구</option>
+            <option value="부산진구">부산진구</option>
+            <option value="해운대구">해운대구</option>
+            <option value="서구">서구</option>
+            <option value="영도구">영도구</option>
+            <option value="동래구">동래구</option>
+        </select>
+
+        <div class="branch-search-box">
+            <input type="text" id="keywordInput" placeholder="지점명 또는 주소 검색">
+            <button id="searchBtn"><i class="fas fa-search"></i></button>
+        </div>
+
+    </div>
+
+    <!-- ⭐ 검색 결과 갯수 표시 -->
+    <div class="branch-count" style="margin-top:30px;">
+        총 <strong id="branchTotal">0</strong> 건
+    </div>
+
+    <!-- ⭐ 리스트 출력 -->
+    <div id="branchList" style="margin-top:20px;"></div>
+
+    <!-- ⭐ 지도 -->
+    <div class="map-wrap" style="margin-top:20px;">
+        <iframe id="branchMap"
+                src="https://map.kakao.com/?q=부산은행%20본점"
+                width="100%" height="400" style="border:0;" loading="lazy">
+        </iframe>
+    </div>
+
+</main>
+
+<footer style="margin-top: 50px;">
+    <div th:replace="~{layouts/footer.html}"></div>
+</footer>
+
+<script>
+    document.addEventListener("DOMContentLoaded", async () => {
+
+        let branchData = [];
+
+        // 1) API 호출
+        try {
+            const res = await fetch('/BNK/api/branch');
+            branchData = await res.json();
+        } catch (e) {
+            alert("지점 정보를 불러올 수 없습니다.");
+            return;
+        }
+
+        const city = document.getElementById("citySelect");
+        const district = document.getElementById("districtSelect");
+        const keyword = document.getElementById("keywordInput");
+        const searchBtn = document.getElementById("searchBtn");
+
+        const listBox = document.getElementById("branchList");
+        const mapIframe = document.getElementById("branchMap");
+        const totalBox = document.getElementById("branchTotal");
+
+        function renderList(data) {
+            totalBox.textContent = data.length;
+            listBox.innerHTML = "";
+
+            if (data.length === 0) {
+                listBox.innerHTML = `<div style="padding:20px;color:#999;">검색 결과가 없습니다.</div>`;
+                return;
+            }
+
+            data.forEach(b => {
+                const html = `
+            <div class="branch-result-item" data-name="${b.brname}">
+                <h3>${b.brname}</h3>
+                <div class="info">
+                    ☎ ${b.brtel}<br>
+                    ${b.braddr}
+                </div>
+                <div class="service-icons">
+                    서비스: ${b.service || "정보 없음"}
+                </div>
+                <div class="waiting">
+                    대기고객: ${b.wait || 0}명
+                </div>
+            </div>`;
+                listBox.insertAdjacentHTML("beforeend", html);
+            });
+
+            // 리스트 클릭 → 지도 이동
+            document.querySelectorAll(".branch-result-item").forEach(item => {
+                item.addEventListener("click", () => {
+                    const q = encodeURIComponent(`부산은행 ${item.dataset.name}`);
+                    mapIframe.src = `https://map.kakao.com/?q=${q}`;
+                });
+            });
+        }
+
+        // 필터링
+        function filter() {
+            let fd = [...branchData];
+
+            const c = city.value;
+            const d = district.value;
+            const k = keyword.value.trim();
+
+            fd = fd.filter(b => {
+                const addr = b.braddr || "";
+                const okCity = c ? addr.includes(c) : true;
+                const okDist = d ? addr.includes(d) : true;
+                const okKeyword = k ? (b.brname.includes(k) || addr.includes(k)) : true;
+                return okCity && okDist && okKeyword;
+            });
+
+            renderList(fd);
+        }
+
+        // 이벤트
+        city.addEventListener("change", filter);
+        district.addEventListener("change", filter);
+        searchBtn.addEventListener("click", filter);
+        keyword.addEventListener("keydown", e => { if (e.key === "Enter") filter(); });
+
+        // 초기 출력
+        renderList(branchData);
+    });
+</script>

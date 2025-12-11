@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>퇴직연금(개인형IRP) 메인</title>
+
+        <style>
+            body {
+                margin: 0;
+                font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+                background: #F6F6F8;
+                color: #222;
+            }
+
+            main {
+                min-height: calc(100vh - 200px); /* header/footer 제외 대략 높이 */
+            }
+
+            /* ===== IRP 메인 영역 ===== */
+            .irp-hero {
+                max-width: 480px;
+                margin: 60px auto 80px;
+                padding: 0 20px;
+            }
+
+            .irp-title {
+                text-align: center;
+                font-size: 24px;
+                line-height: 1.5;
+                font-weight: 600;
+                margin-bottom: 28px;
+            }
+
+            .irp-card {
+                background: #FFFFFF;
+                border-radius: 24px;
+                padding: 28px 22px 30px;
+                box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+            }
+
+            /* 그림 영역 (이미지는 나중에 background 이미지로 바꾸면 됨) */
+            .irp-illust-box {
+                background: #FFF4EC;
+                border-radius: 24px;
+                padding: 24px 16px 26px;
+                text-align: center;
+                margin-bottom: 20px;
+            }
+
+            .irp-illust {
+                width: 100%;
+                height: 140px;
+                border-radius: 16px;
+                background: linear-gradient(135deg, #FFD9B5, #FFE9D0);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #FF8A3C;
+                font-weight: 600;
+                font-size: 15px;
+            }
+            /* 위 .irp-illust에 실제 일러스트 이미지를 넣고 싶으면
+               background-image: url('/img/irp_illust.png'); background-size: contain; 등으로 교체하면 됨 */
+
+            .irp-product-title {
+                margin-top: 18px;
+                font-size: 18px;
+                font-weight: 600;
+                color: #F26C21; /* 은은한 오렌지 */
+                text-align: center;
+            }
+
+            .irp-product-desc {
+                margin-top: 4px;
+                font-size: 13px;
+                color: #777;
+                text-align: center;
+            }
+
+            /* 가입하기 버튼 */
+            .irp-join-wrap {
+                margin-top: 24px;
+            }
+
+            .irp-join-btn {
+                width: 100%;
+                border-radius: 999px;
+                padding: 14px 22px;
+                border: 1.5px solid #F26C21;
+                background: #FFFFFF;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 6px;
+                font-size: 17px;
+                font-weight: 600;
+                color: #F26C21;
+                cursor: pointer;
+                box-shadow: 0 3px 8px rgba(0,0,0,0.03);
+                transition: background 0.15s ease, transform 0.1s ease,
+                box-shadow 0.15s ease;
+            }
+
+            .irp-join-btn:hover {
+                background: #FFF5EC;
+                transform: translateY(-1px);
+                box-shadow: 0 5px 14px rgba(0,0,0,0.08);
+            }
+
+            .irp-join-btn .arrow {
+                font-size: 18px;
+                line-height: 1;
+            }
+
+            @media (max-width: 480px) {
+                .irp-hero {
+                    margin-top: 40px;
+                }
+
+                .irp-title {
+                    font-size: 20px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <header><div th:replace="~{layouts/header.html}"></div></header>
+
+        <main>
+            <section class="irp-hero">
+                <h1 class="irp-title">
+                    살아갈 멋진 인생이<br>
+                    남아 있으니까요
+                </h1>
+
+                <div class="irp-card">
+                    <div class="irp-illust-box">
+                        <!-- 실제 이미지를 쓰고 싶으면 이 div 안을 <img> 로 교체 -->
+                        <div class="irp-illust">
+                            IRP 일러스트 자리
+                        </div>
+                    </div>
+
+                    <div class="irp-product-title">
+                        IRP 개인형 퇴직연금
+                    </div>
+                    <p class="irp-product-desc">
+                        소득이 있는 누구나 가입 가능!
+                    </p>
+
+                    <div class="irp-join-wrap">
+                        <!-- 이동 경로는 프로젝트에 맞게 변경 -->
+                        <button id="btnIrpJoin" class="irp-join-btn" type="button" th:onclick="|location.href='@{/irp/account}'|">
+                            <span>가입하기</span>
+                            <span class="arrow">&gt;</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer><div th:replace="~{layouts/footer.html}"></div></footer>
+    </body>
+</html>
+
+<script>
+    document.addEventListener('DOMContentLoaded',function (){
+        const btn = document.getElementById('btnIrpJoin');
+        if(!btn) return;
+
+        btn.addEventListener('click', function(){
+            //page2 이동
+            window.location.href = '/BNK/irp/account/page2';
+        });
+    });
+</script>

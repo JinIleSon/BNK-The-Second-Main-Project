@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>퇴직연금사업자공시 > 적립금 운용금액 및 운용수익률</title>
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        /*----------------------------------*/
+        /* 전체 페이지 공통 */
+        /*----------------------------------*/
+        body {
+            font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+            background: #F6F6F8;
+            margin: 0;
+            color: #222;
+            padding-top: 100px;
+        }
+
+        .productsRoom-page {
+            display: flex;
+            gap: 40px;
+            width: 1200px;
+            margin: 60px auto 100px;
+            padding: 40px 20px;
+            background: #F6F6F8;
+            border-radius: 8px;
+        }
+
+        /*----------------------------------*/
+        /* 왼쪽 사이드바 */
+        /*----------------------------------*/
+        .all-sidebar {
+            width: 250px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 20px;
+            margin: 0 0 40px 0;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            background: #fff;
+            box-shadow: 0 4px 4px rgba(0, 0, 0, 0.08);
+        }
+
+        .sidebar-menu h2 {
+            font-size: 17px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 16px;
+        }
+
+        .sidebar-menu li {
+            padding: 12px 16px;
+            border-radius: 6px;
+            color: #555;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .sidebar-menu li:last-child {
+            border-bottom: none;
+        }
+
+        .sidebar-menu li:hover {
+            background: #f2f2f2;
+        }
+
+        .sidebar-menu li.active {
+            background: #ffe6e6;
+            border-left: 4px solid #d91a1a;
+            color: #d91a1a;
+            font-weight: 600;
+            padding-left: 12px;
+        }
+
+        .sidebar-menu a {
+            display: block;
+            text-decoration: none;
+            color: #222;
+        }
+
+        .sidebar-menu a:visited {
+            color: #222;
+        }
+
+        .sidebar-menu a:hover {
+            color: #d91a1a;
+        }
+
+        /* 추가 도움 박스 */
+        .all-help {
+            background: linear-gradient(135deg, #e62b2b, #7e2020);
+            color: #fff;
+            border-radius: 12px;
+            padding: 24px 20px;
+            text-align: center;
+            box-shadow: 0 4px 4px rgba(0, 0, 0, 0.08);
+        }
+
+        .help-box h3 {
+            font-size: 17px;
+            margin-bottom: 6px;
+        }
+
+        .help-box p {
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        .help-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-call,
+        .btn-chat {
+            padding: 8px 14px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .btn-call {
+            background: #fff;
+            color: #d91a1a;
+        }
+
+        .btn-chat {
+            background: transparent;
+            border: 1px solid #fff;
+            color: #fff;
+        }
+
+        /*----------------------------------*/
+        /* 메인 컨텐츠 */
+        /*----------------------------------*/
+        .productsRoom-content {
+            flex: 1;
+        }
+
+        .productsRoom-header h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .productsRoom-header p {
+            color: #666;
+            margin: 0 0 20px;
+            font-size: 14px;
+        }
+
+        /*----------------------------------*/
+        /* 적립금 운용금액 및 수익률 표 */
+        /*----------------------------------*/
+        .rate-section {
+            background: #fff;
+            border-radius: 8px;
+            padding: 24px 28px 28px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .rate-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .rate-unit {
+            font-size: 13px;
+            color: #777;
+            margin-bottom: 16px;
+        }
+
+        .rate-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            text-align: center;
+        }
+
+        .rate-table caption {
+            text-align: left;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .rate-table th,
+        .rate-table td {
+            border: 1px solid #ddd;
+            padding: 8px 6px;
+            line-height: 1.4;
+        }
+
+        .rate-table thead th {
+            background: #fafafa;
+            font-weight: 600;
+        }
+
+        .rate-table tbody tr:nth-child(even) {
+            background: #fbfbfb;
+        }
+
+        .rate-table tbody td:first-child {
+            font-weight: 600;
+        }
+
+        .rate-table tbody td:nth-child(2) {
+            text-align: left;
+            padding-left: 8px;
+        }
+
+        .rate-notice {
+            margin-top: 16px;
+            font-size: 12px;
+            color: #555;
+            line-height: 1.7;
+        }
+
+        .rate-notice li {
+            margin-bottom: 2px;
+        }
+    </style>
+</head>
+<body>
+<!-- 헤더 -->
+<div th:replace="~{layouts/header}"></div>
+
+<div class="productsRoom-page">
+    <!-- 왼쪽 사이드바 -->
+    <aside class="all-sidebar">
+        <ul class="sidebar-menu">
+            <h2>퇴직연금사업자공시</h2>
+            <li class="active"><a href="./AnyProduct">운용금액 및 운용수익률</a></li>
+            <li><a href="./depositProduct">퇴직연금 계약서</a></li>
+            <li><a href="./bankManual">원리금 보장 상품 현황</a></li>
+            <li><a href="./serviceFee">수수료</a></li>
+        </ul>
+
+        <!-- 추가 도움 영역 -->
+        <section class="all-help">
+            <div class="help-box">
+                <h3>추가 도움이 필요하신가요?</h3>
+                <p>전문 상담원이 친절하게 도와드리겠습니다.</p>
+                <div class="help-buttons">
+                    <button class="btn-call">전화상담</button>
+                    <button class="btn-chat">Talk상담</button>
+                </div>
+            </div>
+        </section>
+    </aside>
+
+    <!-- 메인 콘텐츠 -->
+    <main class="productsRoom-content">
+        <div class="productsRoom-header">
+            <h1>적립금 운용금액 및 운용수익률</h1>
+            <p>분기말 기준 적립금과 직전 1년간의 운용수익률을 확인하실 수 있습니다.</p>
+        </div>
+
+        <section class="rate-section">
+            <div class="rate-title">적립금 운용금액 및 운용수익률표</div>
+            <div class="rate-unit">(단위 : 억원, %)</div>
+
+            <table class="rate-table">
+                <thead>
+                <tr>
+                    <th rowspan="3">제도유형</th>
+                    <th rowspan="3">구분</th>
+                    <th colspan="4">2025년 3분기 / 2024년(1년)</th>
+                    <th colspan="4">연환산 수익률</th>
+                </tr>
+                <tr>
+                    <th colspan="2">2025년 3분기</th>
+                    <th colspan="2">2024년(1년)</th>
+                    <th>3년<br>(22.10~25.9)</th>
+                    <th>5년<br>(20.10~25.9)</th>
+                    <th>7년<br>(18.10~25.9)</th>
+                    <th>10년<br>(15.10~25.9)</th>
+                </tr>
+                <tr>
+                    <th>적립금</th>
+                    <th>수익률</th>
+                    <th>적립금</th>
+                    <th>수익률</th>
+                    <th>수익률</th>
+                    <th>수익률</th>
+                    <th>수익률</th>
+                    <th>수익률</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- DB -->
+                <tr>
+                    <td rowspan="7">DB</td>
+                    <td>예금성 원리금보장형</td>
+                    <td>15,415</td>
+                    <td>3.25</td>
+                    <td>15,551</td>
+                    <td>3.40</td>
+                    <td>3.32</td>
+                    <td>2.46</td>
+                    <td>2.17</td>
+                    <td>1.91</td>
+                </tr>
+                <tr>
+                    <td>시장성 원리금보장형</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>원리금비보장형</td>
+                    <td>1,146</td>
+                    <td>12.37</td>
+                    <td>840</td>
+                    <td>8.74</td>
+                    <td>8.40</td>
+                    <td>6.30</td>
+                    <td>4.98</td>
+                    <td>4.08</td>
+                </tr>
+                <tr>
+                    <td>기타</td>
+                    <td>-</td><td>-</td><td>-</td><td>-</td>
+                    <td>-</td><td>-</td><td>-</td><td>-</td>
+                </tr>
+                <tr>
+                    <td>계</td>
+                    <td>16,560</td>
+                    <td>-</td>
+                    <td>16,392</td>
+                    <td>-</td>
+                    <td>-</td><td>-</td><td>-</td><td>-</td>
+                </tr>
+                <tr>
+                    <td>(자기 계열사)</td>
+                    <td>1,163</td>
+                    <td>-</td>
+                    <td>1,001</td>
+                    <td>-</td>
+                    <td>-</td><td>-</td><td>-</td><td>-</td>
+                </tr>
+                <tr>
+                    <td>(기타 가입자)</td>
+                    <td>15,397</td>
+                    <td>-</td>
+                    <td>15,391</td>
+                    <td>-</td>
+                    <td>-</td><td>-</td><td>-</td><td>-</td>
+                </tr>
+
+                <!-- DC -->
+                <tr>
+                    <td rowspan="7">DC(기업형IRP 포함)</td>
+                    <td>예금성 원리금보장형</td>
+                    <td>8,162</td>
+                    <td>3.08</td>
+                    <td>7,988</td>
+                    <td>3.36</td>
+                    <td>3.28</td>
+                    <td>2.52</td>
+                    <td>2.30</td>
+                    <td>2.13</td>
+                </tr>
+                <tr>
+                    <td>시장성 원리금보장형</td>
+                    <td>-</td><td>-</td><td>-</td><td>-</td>
+                    <td>-</td><td>-</td><td>-</td><td>-</td>
+                </tr>
+                <tr>
+                    <td>원리금비보장형</td>
+                    <td>859</td>
+                    <td>16.15</td>
+                    <td>573</td>
+                    <td>8.23</td>
+                    <td>13.58</td>
+                    <td>5.93</td>
+                    <td>4.80</td>
+                    <td>4.03</td>
+                </tr>
+                <tr>
+                    <td>기타</td>
+                    <td>-</td><td>-</td><td>-</td><td>-</td>
+                    <td>-</td><td>-</td><td>-</td><td>-</td>
+                </tr>
+                <tr>
+                    <td>계</td>
+                    <td>9,021</td>
+                    <td>-</td>
+                    <td>8,560</td>
+                    <td>-</td>
+                    <td>-</td><td>-</td><td>-</td><td>-</td>
+                </tr>
+                <tr>
+                    <td>(자기 계열사)</td>
+                    <td>158</td>
+                    <td>-</td>
+                    <td>158</td>
+                    <td>-</td>
+                    <td>-</td><td>-</td><td>-</td><td>-</td>
+                </tr>
+                <tr>
+                    <td>(기타 가입자)</td>
+                    <td>8,863</td>
+                    <td>-</td>
+                    <td>8,402</td>
+                    <td>-</td>
+                    <td>-</td><td>-</td><td>-</td><td>-</td>
+                </tr>
+
+                <!-- 개인형 IRP -->
+                <tr>
+                    <td rowspan="7">개인형IRP</td>
+                    <td>예금성 원리금보장형</td>
+                    <td>5,184</td>
+                    <td>2.96</td>
+                    <td>4,829</td>
+                    <td>3.34</td>
+                    <td>3.18</td>
+                    <td>2.39</td>
+                    <td>2.08</td>
+                    <td>1.83</td>
+                </tr>
+                <tr>
+                    <td>시장성 원리금보장형</td>
+                    <td>-</td><td>-</td><td>-</td><td>-</td>
+                    <td>-</td><td>-</td><td>-</td><td>-</td>
+                </tr>
+                <tr>
+                    <td>원리금비보장형</td>
+                    <td>1,644</td>
+                    <td>17.14</td>
+                    <td>1,088</td>
+                    <td>5.00</td>
+                    <td>12.99</td>
+                    <td>5.82</td>
+                    <td>4.78</td>
+                    <td>4.05</td>
+                </tr>
+                <tr>
+                    <td>기타</td>
+                    <td>-</td><td>-</td><td>-</td><td>-</td>
+                    <td>-</td><td>-</td><td>-</td><td>-</td>
+                </tr>
+                <tr>
+                    <td>계</td>
+                    <td>6,828</td>
+                    <td>-</td>
+                    <td>5,917</td>
+                    <td>-</td>
+                    <td>-</td><td>-</td><td>-</td><td>-</td>
+                </tr>
+                <tr>
+                    <td>(자기 계열사)</td>
+                    <td>-</td><td>-</td><td>-</td><td>-</td>
+                    <td>-</td><td>-</td><td>-</td><td>-</td>
+                </tr>
+                <tr>
+                    <td>(기타 가입자)</td>
+                    <td>6,828</td>
+                    <td>-</td>
+                    <td>5,917</td>
+                    <td>-</td>
+                    <td>-</td><td>-</td><td>-</td><td>-</td>
+                </tr>
+
+                <!-- 총계 -->
+                <tr>
+                    <td rowspan="7">총계</td>
+                    <td>예금성 원리금보장형</td>
+                    <td>28,760</td>
+                    <td>-</td>
+                    <td>28,367</td>
+                    <td>-</td>
+                    <td>-</td><td>-</td><td>-</td><td>-</td>
+                </tr>
+                <tr>
+                    <td>시장성 원리금보장형</td>
+                    <td>-</td><td>-</td><td>-</td><td>-</td>
+                    <td>-</td><td>-</td><td>-</td><td>-</td>
+                </tr>
+                <tr>
+                    <td>원리금비보장형</td>
+                    <td>3,649</td>
+                    <td>-</td>
+                    <td>2,501</td>
+                    <td>-</td>
+                    <td>-</td><td>-</td><td>-</td><td>-</td>
+                </tr>
+                <tr>
+                    <td>기타</td>
+                    <td>-</td><td>-</td><td>-</td><td>-</td>
+                    <td>-</td><td>-</td><td>-</td><td>-</td>
+                </tr>
+                <tr>
+                    <td>계</td>
+                    <td>32,409</td>
+                    <td>-</td>
+                    <td>30,869</td>
+                    <td>-</td>
+                    <td>-</td><td>-</td><td>-</td><td>-</td>
+                </tr>
+                <tr>
+                    <td>(자기 계열사)</td>
+                    <td>1,321</td>
+                    <td>-</td>
+                    <td>1,159</td>
+                    <td>-</td>
+                    <td>-</td><td>-</td><td>-</td><td>-</td>
+                </tr>
+                <tr>
+                    <td>(기타 가입자)</td>
+                    <td>31,088</td>
+                    <td>-</td>
+                    <td>29,710</td>
+                    <td>-</td>
+                    <td>-</td><td>-</td><td>-</td><td>-</td>
+                </tr>
+                </tbody>
+            </table>
+
+            <ul class="rate-notice">
+                <li>* 분기말 기준 적립금과 직전 1년간의 운용수익률을 확인할 수 있습니다.</li>
+                <li>* 상품은 근로자퇴직급여보장법령에 따라 원리금보장상품과 비원리금보장상품으로 구별됩니다.</li>
+                <li>* 원리금 보장상품 : 적격 금융기관이 원리금 지급을 보장하는 상품(예금 등) 및 국공채 등 정부가 원리금 상환을 보장하는 상품</li>
+                <li>* 원리금 비보장상품 : 원리금보장상품 이외의 금융상품</li>
+                <li>* 적립금은 해당 분기말(또는 연도말) 잔액입니다.</li>
+            </ul>
+        </section>
+    </main>
+</div>
+
+<!-- 푸터 -->
+<div th:replace="~{layouts/footer}"></div>
+
+<!-- (기존 header/footer, 챗봇 fetch 스크립트 쓰고 있으면 여기 그대로 두고,
+     /BNK/api/document/list 호출하던 스크립트는 이 파일에서는 삭제하면 됩니다.) -->
+</body>
+</html>
