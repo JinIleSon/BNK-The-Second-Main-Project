@@ -25,68 +25,112 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class TossLikeHomePage extends StatelessWidget {
+class TossLikeHomePage extends StatefulWidget {
   const TossLikeHomePage({super.key});
+
+  @override
+  State<TossLikeHomePage> createState() => _TossLikeHomePageState();
+}
+
+class _TossLikeHomePageState extends State<TossLikeHomePage> {
+  int _selectedIndex = 0; // 0: 홈, 1: 관심, 2: 알림, 3: 마이
 
   @override
   Widget build(BuildContext context) {
     final cardColor = Theme.of(context).cardColor;
     final textTheme = Theme.of(context).textTheme;
 
+    Widget body;
+    switch (_selectedIndex) {
+      case 0:
+        body = _HomeTab(cardColor: cardColor, textTheme: textTheme);
+        break;
+      case 1:
+        body = const FavoritePage(); // 새로 추가할 관심 페이지
+        break;
+      case 2:
+        body = const DiscoveryPage();
+        break;
+      case 3:
+        body = const Center(
+          child: Text('마이 화면은 아직 준비 중입니다.'),
+        );
+        break;
+      default:
+        body = _HomeTab(cardColor: cardColor, textTheme: textTheme);
+    }
+
     return Scaffold(
-      body: SafeArea(
-        child: Column(
-          children: [
-            const _TopAppBar(),
-            Expanded(
-              child: SingleChildScrollView(
-                padding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // S&P + 안내 카드
-                    _IndexHeader(cardColor: cardColor, textTheme: textTheme),
-                    const SizedBox(height: 16),
-                    // 내 계좌보기
-                    _AccountSummary(cardColor: cardColor),
-                    const SizedBox(height: 16),
-                    // 내 종목보기
-                    _MyHolding(cardColor: cardColor),
-                    const SizedBox(height: 16),
-                    // 주문내역 / 판매수익
-                    _TwoRowMenu(
-                      cardColor: cardColor,
-                      leftTitle: '주문내역',
-                      rightTitle: '판매수익',
-                      leftSubtitle: '이번 달 1건',
-                      rightSubtitle: '',
-                    ),
-                    const SizedBox(height: 24),
-                    // 수익분석 / 최근 본 종목
-                    _RecentStocksSection(cardColor: cardColor),
-                    const SizedBox(height: 24),
-                    // 실시간 거래대금 차트
-                    _RealtimeChartSection(cardColor: cardColor),
-                    const SizedBox(height: 24),
-                    // 추천 뉴스
-                    _NewsSection(cardColor: cardColor, title: '손진일님을 위한 추천 뉴스'),
-                    const SizedBox(height: 24),
-                    // 간편 홈 보기
-                    _SimpleHomeSection(cardColor: cardColor),
-                    const SizedBox(height: 32),
-                    const SizedBox(height: 48), // 바텀탭 여유
-                  ],
-                ),
-              ),
-            ),
-            const _BottomNavBar(),
-          ],
-        ),
+      body: SafeArea(child: body),
+      bottomNavigationBar: _BottomNavBar(
+        selectedIndex: _selectedIndex,
+        onTap: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
       ),
     );
   }
 }
+
+/// 기존 홈 화면 내용을 여기로 옮긴 탭 위젯
+class _HomeTab extends StatelessWidget {
+  final Color cardColor;
+  final TextTheme textTheme;
+
+  const _HomeTab({
+    required this.cardColor,
+    required this.textTheme,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        const _TopAppBar(),
+        Expanded(
+          child: SingleChildScrollView(
+            padding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _IndexHeader(cardColor: cardColor, textTheme: textTheme),
+                const SizedBox(height: 16),
+                _AccountSummary(cardColor: cardColor),
+                const SizedBox(height: 16),
+                _MyHolding(cardColor: cardColor),
+                const SizedBox(height: 16),
+                _TwoRowMenu(
+                  cardColor: cardColor,
+                  leftTitle: '주문내역',
+                  rightTitle: '판매수익',
+                  leftSubtitle: '이번 달 1건',
+                  rightSubtitle: '',
+                ),
+                const SizedBox(height: 24),
+                _RecentStocksSection(cardColor: cardColor),
+                const SizedBox(height: 24),
+                _RealtimeChartSection(cardColor: cardColor),
+                const SizedBox(height: 24),
+                _NewsSection(
+                    cardColor: cardColor, title: '손진일님을 위한 추천 뉴스'),
+                const SizedBox(height: 24),
+                _SimpleHomeSection(cardColor: cardColor),
+                const SizedBox(height: 32),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+
+
+
 
 /// 상단 앱바
 class _TopAppBar extends StatelessWidget {
@@ -725,27 +769,56 @@ class _SectionHeader extends StatelessWidget {
 
 /// 하단 탭바
 class _BottomNavBar extends StatelessWidget {
-  const _BottomNavBar();
+  final int selectedIndex;
+  final ValueChanged<int> onTap;
+
+  const _BottomNavBar({
+    required this.selectedIndex,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
-    // 실제 BottomNavigationBar 대신, 디자인 비슷하게 Container로 구현
     return Container(
       padding:
       const EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 12),
-      decoration: BoxDecoration(
-        color: const Color(0xFF0B0C10),
+      decoration: const BoxDecoration(
+        color: Color(0xFF0B0C10),
         border: Border(
           top: BorderSide(color: Colors.white10),
         ),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: const [
-          _BottomNavItem(icon: Icons.home_outlined, label: '홈', isActive: true),
-          _BottomNavItem(icon: Icons.bar_chart, label: '순위'),
-          _BottomNavItem(icon: Icons.notifications_none, label: '알림'),
-          _BottomNavItem(icon: Icons.person_outline, label: '마이'),
+        children: [
+          _BottomNavItem(
+            index: 0,
+            selectedIndex: selectedIndex,
+            icon: Icons.home_outlined,
+            label: '홈',
+            onTap: onTap,
+          ),
+          _BottomNavItem(
+            index: 1,
+            selectedIndex: selectedIndex,
+            icon: Icons.favorite_border,
+            label: '관심',
+            onTap: onTap,
+          ),
+          _BottomNavItem(
+            index: 2,
+            selectedIndex: selectedIndex,
+            icon: Icons.explore_outlined,   // ✅ 발견
+            label: '발견',
+            onTap: onTap,
+          ),
+          _BottomNavItem(
+            index: 3,
+            selectedIndex: selectedIndex,
+            icon: Icons.person_outline,
+            label: '마이',
+            onTap: onTap,
+          ),
         ],
       ),
     );
@@ -755,35 +828,50 @@ class _BottomNavBar extends StatelessWidget {
 class _BottomNavItem extends StatelessWidget {
   final IconData icon;
   final String label;
-  final bool isActive;
+  final int index;
+  final int selectedIndex;
+  final ValueChanged<int> onTap;
 
   const _BottomNavItem({
     required this.icon,
     required this.label,
-    this.isActive = false,
+    required this.index,
+    required this.selectedIndex,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
+    final bool isActive = index == selectedIndex;
     final color = isActive ? Colors.white : Colors.white60;
 
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(icon, color: color, size: 22),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 11,
-            color: color,
-            fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
-          ),
+    return GestureDetector(
+      onTap: () => onTap(index),
+      behavior: HitTestBehavior.opaque,
+      child: SizedBox(
+        width: MediaQuery.of(context).size.width / 4 - 8,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, color: color, size: 22),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 11,
+                color: color,
+                fontWeight:
+                isActive ? FontWeight.w600 : FontWeight.normal,
+              ),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }
+
+
 
 class AccountDetailPage extends StatelessWidget {
   const AccountDetailPage({super.key});
@@ -1145,4 +1233,1092 @@ class _MenuTile extends StatelessWidget {
       ),
     );
   }
+}
+
+class FavoritePage extends StatelessWidget {
+  const FavoritePage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final cardColor = Theme.of(context).cardColor;
+    final bodySmall = Theme.of(context).textTheme.bodySmall
+        ?.copyWith(color: Colors.grey[400]);
+
+    return DefaultTabController(
+      length: 4,
+      child: Column(
+        children: [
+          // 상단 앱바
+          Padding(
+            padding:
+            const EdgeInsets.only(left: 16, right: 8, top: 8, bottom: 4),
+            child: Row(
+              children: [
+                Text(
+                  '관심',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  'S&P 500 6,840.51 -0.08%',
+                  style: bodySmall,
+                ),
+                const Spacer(),
+                IconButton(
+                  icon: const Icon(Icons.search),
+                  onPressed: () {},
+                ),
+                IconButton(
+                  icon: const Icon(Icons.menu),
+                  onPressed: () {},
+                ),
+              ],
+            ),
+          ),
+
+          // AI 신호
+          Padding(
+            padding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('AI 신호',
+                    style: bodySmall?.copyWith(color: Colors.blue[300])),
+                const SizedBox(height: 4),
+                Text(
+                  '오스코텍 최대주주 변경 우려로 5% 하락',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ],
+            ),
+          ),
+
+          // 탭바
+          const TabBar(
+            isScrollable: true,
+            indicatorColor: Colors.white,
+            tabs: [
+              Tab(text: '최근 본'),
+              Tab(text: '주식'),
+              Tab(text: '채권'),
+              Tab(text: '그룹추가'),
+            ],
+          ),
+
+          Expanded(
+            child: TabBarView(
+              children: [
+                _FavoriteRecentTab(cardColor: cardColor),
+                Center(child: Text('주식 탭 내용은 준비 중입니다.')),
+                Center(child: Text('채권 탭 내용은 준비 중입니다.')),
+                Center(child: Text('그룹추가 탭 내용은 준비 중입니다.')),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// 관심 탭 - '최근 본' 화면
+class _FavoriteRecentTab extends StatelessWidget {
+  final Color cardColor;
+
+  const _FavoriteRecentTab({required this.cardColor});
+
+  @override
+  Widget build(BuildContext context) {
+    final bodySmall = Theme.of(context).textTheme.bodySmall
+        ?.copyWith(color: Colors.grey[400]);
+
+    final recentStocks = [
+      ('리카겐바이오', '+3.6%', true, '189,800원'),
+      ('삼성전자', '-0.3%', false, '108,000원'),
+      ('BMNU', '+1.1%', true, '15,924원'),
+      ('SK하이닉스', '+3.7%', true, '587,000원'),
+      ('더멕스', '+1.6%', true, '31,000원'),
+      ('자인웍스', '-3.2%', false, '36,868원'),
+    ];
+
+    final relatedStocks = [
+      ('한일사료', '3,085원', '-0.3%', false),
+      ('팜스토리', '1,176원', '-0.3%', false),
+      ('고려산업', '2,485원', '-0.6%', false),
+    ];
+
+    final newsList = [
+      (
+      'SK하이닉스 +3.7%',
+      'SK하이닉스, "자사주 중시 상장 추진" 보도에...\n주가 3%↑',
+      '매일경제 - 4시간 전'
+      ),
+      (
+      'MULL +0.2%   마이크론 테크놀로지 +0.1%',
+      'SK하이닉스, 60만 회복하나..."미국 ADR 상장 검토 소식에 3%대↑"',
+      '매일경제 - 4시간 전'
+      ),
+      (
+      '한화오션 -2.0%   기아 -0.5%',
+      '50대 기업 여유돈 42% 늘어… SK하이닉스 증가율 \'1위\'',
+      '아주경제 - 4시간 전'
+      ),
+    ];
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // 최근 본 종목 리스트
+          const SizedBox(height: 8),
+          for (final s in recentStocks)
+            Column(
+              children: [
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: CircleAvatar(
+                    radius: 16,
+                    backgroundColor: Colors.white10,
+                    child: Text(
+                      s.$1.characters.first,
+                      style: const TextStyle(fontSize: 12),
+                    ),
+                  ),
+                  title: Text(
+                    s.$1,
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  subtitle: Text(
+                    s.$4,
+                    style: bodySmall,
+                  ),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        s.$2,
+                        style: bodySmall?.copyWith(
+                          color: s.$3 ? Colors.redAccent : Colors.blue[200],
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      const Icon(Icons.close,
+                          size: 18, color: Colors.white54),
+                    ],
+                  ),
+                ),
+                const Divider(height: 1, color: Colors.white10),
+              ],
+            ),
+          const SizedBox(height: 16),
+
+          // 사료 관련 주식
+          Text(
+            '손진일님이 관심 있어 할\n사료 관련 주식',
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            '최근 찾아본 주식을 분석했어요.',
+            style: bodySmall,
+          ),
+          const SizedBox(height: 8),
+          Container(
+            decoration: BoxDecoration(
+              color: cardColor,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Column(
+              children: [
+                for (final r in relatedStocks)
+                  Column(
+                    children: [
+                      ListTile(
+                        dense: true,
+                        contentPadding:
+                        const EdgeInsets.symmetric(horizontal: 12),
+                        leading: CircleAvatar(
+                          radius: 16,
+                          backgroundColor: Colors.white10,
+                          child: Text(
+                            r.$1.characters.first,
+                            style: const TextStyle(fontSize: 12),
+                          ),
+                        ),
+                        title: Text(r.$1),
+                        subtitle: Text(
+                          r.$2,
+                          style: bodySmall,
+                        ),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              r.$3,
+                              style: bodySmall?.copyWith(
+                                color: r.$4
+                                    ? Colors.redAccent
+                                    : Colors.blue[200],
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            const Icon(Icons.favorite_border,
+                                size: 18, color: Colors.white60),
+                          ],
+                        ),
+                      ),
+                      if (r != relatedStocks.last)
+                        const Divider(height: 1, color: Colors.white12),
+                    ],
+                  ),
+              ],
+            ),
+          ),
+          TextButton(
+            onPressed: () {},
+            child: const Text('다른 종목 보기'),
+          ),
+          const SizedBox(height: 16),
+
+          // 뉴스 섹션
+          Text(
+            '최근 본 종목과 관련된 뉴스',
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Container(
+            decoration: BoxDecoration(
+              color: cardColor,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Column(
+              children: [
+                for (final n in newsList)
+                  Column(
+                    children: [
+                      ListTile(
+                        contentPadding:
+                        const EdgeInsets.symmetric(horizontal: 12),
+                        title: Padding(
+                          padding: const EdgeInsets.only(bottom: 4),
+                          child: Text(
+                            n.$1,
+                            style: bodySmall?.copyWith(
+                              color: Colors.redAccent,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              n.$2,
+                              style: const TextStyle(fontSize: 14),
+                            ),
+                            const SizedBox(height: 6),
+                            Text(
+                              n.$3,
+                              style: bodySmall,
+                            ),
+                          ],
+                        ),
+                        trailing: Container(
+                          width: 52,
+                          height: 52,
+                          decoration: BoxDecoration(
+                            color: Colors.white10,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Icon(Icons.image, size: 24),
+                        ),
+                      ),
+                      if (n != newsList.last)
+                        const Divider(height: 1, color: Colors.white12),
+                    ],
+                  ),
+              ],
+            ),
+          ),
+          TextButton(
+            onPressed: () {},
+            child: const Text('다른 뉴스 보기'),
+          ),
+          const SizedBox(height: 24),
+
+          // 하단 안내
+          Text(
+            '토스증권에서 제공하는 투자 정보는 고객의 투자 판단을 위한 '
+                '단순 참고자료로, 투자 결과에 대한 법적 책임을 지지 않습니다.',
+            style: bodySmall,
+          ),
+          const SizedBox(height: 24),
+        ],
+      ),
+    );
+  }
+}
+
+class DiscoveryPage extends StatelessWidget {
+  const DiscoveryPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final cardColor = Theme.of(context).cardColor;
+    final bodySmall = Theme.of(context).textTheme.bodySmall
+        ?.copyWith(color: Colors.grey[400]);
+
+    // 실시간 차트용 예시 데이터
+    final stocks = [
+      ('1', 'SK하이닉스', '588,000원', '+3.8%'),
+      ('2', '셀바스AI', '14,870원', '+20.4%'),
+      ('3', '에이비엘바이오', '203,000원', '+9.0%'),
+      ('4', '테라뷰', '17,170원', '+7.3%'),
+      ('5', '페스카로', '33,000원', '+112.9%'),
+      ('6', '삼성전자', '107,900원', '-0.4%'),
+      ('7', '에코프로', '116,700원', '-0.9%'),
+      ('8', '펄트론', '281,500원', '+5.4%'),
+      ('9', 'KODEX 레버리지', '44,680원', '-0.1%'),
+      ('10', '노타', '44,800원', '+5.0%'),
+    ];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // 상단 앱바
+        Padding(
+          padding:
+          const EdgeInsets.only(left: 16, right: 8, top: 8, bottom: 4),
+          child: Row(
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '발견',
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleLarge
+                        ?.copyWith(fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    'S&P 500 6,840.51  -0.08%',
+                    style: bodySmall,
+                  ),
+                ],
+              ),
+              const Spacer(),
+              IconButton(
+                onPressed: () {},
+                icon: const Icon(Icons.search),
+              ),
+              IconButton(
+                onPressed: () {},
+                icon: const Icon(Icons.menu),
+              ),
+            ],
+          ),
+        ),
+
+        // 상단 카테고리 칩 (국내주식 / 해외주식 / 채권 / ETF)
+        SizedBox(
+          height: 76,
+          child: ListView(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            children: const [
+              _DiscoverCategoryChip(
+                label: '국내주식',
+                emoji: '🇰🇷',
+              ),
+              _DiscoverCategoryChip(
+                label: '해외주식',
+                emoji: '🇺🇸',
+              ),
+              _DiscoverCategoryChip(
+                label: '채권',
+                emoji: '💰',
+              ),
+              _DiscoverCategoryChip(
+                label: 'ETF',
+                emoji: '📊',
+              ),
+            ],
+          ),
+        ),
+
+        // 오늘 이벤트 / 코스피
+        Padding(
+          padding:
+          const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('오늘 이벤트', style: bodySmall),
+              const SizedBox(height: 2),
+              Text(
+                '노동시장 신규 구인건수(JOLTs) 발표',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Text(
+                    '코스피',
+                    style: bodySmall,
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    '4,136.31  -0.1%',
+                    style: bodySmall?.copyWith(color: Colors.blue[200]),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+
+        const SizedBox(height: 8),
+
+        // 실시간 차트 + 내부 탭
+        Expanded(
+          child: DefaultTabController(
+            length: 5,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding:
+                  const EdgeInsets.symmetric(horizontal: 16),
+                  child: Text(
+                    '실시간 차트',
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyLarge
+                        ?.copyWith(fontWeight: FontWeight.w700),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                const TabBar(
+                  isScrollable: true,
+                  indicatorColor: Colors.white,
+                  tabs: [
+                    Tab(text: '거래대금'),
+                    Tab(text: '거래량'),
+                    Tab(text: '급상승'),
+                    Tab(text: '급하락'),
+                    Tab(text: '인기'),
+                  ],
+                ),
+                Expanded(
+                  child: TabBarView(
+                    children: [
+                      // 거래대금 탭 – 리스트
+                      _DiscoveryStockList(
+                        stocks: stocks,
+                      ),
+                      Center(child: Text('거래량 탭은 준비 중입니다.')),
+                      Center(child: Text('급상승 탭은 준비 중입니다.')),
+                      Center(child: Text('급하락 탭은 준비 중입니다.')),
+                      Center(child: Text('인기 탭은 준비 중입니다.')),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// 상단 카테고리 칩
+class _DiscoverCategoryChip extends StatelessWidget {
+  final String label;
+  final String emoji;
+
+  const _DiscoverCategoryChip({
+    required this.label,
+    required this.emoji,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final cardColor = Theme.of(context).cardColor;
+
+    return Container(
+      width: 90,
+      margin: const EdgeInsets.only(right: 8),
+      decoration: BoxDecoration(
+        color: cardColor,
+        borderRadius: BorderRadius.circular(14),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(emoji, style: const TextStyle(fontSize: 18)),
+          const SizedBox(height: 6),
+          Text(
+            label,
+            style: Theme.of(context)
+                .textTheme
+                .bodySmall
+                ?.copyWith(fontWeight: FontWeight.w600),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// 실시간 차트 리스트 + 아래 카드/버튼
+class _DiscoveryStockList extends StatelessWidget {
+  final List<(String, String, String, String)> stocks;
+
+  const _DiscoveryStockList({required this.stocks});
+
+  @override
+  Widget build(BuildContext context) {
+    final bodySmall = Theme.of(context).textTheme.bodySmall
+        ?.copyWith(color: Colors.grey[400]);
+    final cardColor = Theme.of(context).cardColor;
+
+    return ListView(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      children: [
+        for (final s in stocks)
+          Column(
+            children: [
+              ListTile(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => StockDetailPage(
+                        name: s.$2,   // 종목 이름
+                        price: s.$3,  // 현재가
+                        change: s.$4, // 등락률
+                      ),
+                    ),
+                  );
+                },
+                contentPadding: EdgeInsets.zero,
+                leading: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      s.$1,
+                      style: bodySmall,
+                    ),
+                    const SizedBox(width: 10),
+                    CircleAvatar(
+                      radius: 16,
+                      backgroundColor: Colors.white10,
+                      child: Text(
+                        s.$2.characters.first,
+                        style: const TextStyle(fontSize: 12),
+                      ),
+                    ),
+                  ],
+                ),
+                title: Text(
+                  s.$2,
+                  style: const TextStyle(fontWeight: FontWeight.w600),
+                ),
+                subtitle: Text(
+                  s.$3,
+                  style: bodySmall,
+                ),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      s.$4,
+                      style: bodySmall?.copyWith(
+                        color: s.$4.startsWith('-')
+                            ? Colors.blue[200]
+                            : Colors.redAccent,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    const Icon(
+                      Icons.favorite_border,
+                      size: 18,
+                      color: Colors.white60,
+                    ),
+                  ],
+                ),
+              ),
+              const Divider(height: 1, color: Colors.white10),
+            ],
+          ),
+        const SizedBox(height: 16),
+
+        // "사람들이 많이 얘기하고 있어요" 카드
+        Container(
+          decoration: BoxDecoration(
+            color: cardColor,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          padding: const EdgeInsets.all(14),
+          child: Row(
+            children: [
+              const Icon(Icons.local_fire_department,
+                  size: 20, color: Colors.redAccent),
+              const SizedBox(width: 10),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '사람들이 많이 얘기하고 있어요',
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyMedium
+                        ?.copyWith(fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    '커뮤니티 새 글 급상승',
+                    style: bodySmall,
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+
+        // 더 보기 버튼
+        Center(
+          child: TextButton(
+            onPressed: () {},
+            child: const Text('더 보기'),
+          ),
+        ),
+        const SizedBox(height: 8),
+      ],
+    );
+  }
+}
+
+class StockDetailPage extends StatelessWidget {
+  final String name;
+  final String price;
+  final String change;
+
+  const StockDetailPage({
+    super.key,
+    required this.name,
+    required this.price,
+    required this.change,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final cardColor = Theme.of(context).cardColor;
+    final isUp = !change.startsWith('-');
+    final changeColor = isUp ? Colors.redAccent : Colors.blue[200];
+
+    return DefaultTabController(
+      length: 4,
+      child: Scaffold(
+        backgroundColor: const Color(0xFF05060A),
+        body: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // 상단 바
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                child: Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back_ios_new, size: 18),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                    const Spacer(),
+                    const Icon(Icons.share, size: 20),
+                    const SizedBox(width: 12),
+                    const Icon(Icons.favorite_border, size: 22),
+                    const SizedBox(width: 12),
+                    const Icon(Icons.more_vert, size: 22),
+                  ],
+                ),
+              ),
+
+              // 종목 정보
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(name,
+                        style: const TextStyle(
+                            fontSize: 22, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 4),
+                    Text(price,
+                        style: const TextStyle(
+                            fontSize: 28, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 4),
+                    Text(
+                      '어제보다 $change',
+                      style: TextStyle(color: changeColor),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 10),
+
+              // 탭바
+              const TabBar(
+                indicatorColor: Colors.white,
+                labelStyle: TextStyle(fontWeight: FontWeight.w600),
+                isScrollable: true,
+                tabs: [
+                  Tab(text: '차트'),
+                  Tab(text: '호가'),
+                  Tab(text: '내 주식'),
+                  Tab(text: '커뮤니티'),
+                ],
+              ),
+
+              Expanded(
+                child: TabBarView(
+                  children: [
+                    _ChartTab(cardColor: cardColor),
+                    _HogaTab(cardColor: cardColor),
+                    _MyStockTab(cardColor: cardColor),
+                    _CommunityTab(cardColor: cardColor),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+
+        // 하단 구매하기 버튼
+        bottomNavigationBar: SafeArea(
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.redAccent,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              onPressed: () {},
+              child: const Text('구매하기', style: TextStyle(fontSize: 18)),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ChartTab extends StatelessWidget {
+  final Color cardColor;
+  const _ChartTab({required this.cardColor});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              decoration: BoxDecoration(
+                color: Colors.white12,
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: const Text(
+                '현금 30%',
+                style: TextStyle(
+                  fontSize: 11,
+                  color: Colors.white70,
+                ),
+              ),
+            ),
+          ],
+        ),
+
+        const SizedBox(height: 14),
+
+        // 차트 박스
+        Container(
+          height: 220,
+          decoration: BoxDecoration(
+            color: cardColor,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: CustomPaint(
+            painter: _FakeChartPainter(),
+          ),
+        ),
+
+        const SizedBox(height: 12),
+
+        // 기간 선택
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            _ChartFilterButton(label: "1일", selected: true),
+            _ChartFilterButton(label: "1주"),
+            _ChartFilterButton(label: "3달"),
+            _ChartFilterButton(label: "1년"),
+            _ChartFilterButton(label: "5년"),
+            _ChartFilterButton(label: "전체"),
+          ],
+        ),
+
+        const SizedBox(height: 20),
+
+        const Text(
+          "일별 · 실시간 시세 보기 >",
+          style: TextStyle(color: Colors.grey),
+        ),
+
+        const SizedBox(height: 20),
+      ],
+    );
+  }
+}
+
+class _ChartFilterButton extends StatelessWidget {
+  final String label;
+  final bool selected;
+
+  const _ChartFilterButton({
+    required this.label,
+    this.selected = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      label,
+      style: TextStyle(
+        fontWeight: selected ? FontWeight.bold : FontWeight.normal,
+        color: selected ? Colors.white : Colors.grey,
+      ),
+    );
+  }
+}
+
+
+class _HogaTab extends StatelessWidget {
+  final Color cardColor;
+
+  const _HogaTab({required this.cardColor});
+
+  @override
+  Widget build(BuildContext context) {
+    final grey = Colors.grey[400];
+
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        // 매도/매수 바
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: cardColor,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  Expanded(child: Container(height: 4, color: Colors.redAccent)),
+                  Expanded(child: Container(height: 4, color: Colors.blue)),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: const [
+                  Text("판매대기 550,299주"),
+                  Text("구매대기 157,556주"),
+                ],
+              ),
+            ],
+          ),
+        ),
+
+        const SizedBox(height: 24),
+
+        // 왜 올랐을까?
+        Text("왜 올랐을까?", style: TextStyle(color: grey)),
+        const SizedBox(height: 6),
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: cardColor,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: const [
+              Text(
+                "SK하이닉스가 금융 자회사 설립 허용으로 자금조달이 쉬워졌기 때문이에요.",
+              ),
+              SizedBox(height: 6),
+              Text("시카트로닉스 외 3개 종목과 연관"),
+            ],
+          ),
+        ),
+
+        const SizedBox(height: 24),
+
+        // 주문내역
+        Container(
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          decoration: BoxDecoration(
+            color: cardColor,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Row(
+            children: const [
+              Text("주문내역 보기"),
+              Spacer(),
+              Icon(Icons.chevron_right),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+
+class _MyStockTab extends StatelessWidget {
+  final Color cardColor;
+
+  const _MyStockTab({required this.cardColor});
+
+  @override
+  Widget build(BuildContext context) {
+    final grey = Colors.grey[400];
+
+    final summaryItems = [
+      ("🔥 호재", "최근 3달 사이 +104.1% 상승했어요.", "6분 전"),
+      ("🔥 호재", "최근 1년 사이 +233.9% 상승했어요.", "6분 전"),
+      ("🟢 소식", "주식 고수들의 76%가 팔았어요.", "21분 전"),
+      ("🔴 호재", "매출액이 2분기 연속 상승했어요.", "21분 전"),
+    ];
+
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        const Text(
+          "10초 요약 보기",
+          style: TextStyle(fontSize: 16),
+        ),
+        const SizedBox(height: 12),
+
+        Container(
+          decoration: BoxDecoration(
+            color: cardColor,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Column(
+            children: [
+              for (final s in summaryItems)
+                Column(
+                  children: [
+                    ListTile(
+                      leading: Text(s.$1),
+                      title: Text(s.$2),
+                      subtitle: Text(s.$3, style: TextStyle(color: grey)),
+                    ),
+                    if (s != summaryItems.last)
+                      const Divider(height: 1, color: Colors.white12),
+                  ],
+                )
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+
+class _CommunityTab extends StatelessWidget {
+  final Color cardColor;
+
+  const _CommunityTab({required this.cardColor});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        const Text("커뮤니티", style: TextStyle(fontSize: 18)),
+        const SizedBox(height: 12),
+
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: cardColor,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: const [
+              Text("💀 누가 뭐래도 난 간다 sk 하이닉스"),
+              SizedBox(height: 8),
+              Text("168,246개 의견 보기 >", style: TextStyle(color: Colors.grey)),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _FakeChartPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.redAccent
+      ..strokeWidth = 2.5
+      ..style = PaintingStyle.stroke;
+
+    final path = Path();
+
+    // 임의의 차트 라인 만들기 (토스 느낌)
+    path.moveTo(0, size.height * 0.7);
+    path.lineTo(size.width * 0.1, size.height * 0.4);
+    path.lineTo(size.width * 0.2, size.height * 0.45);
+    path.lineTo(size.width * 0.35, size.height * 0.25);
+    path.lineTo(size.width * 0.55, size.height * 0.35);
+    path.lineTo(size.width * 0.7, size.height * 0.15);
+    path.lineTo(size.width * 0.9, size.height * 0.3);
+    path.lineTo(size.width, size.height * 0.25);
+
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(_) => false;
 }
