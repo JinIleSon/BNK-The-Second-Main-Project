@@ -1,0 +1,318 @@
+import 'package:flutter/material.dart';
+
+import '../stock_detail/stock_detail_page.dart';
+
+class DiscoveryPage extends StatelessWidget {
+  const DiscoveryPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final cardColor = Theme.of(context).cardColor;
+    final bodySmall = Theme.of(context).textTheme.bodySmall
+        ?.copyWith(color: Colors.grey[400]);
+
+    final stocks = [
+      ('1', 'SK하이닉스', '588,000원', '+3.8%'),
+      ('2', '셀바스AI', '14,870원', '+20.4%'),
+      ('3', '에이비엘바이오', '203,000원', '+9.0%'),
+      ('4', '테라뷰', '17,170원', '+7.3%'),
+      ('5', '페스카로', '33,000원', '+112.9%'),
+      ('6', '삼성전자', '107,900원', '-0.4%'),
+      ('7', '에코프로', '116,700원', '-0.9%'),
+      ('8', '펄트론', '281,500원', '+5.4%'),
+      ('9', 'KODEX 레버리지', '44,680원', '-0.1%'),
+      ('10', '노타', '44,800원', '+5.0%'),
+    ];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding:
+          const EdgeInsets.only(left: 16, right: 8, top: 8, bottom: 4),
+          child: Row(
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '발견',
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleLarge
+                        ?.copyWith(fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    'S&P 500 6,840.51  -0.08%',
+                    style: bodySmall,
+                  ),
+                ],
+              ),
+              const Spacer(),
+              IconButton(
+                onPressed: () {},
+                icon: const Icon(Icons.search),
+              ),
+              IconButton(
+                onPressed: () {},
+                icon: const Icon(Icons.menu),
+              ),
+            ],
+          ),
+        ),
+        SizedBox(
+          height: 76,
+          child: ListView(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            children: const [
+              _DiscoverCategoryChip(label: '국내주식', emoji: '🇰🇷'),
+              _DiscoverCategoryChip(label: '해외주식', emoji: '🇺🇸'),
+              _DiscoverCategoryChip(label: '채권', emoji: '💰'),
+              _DiscoverCategoryChip(label: 'ETF', emoji: '📊'),
+            ],
+          ),
+        ),
+        Padding(
+          padding:
+          const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('오늘 이벤트', style: bodySmall),
+              const SizedBox(height: 2),
+              Text(
+                '노동시장 신규 구인건수(JOLTs) 발표',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Text('코스피', style: bodySmall),
+                  const SizedBox(width: 6),
+                  Text(
+                    '4,136.31  -0.1%',
+                    style: bodySmall?.copyWith(color: Colors.blue[200]),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 8),
+        Expanded(
+          child: DefaultTabController(
+            length: 5,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding:
+                  const EdgeInsets.symmetric(horizontal: 16),
+                  child: Text(
+                    '실시간 차트',
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyLarge
+                        ?.copyWith(fontWeight: FontWeight.w700),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                const TabBar(
+                  isScrollable: true,
+                  indicatorColor: Colors.white,
+                  tabs: [
+                    Tab(text: '거래대금'),
+                    Tab(text: '거래량'),
+                    Tab(text: '급상승'),
+                    Tab(text: '급하락'),
+                    Tab(text: '인기'),
+                  ],
+                ),
+                Expanded(
+                  child: TabBarView(
+                    children: [
+                      _DiscoveryStockList(stocks: stocks),
+                      const Center(child: Text('거래량 탭은 준비 중입니다.')),
+                      const Center(child: Text('급상승 탭은 준비 중입니다.')),
+                      const Center(child: Text('급하락 탭은 준비 중입니다.')),
+                      const Center(child: Text('인기 탭은 준비 중입니다.')),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _DiscoverCategoryChip extends StatelessWidget {
+  final String label;
+  final String emoji;
+
+  const _DiscoverCategoryChip({
+    required this.label,
+    required this.emoji,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final cardColor = Theme.of(context).cardColor;
+
+    return Container(
+      width: 90,
+      margin: const EdgeInsets.only(right: 8),
+      decoration: BoxDecoration(
+        color: cardColor,
+        borderRadius: BorderRadius.circular(14),
+      ),
+      padding:
+      const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(emoji, style: const TextStyle(fontSize: 18)),
+          const SizedBox(height: 6),
+          Text(
+            label,
+            style: Theme.of(context)
+                .textTheme
+                .bodySmall
+                ?.copyWith(fontWeight: FontWeight.w600),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DiscoveryStockList extends StatelessWidget {
+  final List<(String, String, String, String)> stocks;
+
+  const _DiscoveryStockList({required this.stocks});
+
+  @override
+  Widget build(BuildContext context) {
+    final bodySmall = Theme.of(context).textTheme.bodySmall
+        ?.copyWith(color: Colors.grey[400]);
+    final cardColor = Theme.of(context).cardColor;
+
+    return ListView(
+      padding:
+      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      children: [
+        for (final s in stocks)
+          Column(
+            children: [
+              ListTile(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => StockDetailPage(
+                        name: s.$2,
+                        price: s.$3,
+                        change: s.$4,
+                      ),
+                    ),
+                  );
+                },
+                contentPadding: EdgeInsets.zero,
+                leading: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      s.$1,
+                      style: bodySmall,
+                    ),
+                    const SizedBox(width: 10),
+                    CircleAvatar(
+                      radius: 16,
+                      backgroundColor: Colors.white10,
+                      child: Text(
+                        s.$2.characters.first,
+                        style: const TextStyle(fontSize: 12),
+                      ),
+                    ),
+                  ],
+                ),
+                title: Text(
+                  s.$2,
+                  style: const TextStyle(fontWeight: FontWeight.w600),
+                ),
+                subtitle: Text(
+                  s.$3,
+                  style: bodySmall,
+                ),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      s.$4,
+                      style: bodySmall?.copyWith(
+                        color: s.$4.startsWith('-')
+                            ? Colors.blue[200]
+                            : Colors.redAccent,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    const Icon(
+                      Icons.favorite_border,
+                      size: 18,
+                      color: Colors.white60,
+                    ),
+                  ],
+                ),
+              ),
+              const Divider(height: 1, color: Colors.white10),
+            ],
+          ),
+        const SizedBox(height: 16),
+        Container(
+          decoration: BoxDecoration(
+            color: cardColor,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          padding: const EdgeInsets.all(14),
+          child: Row(
+            children: [
+              const Icon(Icons.local_fire_department,
+                  size: 20, color: Colors.redAccent),
+              const SizedBox(width: 10),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '사람들이 많이 얘기하고 있어요',
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyMedium
+                        ?.copyWith(fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    '커뮤니티 새 글 급상승',
+                    style: bodySmall,
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        Center(
+          child: TextButton(
+            onPressed: () {},
+            child: const Text('더 보기'),
+          ),
+        ),
+        const SizedBox(height: 8),
+      ],
+    );
+  }
+}
