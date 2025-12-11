@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>고객센터</title>
+
+    <!-- Pretendard -->
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+
+    <style>
+        /* ---------------------- 공통 레이아웃 ---------------------- */
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: "Noto Sans KR", system-ui, -apple-system, sans-serif;
+            background-color: #f4f5f9;
+            color: #222;
+        }
+
+        .page-container {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 24px;
+        }
+
+        h1 {
+            margin: 0 0 16px;
+            font-size: 24px;
+        }
+
+        .subtitle {
+            font-size: 15px;
+            color: #777;
+            margin-bottom: 24px;
+        }
+
+        /* ---------------------- 검색/필터 영역 ---------------------- */
+        .toolbar {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .toolbar input[type="text"] {
+            flex: 1;
+            padding: 8px 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 15px;
+        }
+
+        .toolbar button {
+            padding: 8px 14px;
+            border-radius: 6px;
+            border: none;
+            font-size: 15px;
+            cursor: pointer;
+            background-color: #d91a1a;
+            color: white;
+        }
+
+        .toolbar button:hover {
+            opacity: 0.9;
+        }
+
+        /* ---------------------- 자동완성 박스 ---------------------- */
+        .auto-box {
+            position: absolute;
+            top: 42px;
+            left: 0;
+            width: 100%;
+            max-height: 200px;
+            overflow-y: auto;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 15px;
+            z-index: 5000;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+            display: none;
+        }
+
+        .auto-item {
+            padding: 8px 12px;
+            cursor: pointer;
+        }
+
+        .auto-item:hover {
+            background: #fff5f5;
+            color: #d91a1a;
+        }
+
+        /* ---------------------- 6칸 고객지원 카드 ---------------------- */
+        .support-card {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+            border: 1px solid #eee;
+            overflow: hidden;
+        }
+
+        .support-item {
+            padding: 26px 10px;
+            text-align: center;
+            font-size: 15px;
+            border-right: 1px solid #eee;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: .15s ease;
+        }
+
+        .support-item:nth-child(2n) {
+            border-right: none;
+        }
+
+        .support-item:nth-last-child(-n+2) {
+            border-bottom: none;
+        }
+
+        .support-item:hover {
+            background: #fff5f5;
+            color: #d91a1a;
+        }
+
+        /* ---------------------- 고객센터 4칸 ---------------------- */
+        .contact-box {
+            display: flex;
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+            gap: 20px;
+            margin-top: 32px;
+        }
+
+        .contact-col {
+            flex: 1;
+            border-right: 1px solid #eee;
+        }
+
+        .contact-title {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .contact-number {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        @media (max-width: 900px) {
+            .contact-box {
+                flex-direction: column;
+            }
+
+            .contact-col {
+                border-right: none !important;
+            }
+        }
+
+        a {
+            color: black;
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: #d91a1a;
+            text-decoration: none;
+        }
+
+        .support-item {
+            display: block;
+            padding: 16px;
+            background: #fff;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #222;
+        }
+
+        .support-item:hover {
+            background: #f2f2f2;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<!-- 🔥 corporate_header.html (사이드바 + 햄버거) -->
+<div th:replace="~{layouts/corporate_header.html}"></div>
+
+
+<!-- ---------------------- 메인 영역 ---------------------- -->
+<div class="page-container">
+
+    <h1>고객센터</h1>
+    <p class="subtitle">기업뱅킹 이용 관련 문의, 자료, 안내를 제공해드립니다.</p>
+
+
+    <!-- 검색창 -->
+    <div class="toolbar">
+        <input type="text" id="faqSearch" placeholder="질문 입력 예: 공인인증서 등록, 이체 오류, 자동이체 해지">
+
+        <button>검색</button>
+
+        <div id="autoBox" class="auto-box"></div>
+    </div>
+
+
+    <!-- 고객지원 6칸 -->
+    <h3 style="margin-bottom:10px;">자주 찾는 메뉴</h3>
+
+    <div class="support-card">
+
+        <a class="support-item" href="/BNK/cs/consultation/FAQ">
+            기업뱅킹 이용가이드
+        </a>
+
+        <a class="support-item" href="/BNK/cs/consultation/FAQ">
+            자주하는 질문
+        </a>
+
+        <a class="support-item" href="/BNK/cs/data_room/loan">
+            퇴직연금 공시
+        </a>
+
+        <a class="support-item" href="/BNK/cs/consultation/FAQ">
+            수수료 안내
+        </a>
+
+        <a class="support-item" href="/BNK/cs/data_room/deposit">
+            서식자료실
+        </a>
+
+        <a class="support-item" href="/BNK/cs/data_room/fund">
+            약관자료실
+        </a>
+
+    </div>
+
+
+    <!-- 고객센터 4칸 -->
+    <h3 style="margin-top:40px;">상담 채널 안내</h3>
+
+    <div class="contact-box">
+
+        <div class="contact-col">
+            <div class="contact-title">대표전화</div>
+            <div class="contact-number">1599-1111 / 1588-1111</div>
+            <div style="color:#666;">평일 09:00 ~ 18:00</div>
+        </div>
+
+        <div class="contact-col">
+            <div class="contact-title">해외 고객</div>
+            <div class="contact-number">+82-42-520-2500</div>
+            <div style="color:#666;">해외 발신</div>
+        </div>
+
+        <div class="contact-col">
+            <div class="contact-title">원격지원 상담</div>
+            <div style="color:#666;">평일 09:00 ~ 18:00</div>
+        </div>
+
+        <div class="contact-col" style="border-right:none;">
+            <div class="contact-title">이메일 상담</div>
+            <div style="color:#666;">365일 24시간</div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    /* 간단한 자동완성 mockup */
+    const box = document.getElementById("autoBox");
+    const input = document.getElementById("faqSearch");
+
+    const mockFaq = [
+        "공인인증서 등록 방법",
+        "퇴직연금 이체 오류",
+        "지로납부 처리 지연",
+        "기업뱅킹 비밀번호 변경",
+        "급여이체 계좌 변경",
+        "자동이체 해지 절차"
+    ];
+
+    input.addEventListener("keyup", () => {
+        const k = input.value.trim();
+        if (!k) {
+            box.style.display = "none";
+            return;
+        }
+
+        const list = mockFaq.filter(v => v.includes(k));
+        if (list.length === 0) {
+            box.style.display = "none";
+            return;
+        }
+
+        box.innerHTML = list.map(v => `<div class='auto-item'>${v}</div>`).join("");
+        box.style.display = "block";
+
+        document.querySelectorAll(".auto-item").forEach(item => {
+            item.addEventListener("click", () => {
+                input.value = item.textContent;
+                box.style.display = "none";
+            });
+        });
+    });
+</script>
+
+<script>
+    initCorporateHeader("cs");
+</script>
+
+</body>
+</html>

@@ -1,0 +1,195 @@
+/*----------------------------------*/
+/*--전체 페이지--*/
+/*----------------------------------*/
+body {
+  font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+  background: #F6F6F8;
+  margin: 0;
+  color: #222;
+  padding-top: 100px;
+}
+
+
+.consultation-page{
+    display:flex;
+    gap:40px;
+    width: 1200px;
+    margin: 60px auto;
+    padding: 40px 20px;
+    background: #F6F6F8;
+    border-radius: 8px;
+    margin-bottom: 100px;
+}
+
+
+
+/*----------------------------------*/
+/*--왼쪽 사이드바--*/
+/*----------------------------------*/
+.all-sidebar{
+    width: 250px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.all-sidebar h2{
+    font-size: 20px;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.sidebar-menu {
+    list-style:none;
+    padding: 20px;
+    margin: 0 0 40px 0;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 4px 4px rgba(0,0,0,0.08);
+}
+
+.sidebar-menu h2{
+    font-size: 17px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 16px;
+}
+
+.sidebar-menu li{
+    padding: 12px 16px;
+    border-radius:  6px;
+    color: #555;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+.sidebar-menu li:hover {
+    background: #f2f2f2;
+}
+
+.sidebar-menu li.active{
+    background: #ffe6e6;
+    border-left: 4px solid #d91a1a;
+    color: #d91a1a;;
+    font-weight:  600;
+    padding-left: 12px;
+}
+
+.sidebar-menu li:last-child{
+    border-bottom: none;
+}
+
+/*----------------------------------*/
+/*--추가 도움--*/
+/*----------------------------------*/
+.all-help{
+    background: linear-gradient(135deg,#e62b2b, #7e2020);
+    color: #fff;
+    border-radius: 12px;
+    padding: 24px 20px;
+    text-align: center;
+    box-shadow: 0 4px 4px rgba(0,0,0,0.08);
+}
+
+.help-box h3{
+    font-size: 17px;
+    margin-bottom: 6px;
+}
+
+.help-box p{
+    font-size: 14px;
+    margin-bottom: 16px;
+}
+
+.help-buttons{
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.btn-call, .btn-chat{
+    padding: 8px 14px;
+    border: none;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.btn-call{
+    background: #fff;
+    color: #d91a1a;
+}
+
+.btn-chat{
+    background:  transparent;
+    border: 1px solid #fff;
+    color: #fff;
+}
+
+/*----------------------------------*/
+/*--메인 컨텐츠--*/
+/*----------------------------------*/
+
+.consultation-content{
+    flex: 1;
+}
+
+.consultation-header h1{
+    font-size: 24px;
+    margin-bottom: 8px;
+}
+
+.consultation-header p{
+    color: #666;
+    margin-bottom:  20px;
+}
+
+.consumer-guide {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: 40px;
+}
+
+.guide-box {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 24px 28px;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.05);
+}
+
+.guide-box p {
+  color: #333;
+  text-align: center;
+  font-size: 15px;
+  margin-bottom: 30px;
+}
+
+.btn-group {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.guide-btn {
+  display: flex;
+  background: #d91a1a;
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background 0.2s ease;
+}
+
+.guide-btn:hover {
+  background: #b50f0f;
+}

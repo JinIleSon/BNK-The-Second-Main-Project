@@ -1,0 +1,39 @@
+<!-- templates/corporate/employee/delete.html -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>직원 삭제</title>
+    <style>
+        body { font-family:'Noto Sans KR'; background:#f4f5f9; margin:40px; }
+        .card { background:white; padding:30px; border-radius:8px; max-width:420px; margin:auto; text-align:center; }
+        .btn { width:100%; padding:12px; font-size:15px; border:none; border-radius:6px; margin-top:12px; cursor:pointer; }
+        .delete { background:#b01010; color:white; }
+        .cancel { background:#555; color:white; }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h2 style="color:#b01010;">삭제하시겠습니까?</h2>
+    <p>삭제된 직원 정보는 복구할 수 없습니다.</p>
+
+    <button class="btn delete" id="deleteBtn">삭제하기</button>
+    <button class="btn cancel" onclick="location.href='/corporate/employee/list.html'">취소</button>
+</div>
+
+<script>
+    const employees = JSON.parse(localStorage.getItem("employeesData")) || [];
+    const empId = new URLSearchParams(window.location.search).get("empId");
+
+    document.getElementById("deleteBtn").onclick = () => {
+        const idx = employees.findIndex(e => e.empId == empId);
+        employees.splice(idx, 1);
+
+        localStorage.setItem("employeesData", JSON.stringify(employees));
+        alert("삭제 완료");
+        location.href = "/corporate/employee/list.html";
+    };
+</script>
+
+</body>
+</html>

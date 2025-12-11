@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>퇴직연금 알아보기</title>
+    <link rel="stylesheet" href="./nps-plan.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        /*----------------------------------*/
+        /* 공통 기본 */
+        /*----------------------------------*/
+        body {
+            font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+            background: #F6F6F8;
+            margin: 0;
+            color: #222;
+            padding-top: 100px;
+        }
+
+        /* 페이지 레이아웃 */
+        .Pension-page {
+            display: flex;
+            gap: 40px;
+            max-width: 1200px;
+            margin: 60px auto;
+            padding: 40px 20px;
+            background: #F6F6F8;
+        }
+
+        /*----------------------------------*/
+        /* 왼쪽 사이드바 */
+        /*----------------------------------*/
+        .all-sidebar {
+            width: 250px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 20px;
+            margin: 0 0 40px 0;
+            border-radius: 8px;
+            background: #fff;
+            border: 1px solid #eee;
+            box-shadow: 0 4px 4px rgba(0, 0, 0, 0.08);
+        }
+
+        .sidebar-menu h2 {
+            font-size: 17px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 16px;
+        }
+
+        .sidebar-menu li {
+            padding: 12px 16px;
+            border-bottom: 1px solid #eee;
+            color: #555;
+            font-size: 15px;
+            font-weight: 500;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-menu li:hover {
+            background: #f2f2f2;
+        }
+
+        .sidebar-menu li.active {
+            background: #ffe6e6;
+            border-left: 4px solid #D91A1A;
+            color: #D91A1A;
+            font-weight: 600;
+            padding-left: 12px;
+        }
+
+        .sidebar-menu li:last-child {
+            border-bottom: none;
+        }
+
+        .sidebar-menu a {
+            display: block;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .sidebar-menu a:hover {
+            color: #D91A1A;
+        }
+
+        /*----------------------------------*/
+        /* 추가 도움 박스 */
+        /*----------------------------------*/
+        .all-help {
+            background: linear-gradient(135deg, #e62b2b, #7e2020);
+            color: #fff;
+            border-radius: 12px;
+            padding: 24px 20px;
+            text-align: center;
+            box-shadow: 0 4px 4px rgba(0,0,0,0.08);
+        }
+
+        .help-box h3 {
+            font-size: 17px;
+            margin-bottom: 6px;
+        }
+
+        .help-box p {
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        .help-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-call {
+            background: #fff;
+            color: #D91A1A;
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .btn-chat {
+            background: transparent;
+            border: 1px solid #fff;
+            color: #fff;
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        /*----------------------------------*/
+        /* 메인 컨텐츠 */
+        /*----------------------------------*/
+        .Pension-content {
+            flex: 1;
+        }
+
+        .Pension-header h1 {
+            font-size: 26px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .Pension-header p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        /*----------------------------------*/
+        /* 검색 박스 */
+        /*----------------------------------*/
+        .Pension-search {
+            display: flex;
+            align-items: center;
+            border: 1px solid #ddd;
+            border-radius: 30px;
+            padding: 6px 12px;
+            background: #fafafa;
+        }
+
+        .Pension-search input {
+            border: none;
+            outline: none;
+            background: transparent;
+            flex: 1;
+            padding: 8px;
+        }
+
+        .search-btn {
+            background: transparent;
+            border: none;
+            color: #D91A1A;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        /*----------------------------------*/
+        /* 태그 */
+        /*----------------------------------*/
+        .Pension-tags button {
+            background: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .Pension-tags button:hover {
+            background: #ffe6e6;
+            color: #D91A1A;
+        }
+
+        /*----------------------------------*/
+        /* 리스트(Box) */
+        /*----------------------------------*/
+        .Pension-list details {
+            border: 1px solid #e6e6e6;
+            border-radius: 8px;
+            background: #fff;
+            padding: 14px 16px;
+            margin-bottom: 10px;
+        }
+
+        .Pension-list summary {
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .Pension-list p {
+            font-size: 14px;
+            color: #555;
+            margin-top: 10px;
+            line-height: 1.6;
+        }
+
+        .Pension-more {
+            background: #fff;
+            border: 1px solid #ddd;
+            padding: 10px 24px;
+            text-align: center;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 30px auto 0;
+        }
+
+        /*----------------------------------*/
+        /* 탭 메뉴 */
+        /*----------------------------------*/
+        .pension-tab {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .pension-tab button {
+            padding: 10px 22px;
+            font-size: 15px;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            cursor: pointer;
+            color: #555;
+        }
+
+        .pension-tab button.active {
+            background: #ffe6e6;
+            border-color: #D91A1A;
+            color: #D91A1A;
+            font-weight: 600;
+        }
+
+        /*----------------------------------*/
+        /* 본문 텍스트 */
+        /*----------------------------------*/
+        .pension-section h2,
+        .pension-structure h3 {
+            font-size: 20px;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+
+        .pension-text {
+            font-size: 15px;
+            color: #555;
+            line-height: 1.7;
+            margin-bottom: 30px;
+        }
+
+        /*----------------------------------*/
+        /* 탭 콘텐츠 표시 */
+        /*----------------------------------*/
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /*----------------------------------*/
+        /* CTA 텍스트(그라데이션 문구) */
+        /*----------------------------------*/
+        .bnk-cta-text {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, #de0000, #ff7a00, #7e2020, #eee, #ff7a00, #de0000);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            color: transparent;
+            animation: rainbowFlow 6s ease-in-out infinite;
+        }
+
+        @keyframes rainbowFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+    </style>
+</head>
+
+<body>
+<!--헤더-->
+<header>
+    <div id="header" th:replace="~{layouts/header.html}"></div>
+</header>
+<div class="Pension-page">
+    <!--왼쪽 사이드바-->
+    <aside class="all-sidebar">
+        <ul class="sidebar-menu">
+            <h2>퇴직연금 알아보기</h2>
+            <li>
+                <a th:href="@{/retirement-renew/intro/why-pension}">퇴직연금소개</a>
+            </li>
+            <li>
+                <a th:href="@{/retirement-renew/system/db}">퇴직연금 제도의 이해</a>
+            </li>
+            <li>
+                <a th:href="@{/retirement-renew/operation/intro-process}">도입/운영안내</a>
+            </li>
+            <li>
+                <a th:href="@{/retirement-renew/tax/tax-benefit}">관련세제</a>
+            </li>
+            <li>
+                <a th:href="@{/retirement-renew/why-bnk/bnk-strong}">왜 BNK인가</a>
+            </li>
+            <li class="active">
+                <a th:href="@{/retirement-renew/nps-plan/nps-plan}">NPS 노후설계서비스</a>
+            </li>
+            <li>
+                <a th:href="@{/retirement-renew/portal-error/portal-error}">통합연금포털 오류신고</a>
+            </li>
+        </ul>
+
+        <!--추가 도움 영역-->
+        <section class="all-help">
+            <div class="help-box">
+                <h3>추가 도움이 필요하신가요?</h3>
+                <p>전문 상담원이 친절하게 도와드리겠습니다.</p>
+                <div class="help-buttons">
+                    <button class="btn-call">전화상담</button>
+                    <button class="btn-chat">Talk상담</button>
+                </div>
+            </div>
+        </section>
+    </aside>
+
+
+    <!--메인 컨텐츠-->
+    <main class="Pension-content">
+        <!--
+        <div class="bnk-cta-wrap">
+            <p class="bnk-cta-text">"부산은행 퇴직연금, 지금 바로 시작하세요."</p>
+        </div>
+        -->
+
+        <!-- 헤더 -->
+        <div class="Pension-header">
+            <h1>NPS 노후설계서비스</h1>
+            <p></p>
+        </div>
+
+        <!-- 탭
+        <div class="pension-tab">
+            <button class="active" data-tab="tab1">기업측면 세제혜택</button>
+            <button data-tab="tab2">근로자측면 세제혜택</button>
+        </div> -->
+
+
+        <!--===================== TAB 1 : 기업측면 세제혜택 (여기를 전체 교체) =====================-->
+        <div id="tab1" class="tab-content active">
+
+            <div class="wrap">
+
+                <h2 style="font-size:24px; font-weight:700; margin-bottom:10px;">
+                    국민연금공단에서 제공하는 <span style="color:#e62b2b;">노후설계서비스</span>입니다.
+                </h2>
+
+                <p class="pension-text" style="margin-bottom:20px;">
+                    국민의 체계적 노후준비와 노후생활을 할 수 있도록 국민연금을 기반으로
+                    노후생활에 대한 종합적인 정보와 서비스를 제공합니다.
+                </p>
+
+                <!-- 상단 바로가기 버튼 -->
+                <a href="#" class="top-link" style="
+            display:inline-block;
+            margin:20px 0; padding:10px 18px;
+            background:#f5f5f5; border-radius:6px;
+            border:1px solid #ddd; font-size:14px;
+            color:#333; text-decoration:none;">
+                    국민연금 노후설계서비스 바로가기
+                    <i class="fa-solid fa-arrow-up-right-from-square" style="margin-left:6px;"></i>
+                </a>
+
+                <!-- 큰 영역 박스 -->
+                <div class="big-box" style="
+            display:flex; justify-content:space-between; gap:30px;
+            border:1px solid #eee; border-radius:8px;
+            padding:30px; background:#fafafa; margin-bottom:40px;
+        ">
+
+                    <!-- 좌측 텍스트 -->
+                    <div class="big-left" style="flex:1;">
+                        <h3 style="font-size:20px; font-weight:700; margin-bottom:10px;">
+                            국민 · 퇴직 · 개인연금 시뮬레이션
+                        </h3>
+
+                        <p style="font-size:15px; color:#555; line-height:1.6; margin-bottom:20px;">
+                            노후의 안정적인 소득보장을 위하여
+                            우리나라는 “국민연금, 퇴직연금, 개인연금” 제도를 완비하여
+                            노후 3층 보장체계의 틀을 갖췄습니다.<br><br>
+                            본 시뮬레이션을 통해 연금을 통한 노후에 필요한 자금을
+                            알아보실 수 있습니다.
+                        </p>
+
+                        <a href="#" style="font-weight:600; color:#e62b2b; text-decoration:none; font-size:14px;">
+                            국민 · 퇴직 · 개인연금 시뮬레이션 바로가기
+                            <i class="fa-solid fa-arrow-up-right-from-square" style="margin-left:4px;"></i>
+                        </a>
+                    </div>
+
+                    <!-- 우측 이미지 -->
+                    <div class="big-right">
+                        <img src="https://cdn-icons-png.flaticon.com/512/6670/6670131.png"
+                             style="width:260px; border:1px solid #ddd; border-radius:6px;">
+                    </div>
+
+                </div>
+
+                <!-- 하단 3개 박스 -->
+                <div class="three-box" style="display:flex; gap:20px;">
+
+                    <!-- 박스 1 -->
+                    <div class="box" style="
+                flex:1; border:1px solid #eee; border-radius:8px;
+                background:#fff; padding:24px;">
+
+                        <h3 style="margin:0; font-size:18px; color:#e62b2b;">노후준비 종합진단</h3>
+                        <p style="font-size:14px; color:#555; margin:15px 0;">
+                            현재의 노후준비 수준과 유형을 진단하여<br>
+                            균형있는 노후준비를 지원합니다.
+                        </p>
+
+                        <a href="#" style="font-size:14px; color:#e62b2b; font-weight:600; text-decoration:none;">
+                            노후준비 종합진단 실행하기
+                            <i class="fa-solid fa-arrow-up-right-from-square" style="margin-left:4px;"></i>
+                        </a>
+
+                        <div class="box-icon" style="font-size:40px; margin-top:10px; color:#444;">
+                            <i class="fa-solid fa-chart-pie"></i>
+                        </div>
+                    </div>
+
+                    <!-- 박스 2 -->
+                    <div class="box" style="
+                flex:1; border:1px solid #eee; border-radius:8px;
+                background:#fff; padding:24px;">
+
+                        <h3 style="margin:0; font-size:18px; color:#e62b2b;">내 연금 알아보기</h3>
+                        <p style="font-size:14px; color:#555; margin:15px 0;">
+                            고객님께서 납부한 국민연금 보험료 및<br>
+                            향후 받을 수 있는 예상연금액을 조회할 수 있습니다.
+                        </p>
+
+                        <a href="#" style="font-size:14px; color:#e62b2b; font-weight:600; text-decoration:none;">
+                            내 연금 알아보기 실행하기
+                            <i class="fa-solid fa-arrow-up-right-from-square" style="margin-left:4px;"></i>
+                        </a>
+
+                        <div class="box-icon" style="font-size:40px; margin-top:10px; color:#444;">
+                            <i class="fa-solid fa-calculator"></i>
+                        </div>
+                    </div>
+
+                    <!-- 박스 3 -->
+                    <div class="box" style="
+                flex:1; border:1px solid #eee; border-radius:8px;
+                background:#fff; padding:24px;">
+
+                        <h3 style="margin:0; font-size:18px; color:#e62b2b;">목적자금 설계</h3>
+                        <p style="font-size:14px; color:#555; margin:15px 0;">
+                            다양한 목적의 자금설계를 통해<br>
+                            자가진단을 받아보실 수 있습니다.
+                        </p>
+
+                        <a href="#" style="font-size:14px; color:#e62b2b; font-weight:600; text-decoration:none;">
+                            목적자금 설계 실행하기
+                            <i class="fa-solid fa-arrow-up-right-from-square" style="margin-left:4px;"></i>
+                        </a>
+
+                        <div class="box-icon" style="font-size:40px; margin-top:10px; color:#444;">
+                            <i class="fa-solid fa-pen-ruler"></i>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        </section>
+        </div>
+
+        <!--===================== TAB 2 :근로자 세제혜택 =====================-->
+
+        <div id="tab2" class="tab-content">
+
+            <section class="pension-section">
+                <h2>근로자 세제혜택</h2>
+                <p class="pension-text">
+                    연금계좌 납입 시 세액공제 혜택 제공<br>
+                    IRP/연금저축 연 900만원 한도 세액공제 가능
+                </p>
+            </section>
+
+            <section class="pension-section">
+                <h2>IRP 세액공제</h2>
+                <p class="pension-text">
+                    총급여 5,500만원 이하: 16.5% 세액공제<br>
+                    초과 시: 13.2% 세액공제
+                </p>
+            </section>
+
+        </div>
+
+
+    </main>
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+
+        const tabButtons = document.querySelectorAll(".pension-tab button");
+        const tabContents = document.querySelectorAll(".tab-content");
+
+        tabButtons.forEach(btn => {
+            btn.addEventListener("click", () => {
+
+                tabButtons.forEach(b => b.classList.remove("active"));
+                btn.classList.add("active");
+
+                const targetId = btn.dataset.tab;
+
+                tabContents.forEach(c => c.classList.remove("active"));
+
+                const target = document.getElementById(targetId);
+                if (target) target.classList.add("active");
+            });
+        });
+
+    });
+
+</script>
+
+<!--푸터-->
+<footer>
+    <div id="footer" th:replace="~{layouts/footer.html}"></div>
+</footer>
+</body>
+</html>

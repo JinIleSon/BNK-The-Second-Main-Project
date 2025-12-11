@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>상품메인</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            background-color: #F6F6F8;
+        }
+
+        main {
+            width: 1200px;
+            background-color: #F6F6F8;
+            padding: 80px 20px;
+            margin: 0 auto;
+        }
+
+        .btn-red {
+            --bg1: #D91A1A;
+            --bg2: #F03A3A;
+            --shadow: rgba(217, 26, 26, .45);
+            position: relative;
+            box-sizing: border-box;
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            cursor: pointer;
+            background: linear-gradient(180deg, var(--bg2), var(--bg1));
+            outline: none;
+            box-shadow: 0 6px 14px -10px var(--shadow);
+            transition: background .18s ease,
+            box-shadow .18s ease,
+            transform .12s ease;
+            /* 프레스만 사용할 예정 */
+            will-change: background, box-shadow, transform;
+        }
+
+        .btn-red svg path {
+            fill: white;
+        }
+
+        /* Hover: 컬러와 섀도우만 아주 미세하게 (리프트 없음) */
+        .btn-red:hover {
+            background: linear-gradient(180deg, #f24a4a, #d61a1a);
+            box-shadow: 0 8px 18px -12px var(--shadow);
+            transform: none;
+            /* 확실하게 떠오르지 않도록 고정 */
+        }
+
+        /* Active: 살짝 눌리는 프레스 효과만 */
+        .btn-red:active {
+            transform: scale(.98);
+            box-shadow: 0 4px 10px -10px var(--shadow);
+        }
+
+        /* 키보드 포커스 접근성 */
+        .btn-red:focus-visible {
+            outline: 3px solid rgba(240, 58, 58, .55);
+            outline-offset: 2px;
+        }
+
+        /* 모션 최소화 존중 */
+        @media (prefers-reduced-motion: reduce) {
+            .btn-red {
+                transition: none !important;
+            }
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .btn-red {
+                --shadow: rgba(240, 58, 58, .35);
+            }
+        }
+
+        /* ====================== search-product style ========================*/
+        .search-product article {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .search-product article h1 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #111827;
+        }
+
+        .search-product article span {
+            display: block;
+            font-size: 15px;
+            color: #6b7280;
+            margin-bottom: 30px;
+        }
+
+        .search-product .search-form {
+            display: flex;
+            justify-content: center;
+        }
+
+        .search-product .search-form form table {
+            border-collapse: collapse;
+        }
+
+        .search-product .search-form input[type="text"] {
+            width: 360px;
+            padding: 12px 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            /* 왼쪽 둥근 모서리 */
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.2s;
+            margin-right: 5px;
+            background: url('/images/product/searchIcon.png') no-repeat right 14px center;
+            background-color: white;
+            background-size: 16px;
+        }
+
+        .search-product .search-form input[type="text"]:focus {
+            border-color: #dc2626;
+        }
+
+        .search-product .search-form input[type="submit"] {
+            width: 90px;
+            height: 41px;
+        }
+
+        /*============================= category style ===============================*/
+        /* 섹션 레이아웃 */
+        .category-section article {
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 28px 16px 40px;
+            text-align: center;
+        }
+
+        .category-section h2 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 24px;
+        }
+
+        /* 그리드 */
+        .category-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px 22px;
+        }
+
+        .category-container > a {
+            display: block;
+            text-decoration: none;
+        }
+
+        /* 카드 공통 */
+        .category-container div {
+            background: #fff;
+            border: 1px solid #f1f5f9;
+            border-radius: 16px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, .04);
+            padding: 18px 18px 20px;
+            text-align: left;
+            transition: border-color .2s, box-shadow .2s, transform .1s;
+            height: 165px;
+            box-sizing: border-box;
+        }
+
+        .category-container div:hover {
+            border-color: #fee2e2; /* 연한 빨강 테두리 */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, .06);
+            transform: translateY(-2px);
+        }
+
+        /* 아이콘: 연한 빨강 원형 배경 */
+        .category-container div > img {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+            border-radius: 12px;
+            border: 1px solid #fee2e2;
+            display: inline-block;
+            margin-bottom: 12px;
+        }
+
+        /* 제목(텍스트 노드) 스타일링을 위해 블록 전환 */
+        .category-container div {
+            font-size: 0; /* 텍스트/이미지 사이 여백 제어용 */
+        }
+
+        .category-container div img + * {
+            display: block;
+            font-size: 16px;
+            font-weight: 700;
+            color: #111827;
+            margin: 2px 0 6px;
+        }
+
+        /* 설명 */
+        .category-container p {
+            margin: 0;
+            font-size: 13px;
+            line-height: 1.5;
+            color: #6b7280;
+            word-break: keep-all;
+        }
+
+        /* 반응형 */
+        @media (max-width: 900px) {
+            .category-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 560px) {
+            .category-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /*============================= recommend style ===============================*/
+        /* 섹션 레이아웃 */
+        .recommend article {
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 28px 16px;
+            text-align: center;
+        }
+
+        .recommend h2 {
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 12px;
+        }
+
+        /* 상단 필터 탭 (두 번째 div) */
+        .recommend article > div:nth-of-type(1) {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        /* 활성화된 탭 스타일 */
+        .tab {
+            padding: 8px 14px;
+            font-size: 13px;
+            border-radius: 9999px;
+            border: 1px solid #e5e7eb;
+            color: #6b7280;
+            background: #fff;
+            cursor: pointer;
+        }
+
+        .tab.active {
+            background: #dc2626;
+            color: #fff;
+            border-color: #dc2626;
+        }
+
+        /* 카드 래퍼 */
+        .recommend .prod-wrapper {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: nowrap;
+        }
+
+        /* 카드 */
+        .product-card {
+            width: 280px;
+            background: #fff;
+            border: 1px solid #f1f5f9;
+            border-radius: 16px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, .06);
+            padding: 18px;
+            text-align: left;
+            position: relative;
+        }
+
+        /* 품목 뱃지 */
+        .product-card .badge {
+            position: absolute;
+            top: 12px;
+            left: 14px;
+            display: inline-block;
+            padding: 3px 8px;
+            font-size: 11px;
+            border-radius: 9999px;
+            background: #fef2f2;
+            /* 연한 빨강 배경 */
+            color: #dc2626;
+            /* 빨강 텍스트 */
+            border: 1px solid #fee2e2;
+        }
+
+        /* 제목/설명 */
+        .product-card .title {
+            margin-top: 25px; /* 뱃지와 간격 */
+            font-weight: 700;
+            font-size: 16px;
+            color: #111827;
+            margin-bottom: 4px;
+        }
+
+        .product-card .desc {
+            font-size: 13px;
+            color: #6b7280;
+            line-height: 1.4;
+            /* 오타 수정 */
+            margin-bottom: 12px;
+        }
+
+        /* 금리 블록 */
+        .product-card .rates {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin: 10px 0 14px;
+        }
+
+        .product-card .rate-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            color: #374151;
+        }
+
+        .product-card .rate-row .value {
+            font-weight: 700;
+        }
+
+        .product-card .rate-row.high .value {
+            color: #d91a1a;
+        }
+
+        .product-card .view-btn {
+            width: 100%;
+            padding: 8px 0;
+            font-weight: 600;
+        }
+
+        .product-card .view-btn:hover {
+            background-color: #b91c1c;
+        }
+
+        /* ============================= chart style ========================= */
+        .interest-chart {
+            text-align: center;
+        }
+
+        .interest-chart article {
+            justify-content: center;
+            display: flex;
+        }
+
+        .chart-box {
+            background-color: #fff;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            width: 700px;
+        }
+
+        /* ============================ tools style ========================= */
+        .tools article {
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .tools h2 {
+            text-align: center;
+        }
+
+        .tools .card {
+            flex: 1;
+            background-color: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+            min-width: 220px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tools .card h3 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tools .card > img {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            border-radius: 12px;
+            border: 1px solid #fee2e2;
+            display: inline-block;
+            margin-bottom: 12px;
+        }
+
+        .tools input,
+        .tools select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            box-sizing: border-box;
+            display: block;
+        }
+
+        .tools .result-box {
+            background-color: #f9fafb;
+            border-radius: 8px;
+            text-align: center;
+            padding: 12px;
+            font-weight: 700;
+            color: #dc2626;
+            margin-bottom: 10px;
+        }
+
+        .tools .btn {
+            display: inline-block;
+            width: 100%;
+            color: #fff;
+            padding: 10px;
+            font-weight: 600;
+            text-align: center;
+            bottom: 0;
+            margin-top: auto;
+        }
+
+        .tools .info-text {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .tools .faq-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 16px 0;
+        }
+
+        .tools .faq-list li {
+            font-size: 14px;
+            color: #374151;
+            margin-bottom: 6px;
+        }
+    </style>
+</head>
+
+<body>
+<header>
+    <div id="header" th:replace="~{layouts/header.html}"></div>
+</header>
+<main>
+    <section class="search-product">
+        <article>
+            <h1>나에게 맞는 예·적금 찾기</h1>
+            <span>목표와 조건에 맞는 최적의 상품을 추천해드립니다.</span>
+            <div class="search-form">
+                <form action="">
+                    <table>
+                        <tr>
+                            <td>
+                                <input type="text" name="keyword" placeholder="상품명, 금리, 조건 등을 검색해보세요."/>
+                            </td>
+                            <td>
+                                <input type="submit" value="상품찾기" class="btn-red"/>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+        </article>
+    </section>
+    <section class="category-section">
+        <article>
+            <h2>상품 카테고리</h2>
+            <div class="category-container">
+                <a th:href="@{/product/list}">
+                    <div>
+                        <img th:src="@{/images/product/termDeposit.png}">
+                        <h2>정기예금</h2>
+                        <p>
+                            안정적인 수익을 원하는 분들께 추천하는 기본 예금상품
+                        </p>
+                    </div>
+                </a>
+                <a th:href="@{/product/list}">
+                    <div>
+                        <img th:src="@{/images/product/freeDeposit.png}">
+                        <h2>자유예금</h2>
+                        <p>
+                            언제든지 입출금이 자유로운 유연한 예금상품
+                        </p>
+                    </div>
+                </a>
+                <a th:href="@{/product/list}">
+                    <div>
+                        <img th:src="@{/images/product/savings.png}">
+                        <h2>적금</h2>
+                        <p>
+                            목돈 마련을 위한 체계적인 저축상품
+                        </p>
+                    </div>
+                </a>
+                <a th:href="@{/product/list}">
+                    <div>
+                        <img th:src="@{/images/product/foreignCurrencyDeposit.png}">
+                        <h2>외환예금</h2>
+                        <p>
+                            외화 자산 운용을 위한 다양한 통화별 예금
+                        </p>
+                    </div>
+                </a>
+                <a th:href="@{/product/list}">
+                    <div>
+                        <img th:src="@{/images/product/taxBond.png}">
+                        <h2>세금우대/비과세</h2>
+                        <p>
+                            세제혜택을 받을 수 있는 특별 우대상품
+                        </p>
+                    </div>
+                </a>
+                <a th:href="@{/product/list}">
+                    <div>
+                        <img th:src="@{/images/product/housingPurchase.png}">
+                        <h2>주택마련</h2>
+                        <p>
+                            내 집 마련의 꿈을 실현하는 주택청약 전용 상품
+                        </p>
+                    </div>
+                </a>
+            </div>
+        </article>
+    </section>
+
+    <section class="interest-chart">
+        <h2>금리 한눈에 보기</h2>
+        <article>
+            <div class="chart-box">
+                <canvas id="rateChart"></canvas>
+            </div>
+            <script>
+                const ctx = document.getElementById('rateChart').getContext('2d');
+
+                const rateChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['정기예금', '정기적금', '자유예금', '연동예금'],
+                        datasets: [
+                            {
+                                label: '기본금리',
+                                data: [2.4, 2.1, 1.8, 2.2],
+                                backgroundColor: '#9ca3af', // 회색 (Tailwind gray-400)
+                                borderRadius: 6,
+                            },
+                            {
+                                label: '최고금리',
+                                data: [3.2, 3.0, 2.7, 3.1],
+                                backgroundColor: '#dc2626', // 빨강 (Tailwind red-600)
+                                borderRadius: 6,
+                            },
+                        ],
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    usePointStyle: true,
+                                    pointStyle: 'circle',
+                                    font: {
+                                        size: 13,
+                                    },
+                                },
+                            },
+                            tooltip: {
+                                backgroundColor: '#111827',
+                                titleColor: '#fff',
+                                bodyColor: '#e5e7eb',
+                            },
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: '금리 (%)',
+                                    font: {size: 13},
+                                },
+                                grid: {
+                                    color: '#f3f4f6',
+                                },
+                            },
+                            x: {
+                                grid: {
+                                    display: false,
+                                },
+                            },
+                        },
+                    },
+                });
+            </script>
+        </article>
+    </section>
+    <section class="tools">
+        <h2 style="margin-top: 60px;">유용한 도구</h2>
+        <article>
+            <!-- 퇴직연금 계산기 -->
+            <div class="card">
+                <img th:src="@{/images/product/calculator.png}" alt="만기 계산기">
+                <h3>퇴직연금 계산기</h3>
+
+                <label>예치금액</label>
+                <input type="text" id="amount" placeholder="1,000,000"/>
+
+                <label>연 이자율(%)</label>
+                <input type="text" id="rate" placeholder="3.2"/>
+
+                <label>예치기간</label>
+                <select id="period">
+                    <option value="12">12개월</option>
+                    <option value="24">24개월</option>
+                    <option value="36">36개월</option>
+                </select>
+
+                <div class="result-box" id="result">예상 이자<br><strong>0원</strong></div>
+                <button class="btn btn-red"
+                        th:onclick="|location.href='@{/mypage/calc}'|">자세히 계산하기</button>
+            </div>
+
+            <!-- 영업점 찾기 -->
+            <div class="card">
+                <img th:src="@{/images/product/location.png}" alt="영업점 찾기">
+                <h3>영업점 찾기</h3>
+                <p class="info-text">가까운 BNK부산은행 영업점을 찾아보세요</p>
+                <p class="info-text">🏦 평일 09:00 - 16:00<br>📞 1588-6200</p>
+                <button type="button"
+                        th:onclick="|location.href='@{/cs/consultation/findStore}'|"
+                        class="btn btn-red">영업점 찾기</button>
+            </div>
+
+            <!-- 자주 묻는 질문 -->
+            <div class="card">
+                <img th:src="@{/images/product/faq.png}" alt="자주 묻는 질문">
+                <h3>자주 묻는 질문</h3>
+                <ul class="faq-list">
+                    <li>예금자보호법 적용 받는가?</li>
+                    <li>중도해지 시 이자는 어떻게?</li>
+                    <li>우대금리 조건은?</li>
+                </ul>
+                <button type="button"
+                        th:onclick="|location.href='@{/cs/consultation/FAQ}'|"
+                        class="btn btn-red">FAQ 더보기</button>
+            </div>
+        </article>
+    </section>
+</main>
+<footer>
+    <div id="footer" th:replace="~{layouts/footer.html}"></div>
+</footer>
+</body>
+
+</html>
+<!-- 추천 상품 탭 + 퇴직연금 계산기 스크립트 -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        /* ===== 추천 상품 탭 ===== */
+        const tabs = document.querySelectorAll(".tab");
+        const cards = document.querySelectorAll(".product-card");
+
+        tabs.forEach(tab => {
+            tab.addEventListener("click", function () {
+                const filterValue = tab.getAttribute("data-filter");
+
+                // 탭 활성화 스타일
+                tabs.forEach(t => t.classList.remove("active"));
+                tab.classList.add("active");
+
+                // 필요하면 카드 필터링 로직 다시 사용
+                // cards.forEach(card => {
+                //     const cardCategory = card.getAttribute("data-category");
+                //     if (filterValue === "all" || cardCategory === filterValue) {
+                //         card.style.display = "block";
+                //     } else {
+                //         card.style.display = "none";
+                //     }
+                // });
+            });
+        });
+
+        /* ===== 퇴직연금 계산기 ===== */
+        const amountInput = document.getElementById("amount");
+        const rateInput   = document.getElementById("rate");
+        const periodSelect = document.getElementById("period");
+        const resultBox   = document.getElementById("result");
+
+        // 숫자/콤마만 허용해서 금액 파싱
+        function parseCurrency(value) {
+            if (!value) return 0;
+            return parseFloat(value.toString().replace(/,/g, "")) || 0;
+        }
+
+        // 이자 계산: 예치금액 × (연이율/100) × (개월수/12)
+        function calculateInterest() {
+            const principal = parseCurrency(amountInput.value);
+            const rate = parseFloat(rateInput.value);   // % 단위 (예: 3.2)
+            const months = parseInt(periodSelect.value, 10);
+
+            if (!principal || !rate || !months) {
+                resultBox.innerHTML = "예상 이자<br><strong>0원</strong>";
+                return;
+            }
+
+            const interest = principal * (rate / 100) * (months / 12);
+            const formatted = Math.floor(interest).toLocaleString();
+
+            resultBox.innerHTML = `예상 이자<br><strong>${formatted}원</strong>`;
+        }
+
+        // 입력 변경 시마다 계산
+        amountInput.addEventListener("input", calculateInterest);
+        rateInput.addEventListener("input", calculateInterest);
+        periodSelect.addEventListener("change", calculateInterest);
+
+        // 기본값 세팅 (원하면 수정)
+        amountInput.value = "1000000";
+        rateInput.value = "3.2";
+        periodSelect.value = "12";
+        calculateInterest();
+    });
+</script>

@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>약관동의</title>
+</head>
+<body>
+<div th:replace="~{layouts/header.html}"></div>
+
+<div id="bnk-chatbot-container" style="position: fixed; right: 20px; bottom: 20px; z-index: 9999;">
+    <div id="bnk-chatbot-slot"></div>
+</div>
+<main>
+    <div class="container">
+        <h1 style="text-align: center;">신규가입</h1>
+        <div class="stepper">
+            <div class="step active"><span class="dot">1</span>약관동의</div>
+            <div class="sep"></div>
+            <div class="step"><span class="dot">2</span>본인인증</div>
+            <div class="sep"></div>
+            <div class="step"><span class="dot">3</span>정보입력</div>
+            <div class="sep"></div>
+            <div class="step"><span class="dot">4</span>가입완료</div>
+        </div>
+
+        <!-- 제목 -->
+        <h2 style="margin: 20px 100px 0px; font-size: 28px;">약관동의</h2>
+        <p style="color: #6b7280; margin: 0 100px 20px;">
+            원활한 서비스 이용을 위해 회원가입 약관 및 개인정보 처리방침에 동의해 주세요.
+        </p>
+
+        <!-- 약관 -->
+        <section class="card">
+            <div class="agree-all">
+                <label><input type="checkbox" class="chk" id="agreeAll"> 전체 약관에 동의합니다</label>
+            </div>
+
+            <!-- 전체 약관 리스트 묶음 -->
+            <div class="list-wrapper">
+                <div class="section-title">
+                    <span class="bullet" style="background-color: #ef4444;">!</span>필수 약관 동의
+                </div>
+
+                <!-- ✅ 필수 약관: div.list → table.list 로 변경 -->
+                <table class="list" id="requiredList" style="width:100%; border-collapse:separate; border-spacing:0 10px;">
+                    <tbody class="item">
+                    <tr>
+                        <td>
+                            <div class="row">
+                                <input type="checkbox" class="chk reqchk">
+                                <div class="label">전자 금융거래 기본 약관 <span class="badge req">필수</span></div>
+                                <div class="chev" role="button" tabindex="0" aria-expanded="false" aria-controls="panel-1">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                        <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="panel" id="panel-1">
+                                <div class="panel-inner">
+                                    ✔ 제 1조 (목적)
+                                    이 약관은 금융회사(또는 전자금융업자)와 이용자 사이에 전자적 장치를 이용한 전자금융거래에 관한 기본적인 사항을 정함으로써, 거래의 신속하고 효율적인 처리 및 거래당사자 상호간의 이해관계 조정을 목적으로 합니다.
+                                    부산은행 BNK<br>
+                                    ✔ 제 2조 (용어의 정의)
+                                    “전자금융거래”: 금융회사 등이 전자적 장치(ATM, 자동입출금기, 컴퓨터, 휴대전화, 그 밖의 전자적 장치)를 통하여 제공하는 금융상품 및 서비스를 이용자가 전자적 방식으로 이용하는 거래.
+                                    부산은행 BNK
+                                    “이용자”: 전자금융거래계약을 체결한 고객.
+                                    부산은행 BNK
+                                    “접근매체”: 이용자가 전자금융거래를 수행하기 위하여 사용하는 카드, 인증서, 이용자번호, 생체정보, 비밀번호 등.
+                                    신한카드
+                                    기타: 전자적 장치, 거래지시, 오류 등.
+                                    부산은행 BNK<br>
+                                    ✔ 제 3조 (적용되는 거래 또는 적용범위)
+                                    이 약관은 금융회사와 이용자 사이에 현금자동지급기, 자동입·출금기, 지급용단말기, 컴퓨터, 전화기 기타 전자적 장치를 이용한 계좌이체·송금·조회·입출금 등의 전자금융거래에 적용됩니다.
+                                    부산은행 BNK
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+
+                    <tbody class="item">
+                    <tr>
+                        <td>
+                            <div class="row">
+                                <input type="checkbox" class="chk reqchk">
+                                <div class="label">전자 금융 서비스 이용 약관 <span class="badge req">필수</span></div>
+                                <div class="chev" role="button" tabindex="0" aria-expanded="false" aria-controls="panel-2">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                        <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="panel" id="panel-2">
+                                <div class="panel-inner">
+                                    ✔ 제 1조 (목적)
+                                    이 약관은 금융회사(또는 전자금융업자)와 이용자 사이에 전자적 장치를 이용한 전자금융거래에 관한 기본적인 사항을 정함으로써, 거래의 신속하고 효율적인 처리 및 거래당사자 상호간의 이해관계 조정을 목적으로 합니다.
+                                    부산은행 BNK<br>
+                                    ✔ 제 2조 (용어의 정의)
+                                    “전자금융거래”: 금융회사 등이 전자적 장치(ATM, 자동입출금기, 컴퓨터, 휴대전화, 그 밖의 전자적 장치)를 통하여 제공하는 금융상품 및 서비스를 이용자가 전자적 방식으로 이용하는 거래.
+                                    부산은행 BNK
+                                    “이용자”: 전자금융거래계약을 체결한 고객.
+                                    부산은행 BNK
+                                    “접근매체”: 이용자가 전자금융거래를 수행하기 위하여 사용하는 카드, 인증서, 이용자번호, 생체정보, 비밀번호 등.
+                                    신한카드
+                                    기타: 전자적 장치, 거래지시, 오류 등.
+                                    부산은행 BNK<br>
+                                    ✔ 제 3조 (적용되는 거래 또는 적용범위)
+                                    이 약관은 금융회사와 이용자 사이에 현금자동지급기, 자동입·출금기, 지급용단말기, 컴퓨터, 전화기 기타 전자적 장치를 이용한 계좌이체·송금·조회·입출금 등의 전자금융거래에 적용됩니다.
+                                    부산은행 BNK<br>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+
+                    <tbody class="item">
+                    <tr>
+                        <td>
+                            <div class="row">
+                                <input type="checkbox" class="chk reqchk">
+                                <div class="label">개인정보 수집 및 이용 동의서 약관 <span class="badge req">필수</span></div>
+                                <div class="chev" role="button" tabindex="0" aria-expanded="false" aria-controls="panel-3">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                        <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="panel" id="panel-3">
+                                <div class="panel-inner">
+                                    ✔ 제 1조 (수집 목적)
+                                    회사는 귀하의 개인정보를 다음의 목적을 위하여 수집·이용합니다.
+                                    ① 서비스 제공 및 회원관리
+                                    ② 마케팅·이벤트 진행 및 광고 안내
+                                    ③ 고객 상담 및 불만 처리<br>
+                                    ✔ 제 2조 (수집 항목)
+                                    ① 필수항목 : 이름, 생년월일, 휴대전화번호, 계좌번호 등
+                                    ② 선택항목 : 이메일 주소, 자산정보 등
+                                    ③ 자동수집항목 : 접속 로그, 쿠키, IP주소 등<br>
+                                    ✔ 제 3조 (보유 및 이용기간)
+                                    본인의 동의 철회 또는 수집목적이 달성된 후에는 개인정보를 지체 없이 파기합니다.
+                                    다만 관계 법령에 의하여 일정기간 보관이 필요한 경우에는 해당 기간 동안 보관합니다.<br>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <div class="section-title">
+                    <span class="bullet" style="background-color: #2563eb;">!</span>선택 약관 동의
+                </div>
+
+                <!-- 선택 약관: div.list → table.list 로 변경 -->
+                <table class="list" style="width:100%; border-collapse:separate; border-spacing:0 10px;">
+                    <tbody class="item">
+                    <tr>
+                        <td>
+                            <div class="row">
+                                <input type="checkbox" class="chk optchk">
+                                <div class="label">마케팅 정보 수신 동의 <span class="badge opt">선택</span></div>
+                                <div class="chev" role="button" tabindex="0" aria-expanded="false" aria-controls="panel-4">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                        <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="panel" id="panel-4">
+                                <div class="panel-inner">
+                                    ✔ 제 1조 (목적)
+                                    회사는 이용자의 동의를 얻어 각종 상품·서비스 소개, 이벤트, 혜택 안내 등 마케팅 정보 제공을 목적으로 개인정보를 이용합니다.
+                                    부산은행 BNK<br>
+                                    ✔ 제 2조 (수집 및 이용 항목)
+                                    이용자의 성명, 연락처(휴대전화번호, 이메일 주소 등), 거래 및 이용 내역, 서비스 이용 기록 등을 마케팅 정보 전송에 활용할 수 있습니다.
+                                    부산은행 BNK<br>
+                                    ✔ 제 3조 (수신 동의 및 철회)
+                                    이용자는 문자, 이메일, 앱 푸시 등으로 마케팅 정보를 수신할 수 있으며, 원하지 않을 경우 언제든지 수신을 거부하거나 동의를 철회할 수 있습니다.
+                                    부산은행 BNK<br>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- 보안 안내 -->
+        <div class="notice" style="margin-top: 20px;">
+            <div>
+                <p style="font-size:16px; font-weight:700; color:#1f3b8f; margin-bottom:4px;">🔒 보안 안내</p>
+                <ul>
+                    <li>개인정보는 암호화되어 안전하게 보호됩니다.</li>
+                    <li>금융거래 시 공인인증서 또는 공동인증서가 필요합니다.</li>
+                    <li>타인의 ID/비밀번호를 공유하지 마세요.</li>
+                </ul>
+            </div>
+        </div>
+        <!-- 버튼 -->
+        <div class="btns">
+            <a th:href="@{/member/main}" class="btn-pressable"
+               style="display:inline-block; box-sizing:border-box; width:40%; height:42px; line-height:42px; border-radius:8px; border:1px solid #D1D5DB; background-color:white; text-align:center; color:#111; text-decoration:none;">
+                취소
+            </a>
+            <button id="nextBtn" class="btn-register"
+                    style="display:inline-block; box-sizing:border-box; width:40%; height:42px; line-height:42px; border-radius:8px; background-color:#007BFF; color:white; text-align:center; border:none; cursor:pointer;">
+                다음
+            </button>
+        </div>
+    </div>
+</main>
+
+<script>
+    // 아코디언: 오른쪽 버튼(.chev) 클릭/엔터/스페이스로 토글
+    document.querySelectorAll('.item').forEach((item) => {
+        const btn = item.querySelector('.chev');
+        const panel = item.querySelector('.panel');
+
+        function toggle(open) {
+            const willOpen = (open !== undefined) ? open : !btn.classList.contains('is-open');
+            btn.classList.toggle('is-open', willOpen);
+            btn.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+            panel.classList.toggle('open', willOpen);
+            panel.style.maxHeight = willOpen ? panel.scrollHeight + 'px' : 0;
+        }
+
+        btn.addEventListener('click', () => toggle());
+        btn.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                toggle();
+            }
+        });
+
+        panel.style.maxHeight = 0;
+    });
+
+    // 전체 동의 → 하위 체크박스 동기화
+    const agreeAll = document.getElementById('agreeAll');
+    const reqChecks = [...document.querySelectorAll('.reqchk')];
+    const optChecks = [...document.querySelectorAll('.optchk')];
+
+    if (agreeAll) {
+        agreeAll.addEventListener('change', () => {
+            [...reqChecks, ...optChecks].forEach(c => c.checked = agreeAll.checked);
+        });
+    }
+
+    // "다음" 버튼 클릭 시 필수 항목 확인 후 /member/auth 로 이동
+    const nextBtn = document.getElementById('nextBtn');
+    if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+            const allRequiredChecked = reqChecks.every(chk => chk.checked);
+            if (!allRequiredChecked) {
+                alert("필수 약관에 모두 동의해야 다음 단계로 이동할 수 있습니다.");
+                return;
+            }
+            window.location.href = "/BNK/member/auth";
+        });
+    }
+</script>
+
+<!-- 모달 창 -->
+<div id="modal-alert" class="modal-overlay">
+    <div class="modal-box">
+        <p class="modal-message">필수 약관에 모두 동의해야 다음 단계로 진행할 수 있습니다.</p>
+        <button id="modal-close" class="btn-register">확인</button>
+    </div>
+</div>
+
+<footer><div th:replace="~{layouts/footer.html}"></div></footer>
+</body>
+
+<style>
+    main { width: 1200px; background-color: #F6F6F8; padding: 80px 20px; margin: 0 auto; }
+    body { font-family: 'Noto Sans KR', '맑은 고딕', sans-serif; background: #F6F6F8; color: #111827; line-height: 1.5; }
+    .container { max-width: 1000px; margin: 0 auto; padding: 28px 16px 40px; }
+
+    /* 단계 표시 */
+    .stepper { width: 800px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; background: #f7f7f9; border: 1px solid #e5e7eb; border-radius: 999px; padding: 10px 20px; }
+    .step { display: flex; align-items: center; gap: 8px; color: #6b7280; font-weight: 600; }
+    .step .dot { width: 28px; height: 28px; border-radius: 999px; display: grid; place-items: center; border: 1px solid #d1d5db; background: #fff; color: #6b7280; font-weight: 700; }
+    .step.active { color: #111; }
+    .step.active .dot { background: #d6001c; border-color: #d6001c; color: #fff; }
+    .sep { width: 28px; height: 2px; background: #e5e7eb; border-radius: 2px; }
+
+    /* 카드 */
+    .card { background: #fff; border: 1px solid #e5e7eb; border-radius: 20px; box-shadow: 0 10px 20px rgba(2,6,23,.06); overflow: hidden; max-width: 800px; margin: 0 auto; }
+
+    /* 전체 동의 */
+    .agree-all { background: #fafafa; border-bottom: 1px solid #e5e7eb; padding: 18px 20px; display: flex; align-items: center; justify-content: space-between; }
+    .agree-all label { display: flex; align-items: center; gap: 10px; font-weight: 700; }
+
+    /* 체크박스(커스텀) */
+    .chk { appearance: none; width: 20px; height: 20px; border: 1px solid #d1d5db; border-radius: 4px; background: #fff; cursor: pointer; position: relative; }
+    .chk:checked { border-color: #d6001c; background: #d6001c; }
+    .chk:checked::after { content: ""; position: absolute; left: 5px; top: 1px; width: 6px; height: 12px; border: 2px solid #fff; border-top: none; border-left: none; transform: rotate(45deg); }
+
+    /* 약관 섹션 타이틀 */
+    .section-title { display: flex; align-items: center; gap: 8px; font-weight: 700; margin: 18px 20px 10px; }
+    .bullet { width: 18px; height: 18px; border-radius: 50%; color: #fff; font-weight: 700; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+
+    /* 리스트 래퍼 */
+    .list { padding: 0; }
+
+    .list-wrapper { padding: 0 12px 18px; }
+    .list-wrapper .section-title { margin-top: 16px; margin-bottom: 10px; }
+    .list-wrapper .section-title:first-of-type { margin-top: 10px; }
+
+    /* 항목 헤더(기존 .row 스타일 재사용) */
+    .row { display: flex; align-items: center; gap: 10px; padding: 12px 10px; border: 1px solid #e5e7eb; border-radius: 12px; background: #fff; }
+    .label { flex: 1; display: flex; align-items: center; gap: 10px; color: #111; }
+    .badge { font-size: 12px; padding: 4px 8px; border-radius: 999px; color: #fff; }
+    .badge.req { background: #ef4444; }
+    .badge.opt { background: #9ca3af; }
+
+    /* 오른쪽 버튼 */
+    .chev { width: 28px; height: 28px; border: 1px solid #d1d5db; border-radius: 50%; display: grid; place-items: center; color: #6b7280; cursor: pointer; transition: transform .2s ease; }
+    .chev:focus-visible { outline: 3px solid rgba(37,99,235,.35); outline-offset: 2px; }
+    .chev svg { transition: transform .2s ease; }
+    .chev.is-open svg { transform: rotate(90deg); }
+
+    /* 펼쳐지는 본문 (기존 .panel 스타일 그대로) */
+    .panel { overflow: hidden; max-height: 0; opacity: 0; transition: max-height .3s ease, opacity .25s ease; border-radius: 10px; padding: 0 14px; border: none; }
+    .panel.open { opacity: 1; padding: 12px 14px; }
+    .panel-inner { font-size: 14px; color: #4b5563; line-height: 1.6; white-space: normal; word-break: keep-all; padding: 10px; border: 1px solid #ddd; border-radius: 10px; }
+
+    /* 보안 안내 */
+    .notice { max-width: 740px; margin: 0 auto; background: #eef4ff; border: 1px solid #c7d7ff; color: #1f3b8f; border-radius: 12px; padding: 20px 30px; display: flex; gap: 8px; }
+    .notice p { margin: 0 0 2px 0; }
+    .notice ul { margin: 0 0 0 25px; padding: 0; }
+
+    /* 버튼 */
+    .btns { display: flex; justify-content: center; gap: 10px; margin-top: 22px; }
+
+    a { text-decoration: none; color: inherit; }
+    /* ✅ 모달창 스타일 */
+    .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.45);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity .25s ease;
+        z-index: 10000;
+    }
+
+    .modal-overlay.show {
+        opacity: 1;
+        pointer-events: all;
+    }
+
+    .modal-box {
+        background: #fff;
+        padding: 24px 30px;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        text-align: center;
+        max-width: 600px;
+        width: auto;
+        animation: popIn .25s ease;
+    }
+
+    .modal-message {
+        font-size: 16px;
+        color: #111;
+        margin-bottom: 18px;
+        line-height: 1.4;
+        white-space: nowrap;
+    }
+
+    @keyframes popIn {
+        from { transform: scale(0.9); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+    }
+</style>
+</html>

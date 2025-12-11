@@ -1,0 +1,515 @@
+/*----------------------------------*/
+/*--전체 페이지--*/
+/*----------------------------------*/
+body {
+  font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+  background: #F6F6F8;
+  margin: 0;
+  color: #222;
+  padding-top: 100px;
+}
+
+
+.Pension-page{
+    display:flex;
+    gap:40px;
+    width: 1200px;
+    margin: 60px auto;
+    padding: 40px 20px;
+    background: #F6F6F8;
+    border-radius: 8px;
+    margin-bottom: 100px;
+}
+
+
+
+/*----------------------------------*/
+/*--왼쪽 사이드바--*/
+/*----------------------------------*/
+.all-sidebar{
+    width: 250px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.all-sidebar h2{
+    font-size: 20px;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.sidebar-menu {
+    list-style:none;
+    padding: 20px;
+    margin: 0 0 40px 0;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 4px 4px rgba(0,0,0,0.08);
+}
+
+.sidebar-menu h2{
+    font-size: 17px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 16px;
+}
+
+.sidebar-menu li{
+    padding: 12px 16px;
+    border-radius:  6px;
+    color: #555;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+.sidebar-menu li:hover {
+    background: #f2f2f2;
+}
+
+.sidebar-menu li.active{
+    background: #ffe6e6;
+    border-left: 4px solid #d91a1a;
+    color: #d91a1a;;
+    font-weight:  600;
+    padding-left: 12px;
+}
+
+.sidebar-menu li:last-child{
+    border-bottom: none;
+}
+
+/*----------------------------------*/
+/*--추가 도움--*/
+/*----------------------------------*/
+.all-help{
+    background: linear-gradient(135deg,#e62b2b, #7e2020);
+    color: #fff;
+    border-radius: 12px;
+    padding: 24px 20px;
+    text-align: center;
+    box-shadow: 0 4px 4px rgba(0,0,0,0.08);
+}
+
+.help-box h3{
+    font-size: 17px;
+    margin-bottom: 6px;
+}
+
+.help-box p{
+    font-size: 14px;
+    margin-bottom: 16px;
+}
+
+.help-buttons{
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.btn-call, .btn-chat{
+    padding: 8px 14px;
+    border: none;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.btn-call{
+    background: #fff;
+    color: #d91a1a;
+}
+
+.btn-chat{
+    background:  transparent;
+    border: 1px solid #fff;
+    color: #fff;
+}
+
+/*----------------------------------*/
+/*--메인 컨텐츠--*/
+/*----------------------------------*/
+
+.Pension-content{
+    flex: 1;
+}
+
+.Pension-header h1{
+    font-size: 24px;
+    margin-bottom: 8px;
+}
+
+.Pension-header p{
+    color: #666;
+    margin-bottom:  20px;
+}
+
+.Pension-search {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ddd;
+    border-radius: 30px;
+    padding: 6px 12px;
+    background: #fafafa;
+}
+
+/* 검색 버튼 */
+.search-btn {
+  background: transparent;
+  border: none;
+  color: #D91A1A;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.Pension-search input{
+    border:none;
+    flex:1;
+    background: transparent;
+    padding: 8px;
+    outline: none;
+    font-size: medium;
+}
+
+.Pension-search button{
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+/* 태그 */
+.Pension-tags {
+  margin: 20px 0;
+  display: flex;
+  gap: 10px;
+}
+
+.Pension-tags button {
+  background: #ffffff;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.Pension-tags button:hover {
+  background: #ffe6e6;
+  color: #d91a1a;
+}
+
+/*리스트*/
+.Pension-list details{
+    border: 1px soild #e6e6e6;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    padding: 14px 16px;
+    background: #fff;
+}
+
+.Pension-list summary{
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.Pension-list p{
+    margin-top: 10px;
+    color: #555;
+    font-size: 14px;
+    line-height:  1.6;
+}
+
+.Pension-more{
+    margin: 30px auto 0;
+    display: block;
+    padding: 10px 24px;
+    border-radius: 8px;
+    background: #ffffff;
+    border: 1px solid #ddd;
+    cursor: pointer;
+}
+
+
+/******************************************/
+/* 전체 페이지 */
+/******************************************/
+body {
+  font-family: 'Pretendard','Noto Sans KR',sans-serif;
+  background: #F6F6F8;
+  margin: 0;
+  color: #222;
+  padding-top: 100px;
+}
+
+.Pension-page {
+  display: flex;
+  gap: 40px;
+  max-width: 1200px;
+  margin: 60px auto;
+  padding: 40px 20px;
+  background: #F6F6F8;
+}
+
+/******************************************/
+/* 왼쪽 사이드바 */
+/******************************************/
+.all-sidebar {
+  width: 250px;
+  display: flex;
+  flex-direction: column;
+}
+
+.all-sidebar h2 {
+  font-size: 20px;
+  margin-bottom: 20px;
+}
+
+.sidebar-menu {
+  list-style: none;
+  padding: 20px;
+  margin: 0 0 40px 0;
+  background: #fff;
+  border-radius: 8px;
+  border: 1px solid #eee;
+  box-shadow: 0 4px 4px rgba(0,0,0,0.08);
+}
+
+.sidebar-menu li {
+  padding: 12px 16px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+  transition: 0.2s;
+  color: #555;
+}
+
+.sidebar-menu li:hover {
+  background: #f2f2f2;
+}
+
+.sidebar-menu li.active {
+  background: #ffe6e6;
+  border-left: 4px solid #D91A1A;
+  color: #D91A1A;
+  padding-left: 12px;
+  font-weight: 600;
+}
+
+.sidebar-menu li:last-child {
+  border-bottom: none;
+}
+
+/******************************************/
+/* 상담 박스 */
+/******************************************/
+.all-help {
+  background: linear-gradient(135deg,#e62b2b,#7e2020);
+  color: #fff;
+  padding: 24px 20px;
+  text-align: center;
+  border-radius: 12px;
+  box-shadow: 0 4px 4px rgba(0,0,0,0.08);
+}
+
+.help-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+/******************************************/
+/* 메인 컨텐츠 */
+/******************************************/
+.Pension-content {
+  flex: 1;
+}
+
+.Pension-header h1 {
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.Pension-header p {
+  color: #777;
+  margin-bottom: 20px;
+}
+
+/******************************************/
+/* 탭 메뉴 */
+/******************************************/
+.pension-tab {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+
+.pension-tab button {
+  padding: 10px 22px;
+  border: 1px solid #ddd;
+  background: #fff;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 15px;
+  color: #555;
+}
+
+.pension-tab button.active {
+  background: #ffe6e6;
+  border-color: #D91A1A;
+  color: #D91A1A;
+  font-weight: 600;
+}
+
+/******************************************/
+/* 본문 텍스트 */
+/******************************************/
+.pension-section h2,
+.pension-structure h3 {
+  font-size: 20px;
+  margin-top: 80px;
+  margin-bottom: 4px;
+  font-weight: 700;
+}
+
+.pension-text {
+  font-size: 15px;
+  line-height: 1.7;
+  color: #555;
+  margin-bottom: 10px;
+}
+
+/******************************************/
+/* 생산 가능 인구 감소 카드 */
+/******************************************/
+.population-container {
+  margin-bottom: 60px;
+  text-align: center;
+}
+
+.population-cards {
+  display: flex;
+  justify-content: center;
+  gap: 50px;
+  margin: 30px 0;
+}
+
+.population-card img {
+  height: 140px;
+}
+
+.circle {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  border: 2px solid #D4B48D;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 10px;
+  font-size: 20px;
+  color: #6a4f37;
+}
+
+.year {
+  font-size: 15px;
+  color: #6a4f37;
+  font-weight: 600;
+}
+
+.population-source {
+  font-size: 13px;
+  color: #888;
+}
+
+/******************************************/
+/* 3층 연금구조 이미지 */
+/******************************************/
+.pyramid-wrap {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.pyramid-wrap img {
+  width: 600px;
+}
+
+/******************************************/
+/* 부산은행 퇴직연금, 지금 바로 시작하세요  */
+/******************************************/
+
+.bnk-cta-wrap {
+  width: 100%;
+  padding: 40px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: ;
+}
+
+.bnk-cta-text {
+  font-size: 3rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-align: center;
+
+  /* 무지개 그라데이션 */
+  background: linear-gradient(
+    90deg,
+    #de0000,
+    #ff7a00,
+    #7e2020,
+    #eee,
+    #ff7a00,
+    #de0000,
+    #de0000
+  );
+  background-size: 300% 300%;
+
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+
+  /* 애니메이션 */
+  animation: rainbowFlow 6s ease-in-out infinite;
+}
+
+@keyframes rainbowFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+
+/******************************************/
+/* 사이드바 a 태그 기본 스타일 제거 */
+/******************************************/
+.sidebar-menu a {
+    display: block;
+    padding: 0px 0;
+    text-decoration: none;   /* 밑줄 제거 */
+    color: #222;             /* 파란색 제거 → 기본 텍스트 색 */
+}
+
+/* hover 효과 */
+.sidebar-menu a:hover {
+    color: #DE0000;          /* BNK 레드 */
+    text-decoration: underline;
+}
+
+/* active 스타일 (선택 페이지 강조) */
+.sidebar-menu .active a,
+.sidebar-menu li.active a {
+    font-weight: 600;
+    color: #DE0000;
+}

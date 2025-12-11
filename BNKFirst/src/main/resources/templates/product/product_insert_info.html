@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>상품 정보입력</title>
+    <link rel="stylesheet" th:href="@{/css/product/product_insert_info.css}">
+    <script type="module" th:src="@{/js/product/product_insert_info.js}"></script>
+    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+    <script th:src="@{/js/product/postcode.js}"></script>
+</head>
+
+<body>
+<header>
+    <div id="header" th:replace="~{layouts/header.html}"></div>
+</header>
+<main id="wizard" th:attr="data-mid=${mid}">
+    <!--    <main id="wizard" th:attr="data-has-info=true">-->
+    <!-- 1) 스텝퍼 -->
+    <ol class="stepper" id="wizardSteps" aria-label="신청 진행 단계">
+        <li class="step active" aria-current="step"><span class="dot">1</span> 본인확인서 등록</li>
+        <li class="step"><span class="dot">2</span> 약관동의</li>
+        <li class="step"><span class="dot">3</span> 중요내용</li>
+        <li class="step"><span class="dot">4</span> 정보입력</li>
+        <li class="step"><span class="dot">5</span> 매수신청</li>
+    </ol>
+
+    <!-- 2) 단계별 패널 (한 페이지에 모두 존재) -->
+    <section class="step-page" id="page1">
+        <h1>본인확인서(FATCA/CRS)등록</h1>
+        <div class="info-box">
+            <div class="info-title">
+                <img th:src="@{/images/product/info-blue.png}" alt="본인확인서 관련 안내" class="info-icon">
+                <strong>본인확인서 관련 안내</strong>
+            </div>
+            <ul class="info-text">
+                <li>상호주의에 따른 정기적인 금융정보의 교환을 위한 조세조약의 이행과 관련하여 국제조세 조정에 관한 법률에 따라 작성이 요구됩니다.</li>
+                <li>부산은행으로부터 본인확인서 재작성 또는 증빙자료를 요청받는 경우, 기재 내용에 변경이 있을 경우 <span class="info-red">60일 이내에
+                            통지</span>하여야 합니다.
+                </li>
+                <li>관련정보를 제공하지 않거나, 허위로 제공할 경우 향후 거래에 제한이 발생할 수 있으며, <span class="info-red">국세청 의무이행방해자로 신고</span>될
+                    수 있습니다.
+                </li>
+            </ul>
+
+            <div class="warn-box">
+                <img th:src="@{/images/product/time-yellow.png}" alt="귀속년도 안내" class="warn-icon">
+                <span>귀속년도는 고객님께서 작성하는 본인확인서 정보의 기존연도를 의미합니다. 예를 들어 2021년 12월 31일 기준으로 본인확인서 정보를 입력하실 경우, 귀속년도는
+                        2021년에 해당합니다.</span>
+            </div>
+        </div>
+        <form id="customerForm" th:object="${userInfo}">
+            <article class="card form-section">
+                <div class="inner">
+                    <h2 class="form-title">
+                        <img th:src="@{/images/product/user-red.png}" alt="고객 기본 정보" class="form-icon">
+                        고객 기본 정보
+                    </h2>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="name">성명<span class="req">*</span>
+                                <span id="name-comment" class="warn-comment"></span></label>
+                            <input id="name" name="name" type="text" placeholder="홍길동" th:value="*{mname}">
+                        </div>
+
+                        <div class="form-group">
+                            <label>성별<span class="req">*</span></label>
+                            <div class="radio-row">
+                                <label><input type="radio" name="gender" value="M" checked> 남성</label>
+                                <label><input type="radio" name="gender" value="F"> 여성</label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="birth">생년월일<span class="req">*</span>
+                                <span id="brthdt-comment" class="warn-comment"
+                                      min="1800-01-01" max="2999-12-31"></span></label>
+                            <input id="birth" name="brthdt" type="date" placeholder="YYYY-MM-DD" th:value="*{mbirth}">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="nation">국적<span class="req">*</span>
+                                <span id="natcd-comment" class="warn-comment"></span></label>
+                            <select id="nation" name="natcd">
+                                <option value="">-- 선택하세요 --</option>
+                                <option value="KR">대한민국</option>
+                                <option value="US">미국</option>
+                                <option value="JP">일본</option>
+                                <option value="CN">중국</option>
+                                <option value="GB">영국</option>
+                                <option value="FR">프랑스</option>
+                                <option value="DE">독일</option>
+                                <option value="CA">캐나다</option>
+                                <option value="AU">호주</option>
+                                <option value="SG">싱가포르</option>
+                                <option value="VN">베트남</option>
+                                <option value="TH">태국</option>
+                                <option value="PH">필리핀</option>
+                                <option value="IN">인도</option>
+                                <option value="ID">인도네시아</option>
+                                <option value="MY">말레이시아</option>
+                                <option value="RU">러시아</option>
+                                <option value="BR">브라질</option>
+                                <option value="ZA">남아프리카공화국</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="taxyr">귀속연도<span class="req">*</span>
+                                <span id="taxyr-comment" class="warn-comment"></span></label>
+                            <select id="taxyr" name="taxyr">
+                                <option value="">선택해 주세요</option>
+                                <option>2025</option>
+                                <option>2024</option>
+                                <option>2023</option>
+                                <option>2022</option>
+                                <option>2021</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="engLastName">영문성명<span class="req">*</span>
+                                <span id="ennm-comment" class="warn-comment"></span></label>
+                            <div style="display: flex; gap: 10px;">
+                                <input id="engLastName" class="engName" name="enlnm" type="text" placeholder="HONG">
+                                <input id="engFirstName" class="engName" name="enfnm" type="text"
+                                       placeholder="GIL DONG">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="phone">휴대전화번호<span class="req">*</span>
+                                <span id="phone-comment" class="warn-comment"></span></label>
+                            <input id="phone" name="phone" type="tel" placeholder="'-'를 포함하여 적어주세요. 예) 010-1111-1111" th:value="*{mphone}">
+                        </div>
+
+                        <div class="form-group full">
+                            <label>주소<span class="req">*</span>
+                                <span id="addr-comment" class="warn-comment"></span></label>
+                            <div class="addr-row">
+                                <input id="zip" name="zipcd" type="text" placeholder="우편번호" readonly style="flex:none">
+                                <button type="button" class="btn-white small" onclick="postcode()">주소검색</button>
+                            </div>
+                            <input id="addr1" name="addr1" type="text" placeholder="도로명 주소" readonly>
+                            <input id="addr2" name="addr2" type="text" placeholder="상세주소">
+                        </div>
+                    </div>
+                </div>
+            </article>
+            <article class="confirm-box">
+                <h2 class="confirm-title">
+                    <img th:src="@{/images/product/check-red.png}" alt="확인사항" class="confirm-icon">
+                    확인사항(해당하는 항복에 모두 체크)
+                </h2>
+                <label class="confirm-item" for="isKorean">
+                    <input type="checkbox" name="krres" id="isKorean">
+                    조세목적상 한국 거주자에 해당합니다.
+                    <img th:src="@{/images/product/detail-grey.png}" alt="세부정보">
+                </label>
+                <label class="confirm-item" for="isForeign">
+                    <input type="checkbox" name="others" id="isForeign">
+                    한국 외에 조세목적상 거주지국이 있습니다.
+                </label>
+            </article>
+        </form>
+    </section>
+    <section class="step-page" id="page2" hidden>
+        <h1 style="margin-bottom: 5px;">매수신청</h1>
+        <ul style="padding: 10px 25px 10px;color: #606060;margin-top: 0;">
+            <li>아래의 [예금거래 약관 동의 및 개별약관 동의]를 확인하신 후 동의하시면 "동의함" 버튼을 클릭하시기 바랍니다.</li>
+        </ul>
+        <h3 class="product-name" style="text-align: center;">저탄소 실천 적금</h3>
+        <article class="accept-terms">
+            <div class="terms-title">
+                <h2>상품설명서 및 약관 동의</h2>
+                <ul>
+                    <li>상품 신규가입을 위해서는 상품설명서 및 약관을 반드시 다운로드 받거나 읽어보셔야 합니다.</li>
+                </ul>
+            </div>
+            <div class="terms-list">
+                <div class="terms-item">
+                    <span>약관</span>
+                    <a href="#" download class="icon-btn" aria-label="기본약관 다운로드">
+                        <svg width="28" height="28" viewBox="0 0 24 24" role="img" aria-label="문서 다운로드" fill="none"
+                             stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M6 2h7l5 5v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/>
+                            <path d="M13 2v5h5" stroke-linecap="butt"/>
+                            <g transform="translate(-1,0)">
+                                <path d="M12 10v6"/>
+                                <path d="m9 13 3 3 3-3"/>
+                            </g>
+                            <path d="M8 20h8"/>
+                        </svg>
+                    </a>
+                </div>
+<!--                <div class="terms-item">-->
+<!--                    <span>유형별약관</span>-->
+<!--                    <a href="#" download class="icon-btn" aria-label="유형별약관 다운로드">-->
+<!--                        <svg width="28" height="28" viewBox="0 0 24 24" role="img" aria-label="문서 다운로드" fill="none"-->
+<!--                             stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">-->
+<!--                            <path d="M6 2h7l5 5v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/>-->
+<!--                            <path d="M13 2v5h5" stroke-linecap="butt"/>-->
+<!--                            <g transform="translate(-1,0)">-->
+<!--                                <path d="M12 10v6"/>-->
+<!--                                <path d="m9 13 3 3 3-3"/>-->
+<!--                            </g>-->
+<!--                            <path d="M8 20h8"/>-->
+<!--                        </svg>-->
+<!--                    </a>-->
+<!--                </div>-->
+<!--                <div class="terms-item">-->
+<!--                    <span>개별약관</span>-->
+<!--                    <a href="#" download class="icon-btn" aria-label="개별약관 다운로드">-->
+<!--                        <svg width="28" height="28" viewBox="0 0 24 24" role="img" aria-label="문서 다운로드" fill="none"-->
+<!--                             stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">-->
+<!--                            <path d="M6 2h7l5 5v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/>-->
+<!--                            <path d="M13 2v5h5" stroke-linecap="butt"/>-->
+<!--                            <g transform="translate(-1,0)">-->
+<!--                                <path d="M12 10v6"/>-->
+<!--                                <path d="m9 13 3 3 3-3"/>-->
+<!--                            </g>-->
+<!--                            <path d="M8 20h8"/>-->
+<!--                        </svg>-->
+<!--                    </a>-->
+<!--                </div>-->
+                <div class="terms-item">
+                    <span>상품설명서</span>
+                    <a href="#" download class="icon-btn" aria-label="상품설명서 다운로드">
+                        <svg width="28" height="28" viewBox="0 0 24 24" role="img" aria-label="문서 다운로드" fill="none"
+                             stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M6 2h7l5 5v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/>
+                            <path d="M13 2v5h5" stroke-linecap="butt"/>
+                            <g transform="translate(-1,0)">
+                                <path d="M12 10v6"/>
+                                <path d="m9 13 3 3 3-3"/>
+                            </g>
+                            <path d="M8 20h8"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+            <div class="esn-info">
+                <h2>필수 안내사항</h2>
+                <div class="info-wrapper">
+                    <div class="info-card">
+                        <div class="info-title">
+                            <img th:src="@{/images/product/info-red.png}" alt="설명의무 관련 확인서">
+                            <h3>설명의무 관련 확인서(차명거래 금지에 관한 설명)</h3>
+                        </div>
+                        <ul>
+                            <li><b>「금융실명거래 및 비밀보장에 관한법률 제3조 제3항</b> 에 따라 불법 재산의 은닉, 자금세탁 행위, 공중협박자금조달행위 및 강제 집행의 면탈,
+                                그 밖의 탈법행위를 목적으로 타인의 실명으로 금융거래를 하여서는 아니 되며, 이를 위반시 5년 이하의 징역 또는 5천만원 이하의 벌금에 처할 수
+                                있습니다.
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-title">
+                            <img th:src="@{/images/product/shield-red-circle.png}" alt="예금보험관계 설명 확인">
+                            <h3>예금보험관계 설명 확인</h3>
+                        </div>
+                        <ul>
+                            <li>본인이 가입하는 금융상품의 예금자보호여부 및 보호한도(원금과 소정의 이자를 합하여 1인당 1억원)에 대하여 이해하였음을 확인합니다.(상품설명서 또는
+                                상품설명 페이지 참조)
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="info-confirm">
+                    <div class="confirm-content"><b>위 안내에 대하여 충분히 이해하였음을 확인합니다.</b></div>
+                    <div class="confirm-check">
+                        <label for="esn-info">
+                            <input type="checkbox" name="esn-info" id="esn-info"> <b
+                                style="color: #467abd;">확인합니다.</b>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="terms-confirm">
+                <label for="terms-confirm">
+                    <input type="checkbox" name="terms-confirm" id="terms-confirm"> <b style="color: #467abd;">상품에
+                    대한 설명 및 약관에 충분히 이해했고
+                    동의합니다.</b>
+                </label>
+            </div>
+        </article>
+<!--        <article class="get-terms card">-->
+<!--            <form id="get-terms" novalidate>-->
+<!--                <h3>약관 및 상품설명서 받기</h3>-->
+<!--                <div class="field">-->
+<!--                    <span class="field-label">수령 방법 선택</span>-->
+<!--                    <div class="radio-group" role="radiogroup" aria-label="수령 방법 선택">-->
+<!--                        <label class="radio">-->
+<!--                            <input type="radio" name="receive" value="sms" checked>-->
+<!--                            문자(SMS)로 받기-->
+<!--                        </label>-->
+<!--                        <label class="radio">-->
+<!--                            <input type="radio" name="receive" value="email">-->
+<!--                            이메일로 받기-->
+<!--                        </label>-->
+<!--                    </div>-->
+<!--                </div>-->
+
+<!--                <div class="field input-field">-->
+<!--                    <label id="contact-label" for="contactInput" class="sr-only">연락처 입력</label>-->
+<!--                    <input id="contactInput" class="text-input" type="tel" inputmode="numeric" autocomplete="tel"-->
+<!--                           placeholder="휴대폰 번호 (‘-’ 포함) 예) 010-1234-5678" required pattern="^01(?:0|1|[6-9])-(?:\d{4})-\d{4}$"-->
+<!--                           aria-describedby="contact-help contact-error">-->
+<!--                    <p class="help" id="contact-help">휴대폰 번호는 ‘-’를 넣어서 입력해 주세요.</p>-->
+<!--                    <p class="error" id="contact-error" aria-live="polite"></p>-->
+<!--                </div>-->
+<!--            </form>-->
+<!--        </article>-->
+    </section>
+    <section class="step-page" id="page3" hidden>
+        <h1 style="margin-bottom: 5px;">금융상품에 대한 중요내용</h1>
+        해당 내용은 금융소비자보호법 제19조 제1항에서 규정하고 있는 중요한 사항입니다.<br>
+        아래의 사항을 확인 후 체크하여 주시기 바랍니다.
+        <article class="b-and-p-int-rates card-white">
+            <div class="doc-title">
+                <h2>
+                    <img th:src="@{/images/product/percent-red.png}" alt="기본이율과 우대이율">
+                    기본이율과 우대이율
+                </h2>
+                <span>
+                        <label for="int-rates-confirm">
+                            <input type="checkbox" name="int-rates-confirm" id="int-rates-confirm">
+                            확인했습니다.
+                        </label>
+                    </span>
+            </div>
+            <div class="card-grey">
+                <div class="content-title">기본이율</div>
+                <div class="content-description">상품가입일 기준 영업점 및 인터넷 홈페이지에 고시된 계약기간별 이율</div>
+            </div>
+            <div class="card-grey">
+                <div class="content-title">우대이율</div>
+                <div class="content-description">상품별, 고객별 우대조건에 따라 개인별로 차등하여 적용되는 이율</div>
+            </div>
+            <p>※ 최종이율은 기본이율과 우대이율을 합산하여 적용되며, 개별상품에 따라 변경될 수 있습니다.</p>
+        </article>
+        <article class="int-pay-date card-white">
+            <div class="doc-title">
+                <h2>
+                    <img th:src="@{/images/product/calender-red.png}" alt="이자지급시기">
+                    이자지급시기
+                </h2>
+                <span>
+                        <label for="pay-date-confirm">
+                            <input type="checkbox" name="pay-date-confirm" id="pay-date-confirm">
+                            확인했습니다.
+                        </label>
+                    </span>
+            </div>
+            <div class="card-grey">
+                <div class="content-title">만기일시지급</div>
+                <div class="content-description">이율에 따른 이자를 예금만기 해지시 한번에 지급</div>
+            </div>
+            <div class="card-grey">
+                <div class="content-title">월 단위 지급</div>
+                <div class="content-description">이율에 따른 이자를 월별로 나눠서 지급</div>
+            </div>
+            <p>※ 이자지급시기는 개별상품에 따라 변경될 수 있습니다.</p>
+        </article>
+        <article class="int-calc-basis card-white">
+            <div class="doc-title">
+                <h2>
+                    <img th:src="@{/images/product/calculator-none-bg.png}" alt="만기이자 산출근거">
+                    만기이자 산출근거
+                </h2>
+                <span>
+                        <label for="calc-basis-confirm">
+                            <input type="checkbox" name="calc-basis-confirm" id="calc-basis-confirm">
+                            확인했습니다.
+                        </label>
+                    </span>
+            </div>
+            <div class="card-grey">
+                <div class="content-title">거치식 예금</div>
+                <div class="content-description">신규일로부터 만기일 전일까지의 기간에 대하여 약정이율로 셈한 이자를 합계하여 지급</div>
+            </div>
+            <div class="card-grey">
+                <div class="content-title">적립식 예금</div>
+                <div class="content-description">저축금마다 입금일로부터 만기일 전일까지 기간에 대하여 약정이율로 셈한 이자를 합하여 지급 (원미만 절사)</div>
+            </div>
+            <p>※ 만기이자 계산방법 및 산출 근거는 개별상품에 따라 변경될 수 있습니다.</p>
+        </article>
+        <article class="dps-int-rates-note card-white">
+            <div class="doc-title">
+                <h2>
+                    <img th:src="@{/images/product/caution-red.png}" alt="예금이율 유의사항">
+                    예금이율 유의사항
+                </h2>
+                <span>
+                        <label for="rates-note-confirm">
+                            <input type="checkbox" name="rates-note-confirm" id="rates-note-confirm">
+                            확인했습니다.
+                        </label>
+                    </span>
+            </div>
+            <div class="card-red">
+                <ul>
+                    <li>이율은 신규가입일 당시 계약기간별 기본이율에 고객별 우대이율을 합산하여 지급합니다.</li>
+                    <li>단, 거래실적 등 우대조건 미충족 시 최종금리가 달라질 수 있습니다.</li>
+                </ul>
+                <p>※ 금리변동형 상품은 약정기간 중 금리가 변동 될 수 있으며 금리상승기에 약정금리 인상 가능성이 큰 반면, 금리하락기에는 약정 금리인하로 소비자에게 불리할 수 있습니다.
+                </p>
+            </div>
+        </article>
+        <article class="disadvantages card-white">
+            <div class="doc-title">
+                <h2>
+                    <img th:src="@{/images/product/minus-coin.svg}" alt="중도해지에 따른 불이익">
+                    중도해지에 따른 불이익
+                </h2>
+                <span>
+                        <label for="disadvantages-confirm">
+                            <input type="checkbox" name="disadvantages-confirm" id="disadvantages-confirm">
+                            확인했습니다.
+                        </label>
+                    </span>
+            </div>
+            <div class="card-grey">
+                <b>중도해지이율 예시</b>
+                <ul>
+                    <li>기본이율 × 적용율(기간별) × 경과일수/계약일수</li>
+                </ul>
+                <b>중도해지이율은 가입일 당시 이 예금의 기본이율을 초과할 수 없으며,<br>
+                    중도해지이자는 가입당시 약정한 세전이자 금액을 초과할 수 없습니다.</b>
+            </div>
+            <p>※ 중도해지이율에 대한 자세한 내용은 상품설명서를 참조 바랍니다.</p>
+        </article>
+        <article class="p-i-limit card-white">
+            <div class="doc-title">
+                <h2>
+                    <img th:src="@{/images/product/shield-red-none-bg.png}" alt="원금 및 이자 지급제한">
+                    원금 및 이자 지급제한
+                </h2>
+                <span>
+                        <label for="p-i-limit-confirm">
+                            <input type="checkbox" name="p-i-limit-confirm" id="p-i-limit-confirm">
+                            확인했습니다.
+                        </label>
+                    </span>
+            </div>
+            <div class="card-grey">
+                <img th:src="@{/images/product/doc-grey.png}" alt="계좌 등록 사항 관련">
+                <p>계좌에 <span>압류, 가압류, 질권설정</span> 등이 등록될 경우 원금 및 이자 지급이 제한됩니다.</p>
+            </div>
+            <div class="card-grey">
+                <img th:src="@{/images/product/hammer-grey.png}" alt="민사집행법">
+                <p>민사집행법에 따라 최저생계비 이하 등 압류금지채권에 해당하는 경우에는 법원에 압류 금지채권 범위 변경 신청 등을 통해 압류를 취소할 수 있습니다.</p>
+            </div>
+            <div class="card-grey">
+                <img th:src="@{/images/product/forbidden-grey.png}" alt="예금잔액증명서">
+                <p><span>예금잔액증명서 발급 당일</span>에는 입금·출금 이체 등 잔액 변동이 불가하므로 지급이 제한됩니다.</p>
+            </div>
+            <p>※ 중도해지이율에 대한 자세한 내용은 상품설명서를 참조 바랍니다.</p>
+        </article>
+        <article class="doc-all-confirm card-white">
+            <label for="doc-all-confirm">
+                <input type="checkbox" name="doc-all-confirm" id="doc-all-confirm">
+                금융상품에 대한 중요사항 설명에 대해 모두 확인했습니다.
+            </label>
+            <p>※ 위 사항은 금융소비자보호법 제19조 제1항에 규정하고 있는 중요한 사항입니다.</p>
+        </article>
+    </section>
+    <section class="step-page" id="page4" hidden>
+        <h1>매수신청</h1>
+        <div class="warning-info card-white">
+            <p>
+                비과세종합저축으로 전환하고자 할 경우에는 신규일 포함 15일 이내에 본인이 신분증과 자격서류를 지참하여 영업점에서 신청하
+                시기 바랍니다.<br>
+                비과세종합저축 가입시 계약기간 만료일 이후의 이자소득은 비과세가 적용되지 않습니다.<br>
+                본 상품 해지 시 원리금은 연결계좌(신규시 사용된 출금계좌)로만 입금 가능하며,영업점에서 해지 시 연결계좌가 한도제한계좌인
+                경우 금융거래목적을 입증하는 서류를 지참해야 해지가 가능합니다.
+            </p>
+        </div>
+        <article class="consumer-info card-white">
+            <h2>가입자정보</h2>
+            <div class="form-row" style="width: 50%;">
+                <label class="label">가입자명</label>
+                <input class="input" name="mname" th:value="${userInfo.mname}" readonly>
+            </div>
+        </article>
+        <article class="insert-info card-white">
+            <div class="insert-title">
+                <h2>신규가입자정보입력</h2>
+                <span>필수입력항목</span>
+            </div>
+            <div class="form-grid">
+
+                <!-- 상품명 -->
+                <div class="form-row">
+                    <label class="label">상품명</label>
+                    <input class="input" name="pname" value="저탄소 실천 적금" readonly>
+                </div>
+
+                <!-- 빈칸(정렬 맞춤) -->
+                <div></div>
+
+                <!-- 출금계좌번호 -->
+                <div class="form-row">
+                    <label class="label">출금계좌번호 <span class="req">*</span></label>
+                    <div class="select">
+                        <select class="input" aria-label="출금계좌번호">
+                            <option selected>계좌를 선택해 주세요</option>
+                            <option>부산은행 123-456-789012</option>
+                            <option>부산은행 555-000-111222</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <label class="label">매수금액 <span class="req">*</span></label>
+
+                    <div class="Chips" id="firstAmtChips">
+                        <button type="button" class="Chip" data-won="10000">1만원</button>
+                        <button type="button" class="Chip" data-won="100000">10만원</button>
+                        <button type="button" class="Chip" data-won="500000">50만원</button>
+                        <button type="button" class="Chip" data-won="1000000">100만원</button>
+                        <button type="button" class="Chip" data-won="">직접입력</button>
+                    </div>
+
+                    <div class="unit-wrap" style="margin-top:8px">
+                        <!-- ⚠ name 속성은 실제 DB에 저장될 필드명으로 맞춰줘 -->
+                        <input id="firstAmt" name="firstAmt" class="input unit-padding"
+                               placeholder="1만원 - 1천만원" inputmode="numeric">
+                        <span class="unit">원</span>
+                    </div>
+
+                    <!-- 선택한 계좌 잔액 안내 -->
+                    <div class="small" id="firstAmtBalanceHelp" style="margin-top:4px">
+                        출금계좌를 선택하면 잔액이 표시됩니다.
+                    </div>
+
+                    <!-- 잔액 기준 비율(%) 입력 -->
+                    <div class="unit-wrap" style="margin-top:4px">
+                        <input id="firstAmtPercent" class="input unit-padding"
+                               placeholder="잔액에서 사용할 비율(%)" inputmode="numeric">
+                        <span class="unit">%</span>
+                    </div>
+
+                    <!-- ✅ 비율로 계산된 금액 표시 -->
+                    <div class="small" id="firstAmtPercentHelp" style="margin-top:4px; color:#80868B;">
+                        비율을 입력하면 사용할 금액이 표시됩니다.
+                    </div>
+                </div>
+
+            </div>
+        </article>
+    </section>
+    <section class="step-page" id="page5" hidden>
+        <div class="page">
+            <h1>매수신청</h1>
+            <p class="sub">입력하신 정보를 확인하고 신청을 완료해주세요.</p>
+
+            <!-- 신청 정보 요약 -->
+            <section class="card">
+                <div class="title-row">
+                    <!-- 문서 아이콘 -->
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--red-600)"
+                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16c0 1.1.9 2 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <path d="M14 2v6h6"/>
+                    </svg>
+                    <h2>신청 정보 요약</h2>
+                </div>
+                <div class="summary">
+                    <div class="srow">
+                        <div class="cell label">가입자명</div>
+                        <div class="cell value">홍길동</div>
+                        <div class="cell label">최초불입금</div>
+                        <div class="cell value">10,000,000원</div>
+                    </div>
+                    <div class="srow">
+                        <div class="cell label">상품명</div>
+                        <div class="cell value">BNK정기예금</div>
+                        <div class="cell label">출금계좌</div>
+                        <div class="cell value">123-456-789012</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 출금계좌 비밀번호 확인 -->
+            <section class="card">
+                <div class="title-row">
+                    <!-- 방패 경고 -->
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--red-600)"
+                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2l7 4v6c0 5-3.5 9-7 10-3.5-1-7-5-7-10V6z"/>
+                        <path d="M12 8v4"/>
+                        <path d="M12 16h.01"/>
+                    </svg>
+                    <h2>출금계좌 비밀번호 확인</h2>
+                </div>
+
+                <div class="field">
+                    <div class="labelline">출금계좌 비밀번호</div>
+                    <p class="sub" style="margin-top:4px;color:#6b7280;font-size:12px">
+                        4단계에서 선택한 출금계좌의 비밀번호(숫자 4자리)를 입력해주세요.
+                    </p>
+
+                    <div class="pin-wrap" id="accPin">
+                        <div class="pin-box">
+                            <input class="pin" inputmode="numeric" maxlength="1"
+                                   autocomplete="one-time-code" aria-label="비밀번호 첫째 자리">
+                        </div>
+                        <div class="pin-box">
+                            <input class="pin" inputmode="numeric" maxlength="1"
+                                   aria-label="비밀번호 둘째 자리">
+                        </div>
+                        <div class="pin-box">
+                            <input class="pin" inputmode="numeric" maxlength="1"
+                                   aria-label="비밀번호 셋째 자리">
+                        </div>
+                        <div class="pin-box">
+                            <input class="pin" inputmode="numeric" maxlength="1"
+                                   aria-label="비밀번호 넷째 자리">
+                        </div>
+                    </div>
+
+                    <div class="hint" id="accPinHint" style="margin-top:8px">
+                        출금계좌 비밀번호 4자리를 입력해주세요.
+                    </div>
+                </div>
+            </section>
+
+            <!-- 하단 확인 -->
+            <section class="card">
+                <div class="center">
+                    <!-- 물음표 아이콘 -->
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--red-600)"
+                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 2-3 4"/>
+                        <path d="M12 17h.01"/>
+                    </svg>
+                    <b>상품 매수를 신청하시겠습니까?</b>
+                    <div class="desc">위 정보로 상품 매수 신청이 진행됩니다.</div>
+                </div>
+            </section>
+        </div>
+    </section>
+
+    <!-- 3) 내비게이션 -->
+    <div class="wizard-nav">
+        <!-- 취소: 항상 표시 -->
+        <button id="cancelBtn" class="btn btn-white">취소</button>
+
+        <!-- 오른쪽: 이전 / 다음 -->
+        <div class="nav-right">
+            <button id="prevBtn" class="btn btn-white">이전</button>
+            <button id="nextBtn" class="btn btn-red">다음</button>
+        </div>
+    </div>
+
+</main>
+<footer>
+    <div id="footer" th:replace="~{layouts/footer.html}"></div>
+</footer>
+</body>
+
+</html>

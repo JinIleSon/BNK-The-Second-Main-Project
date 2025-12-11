@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title th:text="${boardName} + ' 글쓰기 | BNK부산은행'">BNK부산은행 | 글쓰기</title>
+  <link rel="stylesheet" href="../css/board.css" />
+</head>
+
+<body>
+  <div id="header"></div>
+
+  <main>
+    <div class="page-title">
+      <h1 th:text="${boardName}">보도자료</h1>
+      <p class="subtitle">새 게시글을 등록합니다.</p>
+    </div>
+
+    <form th:action="@{'/board/' + ${boardCd} + '/write'}" method="post" enctype="multipart/form-data" class="board-write">
+      <div class="form-group">
+        <label for="title">제목</label>
+        <input type="text" id="title" name="title" placeholder="제목을 입력하세요" required>
+      </div>
+
+      <div class="form-group">
+        <label for="summary">요약</label>
+        <input type="text" id="summary" name="summary" placeholder="요약 문구를 입력하세요 (선택)">
+      </div>
+
+      <div class="form-group">
+        <label for="content">내용</label>
+        <textarea id="content" name="content" rows="12" placeholder="내용을 입력하세요" required></textarea>
+      </div>
+
+      <div class="form-group file-box">
+        <label for="thumbnail">대표 이미지 (썸네일)</label>
+        <input type="file" id="thumbnail" name="thumbnail" accept="image/*">
+        <div id="thumbPreview" class="preview"></div>
+      </div>
+
+      <div class="form-group file-box">
+        <label for="attachments">첨부파일</label>
+        <input type="file" id="attachments" name="files" multiple>
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="btn red">등록</button>
+        <a th:href="@{'/board/' + ${boardCd} + '/list'}" class="btn">취소</a>
+      </div>
+    </form>
+  </main>
+
+  <div id="footer"></div>
+
+  <script src="../js/board.js" defer></script>
+  <script>
+    // ===== 썸네일 미리보기 기능 =====
+    const thumbInput = document.getElementById('thumbnail');
+    const thumbPreview = document.getElementById('thumbPreview');
+
+    if (thumbInput) {
+      thumbInput.addEventListener('change', e => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = ev => {
+          thumbPreview.innerHTML = `<img src="${ev.target.result}" alt="미리보기">`;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+  </script>
+</body>
+</html>

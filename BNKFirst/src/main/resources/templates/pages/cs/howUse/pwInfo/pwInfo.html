@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>이용안내>비밀번호안내</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        /*----------------------------------*/
+        /*--전체 페이지--*/
+        /*----------------------------------*/
+        body {
+            font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+            background: #F6F6F8;
+            margin: 0;
+            color: #222;
+            padding-top: 100px;
+        }
+
+
+        .howUse-page{
+            display:flex;
+            gap:40px;
+            width: 1200px;
+            margin: 60px auto;
+            padding: 40px 20px;
+            background: #F6F6F8;
+            border-radius: 8px;
+            margin-bottom: 100px;
+        }
+
+
+
+        /*----------------------------------*/
+        /*--왼쪽 사이드바--*/
+        /*----------------------------------*/
+        .all-sidebar{
+            width: 250px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        .all-sidebar h2{
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .sidebar-menu {
+            list-style:none;
+            padding: 20px;
+            margin: 0 0 40px 0;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            background: #fff;
+            box-shadow: 0 4px 4px rgba(0,0,0,0.08);
+        }
+
+        .sidebar-menu h2{
+            font-size: 17px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 16px;
+        }
+
+        .sidebar-menu li{
+            padding: 12px 16px;
+            border-radius:  6px;
+            color: #555;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .sidebar-menu li:hover {
+            background: #f2f2f2;
+        }
+
+        .sidebar-menu li.active{
+            background: #ffe6e6;
+            border-left: 4px solid #d91a1a;
+            color: #d91a1a;;
+            font-weight:  600;
+            padding-left: 12px;
+        }
+
+        .sidebar-menu li:last-child{
+            border-bottom: none;
+        }
+
+        /*----------------------------------*/
+        /*--추가 도움--*/
+        /*----------------------------------*/
+        .all-help{
+            background: linear-gradient(135deg,#e62b2b, #7e2020);
+            color: #fff;
+            border-radius: 12px;
+            padding: 24px 20px;
+            margin-top: 0;
+            text-align: center;
+            box-shadow: 0 4px 4px rgba(0,0,0,0.08);
+        }
+
+        .help-box h3{
+            font-size: 17px;
+            margin-bottom: 6px;
+        }
+
+        .help-box p{
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        .help-buttons{
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-call, .btn-chat{
+            padding: 8px 14px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-call{
+            background: #fff;
+            color: #d91a1a;
+        }
+
+        .btn-chat{
+            background:  transparent;
+            border: 1px solid #fff;
+            color: #fff;
+        }
+
+        /*----------------------------------*/
+        /*--메인 컨텐츠--*/
+        /*----------------------------------*/
+
+        .howUse-content{
+            flex: 1;
+        }
+
+        .howUse-header h1{
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .howUse-header p{
+            color: #666;
+            margin-bottom:  20px;
+        }
+
+        .howUse-search {
+            display: flex;
+            align-items: center;
+            border: 1px solid #ddd;
+            border-radius: 30px;
+            padding: 6px 12px;
+            background: #fafafa;
+        }
+
+        /*----------------------------------*/
+        /*-- 비밀번호 안내 페이지 --*/
+        /*----------------------------------*/
+        .password-section {
+            margin-bottom: 50px;
+        }
+
+        .password-section h2 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #d91a1a;
+            padding-bottom: 6px;
+        }
+
+        .password-section p {
+            color: #555;
+            font-size: 15px;
+            line-height: 1.7;
+            margin-bottom: 6px;
+        }
+
+        /* Case Box */
+        .case-box {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #f9f9f9;
+            margin-top: 20px;
+            margin-bottom: 16px;
+            padding: 16px;
+        }
+
+        .case-box h3 {
+            background: #eef2ff;
+            border-left: 4px solid #f73c3c;
+            padding: 8px 12px;
+            font-size: 16px;
+            font-weight: 600;
+            margin: -16px -16px 12px -16px;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+        }
+
+        .case-box h3 span {
+            margin-left: 10px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .case-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fff;
+            border-radius: 6px;
+            border: 1px solid #eee;
+            padding: 12px 16px;
+            font-size: 15px;
+            color: #333;
+        }
+
+        .btn-small {
+            background: #d91a1a;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 14px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-small:hover {
+            background: #b50f0f;
+        }
+    </style>
+</head>
+<body>
+<!--헤더-->
+<div th:replace="~{layouts/header}"></div>
+    
+    <div class="howUse-page">
+        <!--왼쪽 사이드바-->
+        <aside class="all-sidebar">
+            <ul class="sidebar-menu">
+                <h2>이용안내</h2>
+                <li><a href="./regProcess">가입절차</a></li>
+                <li class="active"><a href="./pwInfo">비밀번호 안내</a></li>
+                <li><a href="./serviceTime">서비스 이용시간</a></li>
+                <li><a href="./feeInfo">수수료 안내</a></li>
+            </ul>
+
+            <!--추가 도움 영역-->
+            <section class="all-help">
+                <div class="help-box">
+                    <h3>추가 도움이 필요하신가요?</h3>
+                    <p>전문 상담원이 친절하게 도와드리겠습니다.</p>
+                    <div class="help-buttons">
+                        <button class="btn-call">전화상담</button>
+                        <button class="btn-chat">Talk상담</button>
+                    </div>
+                </div>
+            </section>
+        </aside>
+
+        <!-- 메인 컨텐츠 -->
+        <main class="howUse-content">
+        <div class="howUse-header">
+            <h1>비밀번호안내</h1>
+            <p>
+            부산은행 홈페이지에서 인터넷뱅킹을 하실 때 필요한 비밀번호에 대한 안내입니다.<br>
+            각 비밀번호는 서비스마다 다르게 쓰이고 있으므로 서비스 이용 시 유의하시기 바랍니다.
+            </p>
+        </div>
+
+        <!-- 인증서암호 -->
+        <section class="password-section">
+            <h2>인증서암호</h2>
+            <p>인터넷뱅킹을 이용하기 위해서는 인증서를 발급받고 인증서를 제출(확인)해야 하는데 이때 사용되는 비밀번호입니다.</p>
+            <p>인증서암호는 인증서를 발급받을 때 고객님께서 직접 만들어야 하며, 숫자, 영문자, 특수문자를 포함하여 10자리 이상으로 구성해야 합니다.</p>
+
+            <div class="case-box">
+            <h3>Case 1 <span>인증서암호를 변경하시고자 할 경우</span></h3>
+            <div class="case-content">
+                <p>공동인증센터 → 공동인증서관리 → 공동인증서(구 공인인증서)선택 → 암호변경</p>
+                <button class="btn-small">암호변경</button>
+            </div>
+            </div>
+
+            <div class="case-box">
+            <h3>Case 2 <span>인증서암호를 모르시는 경우</span></h3>
+            <div class="case-content">
+                <p>공동인증센터 → 공동인증서발급(재발급)</p>
+                <button class="btn-small">인증서재발급</button>
+            </div>
+            </div>
+        </section>
+
+        <!-- 계좌비밀번호 -->
+        <section class="password-section">
+            <h2>계좌비밀번호</h2>
+            <p>계좌비밀번호는 계좌(통장)의 숫자 4자리 비밀번호를 말하며, 인터넷뱅킹을 포함한 은행 거래 시마다 기본적으로 요구됩니다.</p>
+            <p>인터넷뱅킹의 각종 조회, 송금 등 계좌와 관련된 거래 시 계좌비밀번호란에 입력해야 합니다.</p>
+            <p>계좌비밀번호를 모르시는 경우나 3회 이상 틀릴 경우에는 영업점을 직접 방문하여 조치를 받으셔야 합니다.</p>
+        </section>
+
+        <!-- 보안카드비밀번호 -->
+        <section class="password-section">
+            <h2>보안카드비밀번호</h2>
+            <p>보안카드비밀번호는 인터넷뱅킹 거래의 보안을 더욱 강화하기 위해 사용되는 비밀번호입니다.</p>
+            <p>공동인증서(구 공인인증서), 송금금액 등의 거래에서 사용되며, 보안카드 코드쌍의 숫자 4자리를 입력해야 합니다.</p>
+            <p>보안카드비밀번호를 3회 이상 틀린 경우 또는 보안카드를 분실한 경우에는 영업점을 직접 방문하셔야 합니다.</p>
+        </section>
+        </main>
+    </div>
+
+    <!--푸터-->
+    <div th:replace="~{layouts/footer}"></div>
+</body>
+</html>
+<script>
+    // header 불러오기
+    fetch(`${contextPath}/layouts/header.html`)
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('header').innerHTML = data;
+        })
+        .catch(err => console.error('[Header load failed]', err));
+
+    // chatbot import 기능
+    async function importHtmlWithAssets(url, mountSelector) {
+        try {
+            const res = await fetch(url, { credentials: 'same-origin' });
+            if (!res.ok) throw new Error(`Failed to load ${url}`);
+            const html = await res.text();
+
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+
+            doc.querySelectorAll('link[rel="stylesheet"]').forEach(link => {
+                const href = link.getAttribute('href');
+                const exists = [...document.head.querySelectorAll('link[rel="stylesheet"]')]
+                    .some(l => l.getAttribute('href') === href);
+                if (!exists && href) document.head.appendChild(link.cloneNode(true));
+            });
+
+            doc.querySelectorAll('style').forEach(styleEl => {
+                const clone = document.createElement('style');
+                clone.textContent = styleEl.textContent;
+                [...styleEl.attributes].forEach(a => clone.setAttribute(a.name, a.value));
+                document.head.appendChild(clone);
+            });
+
+            const mount = document.querySelector(mountSelector);
+            const frag = document.createDocumentFragment();
+            [...doc.body.children].forEach(node => {
+                if (node.tagName.toLowerCase() !== 'script') frag.appendChild(node.cloneNode(true));
+            });
+            mount.appendChild(frag);
+
+            const scripts = [...doc.querySelectorAll('script')];
+            for (const oldScript of scripts) {
+                const newScript = document.createElement('script');
+                [...oldScript.attributes].forEach(attr => newScript.setAttribute(attr.name, attr.value));
+                if (oldScript.src) {
+                    await new Promise(resolve => {
+                        newScript.onload = resolve;
+                        newScript.onerror = resolve;
+                        document.body.appendChild(newScript);
+                    });
+                } else {
+                    newScript.textContent = oldScript.textContent || '';
+                    document.body.appendChild(newScript);
+                }
+            }
+        } catch (err) {
+            console.error('[Chatbot load failed]', err);
+        }
+    }
+
+    // chatbot 불러오기
+    importHtmlWithAssets('/components/chatbot_test.html', '#bnk-chatbot-slot');
+
+    // footer 불러오기
+    fetch(`${contextPath}/layouts/footer.html`)
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('footer').innerHTML = data;
+        })
+        .catch(err => console.error('[Footer load failed]', err));
+
+</script>

@@ -1,0 +1,1497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>mypage_setup</title>
+    <style>
+        main {
+            background-color: #F6F6F8;
+            padding: 10px 20px 80px;
+            
+        }
+        body {
+            background-color: #F6F6F8;
+        }
+        /* 공통 토글 스위치 */
+        .toggle {
+            position: relative;
+            width: 44px; height: 24px;
+            border-radius: 999px;
+            background: #E5E7EB;
+            transition: background .2s ease;
+            flex: 0 0 auto;
+        }
+        .toggle input {
+            position: absolute; inset: 0;
+            width: 100%; height: 100%;
+            opacity: 0; cursor: pointer; margin: 0;
+        }
+        .toggle .knob {
+            position: absolute; top: 2px; left: 2px;
+            width: 20px; height: 20px;
+            border-radius: 999px; background: #fff;
+            box-shadow: 0 1px 2px rgba(0,0,0,.15);
+            transition: transform .2s ease;
+        }
+        .toggle input:checked ~ .knob {
+            transform: translateX(20px);
+        }
+        /* 알림 토글: ON일 때 빨간색(스크린샷 느낌) */
+        .toggle--alert input:checked ~ .bg {
+            background: #DC2626;
+        }
+        /* 다크모드 토글: ON일 때 회색/진회색 */
+        .toggle--dark input:checked ~ .bg {
+            background: #111827;
+        }
+        /* 배경 레이어(색상만 담당) */
+        .toggle .bg {
+            position: absolute; inset: 0;
+            border-radius: inherit;
+            background: #E5E7EB; transition: background .2s ease;
+        }
+
+        /* 클릭이 항상 input으로 가도록 */
+        .toggle .bg,
+        .toggle .knob { pointer-events: none; }
+
+        /* (선택) z-index로도 안전장치 */
+        .toggle input { z-index: 2; }
+        .toggle .bg, .toggle .knob { z-index: 1; }
+
+        /* 다크 테마(간단 예시) */
+        .dark body, .dark main { background:#0f1114; }
+        .dark .card { background:#111827; border-color:#1f2937; }
+        .dark .card * { color:#E5E7EB !important; }
+
+        /* 라이트/다크 변수 */
+        :root{
+        --bg: #F6F6F8;
+        --text-on-bg: #2B2F36;
+        }
+        html[data-theme="dark"]{
+        --bg: #0F1115;
+        --text-on-bg: #ECEFF4;
+        }
+
+        /* 변수 적용 (필요한 곳만) */
+        body{ background: var(--bg); }
+        .on-bg{ color: var(--text-on-bg) !important; }
+
+        /* 스무스 테마 전환 */
+        html, body, main,
+        .on-bg,
+        .card, .card *,
+        input, textarea, select, button {
+        transition:
+            background-color .35s ease,
+            color            .35s ease,
+            border-color     .35s ease,
+            box-shadow       .25s ease,
+            transform        .20s ease;
+        }
+
+        /* 모션 최소화 환경 존중 */
+        @media (prefers-reduced-motion: reduce){
+        html, body, main,
+        .on-bg,
+        .card, .card *,
+        input, textarea, select, button {
+            transition: none !important;
+        }
+        }
+        /* 배경 위 기본 글자색: 변수로 통일 */
+        .on-bg { color: var(--text-on-bg) !important; }
+
+        /* 가능하면 전체 기본 글자도 변수로 */
+        body { color: var(--text-on-bg); background: var(--bg); }
+    </style>
+    <!-- 언어 선택 모달 -->
+<style>
+  .modal-backdrop{
+    position:fixed; inset:0; background:rgba(17,24,39,.45);
+    display:none; align-items:center; justify-content:center; z-index:10000;
+  }
+  .modal-backdrop.show{ display:flex; }
+  .modal{
+    width: 440px; background:#fff; border-radius:12px; border:1px solid #E5E7EB;
+    box-shadow: 0 12px 36px rgba(0,0,0,.18); overflow:hidden;
+  }
+  .modal-header{
+    padding:18px 20px; border-bottom:1px solid #E5E7EB; font-size:16px; font-weight:600; color:#111827;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .modal-body{ padding:14px 20px 6px 20px; }
+  .lang-row{
+    display:flex; align-items:center; gap:12px; padding:12px; border-radius:10px;
+    border:1px solid #E5E7EB; cursor:pointer; margin-bottom:10px;
+  }
+  .lang-row:hover{ background:#F9FAFB; }
+  .lang-dot{ width:18px; height:18px; border-radius:999px; background:#E5E7EB; flex:0 0 auto;}
+  .lang-row.active .lang-dot{ background:#6366F1; }
+  .lang-title{ font-size:15px; color:#111827; }
+  .lang-desc{ font-size:12px; color:#6B7280; margin-top:2px; }
+  .modal-footer{ padding:14px 20px 18px; display:flex; gap:8px; justify-content:flex-end; }
+  .btn{ padding:10px 14px; border-radius:8px; font-size:14px; border:1px solid #D1D5DB; background:#fff; cursor:pointer; }
+  .btn-primary{ background:#4F46E5; color:#fff; border-color:#4F46E5; }
+  /* 다크 테마 대응 */
+  html[data-theme="dark"] .modal{ background:#111827; border-color:#1F2937; }
+  html[data-theme="dark"] .modal-header{ border-color:#1F2937; color:#E5E7EB; }
+  html[data-theme="dark"] .lang-row{ border-color:#1F2937; }
+  html[data-theme="dark"] .lang-row:hover{ background:#0f1115; }
+  html[data-theme="dark"] .lang-title{ color:#E5E7EB; }
+  html[data-theme="dark"] .lang-desc{ color:#9CA3AF; }
+  html[data-theme="dark"] .btn{ background:#111827; color:#E5E7EB; border-color:#374151; }
+  html[data-theme="dark"] .btn-primary{ background:#4F46E5; border-color:#4F46E5; }
+</style>
+
+</head>
+<body>
+    <header>
+        <div th:replace="~{layouts/header.html}"></div>
+    </header>
+
+    <main style="display: flex; justify-content: center;padding-top: 40px !important;">
+        <div style="width: 800px; box-sizing: border-box;">
+            <div>
+                <div class="on-bg" style="font-size: 24px;">설정</div>
+                <div style="display: flex;">
+                    <div class="on-bg" style="font-size: 16px;">
+                        계정 및 개인정보를 안전하게 관리하세요.
+                    </div>
+                </div>
+                <div class="on-bg" style="font-size: 18px; margin-top: 30px;">
+                    계정 정보
+                </div>
+                <div style="margin-top: 20px; box-sizing: border-box;">
+                    <a href="#" style="text-decoration: none;">
+                        <div style="box-sizing: border-box; background-color: white; width: 100%; height: 90px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); border: 1px solid #E5E7EB;">
+                            <div style="padding: 21px;">
+                                <div>
+                                <div style="display: flex;">
+                                    <div style="">
+                                    <div style="display: flex; width: 740px;">
+                                        <div style="display: flex; justify-content: center; align-items: center; border-radius: 8px; background-color: #e5f2fe; width: 48px; height: 48px;">
+                                        <svg width="16" height="18" viewBox="0 0 16 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <g clip-path="url(#clip0_257_416)">
+                                            <path d="M7.875 9C9.06847 9 10.2131 8.52589 11.057 7.68198C11.9009 6.83807 12.375 5.69347 12.375 4.5C12.375 3.30653 11.9009 2.16193 11.057 1.31802C10.2131 0.474106 9.06847 0 7.875 0C6.68153 0 5.53693 0.474106 4.69302 1.31802C3.84911 2.16193 3.375 3.30653 3.375 4.5C3.375 5.69347 3.84911 6.83807 4.69302 7.68198C5.53693 8.52589 6.68153 9 7.875 9ZM6.26836 10.6875C2.80547 10.6875 0 13.493 0 16.9559C0 17.5324 0.467578 18 1.04414 18H14.7059C15.2824 18 15.75 17.5324 15.75 16.9559C15.75 13.493 12.9445 10.6875 9.48164 10.6875H6.26836Z" fill="#0052CC"/>
+                                            </g>
+                                            <defs>
+                                            <clipPath id="clip0_257_416">
+                                            <path d="M0 0H15.75V18H0V0Z" fill="white"/>
+                                            </clipPath>
+                                            </defs>
+                                        </svg>
+                                        </div>
+                                        <div style="margin-left: 15px;">
+                                            <div style="color: #2B2F36; font-size: 16px;">사용자 정보 수정</div>
+                                            <div style="color: #6B7280; font-size: 14px;">이름, 연락처, 이메일, 프로필 사진 변경</div>
+                                        </div>
+                                        <div style="display: flex; align-items: center; margin-left: auto;">
+                                            <svg width="10" height="16" viewBox="0 0 10 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M9.70615 7.29365C10.0968 7.68428 10.0968 8.31865 9.70615 8.70928L3.70615 14.7093C3.31553 15.0999 2.68115 15.0999 2.29053 14.7093C1.8999 14.3187 1.8999 13.6843 2.29053 13.2937L7.58428 7.9999L2.29365 2.70615C1.90303 2.31553 1.90303 1.68115 2.29365 1.29053C2.68428 0.899902 3.31865 0.899902 3.70928 1.29053L9.70928 7.29053L9.70615 7.29365Z" fill="#9CA3AF"/>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    </div>
+                                </div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="on-bg" style="font-size: 18px; margin-top: 30px;">
+                    보안 설정
+                </div>
+                <div style="margin-top: 20px; box-sizing: border-box;">
+                    <a th:href="@{/mypage/pwreset}" style="text-decoration: none;">
+                        <div style="box-sizing: border-box; background-color: white; width: 100%; height: 90px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); border: 1px solid #E5E7EB;">
+                            <div style="padding: 21px;">
+                                <div>
+                                    <div style="display: flex;">
+                                        <div style="">
+                                        <div style="display: flex; width: 740px;">
+                                            <div style="display: flex; justify-content: center; align-items: center; border-radius: 8px; background-color: #fdedd4; width: 48px; height: 48px;">
+                                            <svg width="16" height="18" viewBox="0 0 16 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <g clip-path="url(#clip0_257_471)">
+                                                <path d="M5.0625 5.0625V6.75H10.6875V5.0625C10.6875 3.50859 9.42891 2.25 7.875 2.25C6.32109 2.25 5.0625 3.50859 5.0625 5.0625ZM2.8125 6.75V5.0625C2.8125 2.26758 5.08008 0 7.875 0C10.6699 0 12.9375 2.26758 12.9375 5.0625V6.75H13.5C14.741 6.75 15.75 7.75898 15.75 9V15.75C15.75 16.991 14.741 18 13.5 18H2.25C1.00898 18 0 16.991 0 15.75V9C0 7.75898 1.00898 6.75 2.25 6.75H2.8125Z" fill="#EA580C"/>
+                                                </g>
+                                                <defs>
+                                                <clipPath id="clip0_257_471">
+                                                <path d="M0 0H15.75V18H0V0Z" fill="white"/>
+                                                </clipPath>
+                                                </defs>
+                                            </svg>
+                                            </div>
+                                            <div style="margin-left: 15px;">
+                                                <div style="color: #2B2F36; font-size: 16px;">비밀번호 변경</div>
+                                                <div style="color: #6B7280; font-size: 14px;">로그인 비밀번호 변경 및 보안 강화</div>
+                                            </div>
+                                            <div style="display: flex; align-items: center; margin-left: auto;">
+                                                <svg width="10" height="16" viewBox="0 0 10 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M9.70615 7.29365C10.0968 7.68428 10.0968 8.31865 9.70615 8.70928L3.70615 14.7093C3.31553 15.0999 2.68115 15.0999 2.29053 14.7093C1.8999 14.3187 1.8999 13.6843 2.29053 13.2937L7.58428 7.9999L2.29365 2.70615C1.90303 2.31553 1.90303 1.68115 2.29365 1.29053C2.68428 0.899902 3.31865 0.899902 3.70928 1.29053L9.70928 7.29053L9.70615 7.29365Z" fill="#9CA3AF"/>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div style="margin-top: 15px; box-sizing: border-box;">
+                    <a href="#" style="text-decoration: none;">
+                        <div style="box-sizing: border-box; background-color: white; width: 100%; height: 90px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); border: 1px solid #E5E7EB;">
+                            <div style="padding: 21px;">
+                                <div>
+                                    <div style="display: flex;">
+                                        <div style="">
+                                        <div style="display: flex; width: 740px;">
+                                            <div style="display: flex; justify-content: center; align-items: center; border-radius: 8px; background-color: #dffce6; width: 48px; height: 48px;">
+                                            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <g clip-path="url(#clip0_257_474)">
+                                                <path d="M1.6875 9C1.6875 4.96055 4.96055 1.6875 9 1.6875C11.2184 1.6875 13.2047 2.67539 14.5477 4.23633C14.85 4.59141 15.3844 4.63008 15.7359 4.32773C16.0875 4.02539 16.1297 3.49102 15.8273 3.13945C14.1785 1.21641 11.7316 0 9 0C4.02891 0 0 4.02891 0 9V10.4062C0 10.8738 0.376172 11.25 0.84375 11.25C1.31133 11.25 1.6875 10.8738 1.6875 10.4062V9ZM17.8066 7.14023C17.7117 6.6832 17.2617 6.39141 16.8082 6.48984C16.3547 6.58828 16.0594 7.03477 16.1578 7.48828C16.2598 7.97695 16.316 8.4832 16.316 9.00352V10.4098C16.316 10.8773 16.6922 11.2535 17.1598 11.2535C17.6273 11.2535 18.0035 10.8773 18.0035 10.4098V9C18.0035 8.36367 17.9367 7.74141 17.8102 7.14023H17.8066ZM9 2.8125C8.33203 2.8125 7.68516 2.91797 7.08398 3.11484C6.54961 3.29062 6.42656 3.94805 6.79219 4.37695C7.0418 4.66875 7.45312 4.75664 7.82578 4.65469C8.19844 4.55273 8.59219 4.5 9 4.5C11.4855 4.5 13.5 6.51445 13.5 9V9.87539C13.5 10.7613 13.4473 11.6438 13.3453 12.5227C13.2855 13.0359 13.6758 13.5 14.1961 13.5C14.6109 13.5 14.966 13.1977 15.0152 12.7863C15.1313 11.823 15.191 10.8527 15.191 9.87891V9C15.191 5.58281 12.4207 2.8125 9.00352 2.8125H9ZM5.29805 5.22773C4.97813 4.85508 4.40859 4.82695 4.10625 5.21367C3.29414 6.25781 2.8125 7.57266 2.8125 9V9.87539C2.8125 10.7262 2.72109 11.577 2.53828 12.4031C2.41875 12.9516 2.81602 13.5 3.37852 13.5C3.74766 13.5 4.07812 13.2539 4.15898 12.8918C4.38398 11.9039 4.5 10.8949 4.5 9.87539V9C4.5 8.04375 4.79883 7.15781 5.30508 6.43008C5.5582 6.06445 5.58633 5.56523 5.29805 5.22773ZM9 5.625C7.13672 5.625 5.625 7.13672 5.625 9V9.87539C5.625 11.1375 5.46328 12.3891 5.13984 13.6055C5.00625 14.1082 5.37539 14.625 5.8957 14.625C6.22969 14.625 6.525 14.407 6.61289 14.0836C6.98203 12.7125 7.17188 11.2992 7.17188 9.87539V9C7.17188 7.99102 7.99102 7.17188 9 7.17188C10.009 7.17188 10.8281 7.99102 10.8281 9V9.87539C10.8281 11.1516 10.7051 12.4207 10.4625 13.6687C10.3676 14.1574 10.7332 14.625 11.2289 14.625C11.5875 14.625 11.8969 14.3789 11.9672 14.0273C12.2379 12.6633 12.375 11.2746 12.375 9.87539V9C12.375 7.13672 10.8633 5.625 9 5.625ZM9.84375 9C9.84375 8.53242 9.46758 8.15625 9 8.15625C8.53242 8.15625 8.15625 8.53242 8.15625 9V9.87539C8.15625 11.9812 7.76953 14.0695 7.01367 16.0348L6.80625 16.5727C6.6375 17.0086 6.85547 17.4973 7.29141 17.6625C7.72734 17.8277 8.21602 17.6133 8.38125 17.1773L8.58867 16.6395C9.41836 14.4809 9.84375 12.1887 9.84375 9.87539V9Z" fill="#16A34A"/>
+                                                </g>
+                                                <defs>
+                                                <clipPath id="clip0_257_474">
+                                                <path d="M0 0H18V18H0V0Z" fill="white"/>
+                                                </clipPath>
+                                                </defs>
+                                            </svg>
+                                            </div>
+                                            <div style="margin-left: 15px;">
+                                                <div style="color: #2B2F36; font-size: 16px;">생체인증 설정</div>
+                                                <div style="color: #6B7280; font-size: 14px;">지문, 얼굴인식 등 생체인증 관리</div>
+                                            </div>
+                                            <div style="display: flex; align-items: center; margin-left: auto;">
+                                                <svg width="10" height="16" viewBox="0 0 10 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M9.70615 7.29365C10.0968 7.68428 10.0968 8.31865 9.70615 8.70928L3.70615 14.7093C3.31553 15.0999 2.68115 15.0999 2.29053 14.7093C1.8999 14.3187 1.8999 13.6843 2.29053 13.2937L7.58428 7.9999L2.29365 2.70615C1.90303 2.31553 1.90303 1.68115 2.29365 1.29053C2.68428 0.899902 3.31865 0.899902 3.70928 1.29053L9.70928 7.29053L9.70615 7.29365Z" fill="#9CA3AF"/>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div style="margin-top: 15px; box-sizing: border-box;">
+                    <a href="#" style="text-decoration: none;">
+                        <div style="box-sizing: border-box; background-color: white; width: 100%; height: 90px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); border: 1px solid #E5E7EB;">
+                            <div style="padding: 21px;">
+                                <div>
+                                    <div style="display: flex;">
+                                        <div style="">
+                                        <div style="display: flex; width: 740px;">
+                                            <div style="display: flex; justify-content: center; align-items: center; border-radius: 8px; background-color: #f2e8ff; width: 48px; height: 48px;">
+                                            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <g clip-path="url(#clip0_257_477)">
+                                                <path d="M9.00002 0C9.16173 0 9.32345 0.0351563 9.47111 0.101953L16.091 2.91094C16.8645 3.23789 17.441 4.00078 17.4375 4.92188C17.4199 8.40938 15.9856 14.7902 9.92814 17.6906C9.34103 17.9719 8.659 17.9719 8.07189 17.6906C2.01447 14.7902 0.580094 8.40938 0.562516 4.92188C0.559 4.00078 1.13556 3.23789 1.909 2.91094L8.53244 0.101953C8.67658 0.0351563 8.8383 0 9.00002 0ZM9.00002 2.34844V15.6375C13.8516 13.2891 15.1559 8.08945 15.1875 4.97109L9.00002 2.34844Z" fill="#9333EA"/>
+                                                </g>
+                                                <defs>
+                                                <clipPath id="clip0_257_477">
+                                                <path d="M0 0H18V18H0V0Z" fill="white"/>
+                                                </clipPath>
+                                                </defs>
+                                            </svg>
+                                            </div>
+                                            <div style="margin-left: 15px;">
+                                                <div style="color: #2B2F36; font-size: 16px;">2단계 인증</div>
+                                                <div style="color: #6B7280; font-size: 14px;">SMS, OTP 등 추가 보안 인증 설정</div>
+                                            </div>
+                                            <div style="display: flex; align-items: center; margin-left: auto;">
+                                                <svg width="10" height="16" viewBox="0 0 10 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M9.70615 7.29365C10.0968 7.68428 10.0968 8.31865 9.70615 8.70928L3.70615 14.7093C3.31553 15.0999 2.68115 15.0999 2.29053 14.7093C1.8999 14.3187 1.8999 13.6843 2.29053 13.2937L7.58428 7.9999L2.29365 2.70615C1.90303 2.31553 1.90303 1.68115 2.29365 1.29053C2.68428 0.899902 3.31865 0.899902 3.70928 1.29053L9.70928 7.29053L9.70615 7.29365Z" fill="#9CA3AF"/>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                </div>
+                <div class="on-bg" style="font-size: 18px; margin-top: 30px;">
+                    환경 설정
+                </div>
+                <div style="margin-top: 20px; box-sizing: border-box;">
+                        <div style="box-sizing: border-box; background-color: white; width: 100%; height: 90px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); border: 1px solid #E5E7EB;">
+                            <div style="padding: 21px;">
+                                <div>
+                                    <div style="display: flex;">
+                                        <div style="">
+                                        <div style="display: flex; width: 740px;">
+                                            <div style="display: flex; justify-content: center; align-items: center; border-radius: 8px; background-color: #ddeaff; width: 48px; height: 48px;">
+                                            <svg width="16" height="18" viewBox="0 0 16 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <g clip-path="url(#clip0_257_480)">
+                                                <path d="M7.87481 0C7.25255 0 6.74981 0.502734 6.74981 1.125V1.8C4.18341 2.32031 2.24982 4.59141 2.24982 7.3125V7.97344C2.24982 9.62578 1.64161 11.2219 0.544737 12.4594L0.284581 12.7512C-0.0107315 13.0816 -0.0810441 13.5563 0.0982528 13.9605C0.27755 14.3648 0.681847 14.625 1.12482 14.625H14.6248C15.0678 14.625 15.4686 14.3648 15.6514 13.9605C15.8342 13.5563 15.7604 13.0816 15.465 12.7512L15.2049 12.4594C14.108 11.2219 13.4998 9.6293 13.4998 7.97344V7.3125C13.4998 4.59141 11.5662 2.32031 8.99981 1.8V1.125C8.99981 0.502734 8.49708 0 7.87481 0ZM9.46739 17.3426C9.88927 16.9207 10.1248 16.3477 10.1248 15.75H7.87481H5.62481C5.62481 16.3477 5.86036 16.9207 6.28224 17.3426C6.70411 17.7645 7.27716 18 7.87481 18C8.47247 18 9.04552 17.7645 9.46739 17.3426Z" fill="#2563EB"/>
+                                                </g>
+                                                <defs>
+                                                <clipPath id="clip0_257_480">
+                                                <path d="M0 0H15.75V18H0V0Z" fill="white"/>
+                                                </clipPath>
+                                                </defs>
+                                            </svg>
+                                            </div>
+                                            <div style="margin-left: 15px;">
+                                                <div style="color: #2B2F36; font-size: 16px;">알림 설정</div>
+                                                <div style="color: #6B7280; font-size: 14px;">푸시 알림, 이메일 알림 관리</div>
+                                            </div>
+                                            <!-- 오른쪽 토글 -->
+                                            <div style="margin-left:auto; display:flex; align-items:center;">
+                                                <div class="toggle toggle--alert" id="toggle-noti">
+                                                <input type="checkbox" aria-label="알림 설정 켜기/끄기" checked />
+                                                <span class="bg"></span>
+                                                <span class="knob"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+                <div style="margin-top: 15px; box-sizing: border-box;">
+                        <div style="box-sizing: border-box; background-color: white; width: 100%; height: 90px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); border: 1px solid #E5E7EB;">
+                            <div style="padding: 21px;">
+                                <div>
+                                    <div style="display: flex;">
+                                        <div style="">
+                                        <div style="display: flex; width: 740px;">
+                                            <div style="display: flex; justify-content: center; align-items: center; border-radius: 8px; background-color: #f3f4f6; width: 48px; height: 48px;">
+                                            <svg width="14" height="18" viewBox="0 0 14 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <g clip-path="url(#clip0_257_484)">
+                                                <path d="M7.85742 1.125C3.51562 1.125 0 4.65117 0 9C0 13.3488 3.51562 16.875 7.85742 16.875C9.98789 16.875 11.918 16.0242 13.3348 14.6461C13.5105 14.4738 13.5562 14.2066 13.4437 13.9887C13.3313 13.7707 13.0887 13.6477 12.8461 13.6898C12.5016 13.7496 12.15 13.7812 11.7879 13.7812C8.38125 13.7812 5.61797 11.0109 5.61797 7.59375C5.61797 5.28047 6.88359 3.26602 8.75742 2.2043C8.97188 2.08125 9.08086 1.83516 9.02812 1.59609C8.97539 1.35703 8.77148 1.17773 8.52539 1.15664C8.30391 1.13906 8.08242 1.12852 7.85742 1.12852V1.125Z" fill="#4B5563"/>
+                                                </g>
+                                                <defs>
+                                                <clipPath id="clip0_257_484">
+                                                <path d="M0 0H13.5V18H0V0Z" fill="white"/>
+                                                </clipPath>
+                                                </defs>
+                                            </svg>
+                                            </div>
+                                            <div style="margin-left: 15px;">
+                                                <div style="color: #2B2F36; font-size: 16px;">다크 모드</div>
+                                                <div style="color: #6B7280; font-size: 14px;">어두운 테마 사용</div>
+                                            </div>
+                                            <div style="margin-left:auto; display:flex; align-items:center;">
+                                                <div class="toggle toggle--dark" id="toggle-dark">
+                                                <input type="checkbox" aria-label="다크 모드 켜기/끄기" />
+                                                <span class="bg"></span>
+                                                <span class="knob"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+                <div style="margin-top: 15px; box-sizing: border-box;">
+                    <a id="lang-card" href="#" style="text-decoration: none;">
+                        <div style="box-sizing: border-box; background-color: white; width: 100%; height: 90px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); border: 1px solid #E5E7EB;">
+                            <div style="padding: 21px;">
+                                <div>
+                                    <div style="display: flex;">
+                                        <div style="">
+                                        <div style="display: flex; width: 740px;">
+                                            <div style="display: flex; justify-content: center; align-items: center; border-radius: 8px; background-color: #e1e7ff; width: 48px; height: 48px;">
+                                            <svg width="23" height="18" viewBox="0 0 23 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <g clip-path="url(#clip0_257_487)">
+                                                <path d="M0 4.5C0 3.25898 1.00898 2.25 2.25 2.25H9H10.6875H11.25H20.25C21.491 2.25 22.5 3.25898 22.5 4.5V13.5C22.5 14.741 21.491 15.75 20.25 15.75H11.25H10.6875H9H2.25C1.00898 15.75 0 14.741 0 13.5V4.5ZM11.25 4.5V13.5H20.25V4.5H11.25ZM6.26836 6.18398C6.15586 5.93086 5.90273 5.76562 5.625 5.76562C5.34727 5.76562 5.09414 5.93086 4.98164 6.18398L2.73164 11.2465C2.57344 11.6016 2.73516 12.0164 3.09023 12.1746C3.44531 12.3328 3.86016 12.1711 4.01836 11.816L4.33125 11.1094H6.91875L7.23164 11.816C7.38984 12.1711 7.80469 12.3293 8.15977 12.1746C8.51484 12.0199 8.67305 11.6016 8.51836 11.2465L6.26836 6.18398ZM5.625 8.19844L6.29297 9.70312H4.95703L5.625 8.19844ZM15.75 5.76562C16.1367 5.76562 16.4531 6.08203 16.4531 6.46875V6.60938H18H18.5625C18.9492 6.60938 19.2656 6.92578 19.2656 7.3125C19.2656 7.69922 18.9492 8.01562 18.5625 8.01562H18.4922L18.4359 8.17383C18.123 9.03164 17.6484 9.81211 17.0437 10.473C17.0754 10.4941 17.107 10.5117 17.1387 10.5293L17.8031 10.9266C18.1371 11.127 18.2426 11.5594 18.0457 11.8898C17.8488 12.2203 17.4129 12.3293 17.0824 12.1324L16.418 11.7352C16.2598 11.6402 16.1086 11.5418 15.9574 11.4363C15.5848 11.7 15.1875 11.9285 14.7621 12.1184L14.6355 12.1746C14.2805 12.3328 13.8656 12.1711 13.7074 11.816C13.5492 11.4609 13.7109 11.0461 14.066 10.8879L14.1926 10.8316C14.4176 10.7297 14.6355 10.6172 14.843 10.4871L14.4141 10.0582C14.1398 9.78398 14.1398 9.3375 14.4141 9.06328C14.6883 8.78906 15.1348 8.78906 15.409 9.06328L15.9223 9.57656L15.9398 9.59414C16.3758 9.13359 16.7309 8.59922 16.9875 8.01211H15.75H13.2188C12.832 8.01211 12.5156 7.6957 12.5156 7.30898C12.5156 6.92227 12.832 6.60586 13.2188 6.60586H15.0469V6.46523C15.0469 6.07852 15.3633 5.76211 15.75 5.76211V5.76562Z" fill="#4F46E5"/>
+                                                </g>
+                                                <defs>
+                                                <clipPath id="clip0_257_487">
+                                                <path d="M0 0H22.5V18H0V0Z" fill="white"/>
+                                                </clipPath>
+                                                </defs>
+                                            </svg>
+                                            </div>
+                                            <div style="margin-left: 15px;">
+                                                <div style="color: #2B2F36; font-size: 16px;">언어 설정</div>
+                                                <div style="color: #6B7280; font-size: 14px;">한국어</div>
+                                            </div>
+                                            <div style="display: flex; align-items: center; margin-left: auto;">
+                                                <svg width="10" height="16" viewBox="0 0 10 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M9.70615 7.29365C10.0968 7.68428 10.0968 8.31865 9.70615 8.70928L3.70615 14.7093C3.31553 15.0999 2.68115 15.0999 2.29053 14.7093C1.8999 14.3187 1.8999 13.6843 2.29053 13.2937L7.58428 7.9999L2.29365 2.70615C1.90303 2.31553 1.90303 1.68115 2.29365 1.29053C2.68428 0.899902 3.31865 0.899902 3.70928 1.29053L9.70928 7.29053L9.70615 7.29365Z" fill="#9CA3AF"/>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="on-bg" style="font-size: 18px; margin-top: 30px;">
+                    고객 지원
+                </div>
+                <div style="margin-top: 20px; box-sizing: border-box;">
+                    <a href="#" style="text-decoration: none;">
+                        <div style="box-sizing: border-box; background-color: white; width: 100%; height: 90px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); border: 1px solid #E5E7EB;">
+                            <div style="padding: 21px;">
+                                <div>
+                                    <div style="display: flex;">
+                                        <div style="">
+                                            <a th:href="@{/cs/consultation/FAQ}" style="text-decoration: none;">
+                                                <div style="display: flex; width: 740px;">
+                                                    <div style="display: flex; justify-content: center; align-items: center; border-radius: 8px; background-color: #fdf9c0; width: 48px; height: 48px;">
+                                                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <g clip-path="url(#clip0_257_489)">
+                                                        <path d="M9 18C11.3869 18 13.6761 17.0518 15.364 15.364C17.0518 13.6761 18 11.3869 18 9C18 6.61305 17.0518 4.32387 15.364 2.63604C13.6761 0.948212 11.3869 0 9 0C6.61305 0 4.32387 0.948212 2.63604 2.63604C0.948212 4.32387 0 6.61305 0 9C0 11.3869 0.948212 13.6761 2.63604 15.364C4.32387 17.0518 6.61305 18 9 18ZM5.96953 5.81133C6.24727 5.02734 6.99258 4.5 7.82578 4.5H9.87539C11.1023 4.5 12.0938 5.49492 12.0938 6.71836C12.0938 7.51289 11.6684 8.24766 10.9793 8.64492L9.84375 9.29531C9.83672 9.75234 9.46055 10.125 9 10.125C8.53242 10.125 8.15625 9.74883 8.15625 9.28125V8.80664C8.15625 8.5043 8.31797 8.22656 8.58164 8.07539L10.1391 7.18242C10.3043 7.0875 10.4062 6.91172 10.4062 6.72187C10.4062 6.42656 10.1672 6.19102 9.87539 6.19102H7.82578C7.70625 6.19102 7.60078 6.26484 7.56211 6.37734L7.54805 6.41953C7.39336 6.85898 6.9082 7.0875 6.47227 6.93281C6.03633 6.77812 5.8043 6.29297 5.95898 5.85703L5.97305 5.81484L5.96953 5.81133ZM7.875 12.375C7.875 12.0766 7.99353 11.7905 8.2045 11.5795C8.41548 11.3685 8.70163 11.25 9 11.25C9.29837 11.25 9.58452 11.3685 9.7955 11.5795C10.0065 11.7905 10.125 12.0766 10.125 12.375C10.125 12.6734 10.0065 12.9595 9.7955 13.1705C9.58452 13.3815 9.29837 13.5 9 13.5C8.70163 13.5 8.41548 13.3815 8.2045 13.1705C7.99353 12.9595 7.875 12.6734 7.875 12.375Z" fill="#CA8A04"/>
+                                                        </g>
+                                                        <defs>
+                                                        <clipPath id="clip0_257_489">
+                                                        <path d="M0 0H18V18H0V0Z" fill="white"/>
+                                                        </clipPath>
+                                                        </defs>
+                                                    </svg>
+                                                    </div>
+                                                    <div style="margin-left: 15px;">
+                                                        <div style="color: #2B2F36; font-size: 16px;">도움말 및 FAQ</div>
+                                                        <div style="color: #6B7280; font-size: 14px;">자주 묻는 질문과 사용 가이드</div>
+                                                    </div>
+                                                    <div style="display: flex; align-items: center; margin-left: auto;">
+                                                        <svg width="10" height="16" viewBox="0 0 10 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                            <path d="M9.70615 7.29365C10.0968 7.68428 10.0968 8.31865 9.70615 8.70928L3.70615 14.7093C3.31553 15.0999 2.68115 15.0999 2.29053 14.7093C1.8999 14.3187 1.8999 13.6843 2.29053 13.2937L7.58428 7.9999L2.29365 2.70615C1.90303 2.31553 1.90303 1.68115 2.29365 1.29053C2.68428 0.899902 3.31865 0.899902 3.70928 1.29053L9.70928 7.29053L9.70615 7.29365Z" fill="#9CA3AF"/>
+                                                        </svg>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div style="margin-top: 15px; box-sizing: border-box;">
+                    <a href="#" style="text-decoration: none;">
+                        <div style="box-sizing: border-box; background-color: white; width: 100%; height: 90px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); border: 1px solid #E5E7EB;">
+                            <div style="padding: 21px;">
+                                <div>
+                                    <div style="display: flex;">
+                                        <div style="">
+                                            <a th:href="@{/cs/consultation/Q&A}" style="text-decoration: none;">
+                                                <div style="display: flex; width: 740px;">
+                                                    <div style="display: flex; justify-content: center; align-items: center; border-radius: 8px; background-color: #d1fbf1; width: 48px; height: 48px;">
+                                                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <g clip-path="url(#clip0_257_493)">
+                                                        <path d="M9 1.6875C4.96055 1.6875 1.6875 4.96055 1.6875 9V10.4062C1.6875 10.8738 1.31133 11.25 0.84375 11.25C0.376172 11.25 0 10.8738 0 10.4062V9C0 4.02891 4.02891 0 9 0C13.9711 0 18 4.02891 18 9V14.066C18 15.7746 16.6148 17.1598 14.9027 17.1598L11.025 17.1562C10.7332 17.659 10.1883 18 9.5625 18H8.4375C7.50586 18 6.75 17.2441 6.75 16.3125C6.75 15.3809 7.50586 14.625 8.4375 14.625H9.5625C10.1883 14.625 10.7332 14.966 11.025 15.4688L14.9062 15.4723C15.6832 15.4723 16.3125 14.843 16.3125 14.066V9C16.3125 4.96055 13.0395 1.6875 9 1.6875ZM5.0625 7.3125H5.625C6.24727 7.3125 6.75 7.81523 6.75 8.4375V12.375C6.75 12.9973 6.24727 13.5 5.625 13.5H5.0625C3.82148 13.5 2.8125 12.491 2.8125 11.25V9.5625C2.8125 8.32148 3.82148 7.3125 5.0625 7.3125ZM12.9375 7.3125C14.1785 7.3125 15.1875 8.32148 15.1875 9.5625V11.25C15.1875 12.491 14.1785 13.5 12.9375 13.5H12.375C11.7527 13.5 11.25 12.9973 11.25 12.375V8.4375C11.25 7.81523 11.7527 7.3125 12.375 7.3125H12.9375Z" fill="#0D9488"/>
+                                                        </g>
+                                                        <defs>
+                                                        <clipPath id="clip0_257_493">
+                                                        <path d="M0 0H18V18H0V0Z" fill="white"/>
+                                                        </clipPath>
+                                                        </defs>
+                                                    </svg>
+                                                    </div>
+                                                    <div style="margin-left: 15px;">
+                                                        <div style="color: #2B2F36; font-size: 16px;">고객센터 문의</div>
+                                                        <div style="color: #6B7280; font-size: 14px;">1588-6200 <span class="i18n-text">(평일 09:00~18:00)</span></div>
+                                                    </div>
+                                                    <div style="display: flex; align-items: center; margin-left: auto;">
+                                                        <svg width="10" height="16" viewBox="0 0 10 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                            <path d="M9.70615 7.29365C10.0968 7.68428 10.0968 8.31865 9.70615 8.70928L3.70615 14.7093C3.31553 15.0999 2.68115 15.0999 2.29053 14.7093C1.8999 14.3187 1.8999 13.6843 2.29053 13.2937L7.58428 7.9999L2.29365 2.70615C1.90303 2.31553 1.90303 1.68115 2.29365 1.29053C2.68428 0.899902 3.31865 0.899902 3.70928 1.29053L9.70928 7.29053L9.70615 7.29365Z" fill="#9CA3AF"/>
+                                                        </svg>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="on-bg" style="font-size: 18px; margin-top: 30px;">
+                    계정 관리
+                </div>
+                <div style="margin-top: 20px; box-sizing: border-box;">
+                    <a th:href="@{/member/logout}" style="text-decoration: none;">
+                        <div style="box-sizing: border-box; background-color: white; width: 100%; height: 90px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); border: 1px solid #E5E7EB;">
+                            <div style="padding: 21px;">
+                                <div>
+                                    <div style="display: flex;">
+                                        <div style="">
+                                        <div style="display: flex; width: 740px;">
+                                            <div style="display: flex; justify-content: center; align-items: center; border-radius: 8px; background-color: #f3f4f6; width: 48px; height: 48px;">
+                                                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M13.2855 3.72305L17.6027 8.04023C17.8559 8.29336 18 8.64141 18 9C18 9.35859 17.8559 9.70664 17.6027 9.95977L13.2855 14.277C13.0605 14.502 12.7582 14.625 12.4418 14.625C11.7844 14.625 11.25 14.0906 11.25 13.4332V11.25H6.75C6.12773 11.25 5.625 10.7473 5.625 10.125V7.875C5.625 7.25273 6.12773 6.75 6.75 6.75H11.25V4.5668C11.25 3.90937 11.7844 3.375 12.4418 3.375C12.7582 3.375 13.0605 3.50156 13.2855 3.72305ZM5.625 3.375H3.375C2.75273 3.375 2.25 3.87773 2.25 4.5V13.5C2.25 14.1223 2.75273 14.625 3.375 14.625H5.625C6.24727 14.625 6.75 15.1277 6.75 15.75C6.75 16.3723 6.24727 16.875 5.625 16.875H3.375C1.51172 16.875 0 15.3633 0 13.5V4.5C0 2.63672 1.51172 1.125 3.375 1.125H5.625C6.24727 1.125 6.75 1.62773 6.75 2.25C6.75 2.87227 6.24727 3.375 5.625 3.375Z" fill="#4B5563"/>
+                                                </svg>
+                                            </div>
+                                            <div style="margin-left: 15px;">
+                                                <div style="color: #2B2F36; font-size: 16px;">로그아웃</div>
+                                                <div style="color: #6B7280; font-size: 14px;">현재 계정에서 로그아웃</div>
+                                            </div>
+                                            <div style="display: flex; align-items: center; margin-left: auto;">
+                                                <svg width="10" height="16" viewBox="0 0 10 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M9.70615 7.29365C10.0968 7.68428 10.0968 8.31865 9.70615 8.70928L3.70615 14.7093C3.31553 15.0999 2.68115 15.0999 2.29053 14.7093C1.8999 14.3187 1.8999 13.6843 2.29053 13.2937L7.58428 7.9999L2.29365 2.70615C1.90303 2.31553 1.90303 1.68115 2.29365 1.29053C2.68428 0.899902 3.31865 0.899902 3.70928 1.29053L9.70928 7.29053L9.70615 7.29365Z" fill="#9CA3AF"/>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div style="margin-top: 15px; box-sizing: border-box;">
+                    <a href="#" id="withdraw-open" style="text-decoration: none;">
+                        <div style="box-sizing: border-box; background-color: #fdf2f2; width: 100%; height: 90px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); border: 1px solid #FECACA;">
+                            <div style="padding: 21px;">
+                                <div>
+                                    <div style="display: flex;">
+                                        <div style="">
+                                        <div style="display: flex; width: 740px;">
+                                            <div style="display: flex; justify-content: center; align-items: center; border-radius: 8px; background-color: #fce2e2; width: 48px; height: 48px;">
+                                            <svg width="23" height="18" viewBox="0 0 23 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <g clip-path="url(#clip0_257_498)">
+                                                <path d="M3.375 4.5C3.375 3.30653 3.84911 2.16193 4.69302 1.31802C5.53693 0.474106 6.68153 0 7.875 0C9.06847 0 10.2131 0.474106 11.057 1.31802C11.9009 2.16193 12.375 3.30653 12.375 4.5C12.375 5.69347 11.9009 6.83807 11.057 7.68198C10.2131 8.52589 9.06847 9 7.875 9C6.68153 9 5.53693 8.52589 4.69302 7.68198C3.84911 6.83807 3.375 5.69347 3.375 4.5ZM0 16.9559C0 13.493 2.80547 10.6875 6.26836 10.6875H9.48164C12.9445 10.6875 15.75 13.493 15.75 16.9559C15.75 17.5324 15.2824 18 14.7059 18H1.04414C0.467578 18 0 17.5324 0 16.9559ZM16.5586 5.02734C16.8891 4.69688 17.4234 4.69688 17.7504 5.02734L19.4027 6.67969L21.0551 5.02734C21.3855 4.69688 21.9199 4.69688 22.2469 5.02734C22.5738 5.35781 22.5773 5.89219 22.2469 6.21914L20.5945 7.87148L22.2469 9.52383C22.5773 9.8543 22.5773 10.3887 22.2469 10.7156C21.9164 11.0426 21.382 11.0461 21.0551 10.7156L19.4027 9.06328L17.7504 10.7156C17.4199 11.0461 16.8855 11.0461 16.5586 10.7156C16.2316 10.3852 16.2281 9.85078 16.5586 9.52383L18.2109 7.87148L16.5586 6.21914C16.2281 5.88867 16.2281 5.3543 16.5586 5.02734Z" fill="#DC2626"/>
+                                                </g>
+                                                <defs>
+                                                <clipPath id="clip0_257_498">
+                                                <path d="M0 0H22.5V18H0V0Z" fill="white"/>
+                                                </clipPath>
+                                                </defs>
+                                            </svg>
+                                            </div>
+                                            <div style="margin-left: 15px;">
+                                                    <div style="color: #B91C1C; font-size: 16px;">회원 탈퇴</div>
+                                                    <div style="color: #DC2626; font-size: 14px;">계정 및 모든 데이터가 삭제됩니다</div>
+                                            </div>
+                                            <div style="display: flex; align-items: center; margin-left: auto;">
+                                                <svg width="10" height="16" viewBox="0 0 10 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M9.70615 7.29365C10.0968 7.68428 10.0968 8.31865 9.70615 8.70928L3.70615 14.7093C3.31553 15.0999 2.68115 15.0999 2.29053 14.7093C1.8999 14.3187 1.8999 13.6843 2.29053 13.2937L7.58428 7.9999L2.29365 2.70615C1.90303 2.31553 1.90303 1.68115 2.29365 1.29053C2.68428 0.899902 3.31865 0.899902 3.70928 1.29053L9.70928 7.29053L9.70615 7.29365Z" fill="#9CA3AF"/>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div th:replace="~{layouts/footer.html}"></div>
+    </footer>
+    <div id="bnk-chatbot-container" style="position: fixed; right: 20px; bottom: 20px; z-index: 9999;">
+    <div id="bnk-chatbot-slot"></div>
+    </div>
+    <script>
+    /**
+    * 외부 HTML을 불러와서:
+    *  - <link rel="stylesheet">, <style>는 <head>로 옮기고
+    *  - <script>는 실행되도록 새로 만들어 붙이고 (src/inline, module 모두 지원)
+    *  - 나머지 DOM(예: <flowise-chatbot> / <flowise-embed>)은 mount에 삽입
+    */
+    async function importHtmlWithAssets(url, mountSelector) {
+    const res = await fetch(url, { credentials: 'same-origin' });
+    if (!res.ok) throw new Error(`Failed to load ${url}`);
+    const html = await res.text();
+
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+
+    // 1) <link rel="stylesheet"> 들을 <head>로
+    doc.querySelectorAll('link[rel="stylesheet"]').forEach(link => {
+    // 중복 로드 방지
+    const href = link.getAttribute('href');
+    if (href && ![...document.head.querySelectorAll('link[rel="stylesheet"]')]
+        .some(l => l.getAttribute('href') === href)) {
+        document.head.appendChild(link.cloneNode(true));
+    }
+    });
+
+    // 2) <style> 들을 <head>로
+    doc.querySelectorAll('style').forEach(styleEl => {
+    const clone = document.createElement('style');
+    // CSS 텍스트 보존
+    clone.textContent = styleEl.textContent;
+    // (가능한 속성 복사)
+    [...styleEl.attributes].forEach(a => clone.setAttribute(a.name, a.value));
+    document.head.appendChild(clone);
+    });
+
+    // 3) 본문 콘텐츠를 mount에 붙임 (스크립트 제외)
+    const mount = document.querySelector(mountSelector);
+    // fragment 구성
+    const frag = document.createDocumentFragment();
+    [...doc.body.children].forEach(node => {
+    if (node.tagName.toLowerCase() !== 'script') frag.appendChild(node.cloneNode(true));
+    });
+    mount.appendChild(frag);
+
+    // 4) 스크립트 실행 (src/inline/module 지원, 순서 보장)
+    const scripts = [...doc.querySelectorAll('script')];
+    for (const oldScript of scripts) {
+    const newScript = document.createElement('script');
+    // type/module/defer 등 속성 복사
+    [...oldScript.attributes].forEach(attr => newScript.setAttribute(attr.name, attr.value));
+    if (oldScript.src) {
+        // 네트워크 로드를 기다려 실행 순서 유지
+        await new Promise((resolve, reject) => {
+        newScript.onload = resolve;
+        newScript.onerror = resolve;   // 실패해도 진행(브랜딩 제거 같은 선택 기능 보호)
+        document.body.appendChild(newScript);
+        });
+    } else {
+        // inline 코드 복사
+        newScript.textContent = oldScript.textContent || '';
+        document.body.appendChild(newScript);
+    }
+    }
+    }
+
+    // 실제 호출: 기존 chatbot.html(또는 chatbot_test.html) 경로로 바꿔도 됩니다.
+    importHtmlWithAssets('/components/chatbot_test.html', '#bnk-chatbot-slot')
+    .catch(err => console.error('[Chatbot load failed]', err));
+    </script>
+<script>
+  // 토글 클릭 시 a 태그로 상위 클릭 전파 막기
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('.toggle')){
+        e.stopPropagation();
+    }
+  });
+
+  // 저장된 상태 복원
+  const notiEl = document.querySelector('#toggle-noti input');
+  const darkEl = document.querySelector('#toggle-dark input');
+
+  // 초기 복원
+  if (darkEl) {
+    const saved = localStorage.getItem('pref_dark') === 'on';
+    darkEl.checked = saved;
+    document.documentElement.classList.toggle('dark', saved);              // 기존
+    document.documentElement.setAttribute('data-theme', saved?'dark':'light'); // ★ 추가
+    updateToggleBg(document.getElementById('toggle-dark'));
+  }
+
+  darkEl?.addEventListener('change', () => {
+    const on = darkEl.checked;
+    localStorage.setItem('pref_dark', on ? 'on' : 'off');
+    document.documentElement.classList.toggle('dark', on);              // 기존
+    document.documentElement.setAttribute('data-theme', on?'dark':'light');   // ★ 추가
+    updateToggleBg(document.getElementById('toggle-dark'));
+  });
+
+  // 배경 색상을 상태에 맞게 보장(초기 렌더용)
+  function updateToggleBg(wrap){
+    if (!wrap) return;
+    const input = wrap.querySelector('input');
+    const bg = wrap.querySelector('.bg');
+    // 클래스 기반으로 이미 처리되지만, 초기 페인트 깜빡임 방지
+    bg.style.background = input.checked
+      ? (wrap.classList.contains('toggle--alert') ? '#DC2626' : '#111827')
+      : '#E5E7EB';
+  }
+</script>
+<script>
+  // 저장된 테마 또는 시스템 다크 선호 반영
+  const saved = localStorage.getItem('theme');
+  const sys   = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  document.documentElement.setAttribute('data-theme', saved || sys);
+
+  // 토글 체크박스와 동기화 (id="themeToggle")
+  const t = document.getElementById('themeToggle');
+  if (t) t.checked = (saved || sys) === 'dark';
+
+  // 토글 변경 시 테마 적용 + 저장
+  t?.addEventListener('change', (e) => {
+    const next = e.target.checked ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+<div id="lang-backdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="lang-modal-title">
+  <div class="modal">
+    <div class="modal-header">
+      <span id="lang-modal-title">언어 설정</span>
+      <button id="lang-close" class="btn" aria-label="닫기">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="lang-row" data-lang="ko" id="row-ko">
+        <div class="lang-dot"></div>
+        <div>
+          <div class="lang-title">한국어</div>
+          <div class="lang-desc">앱을 한국어로 표시합니다.</div>
+        </div>
+      </div>
+      <div class="lang-row" data-lang="en" id="row-en">
+        <div class="lang-dot"></div>
+        <div>
+          <div class="lang-title">English</div>
+          <div class="lang-desc">Display the app in English.</div>
+        </div>
+      </div>
+      <div class="lang-row" data-lang="zh" id="row-zh">
+        <div class="lang-dot"></div>
+        <div>
+            <div class="lang-title">中文</div>
+            <div class="lang-desc">以中文显示应用。</div>
+        </div>
+    </div>
+    <div class="lang-row" data-lang="ja" id="row-ja">
+        <div class="lang-dot"></div>
+        <div>
+            <div class="lang-title">日本語</div>
+            <div class="lang-desc">アプリを日本語で表示します。</div>
+        </div>
+    </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" id="lang-cancel">취소</button>
+      <button class="btn btn-primary" id="lang-apply">적용</button>
+    </div>
+  </div>
+</div>
+<script th:inline="none">
+/** 1) 의미 키 기반 번역 사전 */
+const I18N = {
+  title_settings:          { ko:'설정', en:'Settings', zh:'设置', ja:'設定' },
+  subtitle_settings:       { ko:'계정 및 개인정보를 안전하게 관리하세요.', en:'Manage your account and personal information securely.', zh:'管理您的账户和个人信息。', ja:'アカウントと個人情報を安全に管理します。' },
+
+  sec_account:             { ko:'계정 정보', en:'Account', zh:'账户', ja:'アカウント' },
+  item_edit_profile:       { ko:'사용자 정보 수정', en:'Edit Profile', zh:'编辑资料', ja:'プロフィールを編集' },
+  item_edit_profile_desc:  { ko:'이름, 연락처, 이메일, 프로필 사진 변경', en:'Change name, phone, email, profile photo', zh:'更改姓名、电话、邮箱、头像', ja:'名前、連絡先、メール、プロフィール写真の変更' },
+
+  sec_security:            { ko:'보안 설정', en:'Security', zh:'安全', ja:'セキュリティ' },
+  item_change_pw:          { ko:'비밀번호 변경', en:'Change Password', zh:'更改密码', ja:'パスワードの変更' },
+  item_change_pw_desc:     { ko:'로그인 비밀번호 변경 및 보안 강화', en:'Update login password and strengthen security', zh:'更新登录密码并提升安全性', ja:'ログインパスワードの更新とセキュリティ強化' },
+  item_bio:                { ko:'생체인증 설정', en:'Biometric Authentication', zh:'生物识别设置', ja:'生体認証の設定' },
+  item_bio_desc:           { ko:'지문, 얼굴인식 등 생체인증 관리', en:'Manage fingerprint / face ID', zh:'管理指纹 / 面容ID', ja:'指紋・顔認証などの管理' },
+  item_2sv:                { ko:'2단계 인증', en:'Two-Step Verification', zh:'两步验证', ja:'2段階認証' },
+  item_2sv_desc:           { ko:'SMS, OTP 등 추가 보안 인증 설정', en:'Set up extra verification (SMS, OTP)', zh:'设置额外验证（短信、一次性密码）', ja:'追加認証（SMS、OTP）の設定' },
+
+  sec_prefs:               { ko:'환경 설정', en:'Preferences', zh:'偏好设置', ja:'環境設定' },
+  item_notif:              { ko:'알림 설정', en:'Notifications', zh:'通知设置', ja:'通知設定' },
+  item_notif_desc:         { ko:'푸시 알림, 이메일 알림 관리', en:'Manage push & email notifications', zh:'管理推送与邮件通知', ja:'プッシュ通知・メール通知の管理' },
+  item_dark:               { ko:'다크 모드', en:'Dark Mode', zh:'深色模式', ja:'ダークモード' },
+  item_dark_desc:          { ko:'어두운 테마 사용', en:'Use dark theme', zh:'使用深色主题', ja:'ダークテーマを使用' },
+  item_lang:               { ko:'언어 설정', en:'Language', zh:'语言', ja:'言語' },
+  item_lang_value_ko:      { ko:'한국어', en:'Korean', zh:'韩语', ja:'韓国語' },
+  item_lang_value_en:      { ko:'영어',   en:'English', zh:'英语', ja:'英語' },
+  item_cc_time: {
+    ko: '(평일 09:00~18:00)',
+    en: '(Weekdays 09:00–18:00)',
+    zh: '(工作日 09:00–18:00)',
+    ja: '(平日 09:00〜18:00)'
+  },
+
+  sec_support:             { ko:'고객 지원', en:'Support', zh:'客服支持', ja:'サポート' },
+  item_help:               { ko:'도움말 및 FAQ', en:'Help & FAQ', zh:'帮助与常见问题', ja:'ヘルプとFAQ' },
+  item_help_desc:          { ko:'자주 묻는 질문과 사용 가이드', en:'Common questions and guides', zh:'常见问题与使用指南', ja:'よくある質問とガイド' },
+  item_cc:                 { ko:'고객센터 문의', en:'Contact Center', zh:'客服中心', ja:'コンタクトセンター' },
+
+  sec_account_mgmt:        { ko:'계정 관리', en:'Account Management', zh:'账户管理', ja:'アカウント管理' },
+  item_logout:             { ko:'로그아웃', en:'Log Out', zh:'退出登录', ja:'ログアウト' },
+  item_logout_desc:        { ko:'현재 계정에서 로그아웃', en:'Sign out of this account', zh:'退出当前账户', ja:'このアカウントからサインアウト' },
+  item_delete:             { ko:'회원 탈퇴', en:'Delete Account', zh:'删除账户', ja:'アカウント削除' },
+  item_delete_desc:        { ko:'계정 및 모든 데이터가 삭제됩니다', en:'Your account and all data will be deleted.', zh:'您的账户及所有数据将被删除。', ja:'アカウントとすべてのデータが削除されます。' },
+
+  // 모달
+  modal_language:          { ko:'언어 설정', en:'Language', zh:'语言', ja:'言語' },
+  modal_close:             { ko:'닫기', en:'Close', zh:'关闭', ja:'閉じる' },
+  modal_cancel:            { ko:'취소', en:'Cancel', zh:'取消', ja:'キャンセル' },
+  modal_apply:             { ko:'적용', en:'Apply', zh:'应用', ja:'適用' },
+  modal_row_ko_title:      { ko:'한국어', en:'Korean', zh:'韩语', ja:'韓国語' },
+  modal_row_ko_desc:       { ko:'앱을 한국어로 표시합니다.', en:'Show the app in Korean.', zh:'以韩语显示应用。', ja:'アプリを韓国語で表示します。' },
+  modal_row_en_title:      { ko:'영어', en:'English', zh:'英语', ja:'英語' },
+  modal_row_en_desc:       { ko:'앱을 영어로 표시합니다.', en:'Show the app in English.', zh:'以英语显示应用。', ja:'アプリを英語で表示します。' },
+  modal_row_zh_title:      { ko:'중국어', en:'Chinese', zh:'中文', ja:'中国語' },
+  modal_row_zh_desc:       { ko:'앱을 중국어로 표시합니다.', en:'Show the app in Chinese.', zh:'以中文显示应用。', ja:'アプリを中国語で表示します。' },
+  modal_row_ja_title:      { ko:'일본어', en:'Japanese', zh:'日语', ja:'日本語' },
+  modal_row_ja_desc:       { ko:'앱을 일본어로 표시합니다.', en:'Show the app in Japanese.', zh:'以日语显示应用。', ja:'アプリを日本語で表示します。' },
+};
+// === 헤더 i18n 추가 ===
+const I18N_HEADER = {
+    header_branch_search:        { ko:'영업점 찾기',         en:'Find a Branch',                  zh:'查找营业网点',              ja:'営業店検索' },
+  /* 1차 GNB */
+  nav_deposit:      { ko:'예금',     en:'Deposit',         zh:'存款',        ja:'預金' },
+  nav_fund:         { ko:'펀드',     en:'Funds',           zh:'基金',        ja:'ファンド' },
+  nav_fx:           { ko:'외환',     en:'FX',              zh:'外汇',        ja:'外為' },
+  nav_card:         { ko:'카드',     en:'Cards',           zh:'卡',          ja:'カード' },
+  nav_insurance:    { ko:'보험',     en:'Insurance',       zh:'保险',        ja:'保険' },
+  nav_retire:       { ko:'퇴직연금', en:'Retirement Plan', zh:'退休养老金',  ja:'退職年金' },
+  nav_auth_center:  { ko:'인증센터', en:'Certificates',    zh:'认证中心',    ja:'認証センター' },
+
+  /* ===== 예금 ===== */
+  dep_title_td:     { ko:'정기예금', en:'Time Deposit', zh:'定期存款', ja:'定期預金' },
+  dep_bnk_td:       { ko:'부산은행 정기예금', en:'BNK Time Deposit', zh:'釜山银行定期存款', ja:'BNK定期預金' },
+  dep_high_td:      { ko:'고금리 정기예금', en:'High-Yield Time Deposit', zh:'高利率定期存款', ja:'高金利定期預金' },
+  dep_flex_saving:  { ko:'자유적립예금', en:'Flexible Saving', zh:'自由积蓄存款', ja:'自由積立預金' },
+
+  dep_title_free:   { ko:'자유예금', en:'Demand Deposit', zh:'活期存款', ja:'普通預金' },
+  dep_demand:       { ko:'보통예금', en:'Ordinary Deposit', zh:'普通存款', ja:'普通預金' },
+  dep_current:      { ko:'당좌예금', en:'Checking Account', zh:'当座存款', ja:'当座預金' },
+  dep_corp_demand:  { ko:'기업자유예금', en:'Corporate Demand', zh:'企业活期', ja:'法人普通預金' },
+
+  dep_title_special:{ ko:'특수예금', en:'Special Deposit', zh:'特殊存款', ja:'特殊預金' },
+  dep_fx:           { ko:'외화예금', en:'FX Deposit', zh:'外币存款', ja:'外貨預金' },
+  dep_tax:          { ko:'세금우대예금', en:'Tax-Favored Deposit', zh:'税收优惠存款', ja:'税優遇預金' },
+  dep_housing:      { ko:'정기주택마련저축', en:'Housing Savings', zh:'住房储蓄', ja:'住宅積立' },
+
+  /* ===== 펀드 ===== */
+  fund_title_equity:{ ko:'주식형', en:'Equity', zh:'股票型', ja:'株式型' },
+  fund_kor_index:   { ko:'국내지수 추종', en:'KOSPI Index Tracker', zh:'韩国指数跟踪', ja:'国内指数連動' },
+  fund_dividend:    { ko:'배당주 펀드', en:'Dividend Stocks', zh:'红利股基金', ja:'配当株ファンド' },
+  fund_green:       { ko:'친환경 테마', en:'Green Theme', zh:'绿色主题', ja:'グリーンテーマ' },
+
+  fund_title_mix:   { ko:'채권/혼합형', en:'Bond / Mixed', zh:'债券/混合型', ja:'債券/バランス' },
+  fund_kTB:         { ko:'중단기 국공채', en:'Short/Mid Gov Bonds', zh:'中短期国公债', ja:'中短期国公債' },
+  fund_balanced:    { ko:'채권혼합 안정형', en:'Balanced (Conservative)', zh:'稳健混合', ja:'安定バランス' },
+  fund_multi:       { ko:'멀티에셋 밸런스', en:'Multi-Asset Balance', zh:'多资产平衡', ja:'マルチアセット・バランス' },
+
+  fund_title_alt:   { ko:'해외/대체', en:'Global / Alternatives', zh:'海外/另类', ja:'海外/オルタナ' },
+  fund_reit:        { ko:'글로벌 리츠', en:'Global REITs', zh:'全球REITs', ja:'グローバルREIT' },
+  fund_us_tech:     { ko:'미국 기술주', en:'US Tech', zh:'美国科技股', ja:'米国テック' },
+  fund_commodity:   { ko:'원자재 인덱스', en:'Commodity Index', zh:'大宗商品指数', ja:'コモディティ指数' },
+
+  /* ===== 외환 ===== */
+  fx_title_fx:      { ko:'환전', en:'FX Exchange', zh:'换汇', ja:'両替' },
+  fx_rate_now:      { ko:'실시간 환율 조회', en:'Live Rates', zh:'实时汇率', ja:'リアルタイム為替' },
+  fx_mobile:        { ko:'모바일 환전', en:'Mobile FX', zh:'移动换汇', ja:'モバイル両替' },
+  fx_coupon:        { ko:'환율우대 쿠폰', en:'FX Discount Coupon', zh:'汇率优惠券', ja:'為替優待クーポン' },
+
+  fx_title_remit:   { ko:'해외송금', en:'Remittance', zh:'海外汇款', ja:'海外送金' },
+  fx_fast:          { ko:'빠른 해외송금', en:'Fast Remittance', zh:'快速汇款', ja:'高速送金' },
+  fx_regular:       { ko:'정기송금 관리', en:'Scheduled Transfers', zh:'定期汇款管理', ja:'定期送金管理' },
+  fx_track:         { ko:'수취조회', en:'Track Receipt', zh:'收款查询', ja:'受取照会' },
+
+  fx_title_fxdep:   { ko:'외화예금', en:'FX Deposits', zh:'外币存款', ja:'外貨預金' },
+  fx_usd:           { ko:'USD 외화예금', en:'USD FX Deposit', zh:'美元外币存款', ja:'USD外貨預金' },
+  fx_jpy:           { ko:'JPY 외화예금', en:'JPY FX Deposit', zh:'日元外币存款', ja:'JPY外貨預金' },
+  fx_eur:           { ko:'EUR 외화예금', en:'EUR FX Deposit', zh:'欧元外币存款', ja:'EUR外貨預金' },
+
+  /* ===== 카드 ===== */
+  card_title_cc:    { ko:'신용카드', en:'Credit Cards', zh:'信用卡', ja:'クレジットカード' },
+  card_life:        { ko:'생활할인 카드', en:'Everyday Savings', zh:'生活折扣卡', ja:'生活割引カード' },
+  card_miles:       { ko:'항공마일리지 카드', en:'Air Mileage', zh:'航空里程卡', ja:'マイレージカード' },
+  card_premium:     { ko:'프리미엄 카드', en:'Premium', zh:'高端卡', ja:'プレミアムカード' },
+
+  card_title_dc:    { ko:'체크카드', en:'Debit Cards', zh:'借记卡', ja:'デビットカード' },
+  card_cashback:    { ko:'캐시백 체크', en:'Cashback Debit', zh:'返现借记卡', ja:'キャッシュバック・デビット' },
+  card_trans:       { ko:'교통/통신 체크', en:'Transit/Telecom Debit', zh:'交通/通信借记卡', ja:'交通/通信デビット' },
+  card_youth:       { ko:'청소년 체크', en:'Youth Debit', zh:'青少年借记卡', ja:'ユース・デビット' },
+
+  card_title_svc:   { ko:'서비스', en:'Services', zh:'服务', ja:'サービス' },
+  card_event:       { ko:'이벤트/혜택', en:'Events & Offers', zh:'活动/优惠', ja:'イベント/特典' },
+  card_lost:        { ko:'분실/도난 신고', en:'Report Lost/Stolen', zh:'挂失/被盗申报', ja:'紛失/盗難届' },
+  card_bill:        { ko:'이용대금 명세서', en:'Statements', zh:'账单明细', ja:'利用明細' },
+
+  /* ===== 보험 ===== */
+  ins_title_cov:    { ko:'보장성', en:'Coverage', zh:'保障型', ja:'保障性' },
+  ins_med:          { ko:'실손의료 보험', en:'Medical Indemnity', zh:'医疗补偿保险', ja:'実損医療保険' },
+  ins_cancer:       { ko:'암/건강 보험', en:'Cancer/Health', zh:'癌症/健康保险', ja:'がん/健康保険' },
+  ins_driver:       { ko:'운전자 보험', en:'Driver', zh:'驾驶员保险', ja:'ドライバー保険' },
+
+  ins_title_save:   { ko:'저축성', en:'Savings Type', zh:'储蓄型', ja:'貯蓄性' },
+  ins_pension:      { ko:'연금저축 보험', en:'Pension Savings', zh:'养老金储蓄保险', ja:'年金貯蓄保険' },
+  ins_saving:       { ko:'저축보험', en:'Savings Insurance', zh:'储蓄保险', ja:'貯蓄保険' },
+  ins_va:           { ko:'변액보험', en:'Variable', zh:'投连险', ja:'変額保険' },
+
+  ins_title_cs:     { ko:'고객센터', en:'Customer Center', zh:'客服中心', ja:'カスタマーセンター' },
+  ins_claim:        { ko:'청구/서류 안내', en:'Claims/Docs', zh:'理赔/资料指南', ja:'請求/書類案内' },
+  ins_consult:      { ko:'보험 상담 예약', en:'Consultation Booking', zh:'保险咨询预约', ja:'保険相談予約' },
+  ins_faq:          { ko:'FAQ', en:'FAQ', zh:'常见问题', ja:'FAQ' },
+
+  /* ===== 퇴직연금 ===== */
+  rp_title_intro:   { ko:'제도 안내', en:'Plan Guide', zh:'制度指南', ja:'制度案内' },
+  rp_dc_irp:        { ko:'DC/IRP 안내', en:'DC/IRP Guide', zh:'DC/IRP指南', ja:'DC/IRP案内' },
+  rp_fee:           { ko:'수수료 체계', en:'Fee Schedule', zh:'手续费体系', ja:'手数料体系' },
+  rp_tax:           { ko:'세제혜택', en:'Tax Benefits', zh:'税收优惠', ja:'税制優遇' },
+
+  rp_title_prod:    { ko:'운용상품', en:'Products', zh:'运作产品', ja:'運用商品' },
+  rp_principal:     { ko:'원리금보장형', en:'Principal-Guaranteed', zh:'保本型', ja:'元本確保型' },
+  rp_bondmix:       { ko:'채권형/혼합형', en:'Bond/Mixed', zh:'债券/混合型', ja:'債券/バランス' },
+  rp_equity_tdf:    { ko:'주식형/타깃데이트', en:'Equity/Target-Date', zh:'股票/目标日期', ja:'株式/ターゲットデート' },
+
+  rp_title_mgmt:    { ko:'관리', en:'Management', zh:'管理', ja:'管理' },
+  rp_aa_guide:      { ko:'자산배분 가이드', en:'Asset Allocation Guide', zh:'资产配置指南', ja:'資産配分ガイド' },
+  rp_perf:          { ko:'수익률 조회', en:'Performance', zh:'收益率查询', ja:'収益率照会' },
+  rp_transfer:      { ko:'이체/이전', en:'Transfer/Rollover', zh:'转账/转移', ja:'振替/移換' },
+
+  /* aria-label (접근성) */
+  aria_dep:         { ko:'예금 메뉴',     en:'Deposit menu',         zh:'存款菜单',     ja:'預金メニュー' },
+  aria_fund:        { ko:'펀드 메뉴',     en:'Funds menu',           zh:'基金菜单',     ja:'ファンドメニュー' },
+  aria_fx:          { ko:'외환 메뉴',     en:'FX menu',              zh:'外汇菜单',     ja:'外為メニュー' },
+  aria_card:        { ko:'카드 메뉴',     en:'Cards menu',           zh:'卡片菜单',     ja:'カードメニュー' },
+  aria_ins:         { ko:'보험 메뉴',     en:'Insurance menu',       zh:'保险菜单',     ja:'保険メニュー' },
+  aria_rp:          { ko:'퇴직연금 메뉴', en:'Retirement menu',      zh:'退休金菜单',   ja:'退職年金メニュー' },
+};
+Object.assign(I18N, I18N_HEADER);
+// === 푸터 i18n 추가 ===
+const I18N_FOOTER = {
+  /* 좌측 슬로건 */
+  footer_slogan:         { ko:'고객과 함께 성장하는 신뢰받는 지역 대표은행',
+                           en:'A trusted regional bank growing with our customers',
+                           zh:'与客户共同成长的值得信赖的地区代表银行',
+                           ja:'お客さまと共に成長する信頼の地域代表銀行' },
+
+  /* 컬럼 타이틀 */
+  footer_cs_title:       { ko:'고객지원', en:'Customer Support', zh:'客户支持', ja:'カスタマーサポート' },
+  footer_service_title:  { ko:'서비스',   en:'Services',         zh:'服务',   ja:'サービス' },
+  footer_terms_title:    { ko:'약관 및 정책', en:'Terms & Policies', zh:'条款与政策', ja:'約款・ポリシー' },
+
+  /* 고객지원 링크 */
+  footer_cs_contact:     { ko:'문의하기',   en:'Contact Us',    zh:'联系我们',     ja:'お問い合わせ' },
+  footer_cs_faq:         { ko:'FAQ',       en:'FAQ',           zh:'常见问题',     ja:'FAQ' },
+
+  /* 서비스 링크 */
+  footer_svc_ibk:        { ko:'인터넷뱅킹', en:'Internet Banking', zh:'网上银行',   ja:'インターネットバンキング' },
+  footer_svc_mb:         { ko:'모바일뱅킹', en:'Mobile Banking',   zh:'手机银行',   ja:'モバイルバンキング' },
+  footer_svc_rp:         { ko:'퇴직연금',   en:'Retirement Plan',  zh:'退休养老金', ja:'退職年金' },
+
+  /* 약관 */
+  footer_terms_tos:      { ko:'이용약관',         en:'Terms of Use',            zh:'使用条款',     ja:'利用規約' },
+  footer_terms_privacy:  { ko:'개인정보처리방침', en:'Privacy Policy',          zh:'隐私政策',     ja:'個人情報保護方針' },
+  footer_terms_efin:     { ko:'전자금융거래약관', en:'Electronic Financial Terms', zh:'电子金融交易条款', ja:'電子金融取引約款' },
+
+  /* 패밀리 사이트 셀렉트 */
+  footer_family_select:  { ko:'패밀리사이트', en:'Family Sites', zh:'家族网站', ja:'ファミリーサイト' },
+  footer_family_grp:     { ko:'BNK금융그룹', en:'BNK Financial Group', zh:'BNK金融集团', ja:'BNK金融グループ' },
+  footer_family_sec:     { ko:'BNK투자증권', en:'BNK Investment & Securities', zh:'BNK投资证券', ja:'BNK投資証券' },
+
+  /* 하단 정보(주소·저작권 템플릿) */
+  footer_cpr_tpl:        { ko:'© {year} BNK 부산은행. All rights reserved.',
+                           en:'© {year} BNK Busan Bank. All rights reserved.',
+                           zh:'© {year} BNK 釜山银行。保留所有权利。',
+                           ja:'© {year} BNK 釜山銀行。All rights reserved.' },
+  footer_addr_tpl:       { ko:'부산광역시 남구 범일로 30 (범일동) | 대표전화: 1588-6200',
+                           en:'30 Beomil-ro, Nam-gu, Busan | Main: 1588-6200',
+                           zh:'釜山广域市南区凡一路30号（凡一洞）| 总机：1588-6200',
+                           ja:'釜山広域市 南区 凡一路30（凡一洞）| 代表: 1588-6200' },
+    footer_branch_search:  { ko:'지점찾기', en:'Find a Branch', zh:'网点查询', ja:'支店検索' },
+};
+Object.assign(I18N, I18N_FOOTER);
+// === Header extra i18n: 헤더에서 새로 쓰인 한글 텍스트들 ===
+const I18N_HEADER_EXTRA = {
+    /* 상단 1차 메뉴 */
+    header_nav_stock:         { ko:'증권',             en:'Securities',                zh:'证券',                 ja:'証券' },
+    header_nav_product:       { ko:'상품',             en:'Products',                  zh:'产品',                 ja:'商品' },
+    header_nav_forms_notice:  { ko:'서식/공지사항',    en:'Forms / Notices',           zh:'表格/公告',            ja:'書式/お知らせ' },
+    header_nav_retire_guide:  { ko:'퇴직연금 알아보기', en:'Learn about Retirement Pension', zh:'了解退休养老金',   ja:'退職年金について' },
+    header_nav_cs:            { ko:'고객센터',         en:'Customer Center',           zh:'客服中心',             ja:'カスタマーセンター' },
+    header_nav_bank_intro:    { ko:'은행소개',         en:'About the Bank',            zh:'银行介绍',             ja:'銀行紹介' },
+
+    /* 상품 > 카테고리별 상품 */
+    header_prod_by_cat:       { ko:'카테고리별 상품',   en:'Products by Category',      zh:'按类别分类的产品',     ja:'カテゴリ別商品' },
+    header_prod_deposit:      { ko:'예금상품',         en:'Deposit Products',          zh:'存款产品',             ja:'預金商品' },
+    header_prod_saving:       { ko:'적금상품',         en:'Installment Savings',       zh:'积蓄产品',             ja:'積立商品' },
+    header_prod_fund:         { ko:'펀드상품',         en:'Fund Products',             zh:'基金产品',             ja:'ファンド商品' },
+
+    /* 서식/공지사항 > 퇴직연금 자료실 */
+    header_retroom_title:        { ko:'퇴직연금 자료실',        en:'Retirement Pension Resources',        zh:'退休养老金资料室',          ja:'退職年金資料室' },
+    header_retroom_form_by_cat:  { ko:'카테고리별서식',         en:'Forms by Category',                   zh:'按类别分类的表格',         ja:'カテゴリ別書式' },
+    header_retroom_data:         { ko:'자료실',                 en:'Resources',                           zh:'资料室',                   ja:'資料室' },
+    header_retroom_smallfund:    { ko:'소규모펀드등공시',       en:'Small-Scale Fund Disclosures',        zh:'小规模基金等公告',         ja:'小規模ファンド等の公示' },
+    header_retroom_notice:       { ko:'공지사항',               en:'Notices',                             zh:'公告',                     ja:'お知らせ' },
+
+    /* 서식/공지사항 > 퇴직연금사업자공시 */
+    header_retprovider_title:    { ko:'퇴직연금사업자공시',     en:'Retirement Plan Provider Disclosure', zh:'退休金经营机构公示',       ja:'退職年金事業者公示' },
+    header_retprovider_balance:  { ko:'운용금액 및 운용수익률', en:'Assets under Management & Returns',   zh:'运用金额及运用收益率',     ja:'運用残高および収益率' },
+    header_retprovider_contract: { ko:'퇴직연금 계약서',        en:'Retirement Pension Contract',         zh:'退休养老金合同',           ja:'退職年金契約書' },
+    header_retprovider_principal:{ ko:'원리금 보장 상품 현황',  en:'Principal-Guaranteed Products',       zh:'本金及利息保障产品现况',   ja:'元本保証商品の現況' },
+    header_retprovider_fee:      { ko:'수수료',                 en:'Fees',                                zh:'手续费',                   ja:'手数料' },
+
+    /* 고객센터 > 고객상담/금융소비자보호/이용안내 */
+    header_cs_consult:           { ko:'고객상담',               en:'Customer Consultation',               zh:'客户咨询',                 ja:'お客さま相談' },
+    header_cs_required_docs:     { ko:'필요서류안내',           en:'Required Documents',                  zh:'所需资料指南',             ja:'必要書類案内' },
+    header_cs_qa:                { ko:'Q&A',                    en:'Q&A',                                 zh:'问与答',                   ja:'Q&A' },
+    // FAQ, 영업점 찾기 등은 이미 다른 I18N에 있으므로 재사용됨
+
+    header_cs_consumer_protect:  { ko:'금융소비자보호',         en:'Financial Consumer Protection',       zh:'金融消费者保护',           ja:'金融消費者保護' },
+    header_cs_charter:           { ko:'금융소비자보호헌장',     en:'Financial Consumer Protection Charter', zh:'金融消费者保护宪章',    ja:'金融消費者保護憲章' },
+    header_cs_complaint_flow:    { ko:'민원접수 및 처리프로세스', en:'Complaint Handling Process',         zh:'投诉受理及处理流程',       ja:'苦情受付・処理プロセス' },
+    header_cs_must_info:         { ko:'소비자보호필수안내사항', en:'Essential Consumer Protection Info',  zh:'消费者保护必备指南',       ja:'消費者保護必須案内事項' },
+    header_cs_rights:            { ko:'금융소비자권리행사안내', en:'How to Exercise Your Rights',         zh:'金融消费者权利行使指南',   ja:'金融消費者の権利行使案内' },
+
+    header_cs_howto_use:         { ko:'이용안내',               en:'How to Use',                          zh:'使用指南',                 ja:'利用案内' },
+    header_cs_join_process:      { ko:'가입절차',               en:'Sign-up Process',                     zh:'开户/加入流程',            ja:'加入手続き' },
+    header_cs_pw_guide:          { ko:'비밀번호안내',           en:'Password Guide',                      zh:'密码指南',                 ja:'パスワード案内' },
+    header_cs_service_time:      { ko:'서비스 이용시간',        en:'Service Hours',                       zh:'服务时间',                 ja:'サービス利用時間' },
+    header_cs_fee_info:          { ko:'수수료안내',             en:'Fee Information',                     zh:'手续费说明',               ja:'手数料案内' },
+
+    /* 은행소개 */
+    header_bankinfo_title:       { ko:'은행안내',               en:'Bank Information',                    zh:'银行指南',                 ja:'銀行案内' },
+    header_bankinfo_guide:       { ko:'은행안내',               en:'Bank Information',                    zh:'银行指南',                 ja:'銀行案内' },
+    header_bankinfo_story:       { ko:'BNK부산은행스토리',      en:'BNK Busan Bank Story',                zh:'BNK釜山银行故事',         ja:'BNK釜山銀行ストーリー' },
+    header_bankinfo_invest:      { ko:'투자자정보',             en:'Investor Relations',                  zh:'投资者信息',               ja:'投資家情報' },
+
+    /* 세션 영역 버튼 */
+    header_session_extend:       { ko:'연장',                   en:'Extend',                              zh:'延长',                     ja:'延長' },
+    /* ===== 퇴직연금 알아보기 메뉴 ===== */
+    // 1단계 섹션 제목
+    header_retire_intro:      { ko:'퇴직연금 소개',        en:'Introduction to Retirement Pension',
+        zh:'退休养老金介绍',       ja:'退職年金の紹介' },
+    header_retire_system:     { ko:'퇴직연금 제도의 이해',  en:'Understanding the Retirement Pension System',
+        zh:'了解退休养老金制度',   ja:'退職年金制度の理解' },
+    header_retire_guide:      { ko:'도입/운영안내',        en:'Setup & Operation Guide',
+        zh:'导入/运营指南',       ja:'導入・運用案内' },
+
+    // 소개 섹션 내부
+    header_retire_why:        { ko:'왜 퇴직연금인가?',      en:'Why Retirement Pension?',
+        zh:'为什么是退休养老金？', ja:'なぜ退職年金なのか？' },
+    header_retire_what:       { ko:'퇴직연금이란?',        en:'What is a Retirement Pension?',
+        zh:'什么是退休养老金？',   ja:'退職年金とは？' },
+    header_retire_benefit:    { ko:'퇴직연금 도입혜택',     en:'Benefits of Adopting a Retirement Pension',
+        zh:'引入退休养老金的优势', ja:'退職年金導入のメリット' },
+
+    // 제도 이해 섹션 내부
+    header_retire_db:         { ko:'확정급여형(DB)',       en:'Defined Benefit (DB) Plan',
+        zh:'确定给付型(DB)',       ja:'確定給付型(DB)' },
+    header_retire_dc:         { ko:'확정급여형(DC)',       en:'Defined Contribution (DC) Plan',
+        zh:'确定缴费型(DC)',       ja:'確定拠出型(DC)' },
+    header_retire_irp:        { ko:'개인형퇴직연금제도(IRP)', en:'Individual Retirement Pension (IRP)',
+        zh:'个人型退休养老金(IRP)', ja:'個人型退職年金(IRP)' },
+    header_retire_general:    { ko:'제도 일반사항',        en:'General Information',
+        zh:'制度一般事项',         ja:'制度一般事項' },
+
+    // 도입/운영 안내 내부
+    header_retire_proc_overview:{ ko:'도입과정 한눈에 보기',  en:'Overview of Implementation Process',
+        zh:'一览导入流程',         ja:'導入プロセスの概要' },
+    header_retire_proc_check: { ko:'운영과정 체크포인트',    en:'Operational Checkpoints',
+        zh:'运营过程检查要点',      ja:'運用プロセスのチェックポイント' },
+    header_retire_invest:     { ko:'적립금 운용전략',        en:'Contribution Investment Strategy',
+        zh:'积立金运用策略',        ja:'積立金運用戦略' },
+
+    // 단일 링크 섹션
+    header_retire_nps:        { ko:'NPS 노후설계서비스',    en:'NPS Retirement Planning Service',
+        zh:'NPS养老规划服务',       ja:'NPS老後設計サービス' },
+    header_retire_portal_error:{ ko:'통합연금포털 오류 신고', en:'Integrated Pension Portal Error Report',
+        zh:'综合养老金门户错误申报', ja:'統合年金ポータル不具合申告' },
+
+    // 오류 신고 하위
+    header_retire_error_submit:{ ko:'오류신고 접수',        en:'Submit Error Report',
+        zh:'提交错误申报',         ja:'不具合申告受付' },
+    header_retire_error_result:{ ko:'오류신고 내역 및 결과조회', en:'View Error Report History & Results',
+        zh:'查询错误申报记录及结果',  ja:'申告履歴・結果照会' },
+};
+// 기존 I18N에 병합
+Object.assign(I18N, I18N_HEADER_EXTRA);
+
+/** 2) 역매핑(한국어/영어 문자열 → 의미 키) */
+const valueToKey = (() => {
+  const m = {};
+  for (const [key, pair] of Object.entries(I18N)) {
+    m[(pair.ko || '').trim()] = key;
+    m[(pair.en || '').trim()] = key;
+    m[(pair.zh || '').trim()] = key;
+    m[(pair.ja || '').trim()] = key;
+  }
+  return m;
+})();
+
+/** 3) 현재 텍스트로부터 키 찾아 번역 적용 */
+function applyLanguage(lang){
+  document.documentElement.setAttribute('lang', lang);
+
+  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
+    acceptNode(node){
+      const t = node.nodeValue.trim();
+      if (!t) return NodeFilter.FILTER_REJECT;
+      return valueToKey[t] ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+    }
+  });
+
+  const nodes = [];
+  let cur;
+  while (cur = walker.nextNode()) nodes.push(cur);
+
+  nodes.forEach(node => {
+    const curText = node.nodeValue.trim();
+    const key = valueToKey[curText];
+    if (!key) return;
+    const next = I18N[key]?.[lang];
+    if (next && next !== curText) node.nodeValue = next;
+  });
+
+  // 언어 카드의 현재 값(우측 회색 텍스트) 갱신
+  const langCard = document.getElementById('lang-card');
+  if (langCard) {
+    // 카드 내 회색 보조 텍스트가 2개 이상일 수 있으니, '언어 설정' 카드에서만 지정.
+    const subtitle = langCard.querySelector('div[style*="color: #6B7280"]');
+    if (subtitle) subtitle.textContent =
+    (lang === 'en') ? 'English' :
+    (lang === 'zh') ? '中文'    :
+    (lang === 'ja') ? '日本語'  :
+                      '한국어';
+  }
+
+  // 모달 내부 텍스트도 갱신
+  const $ = s => document.querySelector(s);
+  $('#lang-modal-title') && ($('#lang-modal-title').textContent = I18N.modal_language[lang]);
+  $('#lang-close')       && ($('#lang-close').textContent       = I18N.modal_close[lang]);
+  $('#lang-cancel')      && ($('#lang-cancel').textContent      = I18N.modal_cancel[lang]);
+  $('#lang-apply')       && ($('#lang-apply').textContent       = I18N.modal_apply[lang]);
+  $('#row-ko .lang-title')  && ($('#row-ko .lang-title').textContent  = I18N.modal_row_ko_title[lang]);
+  $('#row-ko .lang-desc')   && ($('#row-ko .lang-desc').textContent   = I18N.modal_row_ko_desc[lang]);
+  $('#row-en .lang-title')  && ($('#row-en .lang-title').textContent  = I18N.modal_row_en_title[lang]);
+  $('#row-en .lang-desc')   && ($('#row-en .lang-desc').textContent   = I18N.modal_row_en_desc[lang]);
+}
+
+/** 4) 저장/초기화 유틸 */
+function getSavedLang(){
+  const saved = localStorage.getItem('lang');
+  if (saved === 'ko' || saved === 'en' || saved === 'zh') return saved;
+  const nav = (navigator.language || '').toLowerCase();
+  if (nav.startsWith('ko')) return 'ko';
+  if (nav.startsWith('zh')) return 'zh';
+  if (nav.startsWith('ja')) return 'ja';
+  return 'en';
+}
+function setLang(lang){
+  localStorage.setItem('lang', lang);
+  applyLanguage(lang);
+}
+
+/** 5) 초기 적용 — 헤더/푸터 로드 이후 한 번 더 실행 */
+function initI18N(){
+  applyLanguage(getSavedLang());
+  // 헤더/푸터 fetch 로딩을 고려해 한 번 더 보정
+  setTimeout(()=>applyLanguage(getSavedLang()), 120);
+}
+document.addEventListener('DOMContentLoaded', initI18N);
+
+/** 6) 모달 연동 (기존 모달 마크업 사용) */
+(function bindLangModal(){
+  const backdrop = document.getElementById('lang-backdrop');
+  const langCard = document.getElementById('lang-card');
+  const btnClose = document.getElementById('lang-close');
+  const btnCancel= document.getElementById('lang-cancel');
+  const btnApply = document.getElementById('lang-apply');
+  const rowKO    = document.getElementById('row-ko');
+  const rowEN    = document.getElementById('row-en');
+  const rowZH = document.getElementById('row-zh');
+  const rowJA = document.getElementById('row-ja');
+
+  let pending = getSavedLang();
+
+  function open(){ select(pending = getSavedLang()); backdrop.classList.add('show'); }
+  function close(){ backdrop.classList.remove('show'); }
+  function select(lang){
+    pending = lang;
+    rowKO.classList.toggle('active', lang==='ko');
+    rowEN.classList.toggle('active', lang==='en');
+    rowZH.classList.toggle('active', lang==='zh');
+    rowJA.classList.toggle('active', lang==='ja');
+  }
+
+  langCard?.addEventListener('click', e => { e.preventDefault(); open(); });
+  rowKO?.addEventListener('click', ()=>select('ko'));
+  rowEN?.addEventListener('click', ()=>select('en'));
+  rowZH?.addEventListener('click', ()=>select('zh'));
+  rowJA?.addEventListener('click', ()=>select('ja'));
+  btnApply?.addEventListener('click', ()=>{ setLang(pending); close(); });
+  btnCancel?.addEventListener('click', close);
+  btnClose?.addEventListener('click', close);
+  backdrop?.addEventListener('click', e => { if (e.target===backdrop) close(); });
+})();
+</script>
+<script>
+// === Footer 후처리: 셀렉트/저작권/주소 강제 갱신 ===
+(function translateFooter(){
+  const lang = document.documentElement.getAttribute('lang') || 'ko';
+
+  // 1) 패밀리사이트 <select> 옵션 강제 세팅 (문구가 매칭 실패해도 확실히 교체)
+  const familySel = document.querySelector('.footer-social select');
+  if (familySel) {
+    const labels = [
+      I18N.footer_family_select?.[lang],
+      I18N.footer_family_grp?.[lang],
+      I18N.footer_family_sec?.[lang],
+    ];
+    // 옵션이 3개라고 가정(현재 마크업 기준). 개수 달라도 안전하게 처리
+    [...familySel.options].forEach((opt, i) => {
+      if (labels[i]) opt.textContent = labels[i];
+    });
+  }
+
+  // 2) 저작권/주소 문장 템플릿 적용 (연도 자동 반영)
+  const year = new Date().getFullYear();
+  const cprP  = document.querySelector('.footer-info p:nth-of-type(1)');
+  const addrP = document.querySelector('.footer-info p:nth-of-type(2)');
+  if (cprP)  cprP.textContent  = (I18N.footer_cpr_tpl?.[lang]  || '').replace('{year}', year);
+  if (addrP) addrP.textContent = (I18N.footer_addr_tpl?.[lang] || '');
+})();
+
+document.querySelectorAll('a[href="#"]').forEach(a=>{
+    a.addEventListener('click', e=> e.preventDefault());
+    a.setAttribute('target', '_self'); // 혹시 모를 base 영향 차단
+});
+</script>
+
+<!-- 회원 탈퇴 모달 -->
+<div id="withdraw-backdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="withdraw-title">
+    <div class="modal">
+        <form id="withdraw-form" th:action="@{/member/withdraw}" method="post">
+            <div class="modal-header">
+                <span id="withdraw-title">회원 탈퇴</span>
+                <button type="button" class="btn" id="withdraw-close" aria-label="닫기">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="withdraw-field">
+                    <label for="wd-mid">아이디</label>
+                    <input type="text" id="wd-mid" name="mid"
+                           th:value="${session.loginUser != null ? session.loginUser.mid : ''}"readonly />
+                </div>
+                <div class="withdraw-field">
+                    <label for="wd-pw">비밀번호</label>
+                    <input type="password" id="wd-pw" name="mpw" placeholder="현재 비밀번호를 입력하세요." required />
+                </div>
+                <div class="withdraw-field">
+                    <label for="wd-phone">휴대폰</label>
+                    <div class="withdraw-phone-row">
+                        <input type="text" id="wd-phone" name="mphone"
+                               th:value="${session.loginUser != null ? session.loginUser.mphone : ''}"
+                               placeholder="휴대폰 번호" />
+                        <button type="button" id="wd-phone-req">인증요청</button>
+                    </div>
+                    <div class="withdraw-phone-row">
+                        <input type="text" id="wd-phone-code" placeholder="인증번호 입력" />
+                        <button type="button" id="wd-phone-verify">인증확인</button>
+                    </div>
+                    <div id="wd-phone-status" class="withdraw-help">
+                        휴대폰 번호로 인증을 진행해주세요.
+                    </div>
+                </div>
+                <div id="withdraw-confirm-box" class="withdraw-danger">
+                    <strong>정말 삭제 하시겠습니까?</strong><br/>
+                    계정 및 모든 데이터가 삭제되며 복구할 수 없습니다.
+                </div>
+            </div>
+            <div class="modal-footer" style="justify-content: center">
+                <button type="button" class="btn" id="withdraw-cancel" style="width: 90px; height: 42px">취소</button>
+                <button type="submit" class="btn-register" id="withdraw-submit" disabled>확인</button>
+            </div>
+        </form>
+    </div>
+</div>
+<style>
+    .withdraw-field{
+        margin-bottom: 12px;
+        font-size: 14px;
+    }
+    .withdraw-field label{
+        display:block;
+        margin-bottom: 4px;
+        font-weight:500;
+        color:#374151;
+    }
+    .withdraw-field input{
+        width:100%;
+        box-sizing:border-box;
+        padding:8px 10px;
+        border-radius:8px;
+        border:1px solid #D1D5DB;
+        font-size:14px;
+    }
+    .withdraw-phone-row{
+        display:flex;
+        gap:8px;
+        margin-top:4px;
+    }
+    .withdraw-phone-row input{
+        flex:1 1 auto;
+    }
+    .withdraw-phone-row button{
+        flex:0 0 auto;
+        padding:8px 12px;
+        border-radius:8px;
+        border:1px solid #D1D5DB;
+        background:#F9FAFB;
+        font-size:13px;
+        cursor:pointer;
+    }
+    .withdraw-phone-row button:hover{
+        background:#E5E7EB;
+    }
+    .withdraw-help{
+        margin-top:6px;
+        font-size:12px;
+        color:#6B7280;
+    }
+    .withdraw-danger{
+        display:none;
+        margin-top:12px;
+        padding:10px 12px;
+        border-radius:8px;
+        background:#FEF2F2;
+        border:1px solid #FECACA;
+        font-size:13px;
+        color:#991B1B;
+    }
+</style>
+<script>
+    (function(){
+        const withdrawLink = document.getElementById('withdraw-open');
+
+        const backdrop  = document.getElementById('withdraw-backdrop');
+        const form      = document.getElementById('withdraw-form');
+        const closeBtn  = document.getElementById('withdraw-close');
+        const cancelBtn = document.getElementById('withdraw-cancel');
+        const submitBtn = document.getElementById('withdraw-submit');
+
+        const phoneInput   = document.getElementById('wd-phone');
+        const codeInput    = document.getElementById('wd-phone-code');
+        const phoneReqBtn  = document.getElementById('wd-phone-req');
+        const phoneVerBtn  = document.getElementById('wd-phone-verify');
+        const phoneStatus  = document.getElementById('wd-phone-status');
+        const confirmBox   = document.getElementById('withdraw-confirm-box');
+
+        let phoneVerified = false;
+
+        const CTX = (function () {
+            const path = window.location.pathname;
+            return path.startsWith('/BNK') ? '/BNK' : '';
+        })();
+
+        function openModal(){
+            phoneVerified = false;
+            codeInput.value = '';
+            phoneStatus.textContent = '휴대폰 번호로 인증을 진행해주세요.';
+            phoneStatus.style.color = '#6B7280';
+            confirmBox.style.display = 'none';
+            submitBtn.disabled = true;
+
+            backdrop.classList.add('show');
+        }
+        function closeModal(){
+            backdrop.classList.remove('show');
+        }
+
+        withdrawLink?.addEventListener('click', (e)=>{
+            e.preventDefault();
+            openModal();
+        });
+
+        closeBtn?.addEventListener('click', closeModal);
+        cancelBtn?.addEventListener('click', closeModal);
+        backdrop?.addEventListener('click', e=>{
+            if (e.target === backdrop) closeModal();
+        });
+
+        // 인증번호 요청
+        phoneReqBtn?.addEventListener('click', async ()=>{
+            const phone = phoneInput.value.trim();
+            if (!phone){
+                alert('휴대폰 번호를 입력해주세요.');
+                phoneInput.focus();
+                return;
+            }
+
+            try{
+                const res = await fetch(CTX + '/api/verification/sms/send', {
+                    method: 'POST',
+                    headers: { 'Content-Type':'application/json' },
+                    // ★ 서버는 phoneNumber 라는 키를 기대함
+                    body: JSON.stringify({ phoneNumber: phone })
+                });
+
+                const data = await res.json().catch(() => null);
+
+                if (res.ok && data && data.ok){
+                    // VerificationController.sendSms 에서 ok:true / message:"인증번호 전송 완료"
+                    phoneStatus.textContent = data.message || '인증번호를 전송했습니다. 문자메시지를 확인해주세요.';
+                    phoneStatus.style.color = '#16A34A';
+                } else {
+                    const msg = data && data.message
+                        ? data.message
+                        : '인증번호 전송에 실패했습니다.';
+                    phoneStatus.textContent = msg;
+                    phoneStatus.style.color = '#DC2626';
+                }
+            }catch(err){
+                console.error(err);
+                phoneStatus.textContent = '통신 중 오류가 발생했습니다.';
+                phoneStatus.style.color = '#DC2626';
+            }
+        });
+
+        // 인증번호 확인
+        phoneVerBtn?.addEventListener('click', async ()=>{
+            const phone = phoneInput.value.trim();
+            const code  = codeInput.value.trim();
+            if (!phone || !code){
+                alert('휴대폰 번호와 인증번호를 모두 입력해주세요.');
+                return;
+            }
+
+            try{
+                const res = await fetch(CTX + '/api/verification/sms/verify', {
+                    method:'POST',
+                    headers:{ 'Content-Type':'application/json' },
+                    // ★ 마찬가지로 phoneNumber + code
+                    body: JSON.stringify({ phoneNumber: phone, code })
+                });
+
+                const data = await res.json().catch(() => null);
+
+                if (res.ok && data && data.ok){
+                    // 인증 성공
+                    phoneVerified = true;
+                    phoneStatus.textContent = data.message || '휴대폰 인증이 완료되었습니다.';
+                    phoneStatus.style.color = '#16A34A';
+
+                    // 필요하면 토큰 hidden으로 폼에 심어두기
+                    if (data.verificationToken) {
+                        let hidden = form.querySelector('input[name="smsToken"]');
+                        if (!hidden) {
+                            hidden = document.createElement('input');
+                            hidden.type = 'hidden';
+                            hidden.name = 'smsToken';
+                            form.appendChild(hidden);
+                        }
+                        hidden.value = data.verificationToken;
+                    }
+
+                    confirmBox.style.display = 'block';
+                    submitBtn.disabled = false;
+                } else {
+                    phoneVerified = false;
+                    const msg = data && data.message
+                        ? data.message
+                        : '인증번호가 일치하지 않습니다.';
+                    phoneStatus.textContent = msg;
+                    phoneStatus.style.color = '#DC2626';
+                    confirmBox.style.display = 'none';
+                    submitBtn.disabled = true;
+                }
+            }catch(err){
+                console.error(err);
+                phoneVerified = false;
+                phoneStatus.textContent = '통신 중 오류가 발생했습니다.';
+                phoneStatus.style.color = '#DC2626';
+                confirmBox.style.display = 'none';
+                submitBtn.disabled = true;
+            }
+        });
+
+        // 3) 폼 submit 가드
+        form?.addEventListener('submit', (e)=>{
+            if (!phoneVerified){
+                e.preventDefault();
+                alert('휴대폰 인증을 먼저 완료해주세요.');
+            } else if (!confirm('정말 계정을 삭제하시겠습니까?')){
+                e.preventDefault();
+            }
+        });
+    })();
+</script>
+</body>
+</html>

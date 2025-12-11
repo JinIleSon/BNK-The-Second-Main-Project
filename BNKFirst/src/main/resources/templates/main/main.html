@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BNK 메인페이지</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+            padding-top: 50px;
+            background: rgba(255, 255, 255, 0.92);
+            margin: 0;
+            color: #222;
+        }
+
+        /*-------- 배너 --------*/
+        .banner {
+            width: 1280px;
+            overflow: hidden;
+            background: #ffffff;
+            margin: 60px auto 0;  /* 위 40px, 좌우 중앙, 아래 0 */
+            border-radius: 12px;
+        }
+
+        .banner-slider {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            aspect-ratio: 16/9;
+        }
+
+        .banner-slide {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            transition: opacity 1.1s ease-in-out,
+            transform 1.1s ease-in-out;
+            pointer-events: none;
+        }
+        .banner-slide video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .banner-slide.active {
+            opacity: 1;
+            transform: translateX(0);
+            pointer-events: auto;
+            z-index: 1;
+        }
+
+        /* 이미지: 가로 100%, 세로는 비율 유지 (잘리지 않음) */
+        .banner-slide img {
+            width: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* 좌우 화살표: 부등호만 보이게 */
+        .banner-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: transparent;      /* 동그란 배경 제거 */
+            border: none;                 /* 테두리 제거 */
+            width: auto;
+            height: auto;
+            padding: 0;                   /* 필요하면 4~8px 정도 줘도 됨 */
+            color: rgba(0, 0, 0, 0.55);   /* 화살표 색 */
+            font-size: 28px;              /* 부등호 크기 */
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 5;
+            transition: color 0.2s ease, transform 0.2s ease;
+        }
+
+        /* 호버 시 색/살짝 확대만 */
+        .banner-arrow:hover {
+            color: rgb(165, 0, 0);
+            transform: translateY(-50%) scale(1.05);
+        }
+
+        /* 좌우 위치 */
+        .banner-arrow.prev {
+            left: 18px;
+        }
+
+        .banner-arrow.next {
+            right: 18px;
+        }
+
+
+        /* 하단 도트 */
+        .banner-dots {
+            position: absolute;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 5;
+        }
+
+        .banner-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+            border: none;
+            background: rgba(255,255,255,0.5);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .banner-dot.active {
+            width: 24px;
+            background: #D91A1A;
+        }
+
+
+
+        /*--------- 검색 --------*/
+        .search-box {
+            text-align: center;
+            background: #fff;
+            border-radius: 20px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 60px 0;          /* 세로 패딩 살짝 ↑ (100 → 120) */
+        }
+
+        /* 검색 컨테이너 */
+        .search-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            width: 50%;                /* 가로폭 ↑ (60% → 75%) */
+            margin: 0 auto;
+            overflow: hidden;
+            transition: 0.3s ease;
+        }
+
+        /* 왼쪽 셀렉트박스 */
+        .category-select {
+            border: 1.5px solid #ddd;
+            border-radius: 14px;       /* 살짝 더 둥글게 */
+            background: #fff;
+            padding: 16px 44px 16px 20px;   /* 높이/여백 조금 ↑ */
+            font-size: 17px;           /* 글자 크기 ↑ (16 → 17) */
+            color: #333;
+            appearance: none;
+            cursor: pointer;
+            background-image: url("data:image/svg+xml;utf8,<svg fill='gray' height='14' viewBox='0 0 20 20' width='14' xmlns='http://www.w3.org/2000/svg'><path d='M5.516 7.548l4.484 4.484 4.484-4.484L15.516 9l-6 6-6-6z'/></svg>");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            background-size: 14px;
+            transition: border-color 0.2s ease;
+        }
+
+        /* 오른쪽 검색 박스 */
+        .search-inner {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            border: 1.5px solid #ddd;
+            border-radius: 14px;        /* 둥글기 통일 */
+            background: #fff;
+            overflow: hidden;
+            transition: 0.3s ease;
+        }
+
+        /* 인풋 */
+        .search-inner input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 17px;            /* 글자 크기 ↑ */
+            padding: 16px 20px;         /* 높이/여백 ↑ */
+            color: #333;
+        }
+
+        /* 검색 버튼 */
+        .search-btn {
+            background: transparent;
+            border: none;
+            color: #D91A1A;
+            padding: 16px 20px;         /* 버튼 높이도 맞춰주기 */
+            cursor: pointer;
+            font-size: 20px;            /* 아이콘/텍스트 조금 키우기 */
+        }
+
+        /* 추천 검색어 */
+        .tag-container {
+            margin-top: 15px;
+            color: #777;
+            font-size: 14px;
+        }
+
+        .tag-container span {
+            margin-right: 5px;
+        }
+
+        .tag-container a {
+            color: #D91A1A;
+            text-decoration: none;
+            margin-right: 8px;
+            transition: color 0.2s ease;
+        }
+
+        .tag-container a:hover {
+            color: #a31212;
+            text-decoration: underline;
+        }
+
+        /* 검색 결과 박스 */
+        .search-results {
+            margin-top: 20px;
+            width: 60%;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: left;
+        }
+
+        .search-results h3 {
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: #222;
+        }
+
+        .search-results ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .search-results li {
+            padding: 12px 10px;
+            border-radius: 10px;
+            background: #fafafa;
+            border: 1px solid #eee;
+            margin-bottom: 8px;
+        }
+
+        .search-results li strong {
+            font-weight: 600;
+            color: #222;
+        }
+
+        .search-results li small {
+            color: #666;
+        }
+
+        .no-result {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #777;
+        }
+
+        /*------------ 공지 / 이벤트 -------------*/
+        .notice-event {
+            border-top: 1px solid #E5E7EB;
+            padding-top: 90px;
+            display: flex;
+            justify-content: space-between;
+            width: 80%;
+            margin: 60px auto;
+            gap: 30px;
+        }
+
+        /* 공지 / 이벤트 카드: 카테고리와 톤 맞추기 */
+        .notice,
+        .event {
+            flex: 1;
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 24px 28px;
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+            border: 1px solid rgba(15, 23, 42, 0.08);
+            transition: transform 0.25s ease,
+            box-shadow 0.25s ease,
+            border-color 0.25s ease;
+        }
+
+        .notice:hover,
+        .event:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+            border-color: rgba(217, 26, 26, 0.35); /* BNK 레드톤 살짝 */
+        }
+
+        .notice-header,
+        .event-header{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .notice-header h3,
+        .event-header h3{
+            font-size: 18px;
+            font-weight: 600;
+            color: #222;
+        }
+
+        .notice-header a,
+        .event-header a{
+            color: #555;
+            font-size: 14px;
+            text-decoration: none;
+        }
+
+        .notice ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .notice li {
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .notice li:last-child{
+            border-bottom: none;
+        }
+
+        .notice .date {
+            display: block;
+            font-size: 13px;
+            color: #999;
+            margin-bottom: 5px;
+        }
+
+        .notice .title {
+            font-weight: 600;
+            color: #333;
+            margin-right: 5px;
+        }
+
+        .notice p {
+            color: #666;
+            font-size: 14px;
+            margin-top: 3px;
+        }
+
+        .badge {
+            background: #D91A1A;
+            color: #fff;
+            font-size: 12px;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .event-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #ffffff4e;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+            /*border: 1px solid #b0b0b0;*/
+            border-radius: 10px;
+            padding: 5px 20px;
+            margin-bottom: 12px;
+            transition: 0.3s;
+        }
+
+        .event-item:hover {
+            background: #d91a1a4f;
+            transform: translateY(-3px);
+        }
+
+        .event-info h4 {
+            font-size: 15px;
+            font-weight: 600;
+            color: #222;
+        }
+
+        .event-info p {
+            font-size: 13px;
+            color: #555;
+            margin-top: 3px;
+        }
+
+        .join-btn {
+            background: #D91A1A;
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 18px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: 0.2s;
+        }
+
+        .join-btn:hover {
+            background: #b91515;
+        }
+
+        /* ===== iM은행 APP 카드 ===== */
+
+        .app-grid {
+            display: grid;
+            grid-template-columns: 150px 150px; /* 이미지 크기에 딱 맞게 */
+            gap: 100px;
+            justify-content: center; /* 가운데 정렬 */
+        }
+
+
+
+        .app-item {
+            text-align: center;
+            flex: 1;
+        }
+
+        .app-item img {
+            width: 150px;
+            height: 150px;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            background: #fff;
+        }
+
+        .app-item span {
+            display: block;
+            margin-top: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+
+
+        /*---------------- 상단 바로가기 ----------------*/
+        .bottom-icons {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 100px;
+            margin: 60px auto;
+            width: 80%;
+            padding-top: 80px;
+            border-top: 1px solid #E5E7EB;
+        }
+
+        .icon-item {
+            text-align: center;
+            font-family: "Pretendard", sans-serif;
+        }
+
+        /* 동그라미 유지 + 카테고리 느낌 입히기 */
+        .circle {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;  /* 원형 유지 */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+            background-color: #ffffff;
+            border: 1px solid rgba(15, 23, 42, 0.08);       /* 연한 그레이 보더 */
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);   /* 살짝 그림자 */
+            transition: transform 0.25s ease,
+            box-shadow 0.25s ease,
+            border-color 0.25s ease,
+            background-color 0.25s ease;
+        }
+
+        .circle img {
+            width: 38px;
+            height: 38px;
+        }
+
+        .circle h3 {
+            padding-top: 8px;
+            font-size: 20px;
+            color: #000000;
+            margin: 0;
+        }
+
+        /* 호버 효과: 카테고리랑 톤 맞추기 */
+        /* 1. 로그인 - 레드 계열 */
+        .icon-item.red:hover .circle{
+            background-color: #FFE5E8;                 /* 파스텔 핑크 */
+            border-color: rgba(217, 26, 26, 0.35);     /* BNK 레드톤 */
+        }
+
+        /* 2. 투자 - 블루 계열 */
+        .icon-item.blue:hover .circle{
+            background-color: #E5F0FF;                 /* 파스텔 스카이 블루 */
+            border-color: rgba(37, 99, 235, 0.35);     /* 파란 라인 */
+        }
+
+        /* 3. 금리계산 - 그린 계열 */
+        .icon-item.green:hover .circle{
+            background-color: #E5F8EF;                 /* 파스텔 민트 */
+            border-color: rgba(16, 185, 129, 0.35);    /* 그린 라인 */
+        }
+
+        /* 4. 퀴즈 - 퍼플 계열 */
+        .icon-item.purple:hover .circle{
+            background-color: #F3E8FF;                 /* 파스텔 퍼플 */
+            border-color: rgba(139, 92, 246, 0.35);    /* 퍼플 라인 */
+        }
+
+        /* 아이콘(이미지/SVG) 색 반전 + 부드러운 전환 */
+        /* 1. 로그인 - 레드 계열 아이콘 색 변환 */
+        .icon-item.red:hover .circle img,
+        .icon-item.red:hover .circle svg {
+            filter: brightness(0) saturate(80%) invert(10%) sepia(80%)
+            saturate(7345%) hue-rotate(348deg) brightness(80%) contrast(116%);
+        }
+
+        /* 2. 투자 - 블루 계열 아이콘 색 변환 */
+        .icon-item.blue:hover .circle img,
+        .icon-item.blue:hover .circle svg {
+            filter: brightness(0) saturate(90%) invert(21%) sepia(90%)
+            saturate(2500%) hue-rotate(205deg) brightness(90%) contrast(105%);
+        }
+
+        /* 3. 금리계산 - 그린 계열 아이콘 색 변환 */
+        .icon-item.green:hover .circle img,
+        .icon-item.green:hover .circle svg {
+            filter: brightness(0) saturate(90%) invert(24%) sepia(90%)
+            saturate(2200%) hue-rotate(145deg) brightness(92%) contrast(105%);
+        }
+
+        /* 4. 퀴즈 - 퍼플 계열 아이콘 색 변환 */
+        .icon-item.purple:hover .circle img,
+        .icon-item.purple:hover .circle svg {
+            filter: brightness(0) saturate(90%) invert(18%) sepia(90%)
+            saturate(2400%) hue-rotate(265deg) brightness(90%) contrast(110%);
+        }
+
+        /* 1. 로그인 - 레드 계열 */
+        .icon-item.red:hover .circle h3 {
+            color: #D91A1A;   /* BNK 레드 */
+        }
+
+        /* 2. 투자 - 블루 계열 */
+        .icon-item.blue:hover .circle h3 {
+            color: #2563EB;   /* 파란 포인트 */
+        }
+
+        /* 3. 금리계산 - 그린 계열 */
+        .icon-item.green:hover .circle h3 {
+            color: #10B981;   /* 민트/그린 포인트 */
+        }
+
+        /* 4. 퀴즈 - 퍼플 계열 */
+        .icon-item.purple:hover .circle h3 {
+            color: #8B5CF6;   /* 퍼플 포인트 */
+        }
+        /* 로그인시 5초 유지되는 토스트 추가 (이준우 2025.11.28) */
+        .toast {
+            position: fixed;
+            top: 16px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-10px);
+            background: #181e27;
+            color: #ffffff;
+            border-radius: 12px;
+            padding: 8px 18px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            z-index: 10000;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        .toast-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #22c55e;
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+<!-- 헤더  -->
+<div th:replace="~{layouts/header}"></div>
+
+<!-- 토스트 관련 -->
+<div th:if="${loginSuccessMsg}" id="loginToast" class="toast show">
+    <span class="toast-icon">✔</span>
+    <span th:text="${loginSuccessMsg}"></span>
+</div>
+
+<!-- 배너 (슬라이드) -->
+<section class="banner">
+    <div class="banner-slider">
+        <!-- 1번 배너 -->
+        <div class="banner-slide active">
+            <video th:src="@{/images/001.mp4}" autoplay loop muted playsinline></video>
+        </div>
+
+        <!-- 2번 배너 -->
+        <div class="banner-slide">
+            <video th:src="@{/images/002.mp4}" autoplay loop muted playsinline></video>
+        </div>
+
+        <!-- 3번 배너 -->
+        <div class="banner-slide">
+            <video th:src="@{/images/004.mp4}" autoplay loop muted playsinline></video>
+        </div>
+
+        <!-- 4번 배너 -->
+        <div class="banner-slide">
+            <video th:src="@{/images/003.mp4}" autoplay loop muted playsinline></video>
+        </div>
+
+        <!-- 좌우 버튼 -->
+        <button class="banner-arrow prev" type="button">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <button class="banner-arrow next" type="button">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+
+        <!-- 하단 도트 -->
+        <div class="banner-dots">
+            <button class="banner-dot active" type="button"></button>
+            <button class="banner-dot" type="button"></button>
+            <button class="banner-dot" type="button"></button>
+            <button class="banner-dot" type="button"></button>
+        </div>
+    </div>
+</section>
+
+
+<!-- 검색 -->
+<section class="search-box">
+    <h2>원하는 금융상품을 빠르게 찾아보세요</h2>
+
+    <div class="search-container">
+        <select class="category-select">
+            <option>전체상품</option>
+            <option>원리금 보장상품</option>
+            <option>퇴직연금 알아보기</option>
+            <option>ETF</option>
+        </select>
+
+        <div class="search-inner">
+            <input type="text" placeholder="찾으시는 금융상품을 입력하세요">
+            <button class="search-btn">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+    </div>
+
+    <div class="tag-container">
+        <span>추천 검색어:</span>
+        <a th:href="@{/product/main}">원리금 보장상품</a>
+        <a th:href="@{/retirement-renew/intro/why-pension}">퇴직연금 알아보기</a>
+        <a th:href="@{/stock/mainEtf}">ETF</a>
+    </div>
+
+    <div id="search-result-area"></div>
+</section>
+
+<!-- 상단 바로가기 -->
+<section class="bottom-icons">
+    <a th:href="@{/cs/consultation/findStore}" style="text-decoration: none;">
+        <div class="icon-item red">
+            <div class="circle">
+                <img th:src="@{/images/main_each_customer.png}" alt="영업점 찾기">
+                <h3>영업점 찾기</h3>
+            </div>
+        </div>
+    </a>
+
+    <a th:href="@{/irp/account/main}" style="text-decoration: none;">
+        <div class="icon-item red">
+            <div class="circle">
+                <img th:src="@{/images/main_new.png}" alt="계좌개설">
+                <h3>계좌개설</h3>
+            </div>
+        </div>
+    </a>
+
+    <a th:href="@{/mypage/calc}" style="text-decoration: none;">
+        <div class="icon-item red">
+            <div class="circle">
+                <img th:src="@{/images/main_calculator.png}" alt="금리계산">
+                <h3>금리계산</h3>
+            </div>
+        </div>
+    </a>
+
+    <a th:href="@{/qna/main}" style="text-decoration: none;">
+        <div class="icon-item red">
+            <div class="circle">
+                <div style="">
+                    <div style="display: flex; justify-content: center;">
+                        <svg width="42" height="42" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M8.5 7.5C8.5 6.487 9.395 5.5 10.5 5.5C11.605 5.5 12.5 6.32 12.5 7.333C12.5 7.698 12.384 8.038 12.183 8.324C11.585 9.176 10.5 9.987 10.5 11" stroke="#4B5563" stroke-width="1.5" stroke-linecap="round"/>
+                            <path d="M10.5 13.5H10.509" stroke="#4B5563" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M8 19.5C9.05 20.37 10.315 20.924 11.764 21.019C12.905 21.094 14.097 21.094 15.237 21.019C15.6444 20.9908 16.045 20.9004 16.425 20.751C16.835 20.584 17.039 20.501 17.144 20.514C17.248 20.526 17.399 20.636 17.701 20.856C18.234 21.244 18.905 21.522 19.901 21.499C20.404 21.487 20.656 21.48 20.768 21.291C20.881 21.101 20.741 20.839 20.46 20.314C20.07 19.586 19.824 18.753 20.198 18.085C20.841 17.131 21.388 16.002 21.468 14.782C21.511 14.127 21.511 13.448 21.468 12.792C21.4159 12.0004 21.2235 11.2243 20.9 10.5" stroke="#4B5563" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M12.237 17.0189C13.8553 16.9119 15.3796 16.2203 16.5257 15.0728C17.6719 13.9253 18.3618 12.4003 18.467 10.7819C18.511 10.1269 18.511 9.4479 18.467 8.7919C18.3616 7.17364 17.6716 5.64887 16.5254 4.50161C15.3793 3.35436 13.8552 2.66285 12.237 2.5559C11.0805 2.48137 9.92047 2.48137 8.764 2.5559C7.1454 2.66262 5.6208 3.35413 4.47425 4.50159C3.32771 5.64906 2.63742 7.17422 2.532 8.7929C2.48795 9.4555 2.48795 10.1203 2.532 10.7829C2.612 12.0029 3.159 13.1319 3.802 14.0849C4.176 14.7529 3.929 15.5859 3.54 16.3149C3.26 16.8389 3.12 17.1009 3.232 17.2909C3.345 17.4809 3.596 17.4859 4.1 17.4989C5.095 17.5229 5.766 17.2439 6.299 16.8559C6.601 16.6359 6.752 16.5259 6.856 16.5139C6.96 16.5019 7.166 16.5839 7.576 16.7509C7.944 16.9009 8.371 16.9929 8.764 17.0189C9.903 17.0939 11.094 17.0939 12.237 17.0189Z" stroke="#4B5563" stroke-width="1.5" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <h3 style="margin-top: -4px;">퀴즈</h3>
+                </div>
+            </div>
+        </div>
+    </a>
+</section>
+
+<!-- 공지사항 -->
+<section class="notice-event">
+    <div class="notice">
+        <div class="notice-header">
+            <h3>공지 / 새 소식</h3>
+            <a th:href="@{/cs/data_room/trust}">전체보기</a>
+        </div>
+        <ul>
+            <li th:each="doc : ${latestDocs}">
+                <!-- 날짜: docupdate 사용 -->
+                <span class="date"
+                      th:text="${#temporals.format(doc.docupdate, 'yyyy.MM.dd')}">
+          2025.11.13
+        </span>
+
+                <!-- 제목: doctitle 사용 -->
+                <span class="title" th:text="${doc.doctitle}">
+          문서 제목
+        </span>
+
+                <!-- 내용/요약: doccontent 사용 -->
+                <p th:text="${doc.doccontent}">
+                    문서 내용 요약
+                </p>
+            </li>
+        </ul>
+    </div>
+
+    <!-- 이벤트 -->
+    <div class="event">
+        <div class="event-header">
+            <h3>부기은행 APP</h3>
+        </div>
+
+        <div class="app-grid">
+            <div class="app-item">
+                <img th:src="@{/images/bnk_app_logo.png}" alt="iM은행">
+                <span>부기은행</span>
+            </div>
+
+            <div class="app-item">
+                <img th:src="@{/images/bnk_app_cor_logo.png}" alt="iM은행 기업">
+                <span>부기은행 기업</span>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+<!--푸터-->
+<div th:replace="~{layouts/footer}"></div>
+</body>
+</html>
+<script>
+    // header 불러오기
+    fetch(`/layouts/header.html`)
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('header').innerHTML = data;
+        })
+        .catch(err => console.error('[Header load failed]', err));
+
+    // chatbot import 기능
+    async function importHtmlWithAssets(url, mountSelector) {
+        try {
+            const res = await fetch(url, { credentials: 'same-origin' });
+            if (!res.ok) throw new Error(`Failed to load ${url}`);
+            const html = await res.text();
+
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+
+            doc.querySelectorAll('link[rel="stylesheet"]').forEach(link => {
+                const href = link.getAttribute('href');
+                const exists = [...document.head.querySelectorAll('link[rel="stylesheet"]')]
+                    .some(l => l.getAttribute('href') === href);
+                if (!exists && href) document.head.appendChild(link.cloneNode(true));
+            });
+
+            doc.querySelectorAll('style').forEach(styleEl => {
+                const clone = document.createElement('style');
+                clone.textContent = styleEl.textContent;
+                [...styleEl.attributes].forEach(a => clone.setAttribute(a.name, a.value));
+                document.head.appendChild(clone);
+            });
+
+            const mount = document.querySelector(mountSelector);
+            const frag = document.createDocumentFragment();
+            [...doc.body.children].forEach(node => {
+                if (node.tagName.toLowerCase() !== 'script') frag.appendChild(node.cloneNode(true));
+            });
+            mount.appendChild(frag);
+
+            const scripts = [...doc.querySelectorAll('script')];
+            for (const oldScript of scripts) {
+                const newScript = document.createElement('script');
+                [...oldScript.attributes].forEach(attr => newScript.setAttribute(attr.name, attr.value));
+                if (oldScript.th:src) {
+                    await new Promise(resolve => {
+                        newScript.onload = resolve;
+                        newScript.onerror = resolve;
+                        document.body.appendChild(newScript);
+                    });
+                } else {
+                    newScript.textContent = oldScript.textContent || '';
+                    document.body.appendChild(newScript);
+                }
+            }
+        } catch (err) {
+            console.error('[Chatbot load failed]', err);
+        }
+    }
+
+    // chatbot 불러오기
+    importHtmlWithAssets('/components/chatbot_test.html', '#bnk-chatbot-slot');
+
+    // footer 불러오기
+    fetch(`/layouts/footer.html`)
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('footer').innerHTML = data;
+        })
+        .catch(err => console.error('[Footer load failed]', err));
+
+</script>
+
+<script>
+    async function searchProducts(){
+        const input = document.querySelector('.search-inner input');
+        const keyword = input.value.trim();
+        if(!keyword) {
+            alert('검색어를 입력하세요');
+            input.focus();
+            return;
+        }
+
+        let res;
+
+        try{
+            res = await fetch(`/BNK/main/search?keyword=${encodeURIComponent(keyword)}`);
+        } catch (e){
+            console.error(e);
+            alert('검색 중 오류가 발생했습니다.');
+            return;
+        }
+
+        if(!res.ok){
+            alert('검색 요청에 실패했습니다');
+            return;
+        }
+
+        const data = await res.json();
+
+        const resultArea = document.querySelector('#search-result-area');
+        resultArea.innerHTML='';
+
+        if(!data || data.length === 0){
+            resultArea.innerHTML = `<p class="no-result">검색 결과가 없습니다.</p>`;
+            return;
+        }
+
+        const resultHtml = `
+    <div class="search-results">
+      <h3>검색 결과 (${data.length}개)</h3>
+      <ul>
+        ${data.map(p => `
+          <li>
+            <strong>${p.pname}</strong> (${p.ptype})<br>
+            <small>기본금리: ${p.pbirate}% / 최고금리: ${p.phirate}%</small>
+          </li>
+        `).join('')}
+      </ul>
+    </div>
+`;
+        resultArea.innerHTML = resultHtml;
+    }
+
+    // 버튼 클릭 시 검색
+    document.addEventListener('DOMContentLoaded', () => {
+        const btn = document.querySelector('.search-btn');
+        const input = document.querySelector('.search-inner input');
+
+        if (btn) {
+            btn.addEventListener('click', searchProducts);
+        }
+
+        // 인풋에서 Enter 치면 검색
+        if (input) {
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    searchProducts();
+                }
+            });
+        }
+    });
+</script>
+
+<script>
+    const slides = document.querySelectorAll('.banner-slide');
+    const dots   = document.querySelectorAll('.banner-dot');
+    const prevBtn = document.querySelector('.banner-arrow.prev');
+    const nextBtn = document.querySelector('.banner-arrow.next');
+    const banner  = document.querySelector('.banner');
+
+    let currentIndex = 0;
+    let timer = null;
+
+    function showSlide(index) {
+        if (slides.length === 0) return;
+
+        currentIndex = (index + slides.length) % slides.length;
+
+        slides.forEach((slide, i) => {
+            slide.classList.toggle('active', i === currentIndex);
+        });
+        dots.forEach((dot, i) => {
+            dot.classList.toggle('active', i === currentIndex);
+        });
+    }
+
+    function nextSlide() {
+        showSlide(currentIndex + 1);
+    }
+
+    function prevSlide() {
+        showSlide(currentIndex - 1);
+    }
+
+    function startAuto() {
+        if (timer) clearInterval(timer);
+        timer = setInterval(nextSlide, 5000); // 5초마다 자동 슬라이드
+    }
+
+    function stopAuto() {
+        if (timer) clearInterval(timer);
+        timer = null;
+    }
+
+    // 버튼 이벤트
+    if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+            nextSlide();
+            startAuto();
+        });
+    }
+
+    if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+            prevSlide();
+            startAuto();
+        });
+    }
+
+    // 도트 클릭 이벤트
+    dots.forEach((dot, idx) => {
+        dot.addEventListener('click', () => {
+            showSlide(idx);
+            startAuto();
+        });
+    });
+
+    // 배너 위에 마우스 올리면 자동 롤링 멈추기
+    if (banner) {
+        banner.addEventListener('mouseenter', stopAuto);
+        banner.addEventListener('mouseleave', startAuto);
+    }
+
+    // 초기 실행
+    if (slides.length > 0) {
+        showSlide(0);
+        startAuto();
+    }
+</script>
+<script>
+    // 토스트 관련
+    document.addEventListener('DOMContentLoaded', function () {
+        const loginToast = document.getElementById('loginToast');
+        if (loginToast) {
+            setTimeout(function () {
+                loginToast.classList.remove('show');
+            }, 5000);
+        }
+    });
+</script>

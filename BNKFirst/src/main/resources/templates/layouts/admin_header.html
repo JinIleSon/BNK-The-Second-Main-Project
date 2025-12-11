@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>admin_header</title>
+  <link rel="stylesheet" th:href="@{/components/button.css}">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* 🔹 햄버거 버튼 고정 */
+    .hamburger {
+      position: fixed;
+      top: 29px;
+      left: 15px;
+      width: 35px;
+      height: 25px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      cursor: pointer;
+      border: none;
+      background: none;
+      padding: 0;
+      z-index: 1001;
+    }
+
+    .hamburger span {
+      display: block;
+      height: 4px;
+      width: 100%;
+      background: #333;
+      border-radius: 2px;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* 🔹 햄버거 → X 변환 */
+    .hamburger.active span:nth-child(1) {
+      transform: rotate(45deg) translate(6.5px, 8px);
+    }
+
+    .hamburger.active span:nth-child(2) {
+      opacity: 0;
+    }
+
+    .hamburger.active span:nth-child(3) {
+      transform: rotate(-45deg) translate(7px, -8px);
+    }
+
+    /* 🔹 사이드바 (기본 숨김 상태) */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: -280px;
+      width: 280px;
+      height: 100vh;
+      background-color: #fff;
+      box-shadow: 3px 0 15px rgba(0,0,0,0.2);
+      transition: left 0.5s ease-in-out;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* 🔹 열렸을 때 */
+    .sidebar.active {
+      left: 0;
+    }
+
+    /* 🔹 사이드바 헤더 */
+    .sidebar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 20px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .sidebar-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin-left: 50px;
+    }
+    .sidebar-title p {
+      font-size: 12px;
+      font-weight: initial;
+      margin-top: 1px;
+    }
+
+
+    /* 🔹 메뉴 리스트 */
+    .sidebar-menu {
+      list-style: none;
+      margin: 0;
+      padding: 10px 20px;
+    }
+
+    .sidebar-menu li {
+      padding: 12px 10px;
+      margin: 10px 0;
+      cursor: pointer;
+      transition: background 0.2s;
+      border-radius: 10px;
+      color: #5B6270;
+      display: flex;
+      align-items: center;
+    }
+    .sidebar-menu li svg {
+      margin-right: 10px;
+      transform: translateY(1px);
+    }
+
+    
+    .sidebar-menu li:hover {
+      background-color: #D81921;
+      color: white;
+    }
+    .sidebar-menu li:hover svg path {
+      fill: #FFFFFF;
+      transition: fill 0.2s;
+    }
+    
+    /* 현재 페이지 메뉴 강조 */
+    .sidebar-menu li.selected {
+      background-color: #D81921;
+      color: white;
+    }
+    .sidebar-menu li.selected svg path {
+      fill: #FFFFFF;
+    }
+
+    /* 🔹 본문 */
+    main {
+      padding: 60px 20px;
+    }
+    
+  </style>
+</head>
+<body>
+
+  <!-- 햄버거 버튼 -->
+  <button class="hamburger" aria-label="메뉴 열기">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+
+  <!-- 사이드바 -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-title">
+          <a th:href="@{/main/main}">
+              <img th:src="@{/images/BNK_english.png}"
+                   alt=""
+                   style="width:80px; height:25px; margin-top: 11px;">
+          </a>
+        <p>부산은행 관리자시스템</p>
+      </div>
+    </div>
+    <ul class="sidebar-menu">
+        <a th:href="@{/admin/main}" style="text-decoration: none;">
+          <li data-key="home" class="selected">
+            <svg width="23" height="22" viewBox="0 0 23 22" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-left: 0.2px; margin-right: 11.5px;">
+              <path d="M0 22V7.33333L11.5 0L23 7.33333V22H14.375V13.4444H8.625V22H0Z" fill="black"/>
+            </svg>
+            관리자 메인
+          </li>
+        </a>
+        <a th:href="@{/admin/env}" style="text-decoration: none;">
+          <li data-key="env">
+            <svg width="25" height="25" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M9.0796 25L8.58209 21C8.31261 20.8958 8.05887 20.7708 7.8209 20.625C7.58292 20.4792 7.3495 20.3229 7.12065 20.1562L3.4204 21.7188L0 15.7812L3.20274 13.3438C3.18201 13.1979 3.17164 13.0575 3.17164 12.9225V12.0788C3.17164 11.9429 3.18201 11.8021 3.20274 11.6562L0 9.21875L3.4204 3.28125L7.12065 4.84375C7.34867 4.67708 7.58707 4.52083 7.83582 4.375C8.08458 4.22917 8.33333 4.10417 8.58209 4L9.0796 0H15.9204L16.4179 4C16.6874 4.10417 16.9415 4.22917 17.1803 4.375C17.4192 4.52083 17.6522 4.67708 17.8794 4.84375L21.5796 3.28125L25 9.21875L21.7973 11.6562C21.818 11.8021 21.8284 11.9429 21.8284 12.0788V12.9212C21.8284 13.0571 21.8076 13.1979 21.7662 13.3438L24.9689 15.7812L21.5485 21.7188L17.8794 20.1562C17.6513 20.3229 17.4129 20.4792 17.1642 20.625C16.9154 20.7708 16.6667 20.8958 16.4179 21L15.9204 25H9.0796ZM12.5622 16.875C13.7645 16.875 14.7906 16.4479 15.6405 15.5938C16.4905 14.7396 16.9154 13.7083 16.9154 12.5C16.9154 11.2917 16.4905 10.2604 15.6405 9.40625C14.7906 8.55208 13.7645 8.125 12.5622 8.125C11.3391 8.125 10.3076 8.55208 9.46766 9.40625C8.6277 10.2604 8.20813 11.2917 8.20896 12.5C8.20979 13.7083 8.62977 14.7396 9.46891 15.5938C10.308 16.4479 11.3391 16.875 12.5622 16.875Z" fill="black"/>
+            </svg>
+            환경설정
+          </li>
+        </a>
+        <a th:href="@{/admin/prod}" style="text-decoration: none;">
+          <li data-key="product">
+            <svg width="26" height="26" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right: 8px; margin-left: 1.2px;">
+              <path d="M17.1906 4.68742V3.64575H15.1073V5.72909H4.68854V3.64575H2.60521V4.68742H1.5625V23.4426H2.60417V24.4843H16.149V23.4426H15.1073V22.401H16.149V21.3593H15.1073V19.2749H16.149V18.2333H15.1073V17.1916H16.149V16.1499H17.1906V15.1072H18.2323V4.68846L17.1906 4.68742ZM13.024 19.2749H8.85625V17.1916H13.0229L13.024 19.2749ZM13.024 22.3999H3.64583V21.3583H13.024V22.3999ZM3.64583 8.85721H4.6875V9.89888H5.72917V8.85721H6.77187V7.81554H7.81354V8.85721H6.77187V9.89888H5.72917L5.73021 10.9405H4.68854L4.6875 9.89888H3.64687L3.64583 8.85721ZM3.64583 13.0239H4.6875V14.0655H5.72917V13.0239H6.77187V11.9822H7.81354V13.0239H6.77187V14.0655H5.72917L5.73021 15.1083H4.68854V14.0666H3.64687L3.64583 13.0239ZM4.6875 17.1916V18.2333H5.72917V17.1916H6.77187V16.1499H7.81354V17.1916H6.77187V18.2333H5.72917L5.73021 19.2749H4.68854L4.6875 18.2333H3.64687V17.1916H4.6875ZM16.149 14.0666H15.1073V15.1083H8.85625V13.0249H16.149V14.0666ZM16.149 10.9416H8.85625V8.85513H16.149V10.9416Z" fill="black"/>
+              <path d="M24.4843 18.2323V17.1906H23.4427V16.149H22.401V17.1906H21.3593V16.149H19.275V17.1906H18.2333V16.149H17.1916V17.1906H16.15V18.2323H17.1916V19.274H16.15V21.3583H17.1916V22.4H16.15V23.4417H17.1916V24.4833H18.2333V23.4417H19.275V24.4833H21.3583V23.4417H22.4V24.4833H23.4416V23.4417H24.4843V22.4H23.4427V21.3583H24.4843V19.275H23.4427V18.2333L24.4843 18.2323ZM21.3593 21.3583H19.275V19.275H21.3583L21.3593 21.3583ZM14.0656 2.60417V4.6875H5.72913V2.60417H6.77079V1.5625H13.0218V2.60417H14.0656Z" fill="black"/>
+            </svg>
+            은행 상품 관리
+          </li>
+        </a>
+        <a th:href="@{/admin/member}" style="text-decoration: none;">
+          <li data-key="member">
+            <svg width="26" height="24" viewBox="0 0 19 19" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right: 10px; margin-left: 1px;">
+              <path d="M9.33333 0C10.571 0 11.758 0.491665 12.6332 1.36683C13.5083 2.242 14 3.42899 14 4.66667C14 5.90434 13.5083 7.09133 12.6332 7.9665C11.758 8.84167 10.571 9.33333 9.33333 9.33333C8.09566 9.33333 6.90867 8.84167 6.0335 7.9665C5.15833 7.09133 4.66667 5.90434 4.66667 4.66667C4.66667 3.42899 5.15833 2.242 6.0335 1.36683C6.90867 0.491665 8.09566 0 9.33333 0ZM9.33333 11.6667C14.49 11.6667 18.6667 13.755 18.6667 16.3333V18.6667H0V16.3333C0 13.755 4.17667 11.6667 9.33333 11.6667Z" fill="black"/>
+            </svg>
+            회원 관리
+          </li>
+        </a>
+        <a th:href="@{/admin/cs}" style="text-decoration: none;">
+          <li data-key="cs">
+            <svg width="26" height="24" viewBox="0 0 22 20" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-left:1px;">
+              <path d="M18.1133 12.8275C18.4925 11.9067 18.6983 10.9208 18.6983 9.83749C18.6983 9.05749 18.5792 8.30999 18.3733 7.61665C17.6692 7.77915 16.9325 7.86582 16.1633 7.86582C14.5881 7.86751 13.0356 7.49047 11.6367 6.76648C10.2377 6.04249 9.0333 4.99277 8.125 3.70582C7.15429 6.05745 5.32103 7.94885 3.00083 8.99249C2.9575 9.26332 2.9575 9.55582 2.9575 9.83749C2.9575 10.8718 3.16121 11.8959 3.55701 12.8514C3.95281 13.807 4.53294 14.6752 5.26428 15.4065C6.74128 16.8835 8.74453 17.7133 10.8333 17.7133C11.9708 17.7133 13.065 17.4642 14.0508 17.02C14.6683 18.2008 14.95 18.7858 14.9283 18.7858C13.1517 19.3817 11.7758 19.6742 10.8333 19.6742C8.21167 19.6742 5.70917 18.645 3.8675 16.7925C2.7463 15.6766 1.91346 14.3046 1.44083 12.795H0V7.86582H1.18083C1.53859 6.12438 2.36112 4.51226 3.56112 3.20054C4.76113 1.88882 6.29385 0.926428 7.99666 0.415475C9.69946 -0.0954777 11.5088 -0.135927 13.2328 0.298419C14.9567 0.732765 16.5309 1.6257 17.7883 2.88249C19.1531 4.2427 20.0842 5.97679 20.4642 7.86582H21.6667V12.795H21.6017L17.745 16.3375L12.0033 15.6875V13.8783H17.2358L18.1133 12.8275ZM7.87583 9.58832C8.20083 9.58832 8.515 9.71832 8.7425 9.95665C8.97113 10.1872 9.09942 10.4987 9.09942 10.8233C9.09942 11.148 8.97113 11.4595 8.7425 11.69C8.515 11.9175 8.20083 12.0475 7.87583 12.0475C7.19333 12.0475 6.64083 11.5058 6.64083 10.8233C6.64083 10.1408 7.19333 9.58832 7.87583 9.58832ZM13.78 9.58832C14.4625 9.58832 15.0042 10.1408 15.0042 10.8233C15.0042 11.5058 14.4625 12.0475 13.78 12.0475C13.0975 12.0475 12.545 11.5058 12.545 10.8233C12.545 10.4958 12.6751 10.1817 12.9067 9.95004C13.1383 9.71844 13.4525 9.58832 13.78 9.58832Z" fill="black"/>
+            </svg>
+            고객센터 관리
+          </li>
+        </a>
+
+    </ul>
+  </aside>
+
+  <!-- 본문 -->
+
+  <script>
+    (function () {
+    const hamburger = document.querySelector('.hamburger');
+    const sidebar   = document.querySelector('.sidebar');
+    let currentSel  = sidebar.querySelector('li.selected');
+
+    // 열고 닫기
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('active');
+      sidebar.classList.toggle('active');
+    });
+    document.addEventListener('click', (e) => {
+      if (sidebar.classList.contains('active') &&
+          !sidebar.contains(e.target) &&
+          !hamburger.contains(e.target)) {
+        sidebar.classList.remove('active');
+        hamburger.classList.remove('active');
+      }
+    });
+
+    // ✅ 현재 페이지에 맞게 활성 메뉴를 바꾸는 공개 함수
+    window.initAdminHeader = function (activeKey) {
+      const next = sidebar.querySelector(`li[data-key="${activeKey}"]`);
+      if (!next) return;
+      currentSel?.classList.remove('selected');
+      next.classList.add('selected');
+      currentSel = next;
+    };
+  })();
+  </script>
+
+</body>
+</html>

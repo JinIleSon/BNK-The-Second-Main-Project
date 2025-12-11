@@ -1,0 +1,1272 @@
+<!--
+이름: 전세현
+날짜: 2025-11-21
+내용: 관리자페이지 고객센터 관리페이지
+-->
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>admin_cs</title>
+    <style>
+        /* 이 클래스가 붙은 input의 placeholder만 색 변경 */
+        .input--ph-gray::placeholder { color: #ADAEBC; opacity: 1; } /* 표준 */
+        .input--ph-gray::-webkit-input-placeholder { color: #ADAEBC; } /* Safari/옛 크롬 */
+        .input--ph-gray::-moz-placeholder { color: #ADAEBC; opacity: 1; } /* Firefox */
+        .input--ph-gray:-ms-input-placeholder { color: #ADAEBC; } /* IE10-11 */
+        .input--ph-gray::-ms-input-placeholder { color: #ADAEBC; } /* 옛 Edge */
+    </style>
+    <style>
+        .btn-register {
+            --bg1: #D91A1A;
+            --bg2: #F03A3A;
+            --shadow: rgba(217,26,26,.45);
+            position: relative;
+            box-sizing: border-box;
+            width: 90px; height: 42px;
+            border: none; border-radius: 8px;
+            color: #fff; cursor: pointer;
+            background: linear-gradient(180deg, var(--bg2), var(--bg1));
+            outline: none;
+            box-shadow: 0 6px 14px -10px var(--shadow);
+            transition:
+                    background .18s ease,
+                    box-shadow .18s ease,
+                    transform .12s ease; /* 프레스만 사용할 예정 */
+            will-change: background, box-shadow, transform;
+        }
+
+        /* Hover: 컬러와 섀도우만 아주 미세하게 (리프트 없음) */
+        .btn-register:hover {
+            background: linear-gradient(180deg, #f24a4a, #d61a1a);
+            box-shadow: 0 8px 18px -12px var(--shadow);
+            transform: none; /* 확실하게 떠오르지 않도록 고정 */
+        }
+
+        /* Active: 살짝 눌리는 프레스 효과만 */
+        .btn-register:active {
+            transform: scale(.98);
+            box-shadow: 0 4px 10px -10px var(--shadow);
+        }
+
+        /* 키보드 포커스 접근성 */
+        .btn-register:focus-visible {
+            outline: 3px solid rgba(240,58,58,.55);
+            outline-offset: 2px;
+        }
+
+        /* 모션 최소화 존중 */
+        @media (prefers-reduced-motion: reduce) {
+            .btn-register { transition: none !important; }
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .btn-register { --shadow: rgba(240,58,58,.35); }
+        }
+
+        .pager { gap: 8px; }
+        .page-btn{
+            width:42px; height:40px; border-radius:8px;
+            border:1px solid transparent;
+            background:#F6F6F8; color:#2B2F36; font-size:16px;
+            display:flex; align-items:center; justify-content:center;
+            cursor:pointer; transition:background .15s ease, box-shadow .15s ease, border-color .15s ease, color .15s ease;
+        }
+        .page-btn:hover{
+            background:#FFFFFF;
+            border-color:#E5E7EB;
+            box-shadow:0 2px 8px rgba(0,0,0,.05);
+        }
+        .page-btn.is-active,
+        .page-btn[aria-current="page"]{
+            background:#FFFFFF;
+            color:#D91A1A;
+            border-color:#D91A1A;
+            box-shadow:0 2px 8px rgba(217,26,26,.08);
+            font-weight:600;
+        }
+        .page-btn:focus-visible{
+            outline:none;
+            box-shadow:0 0 0 3px rgba(217,26,26,.2);
+        }
+        /* 아이콘 색 */
+        .page-btn svg path{ fill:#2B2F36; transition:opacity .15s ease, fill .15s ease; }
+        .page-btn:hover svg path{ opacity:.9; }
+        /* 비활성화가 필요할 경우 */
+        .page-btn.is-disabled{ opacity:.4; pointer-events:none; }
+    </style>
+    <!-- 소분류 버튼 공통 스타일 -->
+    <style>
+        .sub-btn {
+            min-width: 130px;
+            height: 38px;
+            padding: 0 12px;
+            border-radius: 999px;
+            border: 1px solid #E5E7EB;
+            background-color: #F9FAFB;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .sub-btn:hover {
+            background-color: #EEF2FF;
+            border-color: #D91A1A;
+            color: #D91A1A;
+        }
+
+        /* ✅ 클릭해서 선택된 소분류(활성 상태) */
+        .sub-btn.is-active-sub {
+            background-color: #D91A1A;
+            border-color: #D91A1A;
+            color: #FFFFFF;
+            font-weight: 500;
+        }
+    </style>
+    <style>
+        /* 전체 박스 느낌 */
+        .admin-cs-table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+            background: #FFFFFF;
+            font-size: 14px;
+            color: #374151;
+        }
+
+        /* 헤더 영역 */
+        .admin-cs-table thead tr {
+            background: #F9FAFB;
+            border-top: 3px solid #D91A1A;   /* 상단 레드 라인 */
+            border-bottom: 1px solid #E5E7EB;
+        }
+        .admin-cs-table thead th {
+            padding: 12px 16px;
+            font-weight: 600;
+            text-align: center;
+            color: #111827;
+        }
+
+        /* 바디 행 & 셀 */
+        .admin-cs-table tbody tr {
+            border-bottom: 1px solid #E5E7EB;
+            height: 52px;
+        }
+        .admin-cs-table tbody tr:last-child {
+            border-bottom: none;
+        }
+        .admin-cs-table tbody tr:hover {
+            background: #F9FAFB;
+        }
+
+        .admin-cs-table tbody td {
+            padding: 10px 16px;
+            text-align: center;
+            vertical-align: middle;
+            word-break: keep-all;
+        }
+
+        /* 번호 / 제목 / 날짜 / 첨부파일 컬럼 정렬 */
+        .admin-cs-table .cell-no {
+            width: 60px;
+        }
+        .admin-cs-table .cell-title {
+            text-align: left;
+        }
+        .admin-cs-table .cell-date {
+            width: 140px;
+        }
+        .admin-cs-table .cell-file {
+            width: 80px;
+        }
+
+        /* 비어있을 때 메시지 */
+        .admin-cs-table .cell-empty {
+            text-align: center;
+            padding: 20px 0;
+            color: #9CA3AF;
+            font-size: 13px;
+        }
+
+        /* 첨부파일 버튼 (아이콘) */
+        .admin-cs-table .file-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 999px;
+            border: 1px solid #D1D5DB;
+            background: #FFFFFF;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background .15s ease, border-color .15s ease, transform .1s ease;
+        }
+        .admin-cs-table .file-btn i {
+            font-size: 14px;
+            color: #374151;
+        }
+        .admin-cs-table .file-btn:hover {
+            background: #F3F4F6;
+            border-color: #9CA3AF;
+            transform: translateY(-1px);
+        }
+    </style> <style>
+    /* 전체 박스 느낌 */
+    .admin-cs-table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+        background: #FFFFFF;
+        font-size: 14px;
+        color: #374151;
+    }
+
+    /* 헤더 영역 */
+    .admin-cs-table thead tr {
+        background: #F9FAFB;
+        border-top: 3px solid #D91A1A;   /* 상단 레드 라인 */
+        border-bottom: 1px solid #E5E7EB;
+    }
+    .admin-cs-table thead th {
+        padding: 12px 16px;
+        font-weight: 600;
+        text-align: center;
+        color: #111827;
+    }
+
+    /* 바디 행 & 셀 */
+    .admin-cs-table tbody tr {
+        border-bottom: 1px solid #E5E7EB;
+        height: 52px;
+    }
+    .admin-cs-table tbody tr:last-child {
+        border-bottom: none;
+    }
+    .admin-cs-table tbody tr:hover {
+        background: #F9FAFB;
+    }
+
+    .admin-cs-table tbody td {
+        padding: 10px 16px;
+        text-align: center;
+        vertical-align: middle;
+        word-break: keep-all;
+    }
+
+    /* 번호 / 제목 / 날짜 / 첨부파일 컬럼 정렬 */
+    .admin-cs-table .cell-no {
+        width: 60px;
+    }
+    .admin-cs-table .cell-title {
+        text-align: left;
+    }
+    .admin-cs-table .cell-date {
+        width: 140px;
+    }
+    .admin-cs-table .cell-file {
+        width: 80px;
+    }
+
+    /* 비어있을 때 메시지 */
+    .admin-cs-table .cell-empty {
+        text-align: center;
+        padding: 20px 0;
+        color: #9CA3AF;
+        font-size: 13px;
+    }
+
+    /* 첨부파일 버튼 (아이콘) */
+    .admin-cs-table .file-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: 999px;
+        border: 1px solid #D1D5DB;
+        background: #FFFFFF;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background .15s ease, border-color .15s ease, transform .1s ease;
+    }
+    .admin-cs-table .file-btn i {
+        font-size: 14px;
+        color: #374151;
+    }
+    .admin-cs-table .file-btn:hover {
+        background: #F3F4F6;
+        border-color: #9CA3AF;
+        transform: translateY(-1px);
+    }
+</style> <style>
+    /* 전체 박스 느낌 */
+    .admin-cs-table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+        background: #FFFFFF;
+        font-size: 14px;
+        color: #374151;
+    }
+
+    /* 헤더 영역 */
+    .admin-cs-table thead tr {
+        background: #F9FAFB;
+        border-top: 3px solid #D91A1A;   /* 상단 레드 라인 */
+        border-bottom: 1px solid #E5E7EB;
+    }
+    .admin-cs-table thead th {
+        padding: 12px 16px;
+        font-weight: 600;
+        text-align: center;
+        color: #111827;
+    }
+
+    /* 바디 행 & 셀 */
+    .admin-cs-table tbody tr {
+        border-bottom: 1px solid #E5E7EB;
+        height: 52px;
+    }
+    .admin-cs-table tbody tr:last-child {
+        border-bottom: none;
+    }
+    .admin-cs-table tbody tr:hover {
+        background: #F9FAFB;
+    }
+
+    .admin-cs-table tbody td {
+        padding: 10px 16px;
+        text-align: center;
+        vertical-align: middle;
+        word-break: keep-all;
+    }
+
+    /* 번호 / 제목 / 날짜 / 첨부파일 컬럼 정렬 */
+    .admin-cs-table .cell-no {
+        width: 60px;
+    }
+    .admin-cs-table .cell-title {
+        text-align: left;
+    }
+    .admin-cs-table .cell-date {
+        width: 140px;
+    }
+    .admin-cs-table .cell-file {
+        width: 80px;
+    }
+
+    /* 비어있을 때 메시지 */
+    .admin-cs-table .cell-empty {
+        text-align: center;
+        padding: 20px 0;
+        color: #9CA3AF;
+        font-size: 13px;
+    }
+
+    /* 첨부파일 버튼 (아이콘) */
+    .admin-cs-table .file-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: 999px;
+        border: 1px solid #D1D5DB;
+        background: #FFFFFF;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background .15s ease, border-color .15s ease, transform .1s ease;
+    }
+    .admin-cs-table .file-btn i {
+        font-size: 14px;
+        color: #374151;
+    }
+    .admin-cs-table .file-btn:hover {
+        background: #F3F4F6;
+        border-color: #9CA3AF;
+        transform: translateY(-1px);
+    }
+</style>
+    <style>
+        /* 헤더 우측에 붙는 작은 등록 버튼 */
+        .btn-register--small {
+            --bg1: #D91A1A;
+            --bg2: #F03A3A;
+            --shadow: rgba(217,26,26,.45);
+            position: relative;
+            box-sizing: border-box;
+            width: 30px;
+            height: 32px;
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            cursor: pointer;
+            background: linear-gradient(180deg, var(--bg2), var(--bg1));
+            outline: none;
+            box-shadow: 0 6px 14px -10px var(--shadow);
+            transition:
+                    background .18s ease,
+                    box-shadow .18s ease,
+                    transform .12s ease;
+            will-change: background, box-shadow, transform;
+
+            /* ★ 추가: 내부 텍스트 중앙 정렬 */
+            display: flex;
+            align-items: center;     /* 세로 중앙 */
+            justify-content: center; /* 가로 중앙 */
+        }
+
+
+        /* Hover: 컬러와 섀도우만 아주 미세하게 (리프트 없음) */
+        .btn-register--small:hover {
+            background: linear-gradient(180deg, #f24a4a, #d61a1a);
+            box-shadow: 0 8px 18px -12px var(--shadow);
+            transform: none; /* 확실하게 떠오르지 않도록 고정 */
+        }
+
+        /* Active: 살짝 눌리는 프레스 효과만 */
+        .btn-register--small:active {
+            transform: scale(.98);
+            box-shadow: 0 4px 10px -10px var(--shadow);
+        }
+
+        /* 키보드 포커스 접근성 */
+        .btn-register--small:focus-visible {
+            outline: 3px solid rgba(240,58,58,.55);
+            outline-offset: 2px;
+        }
+
+        /* 행별 수정/삭제 버튼 */
+        .row-action-btn {
+            min-width: 52px;
+            height: 30px;
+            padding: 0 10px;
+            margin: 0 2px;
+            border-radius: 999px;
+            border: 1px solid #D1D5DB;
+            background-color: #FFFFFF;
+            font-size: 12px;
+            color: #4B5563;
+            cursor: pointer;
+            transition: background .12s ease, color .12s ease, border-color .12s ease;
+        }
+        .row-action-btn:hover {
+            border-color: #D91A1A;
+            color: #D91A1A;
+            background-color: #FDF2F2;
+        }
+    </style>
+    <style>
+        /* 검색창 안 대분류 필터 탭 영역 */
+        .cs-search-tabs {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .cs-search-tab {
+            position: relative;
+            cursor: pointer;
+        }
+
+        /* 실제 라디오 버튼 숨기기 */
+        .cs-search-tab input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* 기본 필터칩 모양 */
+        .cs-search-tab-label {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 90px;
+            height: 32px;
+            padding: 0 14px;
+            border-radius: 999px;
+            border: 1px solid #E5E7EB;
+            font-size: 13px;
+            color: #374151;
+            background: #F9FAFB;
+            transition: background .12s ease, color .12s ease,
+            border-color .12s ease, box-shadow .12s ease;
+        }
+
+        /* 선택된 필터칩(활성) – 살짝만 강조 */
+        .cs-search-tab--active .cs-search-tab-label {
+            background: #D91A1A;
+            color: #FFFFFF;
+            border-color: #D91A1A;
+            box-shadow: 0 1px 3px rgba(217, 26, 26, 0.25);
+            font-weight: 500;
+        }
+    </style>
+
+</head>
+<body>
+  <header>
+      <div th:replace="~{layouts/admin_header.html}"></div>
+  </header>
+
+  <main style="background-color: #F6F6F8; justify-content: center;">
+    <div style="width: 1200px; margin: 0 auto;">
+      <div>
+        <div style="font-size: 24px; color: #4B5563; margin-bottom: 20px">고객센터 관리</div>
+        <div style="display: flex;">
+          <div style="font-size: 16px; color: #4B5563;">고객센터(FAQ,필요서류,Q&A,영업점), 퇴직연금서식(DB(확정급여형),DC(확정기여형),개인형IRP,기업형IRP),<br>
+              퇴직연금자료(자료실,소규모펀드등공시,공지사항,퇴직연금계약서) 게시판을 등록하고 관리합니다.</div>
+          <div style="margin-left: auto; display: flex; justify-content: center; align-items: center; font-size: 14px; background-color: white; width: 165px; height: 40px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); border: 1px solid #E5E7EB;">
+            <div style="display: flex; align-items: center;">
+              <svg width="20" height="16" viewBox="0 0 20 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <g clip-path="url(#clip0_194_44)">
+                <path d="M7 8C8.06087 8 9.07828 7.57857 9.82843 6.82843C10.5786 6.07828 11 5.06087 11 4C11 2.93913 10.5786 1.92172 9.82843 1.17157C9.07828 0.421427 8.06087 0 7 0C5.93913 0 4.92172 0.421427 4.17157 1.17157C3.42143 1.92172 3 2.93913 3 4C3 5.06087 3.42143 6.07828 4.17157 6.82843C4.92172 7.57857 5.93913 8 7 8ZM5.57188 9.5C2.49375 9.5 0 11.9937 0 15.0719C0 15.5844 0.415625 16 0.928125 16H13.0719C13.1281 16 13.1813 15.9938 13.2375 15.9844C10.8531 14.2625 10.1187 11.5781 10.0156 9.72812C9.5125 9.57812 8.98125 9.5 8.43125 9.5H5.57188ZM15.2219 7.05312L11.4719 8.55313C11.1875 8.66875 11 8.94375 11 9.25C11 11.2281 11.8094 14.525 15.2125 15.9438C15.3969 16.0219 15.6062 16.0219 15.7906 15.9438C19.1906 14.525 20 11.2281 20 9.25C20 8.94375 19.8125 8.66875 19.5281 8.55313L15.7781 7.05312C15.6 6.98125 15.4 6.98125 15.2219 7.05312ZM18.4813 9.75C18.3594 11.3344 17.6312 13.3969 15.5 14.4281V8.55625L18.4813 9.75Z" fill="#E6002D"/>
+                </g>
+                <defs>
+                <clipPath id="clip0_194_44">
+                <path d="M0 0H20V16H0V0Z" fill="white"/>
+                </clipPath>
+                </defs>
+              </svg>
+              <div style="margin-left: 10px;">관리자: Admin</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+        <!-- 🔍 검색 + 대분류 탭 필터 -->
+        <div style="margin-top:25px; padding:30px; padding-top: 25px; box-sizing: border-box;
+            background-color: white; width: 100%;  border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); border: 1px solid #E5E7EB;">
+
+            <form id="csSearchForm"
+                  th:action="@{/admin/cs}"
+                  method="get"
+                  style="display: flex; gap: 16px; align-items: center; width: 100%;">
+
+                <!-- 실제로 서버에 넘어갈 값들 -->
+                <input type="hidden" id="groupInput" name="group" th:value="${group}">
+                <input type="hidden" id="typeInput"  name="type"  th:value="${type}">
+                <input type="hidden" name="condition" th:value="${condition}">
+
+                <!-- 🔍 검색어 -->
+                <div style="flex:1 1 auto;">
+                    <input class="input--ph-gray"
+                           name="keyword"
+                           th:value="${keyword}"
+                           placeholder="글 제목 검색"
+                           type="text"
+                           style="box-sizing: border-box; outline:none; padding-left:15px;
+                          font-size: 14px; width: 100%; height: 42px;
+                          border:1px solid #D1D5DB; border-radius: 6px;">
+                </div>
+
+                <!-- 🔴 대분류 탭 3개 -->
+                <div class="cs-search-tabs"
+                     style="display:flex; gap:8px; flex-shrink:0;">
+
+                    <!-- 화면용 라디오 (name은 groupTab으로만 사용) -->
+                    <label class="cs-search-tab"
+                           th:classappend="${group}=='cs' ? ' cs-search-tab--active' : ''"
+                           style="position:relative; cursor:pointer;">
+                        <input type="radio" name="groupTab" value="cs"
+                               th:checked="${group}=='cs'"
+                               style="position:absolute; opacity:0; pointer-events:none;">
+                        <span style="display:inline-flex; align-items:center; justify-content:center;
+                             min-width:90px; height:34px; padding:0 14px;
+                             border-radius:999px; border:1px solid #E5E7EB;
+                             font-size:13px; color:#374151; background:#F9FAFB;"
+                              th:styleappend="${group}=='cs' ?
+                        ';background:#D91A1A; color:#fff; border-color:#D91A1A;' : ''">
+                    고객센터
+                </span>
+                    </label>
+
+                    <label class="cs-search-tab"
+                           th:classappend="${group}=='form' ? ' cs-search-tab--active' : ''"
+                           style="position:relative; cursor:pointer;">
+                        <input type="radio" name="groupTab" value="form"
+                               th:checked="${group}=='form'"
+                               style="position:absolute; opacity:0; pointer-events:none;">
+                        <span style="display:inline-flex; align-items:center; justify-content:center;
+                             min-width:90px; height:34px; padding:0 14px;
+                             border-radius:999px; border:1px solid #E5E7EB;
+                             font-size:13px; color:#374151; background:#F9FAFB;"
+                              th:styleappend="${group}=='form' ?
+                        ';background:#D91A1A; color:#fff; border-color:#D91A1A;' : ''">
+                    퇴직연금서식
+                </span>
+                    </label>
+
+                    <label class="cs-search-tab"
+                           th:classappend="${group}=='data' ? ' cs-search-tab--active' : ''"
+                           style="position:relative; cursor:pointer;">
+                        <input type="radio" name="groupTab" value="data"
+                               th:checked="${group}=='data'"
+                               style="position:absolute; opacity:0; pointer-events:none;">
+                        <span style="display:inline-flex; align-items:center; justify-content:center;
+                             min-width:90px; height:34px; padding:0 14px;
+                             border-radius:999px; border:1px solid #E5E7EB;
+                             font-size:13px; color:#374151; background:#F9FAFB;"
+                              th:styleappend="${group}=='data' ?
+                        ';background:#D91A1A; color:#fff; border-color:#D91A1A;' : ''">
+                    퇴직연금자료
+                </span>
+                    </label>
+                </div>
+
+                <!-- 🔍 검색 버튼 -->
+                <div style="flex-shrink:0;">
+                    <button type="submit"
+                            class="btn-register"
+                            style="gap:6px; box-sizing: border-box; width: 90px; height: 42px;
+                           background-color: #D91A1A; color: white; border:none;
+                           border-radius: 8px; cursor: pointer;">
+                        <div style="display: flex; justify-content: center; align-items: center; gap: 8px;">
+                            <!-- 아이콘은 그대로 -->
+                            <svg  width="16" height="24" viewBox="0 0 16 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <g clip-path="url(#clip0_191_162)">
+                                    <path d="M13 11.5C13 12.9344 12.5344 14.2594 11.75 15.3344L15.7063 19.2937C16.0969 19.6844 16.0969 20.3188 15.7063 20.7094C15.3156 21.1 14.6812 21.1 14.2906 20.7094L10.3344 16.75C9.25938 17.5375 7.93437 18 6.5 18C2.90937 18 0 15.0906 0 11.5C0 7.90937 2.90937 5 6.5 5C10.0906 5 13 7.90937 13 11.5ZM6.5 16C7.09095 16 7.67611 15.8836 8.22208 15.6575C8.76804 15.4313 9.26412 15.0998 9.68198 14.682C10.0998 14.2641 10.4313 13.768 10.6575 13.2221C10.8836 12.6761 11 12.0909 11 11.5C11 10.9091 10.8836 10.3239 10.6575 9.77792C10.4313 9.23196 10.0998 8.73588 9.68198 8.31802C9.26412 7.90016 8.76804 7.56869 8.22208 7.34254C7.67611 7.1164 7.09095 7 6.5 7C5.90905 7 5.32389 7.1164 4.77792 7.34254C4.23196 7.56869 3.73588 7.90016 3.31802 8.31802C2.90016 8.73588 2.56869 9.23196 2.34254 9.77792C2.1164 10.3239 2 10.9091 2 11.5C2 12.0909 2.1164 12.6761 2.34254 13.2221C2.56869 13.768 2.90016 14.2641 3.31802 14.682C3.73588 15.0998 4.23196 15.4313 4.77792 15.6575C5.32389 15.8836 5.90905 16 6.5 16Z" fill="white"/>
+                                </g>
+                                <defs>
+                                    <clipPath id="clip0_191_162">
+                                        <path d="M0 5H16V21H0V5Z" fill="white"/>
+                                    </clipPath>
+                                </defs>
+                            </svg>
+                            <div>검색</div>
+                        </div>
+                    </button>
+                </div>
+
+            </form>
+        </div>
+
+
+        <div style="display: flex; justify-content: center;">
+        <div style="margin-top:50px; padding:15px; padding-top: 15px; box-sizing: border-box; background-color: white; border-radius: 16px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); border: 1px solid #E5E7EB;">
+            <!-- 여기부터 하단 소분류 버튼 영역 -->
+            <div style="margin-top: 5px;">
+                <!-- 고객센터 하위 버튼 -->
+                <div id="sub-cs" style="display:none; gap:10px;">
+                    <button type="button" class="sub-btn" data-key="cs-faq">FAQ</button>
+                    <button type="button" class="sub-btn" data-key="cs-doc">필요서류(안내)</button>
+                    <button type="button" class="sub-btn" data-key="cs-qna">Q&A</button>
+                    <button type="button" class="sub-btn" data-key="cs-branch">영업점(찾기)</button>
+                </div>
+
+                <!-- 퇴직연금서식 하위 버튼 -->
+                <div id="sub-form" style="display:none; gap:10px;">
+                    <button type="button" class="sub-btn" data-key="form-db">DB(확정급여형)</button>
+                    <button type="button" class="sub-btn" data-key="form-dc">DC(확정기여형)</button>
+                    <button type="button" class="sub-btn" data-key="form-pirp">개인형 IRP</button>
+                    <button type="button" class="sub-btn" data-key="form-cirp">기업형 IRP</button>
+                </div>
+
+                <!-- 퇴직연금자료 하위 버튼 -->
+                <div id="sub-data" style="display:none; gap:10px;">
+                    <button type="button" class="sub-btn" data-key="data-room">자료실</button>
+                    <button type="button" class="sub-btn" data-key="data-smallfund">소규모펀드등공시</button>
+                    <button type="button" class="sub-btn" data-key="data-notice">공지사항</button>
+                    <button type="button" class="sub-btn" data-key="data-contract">퇴직연금계약서</button>
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <div style="width: 1200px; margin:25px auto; border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border: 1px solid #E5E7EB; overflow: hidden;">
+          <table id="admin-cs-table" style="border-collapse: collapse; width: 100%;">
+              <thead>
+              <tr id="admin-cs-thead-row"
+                  style="color: #2B2F36; font-size: 14px; height: 52px; border-bottom: 1px #E5E7EB;">
+                  <!-- 헤더는 JS에서 TABLE_COLUMNS 보고 채움 -->
+              </tr>
+              </thead>
+
+              <tbody id="admin-cs-tbody">
+              <!-- JS가 행을 전부 그릴 자리 -->
+              </tbody>
+          </table>
+
+          <!-- 공통 페이지네이션 컨테이너 (모든 타입 공용, JS로만 채움) -->
+          <div class="pager" id="pager"
+               style="width: 100%; margin: 25px auto; display:flex; justify-content:center; align-items:center;">
+          </div>
+
+      </div>
+  </main>
+
+  <div id="bnk-chatbot-container" style="position: fixed; right: 20px; bottom: 20px; z-index: 9999;">
+    <div id="bnk-chatbot-slot"></div>
+  </div>
+  <script>
+      async function includeWithScripts(targetSelector, url) {
+          const res = await fetch(url, { credentials: 'same-origin' });
+          if (!res.ok) throw new Error(`Failed to load ${url}`);
+          const html = await res.text();
+
+          const target = document.querySelector(targetSelector);
+          target.innerHTML = html;
+
+          // 삽입된 영역 안의 <script>들을 실행되도록 교체
+          const scripts = target.querySelectorAll('script');
+          for (const oldScript of scripts) {
+              const newScript = document.createElement('script');
+
+              // type, src, async, defer 등 속성 복사
+              for (const { name, value } of [...oldScript.attributes]) {
+                  newScript.setAttribute(name, value);
+              }
+              // inline 스크립트라면 코드 복사
+              if (!oldScript.src) newScript.text = oldScript.textContent;
+
+              // 실행을 위해 문서에 부착
+              // (src가 있으면 네트워크 로드, 없으면 즉시 실행)
+              oldScript.replaceWith(newScript);
+
+              // src 스크립트 로드를 기다려야 한다면:
+              if (newScript.src) {
+                  await new Promise((res) => {
+                      newScript.addEventListener('load', res, { once: true });
+                      newScript.addEventListener('error', res, { once: true });
+                  });
+              }
+          }
+      }
+
+      // (2) includeWithScripts - 올바른 방법
+      includeWithScripts('#header', '/layouts/admin_header.html')
+          .then(() => {
+              // 환경설정 메뉴 활성화
+              window.initAdminHeader && window.initAdminHeader('cs');
+          })
+          .catch(console.error);
+      document.addEventListener('DOMContentLoaded', () => {
+          if (window.initAdminHeader) window.initAdminHeader('cs');
+      });
+  </script>
+  <script>
+  /**
+   * 외부 HTML을 불러와서:
+   *  - <link rel="stylesheet">, <style>는 <head>로 옮기고
+   *  - <script>는 실행되도록 새로 만들어 붙이고 (src/inline, module 모두 지원)
+   *  - 나머지 DOM(예: <flowise-chatbot> / <flowise-embed>)은 mount에 삽입
+   */
+  async function importHtmlWithAssets(url, mountSelector) {
+    const res = await fetch(url, { credentials: 'same-origin' });
+    if (!res.ok) throw new Error(`Failed to load ${url}`);
+    const html = await res.text();
+
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+
+    // 1) <link rel="stylesheet"> 들을 <head>로
+    doc.querySelectorAll('link[rel="stylesheet"]').forEach(link => {
+      // 중복 로드 방지
+      const href = link.getAttribute('href');
+      if (href && ![...document.head.querySelectorAll('link[rel="stylesheet"]')]
+        .some(l => l.getAttribute('href') === href)) {
+        document.head.appendChild(link.cloneNode(true));
+      }
+    });
+
+    // 2) <style> 들을 <head>로
+    doc.querySelectorAll('style').forEach(styleEl => {
+      const clone = document.createElement('style');
+      // CSS 텍스트 보존
+      clone.textContent = styleEl.textContent;
+      // (가능한 속성 복사)
+      [...styleEl.attributes].forEach(a => clone.setAttribute(a.name, a.value));
+      document.head.appendChild(clone);
+    });
+
+    // 3) 본문 콘텐츠를 mount에 붙임 (스크립트 제외)
+    const mount = document.querySelector(mountSelector);
+    // fragment 구성
+    const frag = document.createDocumentFragment();
+    [...doc.body.children].forEach(node => {
+      if (node.tagName.toLowerCase() !== 'script') frag.appendChild(node.cloneNode(true));
+    });
+    mount.appendChild(frag);
+
+    // 4) 스크립트 실행 (src/inline/module 지원, 순서 보장)
+    const scripts = [...doc.querySelectorAll('script')];
+    for (const oldScript of scripts) {
+      const newScript = document.createElement('script');
+      // type/module/defer 등 속성 복사
+      [...oldScript.attributes].forEach(attr => newScript.setAttribute(attr.name, attr.value));
+      if (oldScript.src) {
+        // 네트워크 로드를 기다려 실행 순서 유지
+        await new Promise((resolve, reject) => {
+          newScript.onload = resolve;
+          newScript.onerror = resolve;   // 실패해도 진행(브랜딩 제거 같은 선택 기능 보호)
+          document.body.appendChild(newScript);
+        });
+      } else {
+        // inline 코드 복사
+        newScript.textContent = oldScript.textContent || '';
+        document.body.appendChild(newScript);
+      }
+    }
+  }
+
+  // 실제 호출: 기존 chatbot.html(또는 chatbot_test.html) 경로로 바꿔도 됩니다.
+  importHtmlWithAssets('/components/chatbot_test.html', '#bnk-chatbot-slot')
+    .catch(err => console.error('[Chatbot load failed]', err));
+  </script>
+
+  <script th:inline="javascript">
+      // ===== 1. 서버 값 가져오기 =====
+      const group = /*[[${group}]]*/ 'cs';
+      const type  = /*[[${type}]]*/ 'faq';
+
+      const docList    = /*[[${docList}]]*/ [];
+      const branchList = /*[[${branchList}]]*/ [];
+
+      // 현재 탭에서 사용할 데이터
+      let documentData = (type === 'branch') ? (branchList || []) : (docList || []);
+
+      const rowsPerPage = 5;
+      let currentPage   = 1;
+
+      const tbody  = document.getElementById('admin-cs-tbody');
+      const pager  = document.getElementById('pager');
+
+      // ===== 2. 컬럼 정의 =====
+      const TABLE_COLUMNS = {
+          // --------------- 고객센터 ---------------
+          'cs-faq':       ['작성자', '글제목', '등록일'],
+          'cs-doc':       ['작성자', '글제목', '등록일'],
+          'cs-qna':       ['작성자', '글제목', '답변상태'],
+          'cs-branch':    ['번호', '영업점명', '주소', '전화번호', '팩스번호'],
+
+          // --------------- 퇴직연금서식 ---------------
+          'form-db':      ['번호', '제목', '등록일'],
+          'form-dc':      ['번호', '제목', '등록일'],
+          'form-pirp':    ['번호', '제목', '등록일'],
+          'form-cirp':    ['번호', '제목', '등록일'],
+
+          // --------------- 퇴직연금자료 ---------------
+          'data-room':     ['작성자', '제목', '등록일'],
+          'data-smallfund':['작성자', '제목', '등록일'],
+          'data-notice':   ['작성자', '제목', '등록일'],
+          'data-contract': ['작성자', '제목', '등록일'],
+      };
+
+      const KEY_TO_PARAM = {
+          'cs-faq':        { group: 'cs',   type: 'faq' },
+          'cs-doc':        { group: 'cs',   type: 'doc' },
+          'cs-qna':        { group: 'cs',   type: 'qna' },
+          'cs-branch':     { group: 'cs',   type: 'branch' },
+
+          'form-db':       { group: 'form', type: 'db' },
+          'form-dc':       { group: 'form', type: 'dc' },
+          'form-pirp':     { group: 'form', type: 'pirp' },
+          'form-cirp':     { group: 'form', type: 'cirp' },
+
+          'data-room':     { group: 'data', type: 'room' },
+          'data-smallfund':{ group: 'data', type: 'smallfund' },
+          'data-notice':   { group: 'data', type: 'notice' },
+          'data-contract': { group: 'data', type: 'contract' },
+      };
+
+      const currentKey = Object.keys(KEY_TO_PARAM)
+          .find(k => KEY_TO_PARAM[k].group === group && KEY_TO_PARAM[k].type === type);
+
+      // ★ /admin/cs 기본 URL (컨텍스트 고려해서 thymeleaf로)
+      const baseUrl = /*[[@{/admin/cs}]]*/ '/admin/cs';
+
+      // ===== 3. 헤더 렌더링 =====
+      function renderHeader() {
+          const cols = TABLE_COLUMNS[currentKey] || [];
+          const theadRow = document.getElementById('admin-cs-thead-row');
+
+         const ths = cols.map(text => `
+      <th style="height:52px; background:#F9FAFB; font-size:14px; color:#374151; border-bottom:1px solid #E5E7EB;">
+        ${text}
+      </th>
+    `).join('');
+
+          const manageTh = `<th
+    style="
+      height:52px;
+      background:#F9FAFB;
+      font-size:14px;
+      color:#374151;
+      border-bottom:1px solid #E5E7EB;
+      padding:0;
+      min-width:120px;
+    "
+  >
+    <div style="
+        width:100%;
+        height:100%;
+        display:flex;
+        align-items:center;
+        justify-content:center;  /* ★ 가로 중앙 */
+    ">
+      <button type="button"
+              class="btn-register btn-register--small"
+              id="btn-insert">
+        등록
+      </button>
+    </div>
+  </th>`;
+
+          theadRow.innerHTML = ths + manageTh;
+      }
+
+      // ===== 4. 행 렌더링 =====
+      function renderTable(page) {
+          tbody.innerHTML = "";
+          const start = (page - 1) * rowsPerPage;
+          const end   = start + rowsPerPage;
+          const pageData = documentData.slice(start, end);
+
+          if (pageData.length === 0) {
+              const colCount = ((TABLE_COLUMNS[currentKey] || []).length + 1) || 1;
+              const tr = document.createElement("tr");
+              tr.innerHTML = `
+        <td colspan="${colCount}" style="text-align:center; padding:24px 0; color:#6B7280; font-size:14px;">
+            등록된 데이터가 없습니다.
+        </td>`;
+              tbody.appendChild(tr);
+              return;
+          }
+
+          pageData.forEach((row, idx) => {
+              const tr = document.createElement("tr");
+              tr.style.height = "56px";
+              tr.style.borderBottom = "1px solid #E5E7EB";
+
+              const itemId = (type === 'branch') ? row.brid : row.docid; // 수정/삭제용 ID
+
+              if (type === 'branch') {
+                  // 영업점 데이터
+                  tr.innerHTML = `
+          <td style="text-align:center; font-size:14px; color:#4B5563;">${row.brid}</td>
+          <td style="text-align:center; font-size:14px; color:#111827;">${row.brname}</td>
+          <td style="text-align:center; font-size:14px; color:#4B5563;">${row.braddr}</td>
+          <td style="text-align:center; font-size:14px; color:#4B5563;">${row.brtel ?? ''}</td>
+          <td style="text-align:center; font-size:14px; color:#4B5563;">${row.brfax ?? ''}</td>
+        `;
+              } else if (group === 'form') {
+                  // 퇴직연금 서식 (첨부파일 있는 타입)
+                  const number  = start + idx + 1;
+                  const created = row.docupdate ? row.docupdate.substring(0, 10) : '';
+
+                  tr.innerHTML = `
+          <td style="text-align:center; font-size:14px; color:#4B5563;">${number}</td>
+          <td style="text-align:center; font-size:14px; color:#111827;">${row.doctitle}</td>
+          <td style="text-align:center; font-size:14px; color:#4B5563;">${created}</td>
+        `;
+              } else if (type === 'qna') {   // 🔴 Q&A 전용 분기 추가 (type 값은 프로젝트에서 쓰는 값으로!)
+                  const statusText = row.docanswer ? '완료' : '미완료';
+
+                  tr.innerHTML = `
+      <td style="text-align:center; font-size:14px; color:#4B5563;">${row.mid || 'admin'}</td>
+      <td style="text-align:center; font-size:14px; color:#111827;">${row.doctitle}</td>
+      <td style="text-align:center; font-size:14px; color:#4B5563;">${statusText}</td>
+    `;
+              } else {
+                  // 일반 문서 타입 (FAQ, 필요서류 안내, 자료실 등)
+                  const created = row.docupdate ? row.docupdate.substring(0, 10) : '';
+                  tr.innerHTML = `
+          <td style="text-align:center; font-size:14px; color:#4B5563;">${row.mid || 'admin'}</td>
+          <td style="text-align:center; font-size:14px; color:#111827;">${row.doctitle}</td>
+          <td style="text-align:center; font-size:14px; color:#4B5563;">${created}</td>
+        `;
+              }
+
+              // === 공통 관리(수정/삭제) 버튼 컬럼 추가 ===
+              // === 관리 버튼 컬럼 (타입별 분기) ===
+              const manageTd = document.createElement('td');
+              manageTd.style.textAlign = 'center';
+
+              if (type === 'qna') {
+                  // ✅ Q&A : 수정/삭제 대신 "답변하기"만
+                  manageTd.innerHTML = `
+      <button type="button"
+              class="row-action-btn row-answer"
+              data-id="${itemId}">
+          답변하기
+      </button>
+    `;
+              } else {
+                  // 그 외 타입(FAQ, 자료실, 영업점 등)은 기존처럼 수정/삭제
+                  manageTd.innerHTML = `
+      <button type="button"
+              class="row-action-btn row-edit"
+              data-id="${itemId}">
+          수정
+      </button>
+      <button type="button"
+              class="row-action-btn row-delete"
+              data-id="${itemId}">
+          삭제
+      </button>
+    `;
+              }
+
+              tr.appendChild(manageTd);
+
+
+              tbody.appendChild(tr);
+          });
+
+      }
+
+      // ===== 5. 페이지네이션 렌더링 =====
+      function renderPagination() {
+          pager.innerHTML = "";
+          const totalPages = Math.max(1, Math.ceil(documentData.length / rowsPerPage));
+
+          // 이전 버튼
+          const prevBtn = document.createElement("button");
+          prevBtn.className = "page-btn page-prev";
+          prevBtn.innerHTML = `
+      <svg width="10" height="16" viewBox="0 0 10 16" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0.2937 7.29414C-0.0969 7.68477-0.0969 8.31914 0.2937 8.70977L6.2937 14.7098C6.6843 15.1004 7.3187 15.1004 7.7093 14.7098C8.0999 14.3191 8.0999 13.6848 7.7093 13.2941L2.4156 8.00039L7.7062 2.70664C8.0968 2.31602 8.0968 1.68164 7.7062 1.29102C7.3156 0.900391 6.6812 0.900391 6.2906 1.29102L0.2906 7.29102L0.2937 7.29414Z" />
+      </svg>`;
+          prevBtn.disabled = currentPage === 1;
+          prevBtn.addEventListener("click", () => {
+              if (currentPage > 1) {
+                  currentPage--;
+                  updatePage();
+              }
+          });
+          pager.appendChild(prevBtn);
+
+          // 숫자 버튼
+          for (let i = 1; i <= totalPages; i++) {
+              const btn = document.createElement("button");
+              btn.className = "page-btn";
+              btn.textContent = i;
+              if (i === currentPage) {
+                  btn.classList.add("is-active");
+                  btn.setAttribute("aria-current", "page");
+              }
+              btn.addEventListener("click", () => {
+                  currentPage = i;
+                  updatePage();
+              });
+              pager.appendChild(btn);
+          }
+
+          // 다음 버튼
+          const nextBtn = document.createElement("button");
+          nextBtn.className = "page-btn page-next";
+          nextBtn.innerHTML = `
+      <svg width="10" height="16" viewBox="0 0 10 16" xmlns="http://www.w3.org/2000/svg">
+        <path d="M9.7061 7.29414C10.0968 7.68477 10.0968 8.31914 9.7061 8.70977L3.7061 14.7098C3.3155 15.1004 2.6811 15.1004 2.2905 14.7098C1.8999 14.3191 1.8999 13.6848 2.2905 13.2941L7.5843 8.00039L2.2937 2.70664C1.903 2.31602 1.903 1.68164 2.2937 1.29102C2.6843 0.900391 3.3187 0.900391 3.7093 1.29102L9.7093 7.29102L9.7061 7.29414Z" />
+      </svg>`;
+          nextBtn.disabled = currentPage === totalPages;
+          nextBtn.addEventListener("click", () => {
+              if (currentPage < totalPages) {
+                  currentPage++;
+                  updatePage();
+              }
+          });
+          pager.appendChild(nextBtn);
+      }
+
+      // ===== 6. 갱신 함수 =====
+      function updatePage() {
+          renderTable(currentPage);
+          renderPagination();
+      }
+
+      // ===== 7. 초기 세팅 & 버튼 이벤트 =====
+      document.addEventListener('DOMContentLoaded', () => {
+          const subCs   = document.getElementById('sub-cs');
+          const subForm = document.getElementById('sub-form');
+          const subData = document.getElementById('sub-data');
+
+          // ✅ 1) 현재 group에 맞는 소분류 영역만 보여주기
+          if (group === 'cs') {
+              subCs.style.display   = 'flex';
+              subForm.style.display = 'none';
+              subData.style.display = 'none';
+          } else if (group === 'form') {
+              subCs.style.display   = 'none';
+              subForm.style.display = 'flex';
+              subData.style.display = 'none';
+          } else if (group === 'data') {
+              subCs.style.display   = 'none';
+              subForm.style.display = 'none';
+              subData.style.display = 'flex';
+          }
+
+          // 3) 소분류 버튼 클릭 시 → group/type 붙여서 서버로 이동
+          document.querySelectorAll('.sub-btn').forEach(btn => {
+              btn.addEventListener('click', () => {
+                  const key   = btn.dataset.key;  // 예: "form-db"
+                  const param = KEY_TO_PARAM[key];
+                  if (!param) return;
+
+                  location.href = `${baseUrl}?group=${param.group}&type=${param.type}`;
+              });
+          });
+
+          // 4) 현재 선택된 소분류 버튼에 활성화 표시
+          if (currentKey) {
+              const active = document.querySelector(`.sub-btn[data-key="${currentKey}"]`);
+              if (active) active.classList.add('is-active-sub');
+          }
+
+          // 5) 테이블 + 페이지네이션 첫 렌더링
+          renderHeader();
+          updatePage();
+
+          // 6) 헤더 "등록" 버튼 클릭
+          document.addEventListener('click', (e) => {
+              const insertBtn = e.target.closest('#btn-insert');
+              if (!insertBtn) return;
+
+              if (type === 'branch') {
+                  // 영업점 등록 페이지 (원하면 별도 경로)
+                  location.href = `${baseUrl}/register?group=${group}&type=${type}`;
+              } else {
+                  // 문서 등록 페이지
+                  location.href = `${baseUrl}/register?group=${group}&type=${type}`;
+              }
+          });
+
+          // 7) 행별 수정/삭제 버튼 동작
+          tbody.addEventListener('click', async (e) => {
+              const editBtn   = e.target.closest('.row-edit');
+              const deleteBtn = e.target.closest('.row-delete');
+              const answerBtn  = e.target.closest('.row-answer');
+
+              // ===== 답변하기 버튼 =====
+              if (answerBtn) {
+                  const id = answerBtn.dataset.id;
+
+                  // 👉 실제 Q&A 답변 작성 화면 URL에 맞게 수정해서 써!
+                  // 예시: /admin/cs/qna/answer?docid=...
+                  const url = `${baseUrl}/qna/answer?docid=${id}&group=${group}&type=${type}`;
+                  window.location.href = url;
+                  return;
+              }
+
+              // ===== 수정 버튼 =====
+              if (editBtn) {
+                  const id = editBtn.dataset.id;
+
+                  if (type === 'branch') {
+                      // 🔥 영업점 수정 화면으로 이동
+                      const url = `${baseUrl}/branch/modify?brid=${id}&group=${group}&type=${type}`;
+                      window.location.href = url;
+                      return;
+                  }
+
+                  // 문서 수정(FAQ / QNA / 자료실 등)
+                  const url = `${baseUrl}/modify?docid=${id}&group=${group}&type=${type}`;
+                  window.location.href = url;
+                  return;
+              }
+
+
+              // ===== 삭제 버튼 =====
+              if (deleteBtn) {
+                  const id = deleteBtn.dataset.id;
+
+                  if (!confirm('정말 삭제하시겠습니까?')) {
+                      return;
+                  }
+
+                  try {
+                      const params = new URLSearchParams({
+                          docid: id,
+                          group: group,
+                          type:  type
+                      });
+
+                      const headers = {
+                          'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+                      };
+
+                      const res = await fetch(`${baseUrl}/delete`, {
+                          method: 'POST',
+                          headers,
+                          body: params
+                      });
+
+                      if (res.redirected) {
+                          window.location.href = res.url;
+                      } else if (res.ok) {
+                          window.location.reload();
+                      } else {
+                          alert('삭제 중 서버 오류가 발생했습니다. (status: ' + res.status + ')');
+                          console.error('삭제 실패 상태코드:', res.status);
+                      }
+
+                  } catch (err) {
+                      console.error(err);
+                      alert('삭제 요청 중 오류가 발생했습니다.');
+                  }
+              }
+          });
+      });
+  </script>
+  <script>
+      // 🔁 검색 대분류 탭 클릭 시 group / type 동기화 + 자동 검색
+      (function () {
+          const groupInput = document.getElementById('groupInput');
+          const typeInput  = document.getElementById('typeInput');
+          const form       = document.getElementById('csSearchForm');
+
+          if (!groupInput || !typeInput || !form) return;
+
+          // 라디오 모두 순회
+          document.querySelectorAll('input[name="groupTab"]').forEach(radio => {
+              radio.addEventListener('change', (e) => {
+                  const g = e.target.value;  // cs / form / data
+                  groupInput.value = g;
+
+                  // 그룹별 기본 type 세팅 (기존 탭 구조에 맞춰서)
+                  switch (g) {
+                      case 'cs':
+                          typeInput.value = 'faq';   // FAQ
+                          break;
+                      case 'form':
+                          typeInput.value = 'db';    // DB(확정급여형)
+                          break;
+                      case 'data':
+                          typeInput.value = 'room';  // 자료실(기존 group=data 기본 타입)
+                          break;
+                  }
+
+                  // 1️⃣ 탭 색상/스타일 토글 (라디오가 들어있는 label 기준)
+                  document.querySelectorAll('.cs-search-tab span').forEach(span => {
+                      // 기본 상태
+                      span.style.background   = '#F9FAFB';
+                      span.style.color        = '#374151';
+                      span.style.borderColor  = '#E5E7EB';
+                  });
+
+                  const span = e.target.parentElement.querySelector('span');
+                  if (span) {
+                      span.style.background   = '#D91A1A';
+                      span.style.color        = '#ffffff';
+                      span.style.borderColor  = '#D91A1A';
+                  }
+
+                  // 2️⃣ 탭 바꾸자마자 바로 검색 실행 (리스트 즉시 변경)
+                  form.submit();
+              });
+          });
+      })();
+  </script>
+
+
+
+
+  <footer>
+      <div th:replace="~{layouts/footer.html}"></div>
+  </footer>
+</body>
+</html>

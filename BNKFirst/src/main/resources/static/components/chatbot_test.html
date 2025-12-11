@@ -1,0 +1,172 @@
+<script type="module">
+      import Chatbot from "https://cdn.jsdelivr.net/npm/flowise-embed/dist/web.js"
+
+      Chatbot.init({
+        chatflowid: "c5c35ce4-18cb-4928-b072-f805252e5889",
+        apiHost: "https://cloud.flowiseai.com",
+        
+
+        // RAG/모델 파라미터 ↓ (필요 없으면 비워둬도 됩니다)
+        chatflowConfig: {
+            returnSourceDocuments: false,   // "question:..." 칩 제거
+        },
+
+        // 🔵 UI/문구 커스터마이즈
+        theme: {
+          button: { backgroundColor: "#D81921", color: "#fff" },
+          chatWindow: {
+            title: "BNK 챗봇",
+            welcomeMessage: "안녕하세요! BNK FAQ 챗봇입니다. 무엇을 도와드릴까요?",
+            inputPlaceholder: "질문을 입력하세요...",
+            backgroundColor: "#ffffff",
+            fontSize: "15px",
+            // 샘플 질문
+            starterPrompts: [
+                "계좌 개설은 어떻게 하나요?",
+                "체크카드 재발급 방법 알려줘요",
+                "예금 금리는 어디서 확인할 수 있나요?",
+                "비대면 계좌 개설 시 필요한 것은 무엇인가요?"
+            ],
+            starterPromptFontSize: 15, // 칩 글자 크기
+            botMessage: { backgroundColor: "#f3f6ff" },
+            userMessage: { backgroundColor: "#0064FF", textColor: "#ffffff" },
+            // 🔴 타이틀 바 색상 변경
+            header: { backgroundColor: "#D81921", textColor: "#ffffff" },
+            // 🔴 입력창 화살표 색상 변경
+            sendButtonColor: "#D81921"
+          }
+        }
+      })
+
+  const getWidget = () =>
+    document.querySelector('flowise-chatbot, flowise-embed')
+
+  // 🔧 "Powered by ..." 줄을 텍스트 기반으로 찾아 스페이서로 교체
+  const nukeBrandingKeepGap = () => {
+    const host = getWidget()
+    const root = host && host.shadowRoot
+    if (!root) return
+
+    // 1) 링크로 먼저 시도
+    let brandNode = root.querySelector('a[href*="flowise"]')
+
+    // 2) 링크가 없다면 텍스트로 탐색
+    if (!brandNode) {
+      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT)
+      let t
+      while ((t = walker.nextNode())) {
+        const s = t.textContent.trim().toLowerCase()
+        if (s.includes('powered by')) {
+          brandNode = t.parentElement
+          break
+        }
+      }
+    }
+    if (!brandNode) return
+
+    // 3) 줄 컨테이너(가장 가까운 작은 block 요소)를 찾음
+    let row = brandNode
+    const isSmall = el => {
+      const r = el.getBoundingClientRect()
+      return r.height > 10 && r.height < 60 && r.width > 150
+    }
+    while (row && row !== root && !isSmall(row)) row = row.parentElement
+    if (!row) row = brandNode.parentElement
+
+    // 4) 같은 높이의 스페이서로 교체
+    const h = (row.getBoundingClientRect().height || 28)
+    const spacer = document.createElement('div')
+    spacer.setAttribute('aria-hidden', 'true')
+    spacer.style.height = h + 'px'
+    spacer.style.opacity = '0'
+    spacer.style.pointerEvents = 'none'
+    row.replaceWith(spacer)
+  }
+
+  // 최초 적용 + 변경 감시(텍스트/속성 포함)로 재적용
+  const start = () => {
+    const host = getWidget()
+    if (!host || !host.shadowRoot) return false
+    nukeBrandingKeepGap()
+    const obs = new MutationObserver(nukeBrandingKeepGap)
+    obs.observe(host.shadowRoot, {
+      childList: true,
+      characterData: true,
+      attributes: true,
+      subtree: true
+    })
+    return true
+  }
+  const boot = setInterval(() => { if (start()) clearInterval(boot) }, 300)
+
+  // (선택) 칩 제거 유지
+  const hideChips = () => {
+    const host = getWidget()
+    const root = host && host.shadowRoot
+    if (!root) return
+    root.querySelectorAll('.chatbot-button.selectable').forEach(n => n.remove())
+  }
+  setInterval(hideChips, 300)
+    </script>
+    <style>
+        /* Flowise 칩/추천 버튼들 전부 숨김 */
+        .flowise-message-chips,
+        .flowise-starter-prompts,
+        .message-chips,
+        .starter-prompts,
+        .chips, .chip, .flowise-chip,
+        div[class*="starterPrompt"],
+        div[class*="message-suggestion"],
+        div[class*="chip"] {
+            display: none !important;
+        }
+    </style>
+
+    <style>
+      /* 타이틀 바 */
+      flowise-chatbot::part(header),
+      flowise-embed::part(header) {
+        background: #D81921 !important;
+        color: #fff !important;
+      }
+
+      /* 전송 버튼(화살표) */
+      flowise-chatbot::part(send-button),
+      flowise-embed::part(send-button) {
+        color: #D81921 !important;
+        fill: #D81921 !important;
+      }
+    </style>
+    
+
+    <style th:inline="css">
+      /* 🔴 Flowise 챗봇 버튼을 커스텀 이미지로 교체 */
+      flowise-chatbot::part(button) {
+        background-image: url([[@{/images/chatbot.png}]]); /* 업로드한 경로로 수정 */
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-color: transparent !important;
+        border: none !important;
+      }
+
+      /* 원형 유지 및 그림자 살짝 */
+      flowise-chatbot::part(button):hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      }
+      /* 🔧 Flowise 챗봇 버튼 아래 생기는 흰색 꼬리(∨, < 모양) 제거 */
+      flowise-chatbot::part(host-bubble)::before,
+      flowise-chatbot::part(host-bubble)::after,
+      flowise-embed::part(host-bubble)::before,
+      flowise-embed::part(host-bubble)::after {
+        display: none !important;
+        content: none !important;
+      }
+
+      /* 혹시 화살표를 만드는 내부 div가 있을 경우 대비 */
+      flowise-chatbot::part(host-bubble),
+      flowise-embed::part(host-bubble) {
+        overflow: visible;
+      }
+    </style>

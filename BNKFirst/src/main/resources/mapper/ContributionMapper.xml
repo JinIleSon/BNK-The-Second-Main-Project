@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.bnkfirst.mapper.ContributionMapper">
+
+    <!-- 직원별 납입 내역 -->
+    <select id="findByEmpId" parameterType="long"
+            resultType="kr.co.bnkfirst.domain.Contribution">
+        SELECT
+            CONTRIID,
+            EMPID,
+            YEARMONTH,
+            AMOUNT
+        FROM CONTRIBUTION
+        WHERE EMPID = #{empId}
+        ORDER BY YEARMONTH
+    </select>
+
+    <!-- 직원별 현재 적립금 -->
+    <select id="findCurrentBalance" parameterType="long" resultType="long">
+        SELECT NVL(SUM(AMOUNT), 0)
+        FROM CONTRIBUTION
+        WHERE EMPID = #{empId}
+    </select>
+
+    <!-- 기업 전체 누적 적립금 -->
+    <select id="getTotalAccumulatedAmount" resultType="long">
+        SELECT NVL(SUM(AMOUNT), 0)
+        FROM CONTRIBUTION
+    </select>
+
+    <!-- 이번 달 예상 납입액 -->
+    <select id="getExpectedContributionForMonth" resultType="long">
+        SELECT NVL(SUM(AMOUNT), 0)
+        FROM CONTRIBUTION
+        WHERE YEARMONTH = '202511'
+    </select>
+
+</mapper>

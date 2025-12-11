@@ -1,0 +1,597 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>상품 변경</title>
+    <script th:src="@{/js/mypage/mypage_prodEdit.js}"></script>
+    <link rel="stylesheet" th:href="@{/css/mypage/mypage_prodEdit.css}">
+    <link rel="stylesheet" th:href="@{/components/button.css}">
+</head>
+<body>
+<header>
+    <div id="header" th:replace="~{layouts/header.html}"></div>
+</header>
+<main>
+    <!-- 상단 설명 -->
+    <section class="page-header">
+        <h1>상품 변경</h1>
+        <p>보유 상품의 비중을 조정하거나 새로운 상품을 매수해 퇴직연금 포트폴리오를 관리하세요.</p>
+
+        <div class="page-tabs">
+            <button type="button" class="tab-btn is-active" data-tab-target="tab-sell">상품 매도</button>
+            <button type="button" class="tab-btn" data-tab-target="tab-buy">상품 매수</button>
+        </div>
+    </section>
+
+    <!-- ===== 매도/상품 변경 탭 ===== -->
+    <section id="tab-sell" class="panel tab-panel is-active">
+        <h2 class="panel-title">보유 상품 요약</h2>
+
+        <div class="summary-grid">
+            <div class="summary-item highlight">
+                <div class="summary-label">평가금액 합계</div>
+                <div class="summary-value">123,456,789원</div>
+                <div class="summary-extra">전일 대비 +123,000원 (+0.10%)</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-label">비중 합계</div>
+                <div class="summary-value">100%</div>
+                <div class="summary-extra">총자산 대비 비율</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-label">총자산</div>
+                <div class="summary-value">150,000,000원</div>
+                <div class="summary-extra">예금·펀드·퇴직연금 등 포함</div>
+            </div>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <div class="list-header">
+            <h2>보유 상품 리스트</h2>
+            <span>상품별 평가금액·비중·수익률을 확인 후 전부매도 / 일부매도를 선택하세요.</span>
+        </div>
+
+        <div class="product-grid">
+            <!-- 예시 카드 1 -->
+            <article class="product-card sell-card">
+                <div class="card-top">
+                    <div class="prod-left">
+                        <div class="prod-icon">IRP</div>
+                        <div class="prod-title">
+                            <div class="prod-name">퇴직연금 안정형 채권형 (IRP)</div>
+                            <div class="prod-sub">만기일: 2030.12.31</div>
+                        </div>
+                    </div>
+                    <div class="radio-wrap">
+                        <input type="checkbox" class="prod-check">
+                    </div>
+                </div>
+
+                <dl class="prod-meta">
+                    <div class="meta-row">
+                        <dt>평가금액</dt>
+                        <dd>52,300,000원</dd>
+                    </div>
+                    <div class="meta-row">
+                        <dt>비중</dt>
+                        <dd>34.8%</dd>
+                    </div>
+                    <div class="meta-row">
+                        <dt>수익률</dt>
+                        <dd class="rate plus">+4.21%</dd>
+                    </div>
+                </dl>
+
+                <div class="card-actions">
+                    <button type="button" class="btn btn-sheen btn-pressable">전부매도</button>
+                    <button type="button" class="btn btn-main btn-partial-toggle">일부매도</button>
+                </div>
+
+                <div class="sell-input-area">
+                    <div class="meta-row">
+                        <dt>일부 매도금액</dt>
+                        <dd>
+                            <input type="text" class="amount-input" placeholder="0">
+                            <span class="unit">원</span>
+                        </dd>
+                    </div>
+                    <div class="meta-row">
+                        <dt>일부 매도 비중</dt>
+                        <dd>
+                            <input type="text" class="percent-input" placeholder="0">
+                            <span class="unit">%</span>
+                        </dd>
+                    </div>
+                    <div class="card-actions">
+                        <button type="button" class="btn btn-sheen btn-pressable btn-partial-cancel">취소</button>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 매도 카드 2 -->
+            <article class="product-card sell-card">
+                <div class="card-top">
+                    <div class="prod-left">
+                        <div class="prod-icon">펀드</div>
+                        <div class="prod-title">
+                            <div class="prod-name">글로벌 배당 성장 펀드</div>
+                            <div class="prod-sub">매수일: 2024.05.10</div>
+                        </div>
+                    </div>
+                    <div class="radio-wrap">
+                        <input type="checkbox" class="prod-check">
+                    </div>
+                </div>
+
+                <dl class="prod-meta">
+                    <div class="meta-row">
+                        <dt>평가금액</dt>
+                        <dd>38,120,000원</dd>
+                    </div>
+                    <div class="meta-row">
+                        <dt>비중</dt>
+                        <dd>25.4%</dd>
+                    </div>
+                    <div class="meta-row">
+                        <dt>수익률</dt>
+                        <dd class="rate plus">+9.87%</dd>
+                    </div>
+                </dl>
+
+                <div class="card-actions">
+                    <button type="button" class="btn btn-sheen btn-pressable">전부매도</button>
+                    <button type="button" class="btn btn-main btn-partial-toggle">일부매도</button>
+                </div>
+
+                <div class="sell-input-area">
+                    <div class="meta-row">
+                        <dt>일부 매도금액</dt>
+                        <dd>
+                            <input type="text" class="amount-input" placeholder="0">
+                            <span class="unit">원</span>
+                        </dd>
+                    </div>
+                    <div class="meta-row">
+                        <dt>일부 매도 비중</dt>
+                        <dd>
+                            <input type="text" class="percent-input" placeholder="0">
+                            <span class="unit">%</span>
+                        </dd>
+                    </div>
+                    <div class="card-actions">
+                        <button type="button" class="btn btn-sheen btn-pressable btn-partial-cancel">취소</button>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 매도 카드 3 -->
+            <article class="product-card sell-card">
+                <div class="card-top">
+                    <div class="prod-left">
+                        <div class="prod-icon">예금</div>
+                        <div class="prod-title">
+                            <div class="prod-name">퇴직연금 정기예금 (1년)</div>
+                            <div class="prod-sub">만기일: 2026.11.28</div>
+                        </div>
+                    </div>
+                    <div class="radio-wrap">
+                        <input type="checkbox" class="prod-check">
+                    </div>
+                </div>
+
+                <dl class="prod-meta">
+                    <div class="meta-row">
+                        <dt>평가금액</dt>
+                        <dd>18,580,000원</dd>
+                    </div>
+                    <div class="meta-row">
+                        <dt>비중</dt>
+                        <dd>12.4%</dd>
+                    </div>
+                    <div class="meta-row">
+                        <dt>수익률</dt>
+                        <dd class="rate minus">-0.20%</dd>
+                    </div>
+                </dl>
+
+                <div class="card-actions">
+                    <button type="button" class="btn btn-sheen btn-pressable">전부매도</button>
+                    <button type="button" class="btn btn-main btn-partial-toggle">일부매도</button>
+                </div>
+
+                <div class="sell-input-area">
+                    <div class="meta-row">
+                        <dt>일부 매도금액</dt>
+                        <dd>
+                            <input type="text" class="amount-input" placeholder="0">
+                            <span class="unit">원</span>
+                        </dd>
+                    </div>
+                    <div class="meta-row">
+                        <dt>일부 매도 비중</dt>
+                        <dd>
+                            <input type="text" class="percent-input" placeholder="0">
+                            <span class="unit">%</span>
+                        </dd>
+                    </div>
+                    <div class="card-actions">
+                        <button type="button" class="btn btn-sheen btn-pressable btn-partial-cancel">취소</button>
+                    </div>
+                </div>
+            </article>
+        </div>
+        <!-- 선택한 매도상품 합계 -->
+        <section class="sell-summary">
+            <h3 class="sell-summary-title">선택한 매도상품 합계</h3>
+            <table class="sell-summary-table">
+                <thead>
+                <tr>
+                    <th>구분(건수)</th>
+                    <th>매도좌수</th>
+                    <th>매도금액</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>투자상품(<span id="sumFundCount">0</span>건)</td>
+                    <td><span id="sumFundQty">0</span></td>
+                    <td><span id="sumFundAmount">0원</span></td>
+                </tr>
+                <tr>
+                    <td>원리금보장상품(<span id="sumTdCount">0</span>건)</td>
+                    <td><span id="sumTdQty">0</span></td>
+                    <td><span id="sumTdAmount">0원</span></td>
+                </tr>
+                <tr class="row-total">
+                    <td>합계(<span id="sumTotalCount">0</span>건)</td>
+                    <td><span id="sumTotalQty">0</span></td>
+                    <td><span id="sumTotalAmount">0원</span></td>
+                </tr>
+                </tbody>
+            </table>
+
+            <div class="sell-summary-notes">
+                <p class="note-danger">
+                    펀드의 실제 매도금액은 기준가 적용일 기준가 변동에 따라 현재 환산 매도금액 대비 차이가 발생할 수 있습니다.
+                </p>
+                <p class="note-normal">
+                    매도금액 환산 기준 : 고객입력 매도좌수 × 현재 기준가 / 1,000
+                </p>
+            </div>
+        </section>
+        <!-- 매도 합계 액션 버튼 영역 -->
+        <div class="sell-summary-actions">
+            <button type="button" class="btn btn-sheen btn-pressable btn-cancel-sell">돌아가기</button>
+            <button type="button" class="btn btn-main btn-open-sell-modal">매도하기</button>
+        </div>
+    </section>
+
+    <!-- ===== 매수 탭 ===== -->
+    <section id="tab-buy" class="panel tab-panel">
+        <h2 class="panel-title">매수 가능 금액 요약</h2>
+
+        <div class="summary-grid">
+            <div class="summary-item highlight">
+                <div class="summary-label">매수 가능 금액</div>
+                <div class="summary-value">30,000,000원</div>
+                <div class="summary-extra">현금성 자산 기준</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-label">현재 평가금액 합계</div>
+                <div class="summary-value">123,456,789원</div>
+                <div class="summary-extra">매수 전 기준</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-label">현재 비중 합계</div>
+                <div class="summary-value">80%</div>
+                <div class="summary-extra">총자산 대비 투자 비중</div>
+            </div>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <div class="list-header">
+            <h2>보유 상품 리스트</h2>
+            <span>상품별 평가금액·비중·수익률을 확인 후 매수 금액을 입력하세요.</span>
+        </div>
+
+        <div class="product-grid">
+            <!-- 매수 카드 1 -->
+            <article class="product-card buy-card">
+                <div class="card-top">
+                    <div class="prod-left">
+                        <div class="prod-icon">IRP</div>
+                        <div class="prod-title">
+                            <div class="prod-name">퇴직연금 글로벌 채권형</div>
+                            <div class="prod-sub">기준가: 1,052.34원</div>
+                        </div>
+                    </div>
+                    <div class="radio-wrap">
+                        <input type="checkbox" class="prod-check">
+                    </div>
+                </div>
+
+                <dl class="prod-meta">
+                    <div class="meta-row">
+                        <dt>평가금액</dt>
+                        <dd>12,300,000원</dd>
+                    </div>
+                    <div class="meta-row">
+                        <dt>비중</dt>
+                        <dd>8.2%</dd>
+                    </div>
+                    <div class="meta-row">
+                        <dt>수익률</dt>
+                        <dd class="rate plus">+3.45%</dd>
+                    </div>
+                </dl>
+
+                <div class="card-actions">
+                    <button type="button" class="btn btn-main btn-toggle-buy">매수하기</button>
+                </div>
+
+                <div class="buy-input-area">
+                    <div class="meta-row">
+                        <dt>매수 금액</dt>
+                        <dd>
+                            <input type="text" class="amount-input" placeholder="0">
+                            <span class="unit">원</span>
+                        </dd>
+                    </div>
+                    <div class="meta-row">
+                        <dt>매수 비중</dt>
+                        <dd>
+                            <input type="text" class="percent-input" placeholder="0">
+                            <span class="unit">%</span>
+                        </dd>
+                    </div>
+                    <div class="card-actions">
+                        <button type="button" class="btn btn-sheen btn-pressable btn-cancel-buy">취소</button>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 매수 카드 2 -->
+            <article class="product-card buy-card">
+                <div class="card-top">
+                    <div class="prod-left">
+                        <div class="prod-icon">펀드</div>
+                        <div class="prod-title">
+                            <div class="prod-name">글로벌 주식 인덱스 펀드</div>
+                            <div class="prod-sub">기준가: 9,876.12원</div>
+                        </div>
+                    </div>
+                    <div class="radio-wrap">
+                        <input type="checkbox" class="prod-check">
+                    </div>
+                </div>
+
+                <dl class="prod-meta">
+                    <div class="meta-row">
+                        <dt>평가금액</dt>
+                        <dd>8,500,000원</dd>
+                    </div>
+                    <div class="meta-row">
+                        <dt>비중</dt>
+                        <dd>5.7%</dd>
+                    </div>
+                    <div class="meta-row">
+                        <dt>수익률</dt>
+                        <dd class="rate plus">+12.80%</dd>
+                    </div>
+                </dl>
+
+                <div class="card-actions">
+                    <button type="button" class="btn btn-main btn-toggle-buy">매수하기</button>
+                </div>
+
+                <div class="buy-input-area">
+                    <div class="meta-row">
+                        <dt>매수 금액</dt>
+                        <dd>
+                            <input type="text" class="amount-input" placeholder="0">
+                            <span class="unit">원</span>
+                        </dd>
+                    </div>
+                    <div class="meta-row">
+                        <dt>매수 비중</dt>
+                        <dd>
+                            <input type="text" class="percent-input" placeholder="0">
+                            <span class="unit">%</span>
+                        </dd>
+                    </div>
+                    <div class="card-actions">
+                        <button type="button" class="btn btn-sheen btn-pressable btn-cancel-buy">취소</button>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 매수 카드 3 -->
+            <article class="product-card buy-card">
+                <div class="card-top">
+                    <div class="prod-left">
+                        <div class="prod-icon">예금</div>
+                        <div class="prod-title">
+                            <div class="prod-name">퇴직연금 정기예금 (3년)</div>
+                            <div class="prod-sub">약정 금리: 연 3.0%</div>
+                        </div>
+                    </div>
+                    <div class="radio-wrap">
+                        <input type="checkbox" class="prod-check">
+                    </div>
+                </div>
+
+                <dl class="prod-meta">
+                    <div class="meta-row">
+                        <dt>평가금액</dt>
+                        <dd>5,600,000원</dd>
+                    </div>
+                    <div class="meta-row">
+                        <dt>비중</dt>
+                        <dd>3.9%</dd>
+                    </div>
+                    <div class="meta-row">
+                        <dt>수익률</dt>
+                        <dd class="rate">3.00%</dd>
+                    </div>
+                </dl>
+
+                <div class="card-actions">
+                    <button type="button" class="btn btn-main btn-toggle-buy">매수하기</button>
+                </div>
+
+                <div class="buy-input-area">
+                    <div class="meta-row">
+                        <dt>매수 금액</dt>
+                        <dd>
+                            <input type="text" class="amount-input" placeholder="0">
+                            <span class="unit">원</span>
+                        </dd>
+                    </div>
+                    <div class="meta-row">
+                        <dt>매수 비중</dt>
+                        <dd>
+                            <input type="text" class="percent-input" placeholder="0">
+                            <span class="unit">%</span>
+                        </dd>
+                    </div>
+                    <div class="card-actions">
+                        <button type="button" class="btn btn-sheen btn-pressable btn-cancel-buy">취소</button>
+                    </div>
+                </div>
+            </article>
+        </div>
+
+
+        <!-- 선택한 매수상품 합계 -->
+        <section class="sell-summary buy-summary">
+            <h3 class="sell-summary-title">선택한 매수상품 합계</h3>
+            <table class="sell-summary-table">
+                <thead>
+                <tr>
+                    <th>구분(건수)</th>
+                    <th>매수좌수</th>
+                    <th>매수금액</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>투자상품(<span id="sumBuyFundCount">0</span>건)</td>
+                    <td><span id="sumBuyFundQty">0</span></td>
+                    <td><span id="sumBuyFundAmount">0원</span></td>
+                </tr>
+                <tr>
+                    <td>원리금보장상품(<span id="sumBuyTdCount">0</span>건)</td>
+                    <td><span id="sumBuyTdQty">0</span></td>
+                    <td><span id="sumBuyTdAmount">0원</span></td>
+                </tr>
+                <tr class="row-total">
+                    <td>합계(<span id="sumBuyTotalCount">0</span>건)</td>
+                    <td><span id="sumBuyTotalQty">0</span></td>
+                    <td><span id="sumBuyTotalAmount">0원</span></td>
+                </tr>
+                </tbody>
+            </table>
+
+            <div class="sell-summary-notes">
+                <p class="note-normal">
+                    매수금액 환산 기준 : 고객입력 매수좌수 × 기준가 / 1,000 (상품 유형에 따라 상이할 수 있습니다)
+                </p>
+            </div>
+        </section>
+
+        <!-- 매수 합계 액션 버튼 영역 -->
+        <div class="sell-summary-actions buy-summary-actions">
+            <button type="button" class="btn btn-sheen btn-pressable btn-cancel-buy-summary">돌아가기</button>
+            <button type="button" class="btn btn-main btn-open-buy-modal">매수하기</button>
+        </div>
+
+    </section>
+</main>
+
+<!-- 상품 매도 확인 / PIN 입력 모달 -->
+<div class="modal-backdrop" id="sellModalBackdrop">
+    <div class="modal-dialog">
+        <div class="modal-header">
+            <h3>상품 매도 확인</h3>
+        </div>
+
+        <div class="modal-body">
+            <p class="modal-text">아래 내용으로 상품 변경(매도)을 진행합니다.</p>
+
+            <div class="modal-summary">
+                <div class="modal-row">
+                    <span class="label">선택한 매도상품 수</span>
+                    <span class="value" id="modalSellCount">0건</span>
+                </div>
+                <div class="modal-row">
+                    <span class="label">총 매도 금액</span>
+                    <span class="value" id="modalSellAmount">0원</span>
+                </div>
+            </div>
+
+            <div class="modal-field">
+                <label for="sellPinInput">계좌 비밀번호 (4자리)</label>
+                <div class="pin-input-wrap">
+                    <input type="password"
+                           id="sellPinInput"
+                           maxlength="4"
+                           inputmode="numeric"
+                           autocomplete="off">
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-sheen btn-pressable" id="sellModalCancelBtn">취소</button>
+            <button type="button" class="btn btn-main" id="sellModalConfirmBtn">확인</button>
+        </div>
+    </div>
+</div>
+
+<!-- 상품 매수 확인 / PIN 입력 모달 -->
+<div class="modal-backdrop" id="buyModalBackdrop">
+    <div class="modal-dialog">
+        <div class="modal-header">
+            <h3>상품 매수 확인</h3>
+        </div>
+
+        <div class="modal-body">
+            <p class="modal-text">아래 내용으로 상품 변경(매수)을 진행합니다.</p>
+
+            <div class="modal-summary">
+                <div class="modal-row">
+                    <span class="label">선택한 매수상품 수</span>
+                    <span class="value" id="modalBuyCount">0건</span>
+                </div>
+                <div class="modal-row">
+                    <span class="label">총 매수 금액</span>
+                    <span class="value" id="modalBuyAmount">0원</span>
+                </div>
+            </div>
+
+            <div class="modal-field">
+                <label for="buyPinInput">계좌 비밀번호 (4자리)</label>
+                <div class="pin-input-wrap">
+                    <input type="password"
+                           id="buyPinInput"
+                           maxlength="4"
+                           inputmode="numeric"
+                           autocomplete="off">
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-sheen btn-pressable" id="buyModalCancelBtn">취소</button>
+            <button type="button" class="btn btn-main" id="buyModalConfirmBtn">확인</button>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <div id="footer" th:replace="~{layouts/footer.html}"></div>
+</footer>
+</body>
+</html>

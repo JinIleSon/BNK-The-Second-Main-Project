@@ -1,0 +1,839 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>stock_mainAbroad</title>
+    <style>
+        main {
+            background-color: #F6F6F8;
+            padding: 10px 20px 80px;
+        }
+        body {
+            background-color: #F6F6F8;
+        }
+    </style>
+    <style>
+        /* 탭 공통 스타일 */
+        .tab-list {
+            list-style: none;
+            display: flex;
+            padding: 0;
+            margin: 0;
+        }
+        .tab-list li {
+            margin-right: 20px;
+        }
+        .tab-link {
+            text-decoration: none;
+            color: #444;
+            padding-bottom: 6px; /* 밑줄과 간격 맞추기 */
+            display: inline-block;
+        }
+        /* 선택된 탭 스타일 (스크린샷처럼 밑줄) */
+        .tab-link.active {
+            color: #000;
+            font-weight: 500;
+        }
+        .tabs-wrapper {
+            position: relative;
+            border-bottom: 1px solid grey;
+        }
+        .tab-underline {
+            position: absolute;
+            bottom: 0;
+            height: 2px;
+            background-color: #000;
+            left: 0;
+            width: 0;
+            transition: left 0.2s ease, width 0.2s ease;
+        }
+
+        .stock-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            align-items: center;
+            padding: 10px 0;
+            border-radius: 12px;
+            transition: background-color 0.2s ease;  /* 서서히 변하도록 */
+        }
+        .stock-row:hover {
+            background-color: #ECEFF3;  /* 원하는 회색으로 조절 */
+        }
+
+        /* 등락률 변화 강조용 (배경만 살짝 깜빡) */
+        @keyframes rateUpBgFlash {
+            from { background-color: #FFEAEA; }   /* 상승 = 연한 빨강 */
+            to   { background-color: transparent; }
+        }
+        @keyframes rateDownBgFlash {
+            from { background-color: #DBE4F5; }   /* 하락 = 연한 파랑 */
+            to   { background-color: transparent; }
+        }
+
+        .rate-span {
+            padding-top:6px;
+            padding-bottom:6px;
+            padding-left: 50px;
+            border-radius: 8px;
+            display: inline-block;
+        }
+
+        .rate-change-up {
+            animation: rateUpBgFlash 1s ease-out;
+        }
+
+        .rate-change-down {
+            animation: rateDownBgFlash 1s ease-out;
+        }
+
+        .stock-row.flash-up {
+            animation: rowUpFlash 0.5s ease-out;
+        }
+        .stock-row.flash-down {
+            animation: rowDownFlash 0.5s ease-out;
+        }
+            /* 표 제목 영역 */
+        .stock-header {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            margin-top: 20px;
+        }
+        .circle-badge {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            color: white;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 17px;
+            flex-shrink: 0;
+        }
+    </style>
+    <style>
+        .rate-up {
+            color: #d60000;   /* 빨간색 */
+        }
+        .rate-down {
+            color: #0051c7;   /* 파란색 */
+        }
+        .rate-zero {
+            color: #555555;   /* 보합 */
+        }
+    </style>
+    <style>
+        .stock-table a {
+            text-decoration: none;
+            color: black;
+        }
+    </style>
+    <style>
+        /* 현재가 기본 스타일 */
+        .price-span {
+            color: #000000;
+        }
+
+        /* 올라갈 때 */
+        @keyframes priceUpFlash {
+            from { color: #de0000; }
+            to   { color: #000000; }
+        }
+        .price-flash-up {
+            animation: priceUpFlash 0.6s ease-out;
+        }
+
+        /* 내려갈 때 */
+        @keyframes priceDownFlash {
+            from { color: #0051C7; }
+            to   { color: #000000; }
+        }
+        .price-flash-down {
+            animation: priceDownFlash 0.6s ease-out;
+        }
+    </style>
+    <style>
+        .toast {
+            position: fixed;
+            top: 16px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-10px);
+            background: #181e27;
+            color: #ffffff;
+            border-radius: 12px;
+            padding: 8px 18px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            z-index: 10000;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        .toast-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #22c55e;
+            margin-right: 8px;
+        }
+    </style>
+    <style>
+        .ticker-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 40px;
+            background: #fff;
+            border-bottom: 1px solid #ddd;
+            overflow: hidden;
+            z-index: 9999;
+
+            display: flex;
+            align-items: center;   /* 세로 가운데 정렬 */
+        }
+
+        .ticker-content {
+            display: inline-block;
+            white-space: nowrap;
+            animation: tickerMove 1000s linear infinite;
+        }
+
+        @keyframes tickerMove {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
+        }
+    </style>
+    <style>
+        .ticker-rate-up {
+            color: #d60000; /* 빨강 */
+        }
+
+        .ticker-rate-down {
+            color: #0051c7; /* 파랑 */
+        }
+
+        .ticker-rate-zero {
+            color: #555;    /* 보합 */
+        }
+    </style>
+    <style>
+        /* 환율 버튼 스타일 */
+        .currency-toggle {
+            margin: 10px 0;
+            text-align: right;
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        .currency-btn {
+            border: 1px solid #E5E7EB;
+            background: #F3F4F6;
+            border-radius: 999px;
+            padding: 6px 14px;
+            font-size: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            color: #4B5563;
+            transition:
+                    background-color 0.15s ease,
+                    border-color 0.15s ease,
+                    box-shadow 0.15s ease,
+                    transform 0.08s ease;
+        }
+
+        .currency-btn:hover {
+            background: #E5E7EB;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+            transform: translateY(-1px);
+        }
+
+        .currency-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 0 0 rgba(0,0,0,0);
+        }
+
+        .currency-btn.active {
+            background: #111827;
+            color: #F9FAFB;
+            border-color: #111827;
+            box-shadow: 0 2px 6px rgba(15,23,42,0.35);
+        }
+
+        .currency-btn.active .currency-text-sub {
+            color: #E5E7EB;
+        }
+
+        .currency-emoji {
+            font-size: 14px;
+            line-height: 1;
+        }
+
+        .currency-text-main {
+            font-weight: 600;
+            letter-spacing: 0.02em;
+        }
+
+        .currency-text-sub {
+            font-size: 11px;
+            color: #9CA3AF;
+        }
+    </style>
+    <style>
+        /* 환율 스타일 */
+        .fx-info-bar {
+            margin: 10px 0 20px;
+            padding: 8px 16px;
+            background: #FFF5F5;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+        .fx-info-bar strong {
+            margin-left: 8px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div th:replace="~{layouts/header.html}"></div>
+    </header>
+
+    <main>
+        <div class="fx-info-bar" th:inline="text">
+            <span>오늘의 달러 환율(한국수출입은행 기준)</span>
+            <strong>
+                1 USD = [[${#numbers.formatDecimal(usdKrw, 0, 'COMMA', 2, 'POINT')}]]원
+            </strong>
+        </div>
+        <div style="">
+            <ul class="tab-list" id="marketTabs" style="list-style: none; display: flex;">
+                <li style=" margin-right: 20px;">
+                    <a th:href="@{/stock/main}" class="tab-link" style="text-decoration: none;color: black;">국내 정규장</a>
+                </li>
+                <li>
+                    <a th:href="@{/stock/mainAbroad}" class="tab-link active" style=" text-decoration: none; color: black;">해외 데이마켓</a>
+                </li>
+                <li>
+                    <a th:href="@{/stock/mainEtf}" class="tab-link" style=" text-decoration: none; color: black;">ETF</a>
+                </li>
+            </ul>
+        </div>
+        <div class="tabs-wrapper" style="margin-top: 50px; border-bottom: 1px solid grey;">
+            <ul class="tab-list" id="subTabs" style="list-style: none; display: flex;">
+                <li style=" margin-right: 20px;">
+                    <a href="#" class="tab-link active" style="text-decoration: none;color: black;">실시간 차트</a>
+                </li>
+                <li style="margin-right: 20px;">
+                    <a href="#" class="tab-link" style=" text-decoration: none; color: black;">지금 뜨는 카테고리</a>
+                </li>
+                <li>
+                    <a href="#" class="tab-link" style=" text-decoration: none; color: black;">국내 투자자 동향</a>
+                </li>
+            </ul>
+
+            <!--
+            날짜: 2025-11-25
+            작업자: 전세현
+            내용: 오늘 기준 USD/KRW 환율
+            -->
+            <div class="currency-toggle">
+                <button type="button" class="currency-btn active" data-currency="USD">
+                    <span class="currency-emoji">🇺🇸</span>
+                    <span class="currency-text-main">USD</span>
+                    <span class="currency-text-sub">달러</span>
+                </button>
+                <button type="button" class="currency-btn" data-currency="KRW">
+                    <span class="currency-emoji">🇰🇷</span>
+                    <span class="currency-text-main">KRW</span>
+                    <span class="currency-text-sub">원</span>
+                </button>
+            </div>
+
+            <script th:inline="javascript">
+                // 서버에서 내려준 환율 (예: 1473.5)
+                const USD_KRW = /*[[${usdKrw}]]*/ 0;
+            </script>
+            <script>
+                // 현재 선택된 통화 (기본 USD)
+                let currentCurrency = 'USD';
+
+                document.addEventListener('DOMContentLoaded', () => {
+                    const currencyButtons = document.querySelectorAll('.currency-btn');
+
+                    currencyButtons.forEach(btn => {
+                        btn.addEventListener('click', () => {
+                            currentCurrency = btn.dataset.currency;
+
+                            // 버튼 active 스타일 토글
+                            currencyButtons.forEach(b =>
+                                b.classList.toggle('active', b === btn)
+                            );
+
+                            // 이미 랭킹 데이터를 받았다면 다시 렌더링
+                            if (window.latestRanks) {
+                                renderRanks(window.latestRanks);
+                            }
+                        });
+                    });
+                });
+            </script>
+
+            <!-- 검은색 움직이는 밑줄 -->
+            <div class="tab-underline" id="subTabsUnderline"></div>
+        </div>
+        <div class="stock-table">
+<!--            컬럼-->
+            <div class="stock-header" style="margin-bottom: 10px;">
+                <div id="timeDisplay" style="font-size: 15px; padding-left: 10px;">순위·오늘 --:-- 기준</div>
+                <div style="font-size: 15px; text-align: end;">현재가</div>
+                <div style="font-size: 15px; text-align: end;">등락률</div>
+                <div style="font-size: 15px; text-align: end; padding-right:10px;">거래대금 순</div>
+            </div>
+<!--            1~10순위-->
+            <!-- 🔥 ka10032 상위 10개 루프 -->
+            <div id="stockRows">
+                <th:block th:each="item : ${ranks}">
+                <!-- 링크: /stock/orderAbroad?code=005930 이런 식 -->
+                <a th:href="@{/stock/orderAbroad(code=${item.code}, name=${item.name})}">
+                    <div class="stock-row">
+                        <!-- 순위 + 종목명 -->
+                        <div style="display:flex; padding-left:14px;">
+                            <div style="margin-right:20px;">
+                                <div style="text-align:center; width:20px;"
+                                     th:text="${item.rank}">1</div>
+                            </div>
+                            <div class="stock-name"
+                                 th:text="${item.name}">삼성전자</div>
+                        </div>
+
+                        <!-- 현재가 -->
+                        <div style="text-align:end;">
+                    <span th:text="${#numbers.formatInteger(item.price,0,'COMMA')}">
+                        152000
+                    </span> 달러
+                        </div>
+
+                        <!-- 등락률: 색상 class 부여 -->
+                        <div style="text-align:end;"
+                             th:classappend="${
+                        item.changeRate > 0 ? ' rate-up' :
+                        (item.changeRate < 0 ? ' rate-down' : ' rate-zero')
+                     }">
+                    <span th:text="${
+                        (item.changeRate > 0 ? '+' : (item.changeRate < 0 ? '-' : ''))
+                        + #numbers.formatDecimal(T(java.lang.Math).abs(item.changeRate), 1, 2)
+                        + '%'
+                    }">-0.07%</span>
+                        </div>
+
+                        <!-- 거래대금: 단위는 문서 기준으로 조정 (예: 억 단위로 보고 싶으면 /10000 등) -->
+                        <div style="text-align:end; padding-right:10px;">
+                    <span th:text="${#numbers.formatInteger(item.amount, 0, 'COMMA')} + ' 달러'">
+                        5,308,092
+                    </span>
+                        </div>
+                    </div>
+                </a>
+            </th:block>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div th:replace="~{layouts/footer.html}"></div>
+    </footer>
+    <!-- 등락률 최저 종목 토스트 -->
+    <div id="rankToast" class="toast">
+    <span class="toast-icon">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"
+             xmlns="http://www.w3.org/2000/svg">
+            <path d="M11.5 4L6 9.5L3.5 7"
+                  stroke="white" stroke-width="1.6"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </span>
+        <span id="rankToastText">-</span>
+    </div>
+
+    <div id="tickerBar" class="ticker-bar">
+        <div id="tickerContent" class="ticker-content" >
+            <!-- ✅ 최초 진입 시 서버에서 먼저 채우기 -->
+            <th:block th:each="item : ${ranks}">
+            <span style="margin-right:40px;">
+                <span th:text="${item.name}">삼성전자</span>
+                <span th:class="${
+                    item.changeRate > 0 ? 'ticker-rate-up' :
+                    (item.changeRate < 0 ? 'ticker-rate-down' : 'ticker-rate-zero')
+                }">
+                    <span th:text="${#numbers.formatInteger(item.price,0,'COMMA')}">72,300</span> 달러
+                    (
+                    <span th:text="${
+                        (item.changeRate > 0 ? '+' : (item.changeRate < 0 ? '-' : '')) +
+                        #numbers.formatDecimal(T(java.lang.Math).abs(item.changeRate), 1, 2)
+                    } + '%'">+1.23%</span>
+                    )
+                </span>
+            </span>
+            </th:block>
+        </div>
+    </div>
+    <script>
+        // 일반 탭 active 처리 (위쪽 탭)
+        function initTabs(ulId) {
+            const tabList = document.getElementById(ulId);
+            if (!tabList) return;
+
+            const links = tabList.querySelectorAll('.tab-link');
+
+            links.forEach(link => {
+                link.addEventListener('click', function (e) {
+                    links.forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+        }
+
+        // 밑줄이 움직이는 탭 처리 (아래쪽 탭)
+        function initMovingUnderline(ulId, underlineId) {
+            const tabList = document.getElementById(ulId);
+            const underline = document.getElementById(underlineId);
+            if (!tabList || !underline) return;
+
+            const links = tabList.querySelectorAll('.tab-link');
+
+            // li의 offset 기준으로 밑줄 이동
+            function moveUnderline(target) {
+                const li = target.parentElement;    // <li>
+                underline.style.width = li.offsetWidth + 'px';
+                underline.style.left  = li.offsetLeft + 'px';
+            }
+
+            // 초기 위치: active 되어있는 탭 기준
+            const activeLink = tabList.querySelector('.tab-link.active') || links[0];
+            if (activeLink) {
+                moveUnderline(activeLink);
+            }
+
+            links.forEach(link => {
+                link.addEventListener('click', function (e) {
+                    e.preventDefault();
+
+                    // active 처리
+                    links.forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+
+                    // 밑줄 이동
+                    moveUnderline(this);
+                });
+            });
+
+            // 리사이즈 시 위치 다시 계산
+            window.addEventListener('resize', () => {
+                const currentActive = tabList.querySelector('.tab-link.active') || links[0];
+                if (currentActive) moveUnderline(currentActive);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            initTabs('marketTabs');                          // 위쪽 탭
+            initMovingUnderline('subTabs', 'subTabsUnderline'); // 아래쪽 움직이는 언더라인 탭
+        });
+    </script>
+<script>
+    function updateTime() {
+        const now = new Date();
+
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+
+        const text = `순위·오늘 ${hours}:${minutes} 기준`;
+
+        document.getElementById('timeDisplay').innerText = text;
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        initTabs('marketTabs');
+        initMovingUnderline('subTabs', 'subTabsUnderline');
+
+        updateTime();            // 처음 실행
+        setInterval(updateTime, 60 * 1000);  // 1분마다 갱신
+    });
+</script>
+    <script>
+        function getRandomColor() {
+            const colors = ["#1E90FF", "#FF6347", "#6A5ACD", "#2E8B57", "#FF8C00", "#DC143C"];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+
+        function getColorForName(name) {
+            const key = `badgeColor_${name}`;
+
+            // 이미 저장된 색이 있다면 그대로 사용
+            const stored = localStorage.getItem(key);
+            if (stored) return stored;
+
+            // 없으면 새로 생성
+            const newColor = getRandomColor();
+            localStorage.setItem(key, newColor);
+            return newColor;
+        }
+
+        function createCircleBadge(text, color) {
+            const badge = document.createElement("div");
+            badge.className = "circle-badge";
+            badge.style.backgroundColor = color;
+            badge.textContent = text;
+            return badge;
+        }
+
+        function initCircleBadges() {
+            const names = document.querySelectorAll(".stock-name");
+
+            names.forEach(nameEl => {
+                const fullName = nameEl.innerText.trim();
+                const firstChar = fullName.charAt(0);
+
+                // 항상 동일한 색을 가져오거나 생성
+                const color = getColorForName(fullName);
+
+                const badge = createCircleBadge(firstChar, color);
+
+                const wrapper = document.createElement("div");
+                wrapper.style.display = "flex";
+                wrapper.style.alignItems = "center";
+
+                const originalText = document.createElement("span");
+                originalText.textContent = fullName;
+
+                wrapper.appendChild(badge);
+                wrapper.appendChild(originalText);
+
+                nameEl.innerHTML = "";
+                nameEl.appendChild(wrapper);
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            initCircleBadges();
+        });
+    </script>
+    <script>
+        // 🔹 이전 랭킹 데이터 저장용
+        let prevRanksByCode = {};
+        let rankToastShown = false;
+
+        async function fetchRanks() {
+            try {
+                console.log('[fetchRanks] 호출');
+
+                const res = await fetch('/BNK/api/overseas-ranks', {
+                    method: 'GET',
+                    cache: 'no-store'
+                });
+
+                if (!res.ok) {
+                    throw new Error('failed to fetch ranks: ' + res.status);
+                }
+
+                const ranks = await res.json();
+                console.log('[fetchRanks] 데이터:', ranks);
+                renderRanks(ranks);   // 🔥 여기서 토스트까지 같이 처리됨
+                updateTicker(ranks);
+            } catch (e) {
+                console.error('랭킹 불러오기 실패:', e);
+            }
+        }
+
+        function renderRanks(ranks) {
+            const container = document.getElementById('stockRows');
+            if (!container) return;
+
+            // 통화 토글용으로 마지막 데이터 저장 : 전세현
+            window.latestRanks = ranks;
+
+            let html = '';
+            let minItem = null;
+
+            ranks.forEach(item => {
+                const rank   = item.rank;
+                const code   = item.code;
+                const name   = item.name;
+                const priceUsd  = Number(item.price);        // 원본: 달러
+                const rate   = Number(item.changeRate);
+                const amountUsd = Number(item.amount);       // 거래대금 (달러)
+
+                if (!isNaN(rate)) {
+                    if (!minItem || rate < Number(minItem.changeRate)) {
+                        minItem = item;
+                    }
+                }
+
+                const prev = prevRanksByCode[code];
+                let rateChangeClass = '';
+
+                if (prev) {
+                    if (rate > prev.rate) {
+                        rateChangeClass = 'rate-change-up';
+                    } else if (rate < prev.rate) {
+                        rateChangeClass = 'rate-change-down';
+                    }
+                }
+
+                const rateClass =
+                    rate > 0 ? 'rate-up' :
+                        (rate < 0 ? 'rate-down' : 'rate-zero');
+
+                const sign =
+                    rate > 0 ? '+' :
+                        (rate < 0 ? '-' : '');
+
+                const absRate  = Math.abs(rate).toFixed(2);
+                const rateText = `${sign}${absRate}%`;
+
+                // 통화에 따른 가격/거래대금 계산 : 전세현
+                const priceKrw  = priceUsd  * USD_KRW;
+                const amountKrw = amountUsd * USD_KRW;
+
+                let displayPrice, priceUnit;
+                let displayAmount, amountUnit;
+
+                if (currentCurrency === 'KRW') {
+                    displayPrice  = Math.round(priceKrw).toLocaleString('ko-KR');
+                    displayAmount = Math.round(amountKrw).toLocaleString('ko-KR');
+                    priceUnit  = ' 원';
+                    amountUnit = ' 원';
+                } else {
+                    displayPrice  = priceUsd.toLocaleString('ko-KR');
+                    displayAmount = amountUsd.toLocaleString('ko-KR');
+                    priceUnit  = ' $';
+                    amountUnit = ' $';
+                }
+
+                const url = `/BNK/stock/orderAbroad?code=${encodeURIComponent(code)}&name=${encodeURIComponent(name)}`;
+
+                html += `
+                <a href="${url}">
+                    <div class="stock-row">
+                        <div style="display:flex; padding-left:14px;">
+                            <div style="margin-right:20px;">
+                                <div style="text-align:center; width:20px;">
+                                    ${rank}
+                                </div>
+                            </div>
+                            <div class="stock-name">
+                                ${name}
+                            </div>
+                        </div>
+                        <div style="text-align:end;">
+                            <span>${displayPrice}</span>${priceUnit}
+                        </div>
+                        <div style="text-align:end;" class="${rateClass}">
+                            <span class="rate-span ${rateChangeClass}">${rateText}</span>
+                        </div>
+                        <div style="text-align:end; padding-right:10px;">
+                            <span>${displayAmount}</span>${amountUnit}
+                        </div>
+                    </div>
+                </a>
+            `;
+            });
+
+            container.innerHTML = html;
+
+            prevRanksByCode = {};
+            ranks.forEach(item => {
+                prevRanksByCode[item.code] = {
+                    price: Number(item.price),
+                    rate:   Number(item.changeRate),
+                    amount: Number(item.amount)
+                };
+            });
+
+            if (typeof initCircleBadges === 'function') {
+                initCircleBadges();
+            }
+
+            // ✅ 여기서 토스트
+            if (!rankToastShown && minItem) {
+                rankToastShown = true;
+                showRankToast(minItem.name, Number(minItem.changeRate));
+            }
+        }
+
+        function showRankToast(stockName, rate) {
+            const toast = document.getElementById('rankToast');
+            const text  = document.getElementById('rankToastText');
+            if (!toast || !text) return;
+
+            const absRate = Math.abs(rate).toFixed(2);
+
+            text.innerHTML =
+                `오늘 가장 많이 하락한 종목은 <b>${stockName}</b>에요` +
+                `<br><span style="font-size:12px;opacity:0.8;">` +
+                `등락률 <b>${rate < 0 ? '-' : ''}${absRate}%</b>` +
+                `</span>`;
+
+            toast.classList.add('show');
+
+            clearTimeout(window._rankToastTimer);
+            window._rankToastTimer = setTimeout(function () {
+                toast.classList.remove('show');
+            }, 1500);
+        }
+
+        // ✅ 페이지 로드 시 데이터 불러오기 + 주기적 갱신
+        document.addEventListener('DOMContentLoaded', function () {
+            fetchRanks();                  // 처음 한 번
+            setInterval(fetchRanks, 1500); // 1.5초마다 갱신 (원래 있던 로직)
+        });
+    </script>
+    <script>
+        function updateTicker(ranks) {
+            const html = ranks.map(r => {
+                const rate = Number(r.changeRate);
+                const price = Number(r.price);
+
+                const rateClass =
+                    rate > 0 ? 'ticker-rate-up' :
+                        rate < 0 ? 'ticker-rate-down' :
+                            'ticker-rate-zero';
+
+                const sign =
+                    rate > 0 ? '+' :
+                        rate < 0 ? '-' : '';
+
+                const absRate = Math.abs(rate).toFixed(2);
+                const priceText = price.toLocaleString('ko-KR');
+
+                return `
+            <span style="margin-right:40px;">
+                ${r.name}
+                <span class="${rateClass}">
+                     $${priceText} (${sign}${absRate}%)
+                </span>
+            </span>
+        `;
+            }).join('');
+
+            // 끊김 없이 돌게 2번 이어붙이기 (원하면 유지)
+            document.getElementById('tickerContent').innerHTML = html + html;
+        }
+    </script>
+
+</body>
+</html>

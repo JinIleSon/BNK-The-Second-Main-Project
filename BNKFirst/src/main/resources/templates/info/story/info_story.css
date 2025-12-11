@@ -1,0 +1,66 @@
+
+:root{
+    --bnk-red:#DE0000;
+    --bnk-gray:#444;
+    --bnk-border:#ddd;
+    --bnk-panel:#f9f9f9;
+    --shadow:0 4px 12px rgba(0,0,0,.06);
+    --radius:12px;
+    --maxw:1200px;
+}
+body {
+    font-family: "Noto Sans KR", sans-serif;
+    margin-top: 150px;
+    background-color: #fafafa;
+    color: #222;
+}
+main{width:80%;max-width:var(--maxw);margin:80px auto;}
+a{text-decoration:none;color:inherit;}
+img{max-width:100%;display:block;}
+
+/* 공통 */
+.section-title{font-size:20px;font-weight:700;margin:0 0 14px;}
+.headline{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+.headline .bar{width:6px;height:18px;background:var(--bnk-red);border-radius:3px;}
+
+/* 페이지 레이아웃 */
+.press-grid{display:grid;grid-template-columns:2fr 1.3fr 1.1fr;gap:24px;}
+.card{background:#fff;border:1px solid var(--bnk-border);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;}
+
+/* ① 보도자료 */
+.press-main{display:grid;grid-template-columns:1fr 220px;gap:16px;margin-bottom:14px;}
+.mini{display:grid;grid-template-columns:80px 1fr;gap:8px;padding:8px;border:1px solid #eee;border-radius:8px;}
+.mini img{border-radius:6px;}
+.press h3{font-size:16px;margin:8px 0 4px;}
+.press .subtitle{font-size:13px;color:#444;}
+.press .date{font-size:12px;color:#666;}
+
+/* ② 공지/이벤트/소식지/영상/앨범 */
+.notice li{display:flex;justify-content:space-between;border-bottom:1px dashed #eee;padding:6px 0;}
+.notice .new{width:8px;height:8px;background:var(--bnk-red);border-radius:50%;margin-left:6px;}
+.slider{position:relative;overflow:hidden;border-radius:10px;border:1px solid #ddd;}
+.slides{display:flex;transition:transform .3s;}
+.slide{min-width:100%;display:flex;align-items:center;justify-content:center;background:#fff;}
+.nav{position:absolute;inset:0;display:flex;align-items:center;justify-content:space-between;padding:0 8px;}
+.nav button{background:#fff;border:1px solid #ddd;border-radius:50%;width:32px;height:32px;cursor:pointer;}
+.dot{width:8px;height:8px;border-radius:50%;background:#ccc;margin:0 3px;}
+.dot.active{background:#444;}
+.mag{display:flex;gap:10px;align-items:center;}
+.mag img{border:1px solid #ddd;border-radius:8px;width:150px;}
+.video{position:relative;border-radius:12px;overflow:hidden;border:1px solid #ddd;}
+.video::after{content:"▶";position:absolute;inset:0;margin:auto;width:64px;height:64px;border-radius:50%;background:rgba(0,0,0,.4);color:#fff;display:grid;place-items:center;font-size:28px;}
+.gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
+.gallery img{aspect-ratio:4/3;object-fit:cover;border-radius:6px;}
+
+/* ③ SNS */
+.sns{background:var(--bnk-panel);border:1px solid var(--bnk-border);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);}
+.fb-embed{background:#fff;border:1px solid #ddd;border-radius:10px;padding:10px;}
+.ticker{background:#fff;border:1px solid #ddd;border-radius:10px;max-height:320px;overflow:auto;}
+.tick-item{padding:8px 10px;border-bottom:1px dashed #eee;}
+.tick-item:last-child{border-bottom:0;}
+.mascot{position:fixed;right:22px;bottom:22px;width:56px;height:56px;border-radius:50%;background:#fff;border:1px solid #ddd;box-shadow:var(--shadow);display:grid;place-items:center;font-weight:700;color:var(--bnk-red);cursor:pointer;}
+
+@media(max-width:1024px){
+    .press-grid{grid-template-columns:1fr;}
+    main{width:90%;margin:40px auto;}
+}

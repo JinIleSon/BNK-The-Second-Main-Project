@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BNK부산은행 | 그룹 전략체계도</title>
+  <style>
+    :root {
+      --bnk-red: #DE0000;
+      --bnk-border: #ddd;
+      --bnk-gray: #444;
+    }
+
+    body {
+      font-family: "Noto Sans KR", sans-serif;
+      margin: 40px;
+      background-color: #fff;
+      color: #222;
+    }
+
+    .sidebar {
+      width: 260px;
+      border: 1px solid var(--bnk-border);
+    }
+
+    .sidebar h3 {
+      font-size: 18px;
+      font-weight: 600;
+      padding: 16px;
+      border-bottom: 1px solid var(--bnk-border);
+    }
+
+    .menu-item {
+      border-bottom: 1px solid var(--bnk-border);
+    }
+
+    .menu-title {
+      padding: 14px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      color: var(--bnk-gray);
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+
+    .menu-title:hover {
+      background-color: #fff5f5;
+      color: var(--bnk-red);
+    }
+
+    .menu-title.active {
+      background-color: #fff5f5;
+      color: var(--bnk-red);
+      font-weight: 600;
+    }
+
+    .menu-title::after {
+      content: ">";
+      color: var(--bnk-gray);
+      transition: transform 0.2s;
+    }
+
+    .menu-title.active::after {
+      transform: rotate(90deg);
+      color: var(--bnk-red);
+    }
+
+    .submenu {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+      background-color: #fafafa;
+    }
+
+    .submenu a {
+      display: block;
+      padding: 10px 24px;
+      text-decoration: none;
+      color: var(--bnk-gray);
+      font-size: 14px;
+      border-left: 2px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .submenu a:hover {
+      color: var(--bnk-red);
+      border-left: 2px solid var(--bnk-red);
+      background-color: #fff;
+    }
+
+    .submenu a.active {
+      font-weight: 600;
+      color: var(--bnk-red);
+      border-left: 2px solid var(--bnk-red);
+    }
+  </style>
+</head>
+<body>
+
+  <aside class="sidebar">
+    <h3>은행안내</h3>
+
+    <div class="menu-item">
+      <div class="menu-title">CEO인사말</div>
+    </div>
+
+    <div class="menu-item">
+      <div class="menu-title active">미션과 전략체계</div>
+      <div class="submenu" style="max-height: 240px;">
+        <a href="#">그룹 전략 체계도</a>
+        <a href="#">그룹 미션</a>
+        <a href="#">그룹 비전</a>
+        <a href="#">그룹 전략 슬로건</a>
+        <a href="#">그룹 핵심가치</a>
+      </div>
+    </div>
+
+    <div class="menu-item">
+      <div class="menu-title">조직도</div>
+    </div>
+
+    <div class="menu-item">
+      <div class="menu-title">연혁</div>
+    </div>
+
+    <div class="menu-item">
+      <div class="menu-title">윤리경영</div>
+    </div>
+  </aside>
+
+  <script>
+    const titles = document.querySelectorAll(".menu-title");
+
+    titles.forEach(title => {
+      title.addEventListener("click", () => {
+        const isActive = title.classList.contains("active");
+
+        // 모든 메뉴 닫기
+        titles.forEach(t => {
+          t.classList.remove("active");
+          const next = t.nextElementSibling;
+          if (next && next.classList.contains("submenu")) {
+            next.style.maxHeight = null;
+          }
+        });
+
+        // 현재 클릭한 메뉴만 열기
+        if (!isActive) {
+          title.classList.add("active");
+          const submenu = title.nextElementSibling;
+          if (submenu && submenu.classList.contains("submenu")) {
+            submenu.style.maxHeight = submenu.scrollHeight + "px";
+          }
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,256 @@
+<!-- ==================== BNK 부산은행 헤더 ==================== -->
+<div class="nav-root" style="">
+    <!-- 메인 네비게이션 -->
+    <div class="nav-wrap" style="display:flex; padding-top:20px; padding-bottom: 15px; padding-left: 30px; padding-right: 10px;">
+        <!--로고-->
+        <a th:href="@{/main/main}">
+            <img th:src="@{/images/bnk_logo.png}" alt="BNK" class="logo-img" width="258px">
+        </a>
+        <div style="flex-grow:1;">
+            <ul class="gnb" style="
+                display: flex;
+                justify-content: flex-end;
+                gap: 50px;
+                list-style: none;
+                margin: 0;
+                padding: 0;
+                align-items: center;
+                ">
+                <li style="margin-bottom:15px;"></li>
+
+                <li class="has-mega">
+                    <a th:href="@{/info/guide}" style="text-decoration: none; color: #374151; font-weight: 650; font-size: x-large;">은행안내</a>
+                    <div class="mega">
+                        <div class="mega-inner">
+                            <div>
+                                <h4>은행안내</h4>
+                                <ul>
+                                    <li><a th:href="@{/info/guide/ceoGreeting}" style="font-size: 18px;">CEO인사말</a></li>
+                                    <li><a th:href="@{/info/guide/groupMission}" style="font-size: 18px;">미션과 전략체계</a></li>
+                                    <li><a href="#" style="font-size: 18px;">조직도</a></li>
+                                    <li><a href="#" style="font-size: 18px;">연혁</a></li>
+                                    <li><a href="#" style="font-size: 18px;">윤리경영</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+
+                <li class="has-mega">
+                    <a th:href="@{/info/story}" style="text-decoration: none; color: #374151; font-weight: 650; font-size: x-large;">BNK부산은행스토리</a>
+                    <div class="mega">
+                        <div class="mega-inner">
+                            <div>
+                                <h4>BNK부산은행스토리</h4>
+                                <ul>
+                                    <li><a th:href="@{/info/story}" style="font-size: 18px;">BNK부산은행뉴스</a></li>
+                                    <li><a th:href="@{/info/story}" style="font-size: 18px;">홍보센터</a></li>
+                                    <li><a th:href="@{/info/story}" style="font-size: 18px;">CI/캐릭터소개</a></li>
+                                    <li><a th:href="@{/info/story}" style="font-size: 18px;">사회공헌(행복한BNK)</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+
+                <li class="has-mega">
+                    <a th:href="@{/info/invest}" style="text-decoration: none; color: #374151; font-weight: 650; font-size: x-large;">투자자정보</a>
+                    <div class="mega">
+                        <div class="mega-inner">
+                            <div>
+                                <h4>투자자정보</h4>
+                                <ul>
+                                    <li><a th:href="@{/info/invest}" style="font-size: 18px;">경영정보</a></li>
+                                    <li><a th:href="@{/info/invest}" style="font-size: 18px;">공고</a></li>
+                                    <li><a th:href="@{/info/invest}" style="font-size: 18px;">신용등급</a></li>
+                                    <li><a th:href="@{/info/invest}" style="font-size: 18px;">BNK금융지주</a></li>
+                                    <li><a th:href="@{/info/invest}" style="font-size: 18px;">IR정보</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+
+                <li class="has-mega">
+                    <a th:href="@{/info/branch}" style="text-decoration: none; color: #374151; font-weight: 650; font-size: x-large;">영업점안내</a>
+                    <div class="mega">
+                        <div class="mega-inner">
+                            <div>
+                                <h4>영업점안내</h4>
+                                <ul>
+                                    <li><a th:href="@{/info/branch}" style="font-size: 18px;">영업점안내</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+
+                <li style="width:300px;">
+                    <div style="display: flex; align-items: center;">
+                        <div style=" width: 60px;">
+                            <a th:href="@{/info/guide}">
+                                <img th:src="@{/images/magnifier.png}" alt="">
+                            </a>
+                        </div>
+                        <div style="width: 60px;">
+                            <a th:href="@{/admin/main}">
+                                <img th:src="@{/images/globe.png}" alt="">
+                            </a>
+                        </div>
+                        <div style="width: 115px;">
+                            <button class="auth-btn"
+                                    th:onclick="|location.href='@{/cs/main}'|"
+                                    style="cursor: pointer;border-radius: 6px; border:1px solid #E5E7EB; width:85px; height:38px;">고객센터</button>
+                        </div>
+                        <div style="width: 60px;">
+                            <a th:href="@{/mypage/main}">
+                                <img th:src="@{/images/human.png}" alt="">
+                            </a>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== CSS ==================== -->
+<style>
+    .nav-root {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        background: #fff;
+        border-bottom: 5px solid #DE0000;
+    }
+
+    .nav-wrap {
+        position: relative;
+    }
+
+
+.mega {
+    display: none;
+    position: fixed;          /* 화면 기준으로 전체폭 */
+    left: 0;
+    right: 0;
+    top: 80px;                /* 상단바 높이에 맞게 조절(기존보다 조금 여유) */
+    background: #fff;
+    border-top: 0px solid #E5E7EB;
+    border-bottom: 5px solid #DE0000;
+    box-shadow: 0 0px 0px rgba(0,0,0,.06);
+    padding: 40px 48px;       /* 패널 내부 여백 ↑ */
+    min-height: 240px;        /* 펼쳐지는 세로 공간 ↑ */
+    z-index: 19;
+}
+
+
+
+    .has-mega:hover .mega,
+    .mega:hover {
+        display: block;
+    }
+
+    .mega-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 32px 110px;          /* 컬럼 가로 간격 넓힘 */
+    }
+
+    .mega h4 {
+        margin: 0 0 16px;
+        font-size: 22px;
+        color: #111827;
+        font-weight: 700;
+    }
+
+    .mega ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .mega li {
+        margin: 12px 0;
+    }
+
+    .mega a {
+        position: relative;
+        display: inline-block;
+        text-decoration: none;
+        color: #374151;
+        font-size: 14px;
+        line-height: 1.9;
+    }
+
+    .mega a:hover {
+        color: #DE0000;
+    }
+
+    .gnb>li>a {
+        position: relative;
+        display: inline-block;
+        text-decoration: none;
+        color: #374151;
+        padding-bottom: 10px;
+        transition: color 0.2s ease;
+    }
+
+    .gnb>li:hover>a {
+        color: #DE0000;
+    }
+
+    .auth-btn {
+        cursor: pointer;
+        border-radius: 6px;
+        border: 1px solid #E5E7EB;
+        background-color: white;
+        width: 85px;
+        height: 38px;
+        color: #374151;
+        transition: all 0.25s ease-in-out;
+    }
+
+    .auth-btn:hover {
+        background-color: #DE0000;
+        color: white;
+        border-color: #DE0000;
+    }
+
+    :root {
+        --nav-h: 68px;
+    }
+</style>
+
+<script>
+    document.querySelectorAll('.has-mega').forEach(el => {
+  const mega = el.querySelector('.mega');
+  let timer;
+
+  el.addEventListener('mouseenter', () => {
+    clearTimeout(timer);
+    mega.style.display = 'block';
+  });
+
+  el.addEventListener('mouseleave', () => {
+    timer = setTimeout(() => {
+      mega.style.display = 'none';
+    }, 300);
+  });
+
+  mega.addEventListener('mouseenter', () => {
+    clearTimeout(timer);
+  });
+
+  mega.addEventListener('mouseleave', () => {
+    timer = setTimeout(() => {
+      mega.style.display = 'none';
+    }, 300);
+  });
+});
+
+</script>

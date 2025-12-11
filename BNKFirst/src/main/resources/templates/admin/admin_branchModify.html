@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>영업점 정보 수정</title>
+    <style>
+        body {
+            font-family: 'Pretendard','Noto Sans KR',sans-serif;
+            background:#F6F6F8;
+            margin:0;
+        }
+        .container {
+            width: 1200px;
+            margin: 80px auto 40px;
+        }
+        .card {
+            background:#fff;
+            border-radius:16px;
+            border:1px solid #E5E7EB;
+            box-shadow:0 2px 8px rgba(0,0,0,.05);
+            padding:24px 28px 28px;
+        }
+        .card-title {
+            font-size:20px;
+            color:#111827;
+            margin-bottom:16px;
+        }
+        .form-row {
+            display:flex;
+            gap:24px;
+            margin-top:16px;
+        }
+        .form-field {
+            flex:1;
+        }
+        .form-label {
+            font-size:14px;
+            color:#4B5563;
+            margin-bottom:6px;
+        }
+        .form-input {
+            width:100%;
+            height:40px;
+            box-sizing:border-box;
+            border:1px solid #D1D5DB;
+            border-radius:6px;
+            padding:0 12px;
+            font-size:14px;
+            outline:none;
+        }
+        .form-input:focus {
+            border-color:#9CA3AF;
+            box-shadow:0 0 0 3px rgba(156,163,175,.25);
+        }
+        .btn-area {
+            display:flex;
+            justify-content:flex-end;
+            gap:8px;
+            margin-top:24px;
+        }
+        .btn {
+            min-width:80px;
+            height:40px;
+            border-radius:8px;
+            border:1px solid #D1D5DB;
+            background:#fff;
+            cursor:pointer;
+            font-size:14px;
+        }
+        .btn-primary {
+            border:none;
+            background:linear-gradient(180deg,#F03A3A,#D91A1A);
+            color:#fff;
+        }
+        .btn-primary:hover {
+            filter:brightness(1.02);
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div th:replace="~{layouts/admin_header.html}"></div>
+</header>
+
+<main class="container">
+    <h2 style="font-size:24px; color:#4B5563; margin-bottom:16px;">영업점 정보 수정</h2>
+
+    <form th:action="@{/admin/cs/branch/modify(group=${group}, type=${type})}"
+          method="post"
+          class="card">
+
+        <!-- PK -->
+        <input type="hidden" name="brid" th:value="${branch.brid}"/>
+
+        <div class="card-title">
+            [[${branch.brid}]] 번 영업점
+        </div>
+
+        <div class="form-row">
+            <div class="form-field">
+                <div class="form-label">영업점명</div>
+                <input class="form-input"
+                       type="text"
+                       name="brname"
+                       th:value="${branch.brname}"
+                       placeholder="예: 부산은행 본점영업부">
+            </div>
+            <div class="form-field">
+                <div class="form-label">전화번호</div>
+                <input class="form-input"
+                       type="text"
+                       name="brtel"
+                       th:value="${branch.brtel}"
+                       placeholder="예: 051-000-0000">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-field">
+                <div class="form-label">팩스번호</div>
+                <input class="form-input"
+                       type="text"
+                       name="brfax"
+                       th:value="${branch.brfax}"
+                       placeholder="예: 051-000-0001">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-field">
+                <div class="form-label">주소</div>
+                <input class="form-input"
+                       type="text"
+                       name="braddr"
+                       th:value="${branch.braddr}"
+                       placeholder="지점을 찾기 쉽게 전체 주소를 입력하세요.">
+            </div>
+        </div>
+
+        <div class="btn-area">
+            <button type="button"
+                    class="btn"
+                    onclick="history.back();">
+                취소
+            </button>
+            <button type="submit"
+                    class="btn btn-primary">
+                수정하기
+            </button>
+        </div>
+    </form>
+</main>
+
+<footer>
+    <div th:replace="~{layouts/footer.html}"></div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>마이페이지 > 타행 보유계좌 조회</title>
+    <style>
+        body {
+            background-color: #F6F6F8;
+            margin: 0;
+            font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+        }
+
+        /* 카드 스타일 (마이페이지 공통 스타일과 유사) */
+        .card {
+            background: #fff;
+            border-radius: 16px;
+            border: 1px solid #E5E7EB;
+            box-shadow: 0 2px 8px rgba(0,0,0,.05);
+            padding: 30px;
+            margin: 25px auto;
+            width: 1200px;
+        }
+
+        h2 {
+            color: #13263A;
+            font-size: 22px;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border-top: 1px solid #E5E7EB;
+            font-size: 14px;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #E5E7EB;
+        }
+
+        th {
+            background: #fafafa;
+            color: #2B2F36;
+        }
+
+        /* BNK 버튼 */
+        .btn {
+            background: linear-gradient(180deg, #F03A3A, #D91A1A);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            cursor: pointer;
+            padding: 10px 16px;
+            font-size: 14px;
+            transition: all .15s ease;
+        }
+
+        .btn:hover {
+            background: linear-gradient(180deg, #f24a4a, #d61a1a);
+        }
+
+        .empty {
+            padding: 30px;
+            text-align: center;
+            color: #6B7280;
+        }
+    </style>
+</head>
+
+<body>
+<header>
+    <div th:replace="~{layouts/header.html}"></div>
+</header>
+
+<main style="padding-top: 100px;">
+    <div class="card">
+
+        <h2>타행 보유계좌 조회</h2>
+
+        <p style="color:#4B5563; font-size:15px; margin-bottom:25px;">
+            마이데이터 기반으로 등록된 <b>타 금융기관 보유 계좌</b>를 확인할 수 있습니다.
+        </p>
+
+        <!-- 계좌 목록 -->
+        <table>
+            <tr>
+                <th>금융기관</th>
+                <th>상품명</th>
+                <th>계좌번호</th>
+                <th>잔액(원)</th>
+                <th>수익률(%)</th>
+                <th>퇴직연금 여부</th>
+                <th>상품비교</th>
+            </tr>
+
+            <tr th:each="acc : ${mydataAccounts}">
+                <td th:text="${acc.institution}"></td>
+                <td th:text="${acc.productname}"></td>
+                <td th:text="${acc.accountnumber}"></td>
+                <td th:text="${#numbers.formatInteger(acc.balance, 3, 'COMMA')}"></td>
+                <td th:text="${acc.yieldrate}"></td>
+
+                <td>
+                    <span th:if="${acc.isretirement == 'Y'}"
+                          style="color:#D91A1A; font-weight:600;">퇴직연금</span>
+
+                    <span th:if="${acc.isretirement == 'N'}"
+                          style="color:#4B5563;">일반계좌</span>
+                </td>
+                <td>
+                    <button class="btn"
+                            th:onclick="|location.href='@{/mypage/compare(myaccid=${acc.myaccid})}'|">
+                        비교하기
+                    </button>
+                </td>
+            </tr>
+
+            <tr th:if="${#lists.isEmpty(mydataAccounts)}">
+                <td colspan="6" class="empty">등록된 타행 계좌가 없습니다.</td>
+            </tr>
+        </table>
+
+        <div style="text-align:right; margin-top:20px;">
+            <button class="btn" th:onclick="|location.href='@{/mypage/main}'|">
+                돌아가기
+            </button>
+        </div>
+
+    </div>
+</main>
+
+<footer>
+    <div th:replace="~{layouts/footer.html}"></div>
+</footer>
+
+</body>
+</html>

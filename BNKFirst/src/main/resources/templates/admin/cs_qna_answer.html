@@ -1,0 +1,342 @@
+<!--
+작성자: 전세현
+작업일: 2025-11-20
+작업내용: 관리자 페이지 고객센터 부문 답변용 페이지
+-->
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>고객센터 Q&A 답변</title>
+
+    <!-- placeholder 색상 공통 -->
+    <style>
+        .input--ph-gray::placeholder { color: #ADAEBC; opacity: 1; }
+        .input--ph-gray::-webkit-input-placeholder { color: #ADAEBC; }
+        .input--ph-gray::-moz-placeholder { color: #ADAEBC; opacity: 1; }
+        .input--ph-gray:-ms-input-placeholder { color: #ADAEBC; }
+        .input--ph-gray::-ms-input-placeholder { color: #ADAEBC; }
+    </style>
+
+    <!-- 메인 버튼 스타일 (기존과 통일) -->
+    <style>
+        .btn-primary {
+            --bg1: #D91A1A;
+            --bg2: #F03A3A;
+            --shadow: rgba(217,26,26,.45);
+            position: relative;
+            box-sizing: border-box;
+            min-width: 96px;
+            height: 40px;
+            padding: 0 18px;
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            cursor: pointer;
+            background: linear-gradient(180deg, var(--bg2), var(--bg1));
+            outline: none;
+            font-size: 14px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            box-shadow: 0 6px 14px -10px var(--shadow);
+            transition:
+                    background .18s ease,
+                    box-shadow .18s ease,
+                    transform .12s ease;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(180deg, #f24a4a, #d61a1a);
+            box-shadow: 0 8px 18px -12px var(--shadow);
+            transform: none;
+        }
+
+        .btn-primary:active {
+            transform: scale(.98);
+            box-shadow: 0 4px 10px -10px var(--shadow);
+        }
+
+        .btn-primary:focus-visible {
+            outline: 3px solid rgba(240,58,58,.55);
+            outline-offset: 2px;
+        }
+
+        .btn-secondary {
+            min-width: 80px;
+            height: 40px;
+            padding: 0 16px;
+            border-radius: 8px;
+            border: 1px solid #D1D5DB;
+            background-color: #FFFFFF;
+            color: #4B5563;
+            font-size: 14px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            transition: background .12s ease, color .12s ease, border-color .12s ease;
+        }
+
+        .btn-secondary:hover {
+            background-color: #F9FAFB;
+            border-color: #9CA3AF;
+        }
+
+        body {
+            font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+            background-color: #F6F6F8;
+            margin: 0;
+            color: #1F2933;
+        }
+
+        .page-container {
+            width: 1200px;
+            margin: 0 auto;
+            padding: 40px 0 80px;
+            box-sizing: border-box;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+
+        .page-desc {
+            font-size: 14px;
+            color: #6B7280;
+            margin-bottom: 24px;
+        }
+
+        .breadcrumb {
+            font-size: 13px;
+            color: #9CA3AF;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background-color: #FFFFFF;
+            border-radius: 16px;
+            border: 1px solid #E5E7EB;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            padding: 24px 24px 20px;
+            box-sizing: border-box;
+        }
+
+        .card + .card {
+            margin-top: 24px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .card-header-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 120px 1fr 120px 1fr;
+            row-gap: 8px;
+            column-gap: 12px;
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        .info-label {
+            color: #6B7280;
+            text-align: right;
+            padding-right: 4px;
+        }
+
+        .info-value {
+            color: #111827;
+        }
+
+        .question-content {
+            margin-top: 10px;
+            padding: 14px 16px;
+            background-color: #F9FAFB;
+            border-radius: 10px;
+            border: 1px solid #E5E7EB;
+            font-size: 14px;
+            color: #374151;
+            white-space: pre-wrap;
+            line-height: 1.6;
+        }
+
+        .form-row {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 6px;
+        }
+
+        .form-label-sub {
+            font-size: 12px;
+            color: #9CA3AF;
+            margin-left: 4px;
+            font-weight: 400;
+        }
+
+        .form-select,
+        .form-input,
+        .form-textarea {
+            box-sizing: border-box;
+            width: 100%;
+            font-size: 14px;
+            border-radius: 8px;
+            border: 1px solid #D1D5DB;
+            padding: 10px 12px;
+            outline: none;
+        }
+
+        .form-select:focus,
+        .form-input:focus,
+        .form-textarea:focus {
+            border-color: #D91A1A;
+            box-shadow: 0 0 0 1px rgba(217,26,26,0.15);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 180px;
+            line-height: 1.6;
+        }
+
+        .form-footer {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        @media (max-width: 1280px) {
+            .page-container {
+                width: 100%;
+                padding: 24px 16px 60px;
+            }
+
+            .info-grid {
+                grid-template-columns: 100px 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <!-- 공통 관리자 헤더 -->
+    <div th:replace="~{layouts/admin_header.html}"></div>
+</header>
+
+<main>
+    <div class="page-container">
+        <div class="breadcrumb">
+            고객센터 관리 &gt; Q&amp;A &gt; 답변 작성
+        </div>
+
+        <div class="page-title">Q&amp;A 답변 작성</div>
+        <div class="page-desc">
+            고객 문의 내용을 확인하고, 하단에 답변을 작성한 뒤 등록해주세요.
+        </div>
+
+        <!-- ❓ 문의 내용 카드 -->
+        <section class="card">
+            <div class="card-header">
+                <div class="card-header-title">문의 상세</div>
+                <div style="font-size:12px; color:#9CA3AF;">
+                    문의번호:
+                    <span th:text="${qna.docid}">123</span>
+                </div>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-label">제목</div>
+                <div class="info-value" th:text="${qna.doctitle}">인터넷뱅킹 이체 한도 관련 문의</div>
+
+                <div class="info-label">작성자</div>
+                <div class="info-value" th:text="${qna.mid}">customer01</div>
+
+                <div class="info-label">등록일</div>
+                <div class="info-value" th:text="${qna.docupdate}">2025-11-20</div>
+                <div class="info-label">답변상태</div>
+                <div class="info-value" th:text="${answerStatus}">대기</div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-label">문의 내용</div>
+                <div class="question-content"
+                     th:text="${qna.doccontent}">
+                    인터넷뱅킹 이체 한도 변경은 어디서 할 수 있나요?
+                </div>
+            </div>
+        </section>
+
+        <!-- 💬 답변 작성 카드 -->
+        <section class="card" style="margin-top:24px;">
+            <div class="card-header">
+                <div class="card-header-title">답변 작성</div>
+            </div>
+
+            <form th:action="@{/admin/cs/qna/answer}" method="post">
+                <input type="hidden" name="docid" th:value="${qna.docid}">
+                <input type="hidden" name="group" th:value="${group}">
+                <input type="hidden" name="type" th:value="${type}">
+
+                <!-- 답변 상태 셀렉트는 굳이 컬럼 없으니까 빼고, 필요하면 프론트에서 '대기/완료'만 계산 -->
+
+                <div class="form-row">
+                    <label class="form-label">
+                        답변 내용
+                        <span class="form-label-sub">고객이 그대로 확인할 내용이므로 존댓말로 정중히 작성해주세요.</span>
+                    </label>
+                    <textarea
+                            name="answerContent"
+                            class="form-textarea input--ph-gray"
+                            placeholder="예) 고객님, 안녕하세요. 부산은행 인터넷뱅킹을 이용해 주셔서 감사합니다..."
+                    >[[${qna.docanswer}]]</textarea> <!-- ⭐ 기존 답변 있으면 그대로 보이게 -->
+                </div>
+
+                <div class="form-footer">
+                    <button type="button" class="btn-secondary" onclick="history.back();">취소</button>
+                    <a th:href="@{/admin/cs(group=${group}, type=${type})}"
+                       class="btn-secondary" style="text-decoration:none;">목록</a>
+                    <button type="submit" class="btn-primary">답변 등록</button>
+                </div>
+            </form>
+        </section>
+    </div>
+</main>
+
+<footer>
+    <div th:replace="~{layouts/footer.html}"></div>
+</footer>
+
+<script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', () => {
+        // 상단 GNB에서 고객센터 메뉴 활성화
+        if (window.initAdminHeader) {
+            window.initAdminHeader('cs');
+        }
+    });
+</script>
+</body>
+</html>

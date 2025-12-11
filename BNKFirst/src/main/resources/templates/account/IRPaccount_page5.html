@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>IRP 계좌개설 - 본인 명의 계좌인증</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+            background: #F6F6F8;
+            color: #222;
+        }
+
+        .page-wrap {
+            max-width: 520px; /* 웹 기준 넓게 */
+            margin: 40px auto 60px;
+            padding: 0 20px 40px;
+        }
+
+        .header-title-area {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .header-title {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        .header-sub {
+            font-size: 15px;
+            color: #444;
+        }
+
+        /* 카드 */
+        .card {
+            background: #fff;
+            padding: 30px 28px;
+            border-radius: 18px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+        }
+
+        .illust-area {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        .illust-area img {
+            width: 140px;
+            height: auto;
+        }
+
+        /* 라벨 */
+        .input-label {
+            font-size: 14px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        /* 드롭다운 */
+        .dropdown {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #D4D7E2;
+            border-radius: 10px;
+            background: #fff;
+            font-size: 14px;
+            color: #444;
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+
+        /* 계좌비밀번호 */
+        .password-input {
+            width: 94%;
+            padding: 12px 14px;
+            border: 1px solid #D4D7E2;
+            border-radius: 10px;
+            font-size: 14px;
+            margin-bottom: 10px;
+            outline: none;
+        }
+        .password-input:focus {
+            border-color: #3C6BFF;
+        }
+
+        /* 다른은행 버튼 */
+        .sub-link {
+            display: block;
+            text-align: right;
+            font-size: 13px;
+            margin-bottom: 24px;
+            color: #4E5F7C;
+            cursor: pointer;
+        }
+
+        /* 다음 버튼 */
+        .btn-next {
+            width: 100%;
+            padding: 14px 0;
+            background: #4D8CFF;
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background .15s ease;
+        }
+        .btn-next:hover {
+            background: #3B74E0;
+        }
+    </style>
+</head>
+
+<body>
+<header>
+    <div th:replace="~{layouts/header.html}"></div>
+</header>
+
+<main>
+    <div class="page-wrap">
+
+        <!-- 제목 -->
+        <div class="header-title-area">
+            <div class="header-title">본인 명의 계좌인증이 필요합니다</div>
+            <div class="header-sub">
+                IRP 개설을 위해 본인 명의의 계좌를 확인합니다.
+            </div>
+        </div>
+
+        <!-- 메인 카드 -->
+        <div class="card">
+
+            <!-- 일러스트 -->
+            <div class="illust-area">
+                <img src="https://cdn-icons-png.flaticon.com/512/4767/4767770.png"
+                     alt="계좌 인증 일러스트">
+            </div>
+
+            <!-- 계좌 선택 -->
+            <div class="input-label">계좌 선택</div>
+            <select id="accountSelect" class="dropdown">
+                <option value="">계좌를 선택하세요</option>
+                <option value="123456789012">부산은행 123-456-789012</option>
+                <option value="987654321098">부산은행 987-654-321098</option>
+            </select>
+
+            <!-- 비밀번호 -->
+            <div class="input-label">계좌 비밀번호</div>
+            <input type="password" maxlength="4" class="password-input" id="accountPw" placeholder="●●●●">
+
+            <span class="sub-link">다른은행 계좌확인 ></span>
+
+            <button class="btn-next" id="nextBtn">다음</button>
+        </div>
+
+    </div>
+</main>
+
+<footer>
+    <div th:replace="~{layouts/footer.html}"></div>
+</footer>
+</body>
+</html>
+
+<!-- ========== JS: Page6로 이동 ========== -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const accountSelect = document.getElementById("accountSelect");
+        const accountPw = document.getElementById("accountPw");
+        const nextBtn = document.getElementById("nextBtn");
+
+        nextBtn.addEventListener("click", function () {
+
+            const selectedAccount = accountSelect.value;
+            const pw = accountPw.value.trim();
+
+            // 1) 계좌 미선택
+            if (!selectedAccount) {
+                alert("계좌를 선택해 주세요.");
+                return;
+            }
+
+            // 2) 비밀번호 미입력 또는 4자리 미만
+            if (pw.length !== 4 || isNaN(pw)) {
+                alert("4자리 숫자로 된 계좌 비밀번호를 입력해 주세요.");
+                return;
+            }
+
+            // 3) 모든 검증 통과 → 페이지6으로 이동
+            window.location.href = "/BNK/irp/account/page6";
+        });
+
+    });
+</script>

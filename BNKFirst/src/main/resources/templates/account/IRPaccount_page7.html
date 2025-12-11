@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>IRP 계좌개설 - 개인정보 확인</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Pretendard','Noto Sans KR',sans-serif;
+            background: #F6F6F8;
+            color: #222;
+        }
+
+        .page-wrap {
+            max-width: 520px;
+            margin: 30px auto 80px;
+            padding: 0 20px;
+        }
+
+        /* 섹션 타이틀 */
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        /* 카드 */
+        .card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 24px 18px;
+            margin-bottom: 28px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+        }
+
+        .profile-img {
+            width: 80px;
+            height: 80px;
+            background: #e8e8e8;
+            border-radius: 50%;
+            margin: 0 auto 12px;
+        }
+
+        .info-block-title {
+            font-weight: 600;
+            font-size: 15px;
+            margin-bottom: 8px;
+        }
+
+        .info-row {
+            margin-bottom: 6px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        /* 수정 버튼 */
+        .btn-edit {
+            width: 100%;
+            padding: 10px 0;
+            border-radius: 10px;
+            border: 1px solid #4D8CFF;
+            color: #4D8CFF;
+            background: #fff;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 16px;
+        }
+
+        /* 두 번째 섹션 */
+        .desc-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .desc-text {
+            font-size: 13px;
+            line-height: 1.6;
+            color: #555;
+            margin-bottom: 16px;
+        }
+
+        .email-label {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .agreement-box {
+            background: #fff;
+            border-radius: 16px;
+            padding: 22px 18px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+            margin-bottom: 40px;
+        }
+
+        /* 확인 버튼 */
+        .btn-next {
+            width: 100%;
+            padding: 14px 0;
+            background-color: #4D8CFF;
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+<header>
+    <div th:replace="~{layouts/header.html}"></div>
+</header>
+
+<main>
+    <div class="page-wrap">
+
+        <!-- 섹션 1: 내정보 -->
+        <div class="section-title">내정보</div>
+
+        <div class="card">
+
+            <div class="profile-img"></div>
+
+            <div class="info-block-title">기본정보</div>
+            <div class="info-row">이름: 홍길동</div>
+            <div class="info-row">영문명: HONG GILDONG</div>
+            <div class="info-row">휴대전화번호: 010-1234-5678</div>
+            <div class="info-row">이메일 주소: abc@naver.com</div>
+            <div class="info-row">우편물 수령지: 부산광역시 ...</div>
+
+            <div class="info-block-title" style="margin-top:16px;">자택정보</div>
+            <div class="info-row">주소: 부산광역시...</div>
+
+            <div class="info-block-title" style="margin-top:16px;">직장정보</div>
+            <div class="info-row">직장명: BNK은행</div>
+            <div class="info-row">직급: 사원</div>
+
+            <button class="btn-edit">수정</button>
+        </div>
+
+        <button class="btn-next" id="nextBtn">확인</button>
+
+    </div>
+</main>
+
+<footer>
+    <div th:replace="~{layouts/footer.html}"></div>
+</footer>
+
+</body>
+
+<script>
+    nextBtn.addEventListener('click', () => {
+        window.location.href = "/BNK/irp/account/page8";
+    });
+</script>
+</html>

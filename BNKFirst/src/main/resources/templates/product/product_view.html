@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>상품보기</title>
+    <link rel="stylesheet" th:href="@{/css/product/product_view_style.css}">
+    <script id="script" th:attr="data-pid=${pid}" type="module" th:src="@{/js/product/product_view.js}"></script>
+</head>
+
+<body>
+<header>
+    <div id="header" th:replace="~{layouts/header.html}"></div>
+</header>
+<main>
+    <section class="page-wrap" id="depositDetail">
+        <!-- breadcrumb -->
+        <nav aria-label="breadcrumb" class="breadcrumb">
+            <a href="#">홈</a><span class="sep">›</span>
+            <a href="#">예금</a><span class="sep">›</span>
+            <span aria-current="page">정기예금</span>
+        </nav>
+
+        <!-- 헤더 -->
+        <div class="head">
+            <h1 class="h-title">BNK 스마트정기예금</h1>
+            <span class="badge-red">추천상품</span>
+        </div>
+        <p class="subtitle">온라인 전용 고금리 장기예금으로 언제 어디서나 편리하게</p>
+
+        <div class="grid">
+            <!-- 메인(좌) -->
+            <div class="main">
+                <div class="card">
+                    <div class="inner">
+                        <h3 class="small" style="font-weight:800;color:#111827;margin:0 0 10px">핵심 정보</h3>
+                        <div class="kv" id="kv">
+                            <div class="box">
+                                <div class="label">자산관리기관</div>
+                                <div class="value" id="maxRate">부산은행</div>
+                            </div>
+                            <div class="box">
+                                <div class="label">상품제공기관</div>
+                                <div class="value" id="prprbank" style="text-wrap: nowrap;">부산은행</div>
+                            </div>
+                            <div class="box">
+                                <div class="label">금리</div>
+                                <div class="value red" id="baseRate">3.50%</div>
+                            </div>
+                            <div class="box">
+                                <div class="label">계약기간</div>
+                                <div class="value" id="contractPeriod">1~36개월</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 탭 -->
+                <div class="tabs" role="tablist">
+                    <button aria-selected="true" class="tab active" data-tab="guide" role="tab">상품안내</button>
+                    <button aria-selected="false" class="tab" data-tab="rate" role="tab">금리안내</button>
+                    <button aria-selected="false" class="tab" data-tab="terms" role="tab">상품약관</button>
+                </div>
+                <!-- 상품안내 패널 -->
+                <section aria-labelledby="tab-guide" class="panel active" id="panel-guide" role="tabpanel">
+                    <div class="card">
+                        <div class="inner">
+                            <ul class="pi-list">
+                                <li>
+                                    <span class="pi-text">
+                                        확정금리형(DB): 이 퇴직연금은 예금자보호법에 따라
+                                        <strong class="pi-emph">보호되지 않습니다.</strong>
+                                      </span>
+                                </li>
+                                <li>
+                                    <span class="pi-text">
+                                        확정기여형(DC), 개인형 IRP: 예금자보호법에 따라 예금보호 대상 금융상품으로 운용되는 적립금에 한하여
+                                        <strong class="pi-emph">1인당 “예금원금과 소정의 이자 합산 5천만원 한도”</strong> 내에서 보호됩니다.
+                                      </span>
+                                </li>
+                                <li>
+                                    <span class="pi-text">
+                                        우체국예금은 예금자보호 비대상이나, 우체국예금보험법 제4조에 의하여
+                                        <strong class="pi-emph">국가가 원리금을 지급 보장</strong>합니다.
+                                      </span>
+                                </li>
+                                <li>
+                                    <span class="pi-text">
+                                        퇴직연금의 가입 및 운용에 따라 확정기여(DC), 기업형 IRP, 개인형 IRP에서
+                                        <strong class="pi-emph">예금자보호 한도 이내에서만 가입</strong>이 가능합니다.
+                                      </span>
+                                </li>
+                                <li>
+                                    <span class="pi-text">
+                                        적립순환 정기예금 합리이전 해당 상품은
+                                        <strong class="pi-emph">매도순위 지정이 불가</strong>합니다. 자세한 사항은 고객센터로 문의 바랍니다.
+                                      </span>
+                                </li>
+                                <li>
+                                    <span class="pi-text">
+                                        퇴직연금상품은 운용성과 및 시장 상황에 따라
+                                        <strong class="pi-emph">계속성 운용지시 및 실제 매수ㆍ매각이 불가</strong>할 수 있습니다.
+                                      </span>
+                                </li>
+                                <li>
+                                    <span class="pi-text">
+                                        원리금보장상품으로만 구성된 포트폴리오를 운용(교체) 시 재예치가
+                                        <strong class="pi-emph">현금성자산으로 상환</strong>되며, 원리금보장상품 및 펀드가 혼합된 포트폴리오의 경우
+                                        <strong class="pi-emph">일부 상환</strong>될 수 있습니다.
+                                      </span>
+                                </li>
+                                <li>
+                                    <span class="pi-text">
+                                    확정금리형(DB)에 편입된 상품은 별도의 지시가 없을 경우 만기 시
+                                    <strong class="pi-emph">원금과 이자를 합산하여 자동 재예치</strong>됩니다.
+                                    확정기여형(DC), 개인형퇴직연금(IRP) 내 편입된 상품일 경우 만기 시
+                                    <strong class="pi-emph">현금성자산으로 상환</strong>됩니다.
+                                  </span>
+                                </li>
+                                <li>
+                                    <span class="pi-text">
+                                        대출을 연동할 경우 신규 및 유지 요건을 충족하지 못하면 일정 대기기간(최소 ~ 청산 6주) 이후
+                                        <strong class="pi-emph">원리금보장 상품으로 운용</strong>됩니다.
+                                        <em class="pi-note">(단, 별도 운용지시가 있는 경우 그에 따름)</em>
+                                      </span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+<!--                    <div class="notice card">-->
+<!--                        <div class="inner">-->
+<!--                            <div aria-hidden="true" class="icon">⚠️</div>-->
+<!--                            <div>-->
+<!--                                <h4 class="title">유의사항</h4>-->
+<!--                                <ul>-->
+<!--                                    <li>중도해지 시 약정금리보다 낮은 금리가 적용됩니다.</li>-->
+<!--                                    <li>우대금리는 조건 충족 시 제공됩니다.</li>-->
+<!--                                    <li>예금자보호법에 따라 예금보험공사가 1인당 최고 5천만원까지 보호합니다.</li>-->
+<!--                                </ul>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+
+<!--                    <div class="card">-->
+<!--                        <div class="inner">-->
+<!--                            <h3 style="margin:0 0 8px;font-weight:800">유사 상품</h3>-->
+<!--                            <div class="reco">-->
+<!--                                <div class="item">-->
+<!--                                    <div class="name">BNK 자유적금</div>-->
+<!--                                    <div class="small">매달 자유롭게 납입</div>-->
+<!--                                    <div class="rate">2.50%</div>-->
+<!--                                </div>-->
+<!--                                <div class="item">-->
+<!--                                    <div class="name">BNK 목표금리예금</div>-->
+<!--                                    <div class="small">특판 예금상품</div>-->
+<!--                                    <div class="rate">3.20%</div>-->
+<!--                                </div>-->
+<!--                                <div class="item">-->
+<!--                                    <div class="name">BNK 청년희망적금</div>-->
+<!--                                    <div class="small">청년 우대금리 적용</div>-->
+<!--                                    <div class="rate">4.00%</div>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+                </section>
+                <!-- 금리우대 패널 (두 번째 이미지 내용) -->
+                <section aria-labelledby="tab-rate" class="panel" id="panel-rate" role="tabpanel">
+                    <div class="card">
+                        <div class="inner">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 상품약관 패널 (임시) -->
+                <section aria-labelledby="tab-terms" class="panel" id="panel-terms" role="tabpanel">
+                    <div class="card">
+                        <div class="inner">
+                                <!-- JS로 렌더됩니다 -->
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- 우측 사이드 -->
+            <aside class="side">
+                <div class="card">
+                    <div class="inner calc">
+                        <div class="title">금리</div>
+                        <div id="rateBig" style="font-size:28px;font-weight:900;color:var(--red);text-align:center;">
+                            3.50%
+                        </div>
+                        <div style="text-align: center; color: #80868B;">연(세전)</div>
+                        <div class="hr"></div>
+
+                        <div class="row">
+                            <label for="amount">예치금액</label>
+                            <input aria-describedby="amtHelp" class="input" id="amount" min="10000" step="10000"
+                                   type="number"
+                                   value="10000000">
+                            <div class="small" id="amtHelp">단위: 원</div>
+                        </div>
+
+                        <div class="row">
+                            <label for="period">예치기간</label>
+                            <div id="period"
+                                 data-months="12"
+                                 class="input"
+                                 style="background:#f5f5f5;pointer-events:none;">
+                                12개월
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="sum">
+                                <div class="key">예상 수령액</div>
+                                <div class="val" id="sumAmt">10,350,000원</div>
+                            </div>
+                            <div class="sum">
+                                <div class="key">예상 이자</div>
+                                <div class="val" id="sumInt" style="color: var(--red);">350,000원</div>
+                            </div>
+                        </div>
+                        <th:block th:if="${session.loginUser != null}">
+                            <button class="btn-red"
+                                    style="margin-top:8px"
+                                    th:onclick="'window.location.href=\''+@{/product/insertInfo/{pid}(pid=${pid})}+'\';'">
+                                가입하기
+                            </button>
+                        </th:block>
+                        <th:block th:unless="${session.loginUser != null}">
+                            <button class="btn-red"
+                                    style="margin-top:8px"
+                                    th:onclick="'window.location.href=\''+@{/member/main}+'\';'">가입하기
+                            </button>
+                        </th:block>
+                        <button class="btn-ghost btn-white" onclick="window.location.href='/BNK/cs/consultation/Q&A'" style="margin-top:8px">상담하기</button>
+                        <div class="helper">약관 동의 후 가입이 가능합니다</div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+        <!-- 하단 공시 안내 -->
+        <section aria-label="공시 안내" class="disclosure-fixed card">
+            <h4 class="disclosure-title">공시승인번호</h4>
+            <p class="disclosure-text">이 내용은 법령 및 내부통제기준에 따른 광고 관련 절차를 준수하였습니다.</p>
+            <p class="disclosure-text">준법감시인 심의필 2025-1660(심의일자 : 2025.07.31)</p>
+            <p class="disclosure-text">유효기일 2025.07.31 ~ 2026.07.30</p>
+        </section>
+    </section>
+    <script>
+
+    </script>
+</main>
+<footer>
+    <div id="footer" th:replace="~{layouts/footer.html}"></div>
+</footer>
+</body>
+
+</html>

@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>상품공시실>예금상품</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        /*----------------------------------*/
+        /*--전체 페이지--*/
+        /*----------------------------------*/
+        body {
+            font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+            background: #F6F6F8;
+            margin: 0;
+            color: #222;
+            padding-top: 100px;
+        }
+
+
+        .productsRoom-page{
+            display:flex;
+            gap:40px;
+            width: 1200px;
+            margin: 60px auto;
+            padding: 40px 20px;
+            background: #F6F6F8;
+            border-radius: 8px;
+            margin-bottom: 100px;
+        }
+
+
+
+        /*----------------------------------*/
+        /*--왼쪽 사이드바--*/
+        /*----------------------------------*/
+        .all-sidebar{
+            width: 250px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        .all-sidebar h2{
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .sidebar-menu {
+            list-style:none;
+            padding: 20px;
+            margin: 0 0 40px 0;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            background: #fff;
+            box-shadow: 0 4px 4px rgba(0,0,0,0.08);
+        }
+
+        .sidebar-menu h2{
+            font-size: 17px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 16px;
+        }
+
+        .sidebar-menu li{
+            padding: 12px 16px;
+            border-radius:  6px;
+            color: #555;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .sidebar-menu li:hover {
+            background: #f2f2f2;
+        }
+
+        .sidebar-menu li.active{
+            background: #ffe6e6;
+            border-left: 4px solid #d91a1a;
+            color: #d91a1a;;
+            font-weight:  600;
+            padding-left: 12px;
+        }
+
+        .sidebar-menu li:last-child{
+            border-bottom: none;
+        }
+
+        /*----------------------------------*/
+        /*--추가 도움--*/
+        /*----------------------------------*/
+        .all-help{
+            background: linear-gradient(135deg,#e62b2b, #7e2020);
+            color: #fff;
+            border-radius: 12px;
+            padding: 24px 20px;
+            margin-top: 0;
+            text-align: center;
+            box-shadow: 0 4px 4px rgba(0,0,0,0.08);
+        }
+
+        .help-box h3{
+            font-size: 17px;
+            margin-bottom: 6px;
+        }
+
+        .help-box p{
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        .help-buttons{
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-call, .btn-chat{
+            padding: 8px 14px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-call{
+            background: #fff;
+            color: #d91a1a;
+        }
+
+        .btn-chat{
+            background:  transparent;
+            border: 1px solid #fff;
+            color: #fff;
+        }
+
+        /*----------------------------------*/
+        /*--메인 컨텐츠--*/
+        /*----------------------------------*/
+
+        .productsRoom-content{
+            flex: 1;
+        }
+
+        .productsRoom-header h1{
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .productsRoom-header p{
+            color: #666;
+            margin-bottom:  20px;
+        }
+
+        .productsRoom-search {
+            display: flex;
+            align-items: center;
+            border: 1px solid #ddd;
+            border-radius: 30px;
+            padding: 6px 12px;
+            background: #fafafa;
+        }
+
+        /*----------------------------------*/
+        /*-- 비밀번호 안내 페이지 --*/
+        /*----------------------------------*/
+        .password-section {
+            margin-bottom: 50px;
+        }
+
+        .password-section h2 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #d91a1a;
+            padding-bottom: 6px;
+        }
+
+        .password-section p {
+            color: #555;
+            font-size: 15px;
+            line-height: 1.7;
+            margin-bottom: 6px;
+        }
+
+        /* Case Box */
+        .case-box {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #f9f9f9;
+            margin-top: 20px;
+            margin-bottom: 16px;
+            padding: 16px;
+        }
+
+        .case-box h3 {
+            background: #eef2ff;
+            border-left: 4px solid #f73c3c;
+            padding: 8px 12px;
+            font-size: 16px;
+            font-weight: 600;
+            margin: -16px -16px 12px -16px;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+        }
+
+        .case-box h3 span {
+            margin-left: 10px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .case-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fff;
+            border-radius: 6px;
+            border: 1px solid #eee;
+            padding: 12px 16px;
+            font-size: 15px;
+            color: #333;
+        }
+
+        .btn-small {
+            background: #d91a1a;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 14px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-small:hover {
+            background: #b50f0f;
+        }
+
+        /*----------------------------------*/
+        /*-- 가입절차 탭 버튼 --*/
+        /*----------------------------------*/
+        .join-type-btns {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0 30px 0;
+        }
+
+        .join-btn {
+            border: 1px solid #ccc;
+            background: #fff;
+            color: #333;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .join-btn.active {
+            background: #d91a1a;
+            color: #fff;
+            border-color: #d91a1a;
+        }
+
+        /*----------------------------------*/
+        /*-- 가입절차 콘텐츠 --*/
+        /*----------------------------------*/
+        .join-section {
+            display: none;
+        }
+
+        .join-section.active {
+            display: block;
+        }
+
+        .info-box {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin-bottom: 20px;
+            line-height: 1.6;
+            font-size: 15px;
+        }
+
+        /* Step Box */
+        .step-box {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #fafafa;
+            margin-bottom: 18px;
+            overflow: hidden;
+        }
+
+        .step-box h3 {
+            background: #f4f4f4;
+            border-bottom: 1px solid #ddd;
+            padding: 10px 16px;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .step-content {
+            padding: 16px 20px;
+            background: #fff;
+        }
+
+        .step-content h4 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #333;
+        }
+
+        .step-content p {
+            font-size: 14.5px;
+            color: #555;
+            line-height: 1.7;
+            margin-bottom: 10px;
+        }
+
+        /* 버튼 그룹 */
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-small {
+            background: #d91a1a;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 14px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-small:hover {
+            background: #b50f0f;
+        }
+
+
+        /*----------------------------------*/
+        /*-- 상위 탭 (예금/신탁 / 이체 / 조회) --*/
+        /*----------------------------------*/
+        .main-tab-btns {
+            display: flex;
+            border-bottom: 2px solid #d91a1a;
+            margin-bottom: 20px;
+        }
+
+        .main-btn {
+            flex: 1;
+            background: #fff;
+            border: none;
+            border-bottom: 3px solid transparent;
+            font-size: 16px;
+            padding: 12px 0;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .main-btn.active {
+            color: #d91a1a;
+            border-bottom: 3px solid #d91a1a;
+            font-weight: 600;
+        }
+
+        .deposit-page {
+            width: 1200px;
+            margin: 80px auto;
+            background: #fff;
+            border-radius: 8px;
+            padding: 40px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .deposit-page h1 {
+            font-size: 24px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #c41e20;
+            padding-bottom: 10px;
+        }
+
+        .list-top {
+            text-align: right;
+            margin-bottom: 15px;
+            color: #555;
+        }
+        .list-top strong {
+            color: #c41e20;
+        }
+
+        .deposit-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            font-size: 15px;
+        }
+
+        .deposit-table thead th {
+            background: #fafafa;
+            border-top: 2px solid #c41e20;
+            border-bottom: 1px solid #ddd;
+            padding: 12px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .deposit-table tbody td {
+            padding: 14px;
+            border-bottom: 1px solid #eee;
+            text-align: center;
+        }
+
+        .deposit-table tbody tr:hover {
+            background: #f9f9f9;
+        }
+
+        .file-btn, .change-btn {
+            background: none;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 6px 10px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        .file-btn:hover, .change-btn:hover {
+            border-color: #c41e20;
+            color: #c41e20;
+        }
+
+        .file-btn i {
+            font-size: 16px;
+        }
+
+        .pagination {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .pagination button {
+            background: none;
+            border: 1px solid #ccc;
+            margin: 0 3px;
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .pagination button.active {
+            background: #c41e20;
+            color: #fff;
+            border-color: #c41e20;
+        }
+
+        .pagination button:disabled {
+            opacity: 0.4;
+            cursor: default;
+        }
+
+        /* 탭 콘텐츠 제어 */
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+<!--헤더-->
+<div th:replace="~{layouts/header}"></div>
+    
+    <div class="productsRoom-page">
+        <!--왼쪽 사이드바-->
+        <aside class="all-sidebar">
+            <ul class="sidebar-menu">
+                <h2>상품공시실</h2>
+                <li><a href="./bankManual">은행상품공시이용매뉴얼</a></li>
+                <li class="active"><a href="./depositProduct">예금상품</a></li>
+                <li><a href="./AnyProduct">기타상품</a></li>
+                <li><a href="./serviceFee">서비스이용수수료</a></li>
+            </ul>
+
+            <!--추가 도움 영역-->
+            <section class="all-help">
+                <div class="help-box">
+                    <h3>추가 도움이 필요하신가요?</h3>
+                    <p>전문 상담원이 친절하게 도와드리겠습니다.</p>
+                    <div class="help-buttons">
+                        <button class="btn-call">전화상담</button>
+                        <button class="btn-chat">Talk상담</button>
+                    </div>
+                </div>
+            </section>
+        </aside>
+
+        <!-- 메인 콘텐츠 -->
+        <main class="productsRoom-content">
+            <div class="productsRoom-header">
+                <h1>예금상품</h1>
+            </div>
+
+            <!-- 1단계 상위 탭 -->
+            <div class="main-tab-btns">
+                <button class="main-btn active" onclick="showMainTab('terms')">적립식예금</button>
+                <button class="main-btn" onclick="showMainTab('guide')">거치식예금</button>
+                <button class="main-btn" onclick="showMainTab('forms')">입출금자유로운예금</button>
+            </div>
+
+            <section id="terms" class="tab-content active">
+                <div class="list-top">
+                  <p>총 <strong>156</strong>건 현재: <strong>1/16</strong>페이지</p>
+                </div>
+
+                <!-- 표 구조 -->
+                <table class="deposit-table">
+                    <thead>
+                        <tr>
+                        <th>번호</th>
+                        <th>상품명</th>
+                        <th>상품설명서</th>
+                        <th>약관</th>
+                        <th>거래조건변경사항</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                        <td>1</td>
+                        <td>BNK썸농구단 우승기원적금</td>
+                        <td><button class="file-btn"><i class="fa-solid fa-download"></i></button></td>
+                        <td><button class="file-btn"><i class="fa-solid fa-download"></i></button></td>
+                        <td><button class="change-btn">변경사항보기</button></td>
+                        </tr>
+                        <tr>
+                        <td>2</td>
+                        <td>Only One 주거래 법인적금</td>
+                        <td><button class="file-btn"><i class="fa-solid fa-download"></i></button></td>
+                        <td><button class="file-btn"><i class="fa-solid fa-download"></i></button></td>
+                        <td><button class="change-btn">변경사항보기</button></td>
+                        </tr>
+                        <tr>
+                        <td>3</td>
+                        <td>청년 주택드림 청약통장</td>
+                        <td><button class="file-btn"><i class="fa-solid fa-download"></i></button></td>
+                        <td><button class="file-btn"><i class="fa-solid fa-download"></i></button></td>
+                        <td><button class="change-btn">변경사항보기</button></td>
+                        </tr>
+                        <tr>
+                        <td>4</td>
+                        <td>주택청약종합저축</td>
+                        <td><button class="file-btn"><i class="fa-solid fa-download"></i></button></td>
+                        <td><button class="file-btn"><i class="fa-solid fa-download"></i></button></td>
+                        <td><button class="change-btn">변경사항보기</button></td>
+                        </tr>
+                        <tr>
+                        <td>5</td>
+                        <td>Only One 주거래 우대적금</td>
+                        <td><button class="file-btn"><i class="fa-solid fa-download"></i></button></td>
+                        <td><button class="file-btn"><i class="fa-solid fa-download"></i></button></td>
+                        <td><button class="change-btn">변경사항보기</button></td>
+                        </tr>
+                        <tr>
+                        <td>6</td>
+                        <td>사장님 월급통장</td>
+                        <td><button class="file-btn"><i class="fa-solid fa-download"></i></button></td>
+                        <td><button class="file-btn"><i class="fa-solid fa-download"></i></button></td>
+                        <td><button class="change-btn">변경사항보기</button></td>
+                        </tr>
+                        <tr>
+                        <td>7</td>
+                        <td>아이사랑 적금</td>
+                        <td><button class="file-btn"><i class="fa-solid fa-download"></i></button></td>
+                        <td><button class="file-btn"><i class="fa-solid fa-download"></i></button></td>
+                        <td><button class="change-btn">변경사항보기</button></td>
+                        </tr>
+                        <tr>
+                        <td>8</td>
+                        <td>아기천사 적금</td>
+                        <td><button class="file-btn"><i class="fa-solid fa-download"></i></button></td>
+                        <td><button class="file-btn"><i class="fa-solid fa-download"></i></button></td>
+                        <td><button class="change-btn">변경사항보기</button></td>
+                        </tr>
+                        <tr>
+                        <td>9</td>
+                        <td>너만손 적금</td>
+                        <td><button class="file-btn"><i class="fa-solid fa-download"></i></button></td>
+                        <td><button class="file-btn"><i class="fa-solid fa-download"></i></button></td>
+                        <td><button class="change-btn">변경사항보기</button></td>
+                        </tr>
+                        <tr>
+                        <td>10</td>
+                        <td>신라대학교 예금 토론 전자저금 특약</td>
+                        <td><button class="file-btn"><i class="fa-solid fa-download"></i></button></td>
+                        <td><button class="file-btn"><i class="fa-solid fa-download"></i></button></td>
+                        <td><button class="change-btn">변경사항보기</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+            
+
+            <!-- 설명서 탭 -->
+            <section id="guide" class="tab-content">
+            <div class="list-top">
+                <p>총 <strong>156</strong>건 현재: <strong>1/16</strong>페이지</p>
+            </div>
+            <table class="deposit-table">
+                <thead>
+                    <tr>
+                        <th>번호</th>
+                        <th>상품명</th>
+                        <th>상품설명서</th>
+                        <th>약관</th>
+                        <th>거래조건변경사항</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>Only One 주거래 법인적금</td>
+                    <td><button class="file-btn"><i class="fa-solid fa-download"></i></button></td>
+                    <td><button class="file-btn"><i class="fa-solid fa-download"></i></button></td>
+                    <td><button class="change-btn">변경사항보기</button></td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>공공기관 전용 정기예금</td>
+                    <td><button class="file-btn"><i class="fa-solid fa-download"></i></button></td>
+                    <td><button class="file-btn"><i class="fa-solid fa-download"></i></button></td>
+                    <td><button class="change-btn">변경사항보기</button></td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>BNK ONE SHOT 통장</td>
+                    <td><button class="file-btn"><i class="fa-solid fa-download"></i></button></td>
+                    <td><button class="file-btn"><i class="fa-solid fa-download"></i></button></td>
+                    <td><button class="change-btn">변경사항보기</button></td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td>거래당좌예금</td>
+                    <td><button class="file-btn"><i class="fa-solid fa-download"></i></button></td>
+                    <td><button class="file-btn"><i class="fa-solid fa-download"></i></button></td>
+                    <td><button class="change-btn">변경사항보기</button></td>
+                </tr>
+                </tbody>
+            </table>
+            </section>
+
+            <!-- 서식자료실 탭 -->
+            <section id="forms" class="tab-content">
+            <div class="list-top">
+                <p>총 <strong>42</strong>건 현재: <strong>1/5</strong>페이지</p>
+            </div>
+            <table class="deposit-table">
+                <thead>
+                <tr>
+                    <th>번호</th>
+                    <th>상품명</th>
+                    <th>상품설명서</th>
+                    <th>약관</th>
+                    <th>거래조건변경사항</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>예금 신규 신청서</td>
+                    <td><button class="file-btn"><i class="fa-solid fa-download"></i></button></td>
+                    <td><button class="file-btn"><i class="fa-solid fa-download"></i></button></td>
+                    <td><button class="change-btn">변경사항보기</button></td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>예금 해지 신청서</td>
+                    <td><button class="file-btn"><i class="fa-solid fa-download"></i></button></td>
+                    <td><button class="file-btn"><i class="fa-solid fa-download"></i></button></td>
+                    <td><button class="change-btn">변경사항보기</button></td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>자동이체 등록 신청서</td>
+                    <td><button class="file-btn"><i class="fa-solid fa-download"></i></button></td>
+                    <td><button class="file-btn"><i class="fa-solid fa-download"></i></button></td>
+                    <td><button class="change-btn">변경사항보기</button></td>
+                </tr>
+                </tbody>
+            </table>
+            </section>
+
+
+            <!-- 페이지네이션 -->
+            <div class="pagination">
+                <button disabled><i class="fas fa-angle-double-left"></i></button>
+                <button class="active">1</button>
+                <button>2</button>
+                <button>3</button>
+                <button>4</button>
+                <button>5</button>
+                <button><i class="fas fa-angle-double-right"></i></button>
+            </div>
+        </main>
+    </div>
+
+    <!--푸터-->
+    <div th:replace="~{layouts/footer}"></div>
+</body>
+</html>
+<script>
+    // header 불러오기
+    fetch(`${contextPath}/layouts/header.html`)
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('header').innerHTML = data;
+        })
+        .catch(err => console.error('[Header load failed]', err));
+
+    // chatbot import 기능
+    async function importHtmlWithAssets(url, mountSelector) {
+        try {
+            const res = await fetch(url, { credentials: 'same-origin' });
+            if (!res.ok) throw new Error(`Failed to load ${url}`);
+            const html = await res.text();
+
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+
+            doc.querySelectorAll('link[rel="stylesheet"]').forEach(link => {
+                const href = link.getAttribute('href');
+                const exists = [...document.head.querySelectorAll('link[rel="stylesheet"]')]
+                    .some(l => l.getAttribute('href') === href);
+                if (!exists && href) document.head.appendChild(link.cloneNode(true));
+            });
+
+            doc.querySelectorAll('style').forEach(styleEl => {
+                const clone = document.createElement('style');
+                clone.textContent = styleEl.textContent;
+                [...styleEl.attributes].forEach(a => clone.setAttribute(a.name, a.value));
+                document.head.appendChild(clone);
+            });
+
+            const mount = document.querySelector(mountSelector);
+            const frag = document.createDocumentFragment();
+            [...doc.body.children].forEach(node => {
+                if (node.tagName.toLowerCase() !== 'script') frag.appendChild(node.cloneNode(true));
+            });
+            mount.appendChild(frag);
+
+            const scripts = [...doc.querySelectorAll('script')];
+            for (const oldScript of scripts) {
+                const newScript = document.createElement('script');
+                [...oldScript.attributes].forEach(attr => newScript.setAttribute(attr.name, attr.value));
+                if (oldScript.src) {
+                    await new Promise(resolve => {
+                        newScript.onload = resolve;
+                        newScript.onerror = resolve;
+                        document.body.appendChild(newScript);
+                    });
+                } else {
+                    newScript.textContent = oldScript.textContent || '';
+                    document.body.appendChild(newScript);
+                }
+            }
+        } catch (err) {
+            console.error('[Chatbot load failed]', err);
+        }
+    }
+
+    // chatbot 불러오기
+    importHtmlWithAssets('/components/chatbot_test.html', '#bnk-chatbot-slot');
+
+    // footer 불러오기
+    fetch(`${contextPath}/layouts/footer.html`)
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('footer').innerHTML = data;
+        })
+        .catch(err => console.error('[Footer load failed]', err));
+
+</script>
