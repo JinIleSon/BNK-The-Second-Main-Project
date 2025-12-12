@@ -1,5 +1,11 @@
 // lib/models/EtfTrade.dart
 
+/*
+  날짜 : 2025.12.11.
+  이름 : 강민철
+  내용 : ETF 매수/매도 작업을 위한 model
+ */
+
 class EtfBuy {
   final String pcuid;
   final int pstock;

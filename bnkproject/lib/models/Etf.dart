@@ -2,6 +2,12 @@
 //
 // 백엔드 EtfDTO 대응 Flutter 모델
 
+/*
+  날짜 : 2025.12.11.
+  이름 : 강민철
+  내용 : EtfDTO
+ */
+
 class Etf {
   final String? pcuid;
   final int? pstock;

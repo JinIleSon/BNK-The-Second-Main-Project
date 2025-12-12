@@ -1,5 +1,11 @@
 // lib/api/etf_api.dart
 
+/*
+  날짜 : 2025.12.11.
+  이름 : 강민철
+  내용 : 키움 ETF API
+ */
+
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 

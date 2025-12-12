@@ -1,5 +1,11 @@
 // lib/models/EtfOrder.dart
 
+/*
+  날짜 : 2025.12.11.
+  이름 : 강민철
+  내용 : ETF 매수/매도 주문을 위한 model
+ */
+
 import 'Pcontract.dart';
 import 'Etf.dart';
 import 'EtfQuote.dart';
