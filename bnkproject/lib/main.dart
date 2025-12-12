@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'screens/home/home_tab.dart';
 import 'screens/favorite/favorite_page.dart';
 import 'screens/discovery/discovery_page.dart';
+import 'screens/boarder/board_main.dart';
 
 void main() {
   runApp(const MyApp());
@@ -37,7 +38,7 @@ class TossLikeHomePage extends StatefulWidget {
 }
 
 class _TossLikeHomePageState extends State<TossLikeHomePage> {
-  int _selectedIndex = 0; // 0: 홈, 1: 관심, 2: 발견, 3: 마이
+  int _selectedIndex = 0; // 0: 홈, 1: 관심, 2: 발견, 3: 마이, 4: 피드(임시)
 
   @override
   Widget build(BuildContext context) {
@@ -60,6 +61,10 @@ class _TossLikeHomePageState extends State<TossLikeHomePage> {
           child: Text('마이 화면은 아직 준비 중!'),
         );
         break;
+      case 4:
+        body = const BoardMain(); // 토스 피드 메인
+        break;
+
       default:
         body = HomeTab(cardColor: cardColor, textTheme: textTheme);
     }
@@ -130,6 +135,13 @@ class _BottomNavBar extends StatelessWidget {
             label: '마이',
             onTap: onTap,
           ),
+          _BottomNavItem(
+            index: 4,
+            selectedIndex: selectedIndex,
+            icon: Icons.dynamic_feed_outlined,
+            label: '피드',
+            onTap: onTap,
+          ),
         ],
       ),
     );
@@ -160,7 +172,7 @@ class _BottomNavItem extends StatelessWidget {
       onTap: () => onTap(index),
       behavior: HitTestBehavior.opaque,
       child: SizedBox(
-        width: MediaQuery.of(context).size.width / 4 - 8,
+        width: MediaQuery.of(context).size.width / 5 - 8,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
