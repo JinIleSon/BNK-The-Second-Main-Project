@@ -57,7 +57,7 @@ class _TossLikeHomePageState extends State<TossLikeHomePage> {
         break;
       case 3:
         body = const Center(
-          child: Text('마이 화면은 아직 준비 중입니다.'),
+          child: Text('마이 화면은 아직 준비 중!'),
         );
         break;
       default:
