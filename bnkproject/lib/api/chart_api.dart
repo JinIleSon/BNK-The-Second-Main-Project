@@ -24,6 +24,10 @@ class ChartApiClient {
   /// [code] 예: "005930"
   /// [interval] 예: "1m", "5m" 등 (백엔드에서 지원하는 값)
   ///
+  /// 날짜 : 2025.12.11.
+  /// 이름 : 강민철
+  /// 내용 : 키움 차트 불러오기 API
+  ///
   /// GET {baseUrl}/api/chart/{code}?interval={interval}
   Future<List<Candle>> fetchCandles({
     required String code,

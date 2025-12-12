@@ -2,6 +2,12 @@
 //
 // 백엔드 EtfQuoteDTO 대응 Flutter 모델
 
+/*
+  날짜 : 2025.12.11.
+  이름 : 강민철
+  내용 : EtfQuoteDTO
+ */
+
 class EtfQuote {
   final int? rank;             // 화면용 순위
   final String? code;          // stk_cd

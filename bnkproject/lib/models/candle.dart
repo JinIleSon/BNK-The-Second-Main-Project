@@ -2,6 +2,12 @@
 //
 // 백엔드 CandleDTO 에 대응하는 Flutter 모델 클래스
 
+/*
+  날짜 : 2025.12.11.
+  이름 : 강민철
+  내용 : CandleDTO
+ */
+
 class Candle {
   /// unix seconds (백엔드 CandleDTO의 long time)
   final int time;

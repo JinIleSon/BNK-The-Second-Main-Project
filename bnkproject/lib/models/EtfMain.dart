@@ -1,5 +1,11 @@
 // lib/models/EtfMain.dart
 
+/*
+  날짜 : 2025.12.11.
+  이름 : 강민철
+  내용 : ETF API를 위한 model
+ */
+
 import 'EtfQuote.dart';
 
 class EtfMain {
