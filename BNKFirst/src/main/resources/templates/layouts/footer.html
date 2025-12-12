@@ -1,0 +1,235 @@
+<!--Footer-->
+<div class="footer-root">
+  <div class="footer-wrap">
+    <div class="footer-col left">
+      <img
+        th:src="@{/images/footer_logo.png}"
+        alt="BNK Logo"
+        style="width:200px; ;"
+      />
+      <p style="font-size:13px; color:#6B7280;">고객과 함께 성장하는 신뢰받는 지역 대표은행</p>
+    </div>
+
+    <div class="footer-col">
+      <h4 style="margin-top: 0;">고객지원</h4>
+      <ul>
+        <li><a th:href="@{/cs/consultation/Q&A}">문의하기</a></li>
+        <li><a th:href="@{/cs/consultation/findStore}">지점찾기</a></li>
+        <li><a th:href="@{/cs/consultation/FAQ}">FAQ</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h4 style="margin-top: 0;">서비스</h4>
+      <ul>
+        <li><a th:href="@{/product/main}">상품</a></li>
+        <li><a th:href="@{/stock/main}">증권</a></li>
+        <li><a href="/BNK/retirement-renew/intro/why-pension">퇴직연금</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h4 style="margin-top: 0;">약관 및 정책</h4>
+      <ul>
+        <li><a href="https://www.busanbank.co.kr/vupload/customer/fia/terms/%EC%9C%84%EC%B9%98%EA%B8%B0%EB%B0%98%EC%84%9C%EB%B9%84%EC%8A%A4%20%EC%9D%B4%EC%9A%A9%EC%95%BD%EA%B4%80(2024.12.02).pdf">위치기반서비스 이용약관</a></li>
+        <li><a href="https://m.busanbank.co.kr/ib20/mnu/MWPCSCE000CSC10">개인정보처리방침</a></li>
+        <li><a href="https://www.busanbank.co.kr/vupload/customer/fia/docs/%EC%A0%84%EC%9E%90%EA%B8%88%EC%9C%B5%EC%84%9C%EB%B9%84%EC%8A%A4%EC%9D%B4%EC%9A%A9%EC%95%BD%EA%B4%80.pdf">전자금융거래약관</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <div class="footer-info">
+      <p>© 2025 BNK 부산은행. All rights reserved. [[${appInfo.appName}]] ADMINISTRATOR Version [[${appInfo.appVersion}]]</p>
+      <p>부산광역시 남구 문현금융로 30 (문현동) | 대표전화: 1588-6200</p>
+    </div>
+
+    <div class="footer-social">
+      <select>
+        <option selected>패밀리사이트</option>
+        <option>BNK금융그룹</option>
+        <option>BNK투자증권</option>
+      </select>
+      <div class="sns-icons">
+        <a href="#"><img th:src="@{/images/footer_facebook_logo.png}" alt="facebook" /></a>
+        <a href="#"><img th:src="@{/images/footer_insta_logo.png}" alt="instagram"/></a>
+        <a href="#"><img th:src="@{/images/footer_youtube_logo.png}" alt="youtube" /></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--CSS-->
+<style>
+:root {
+  --accent: #de0000;
+  --text-base: #374151;
+  --text-sub: #6b7280;
+}
+
+.footer-root {
+  border-top: 1px solid #e5e7eb;
+  background-color: #F6F6F6;
+  padding: 40px 48px 20px;
+  font-family: 'Noto Sans KR', sans-serif;
+  color: var(--text-base);
+  font-size: 14px;
+}
+
+.footer-wrap {
+  display: grid;
+  grid-template-columns: 1.5fr repeat(3, 1fr);
+  gap: 40px;
+  margin-bottom: 28px;
+}
+
+.footer-col h4 {
+  font-size: 15px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 16px;
+}
+
+.footer-col ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-col li {
+  margin: 8px 0;
+}
+
+.footer-col a {
+  text-decoration: none;
+  color: var(--text-base);
+  font-size: 14px;
+  transition: color 0.2s ease;
+}
+
+.footer-col a:hover {
+  color: var(--accent);
+}
+
+.footer-bottom {
+  border-top: 1px solid #e5e7eb;
+  padding-top: 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.footer-info p {
+  margin: 2px 0;
+  font-size: 13px;
+  color: var(--text-sub);
+}
+
+.footer-social {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.footer-social select {
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  padding: 6px 8px;
+  font-size: 13px;
+  color: #374151;
+  background: #fff;
+}
+
+.sns-icons {
+  display: flex;
+  gap: 10px;
+}
+
+.sns-icons img {
+  width: 20px;
+  height: 20px;
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
+}
+
+.sns-icons img:hover {
+  opacity: 1;
+}
+</style>
+
+
+<div id="bnk-chatbot-container" style="position: fixed; right: 20px; bottom: 20px; z-index: 9999;">
+    <div id="bnk-chatbot-slot"></div>
+</div>
+<script>
+    /**
+     * 외부 HTML을 불러와서:
+     *  - <link rel="stylesheet">, <style>는 <head>로 옮기고
+     *  - <script>는 실행되도록 새로 만들어 붙이고 (src/inline, module 모두 지원)
+     *  - 나머지 DOM(예: <flowise-chatbot> / <flowise-embed>)은 mount에 삽입
+     */
+    async function importHtmlWithAssets(url, mountSelector) {
+        const res = await fetch(url, { credentials: 'same-origin' });
+        if (!res.ok) throw new Error(`Failed to load ${url}`);
+        const html = await res.text();
+
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+
+        // 1) <link rel="stylesheet"> 들을 <head>로
+        doc.querySelectorAll('link[rel="stylesheet"]').forEach(link => {
+            // 중복 로드 방지
+            const href = link.getAttribute('href');
+            if (href && ![...document.head.querySelectorAll('link[rel="stylesheet"]')]
+                .some(l => l.getAttribute('href') === href)) {
+                document.head.appendChild(link.cloneNode(true));
+            }
+        });
+
+        // 2) <style> 들을 <head>로
+        doc.querySelectorAll('style').forEach(styleEl => {
+            const clone = document.createElement('style');
+            // CSS 텍스트 보존
+            clone.textContent = styleEl.textContent;
+            // (가능한 속성 복사)
+            [...styleEl.attributes].forEach(a => clone.setAttribute(a.name, a.value));
+            document.head.appendChild(clone);
+        });
+
+        // 3) 본문 콘텐츠를 mount에 붙임 (스크립트 제외)
+        const mount = document.querySelector(mountSelector);
+        // fragment 구성
+        const frag = document.createDocumentFragment();
+        [...doc.body.children].forEach(node => {
+            if (node.tagName.toLowerCase() !== 'script') frag.appendChild(node.cloneNode(true));
+        });
+        mount.appendChild(frag);
+
+        // 4) 스크립트 실행 (src/inline/module 지원, 순서 보장)
+        const scripts = [...doc.querySelectorAll('script')];
+        for (const oldScript of scripts) {
+            const newScript = document.createElement('script');
+            // type/module/defer 등 속성 복사
+            [...oldScript.attributes].forEach(attr => newScript.setAttribute(attr.name, attr.value));
+            if (oldScript.src) {
+                // 네트워크 로드를 기다려 실행 순서 유지
+                await new Promise((resolve, reject) => {
+                    newScript.onload = resolve;
+                    newScript.onerror = resolve;   // 실패해도 진행(브랜딩 제거 같은 선택 기능 보호)
+                    document.body.appendChild(newScript);
+                });
+            } else {
+                // inline 코드 복사
+                newScript.textContent = oldScript.textContent || '';
+                document.body.appendChild(newScript);
+            }
+        }
+    }
+
+</script>
+<script th:inline="javascript">
+    const CHATBOT_URL = /*[[@{/components/chatbot_test}]]*/ '/components/chatbot_test';
+    importHtmlWithAssets(CHATBOT_URL, '#bnk-chatbot-slot').catch(console.error);
+</script>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>펀드</title>
+    <link rel="stylesheet" th:href="@{/css/product/product_list_style.css}">
+    <script th:src="@{/js/fund/TDF_list.js}"></script>
+</head>
+
+<body>
+<header>
+    <div id="header" th:replace="~{layouts/header.html}"></div>
+</header>
+<main class="product-list-search">
+    <section class="list-title">
+        <h1>TDF</h1>
+        <span>다양한 펀드 상품을 비교하고 나에게 맞는 상품을 찾아보세요</span>
+    </section>
+    <section class="main-container">
+        <article class="search-form">
+            <div class="search-box">
+                <form action="" method="get">
+                    <input id="keywordInput" type="text" name="keyword" placeholder="상품명/키워드로 검색"/>
+                </form>
+            </div>
+            <div class="keywords">
+                <span class="label">추천 키워드:</span>
+                <button>신탁</button>
+                <button>투자</button>
+                <button>주식형</button>
+            </div>
+        </article>
+        <article class="list-content">
+            <div class="wrap">
+                <h2 style="margin:0 0 8px">총 상품 <span id="totalCount">0</span></h2>
+                <div class="toolbar">
+                    <div class="view-toggle">
+                        <button id="btnGrid" class="active" aria-selected="true" title="그리드 보기">▦</button>
+                        <button id="btnList" aria-selected="false" title="리스트 보기">☰</button>
+                    </div>
+                    <div style="display: flex; justify-content: flex-end; margin-right: 1px; width: 93%;">
+                        <div class="selectPage" style="">
+                            <select id="selectFund" aria-label="페이지 이동">
+                                <option value="fund">펀드</option>
+                                <option value="TDF" selected>TDF</option>
+                                <option value="ETF">ETF</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div id="chipFilters" class="filterChipbar" aria-label="검색 필터 (칩)"></div>
+                <div id="container"></div>
+                <div id="pagination" class="pagination" role="navigation" aria-label="페이지네이션"></div>
+            </div>
+        </article>
+    </section>
+    <section class="notice-box" role="region" aria-label="예금 상품 안내사항">
+        <div class="notice-icon" aria-hidden="true">
+            <!-- 빨간 동그라미 느낌표 아이콘 -->
+            <svg width="16" height="16" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="11" fill="#dc2626"/>
+                <rect x="11" y="6" width="2" height="9" rx="1" fill="#fff"/>
+                <circle cx="12" cy="18" r="1.5" fill="#fff"/>
+            </svg>
+        </div>
+        <div class="notice-body">
+            <h3 class="notice-title">예금 상품 안내사항</h3>
+            <ul class="notice-list">
+                <li>예금자보호법에 따라 예금보험공사가 1인당 최고 5천만원까지 보호합니다.</li>
+                <li>중도해지 시 약정금리보다 낮은 금리가 적용되어 불이익이 발생할 수 있습니다.</li>
+                <li>우대금리는 조건 충족 시 제공되며, 세부 조건은 상품설명 참고합니다.</li>
+                <li>금리는 시장상황에 따라 변동될 수 있으며, 가입 시점의 금리가 적용됩니다.</li>
+            </ul>
+        </div>
+    </section>
+</main>
+<footer>
+    <div id="footer" th:replace="~{layouts/footer.html}"></div>
+</footer>
+</body>
+
+</html>

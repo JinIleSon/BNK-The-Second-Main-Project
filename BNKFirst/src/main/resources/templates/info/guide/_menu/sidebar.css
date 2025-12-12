@@ -1,0 +1,19 @@
+.sidebar {
+  width: 260px;
+  border-right: 1px solid #ddd;
+  padding: 20px;
+}
+
+.menu-item {
+  margin-bottom: 12px;
+}
+
+.menu-title.active {
+  color: #DE0000;
+  font-weight: bold;
+}
+
+.submenu a.active {
+  color: #DE0000;
+  font-weight: bold;
+}

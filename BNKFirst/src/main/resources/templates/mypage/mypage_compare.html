@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>상품 비교하기</title>
+
+    <style>
+        body {
+            background-color: #F6F6F8;
+            margin: 0;
+            font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 16px;
+            border: 1px solid #E5E7EB;
+            padding: 30px;
+            margin: 30px auto;
+            width: 1200px;
+            box-shadow: 0 2px 8px rgba(0,0,0,.05);
+        }
+
+        h2 {
+            font-size: 22px;
+            color: #13263A;
+            margin-bottom: 20px;
+        }
+
+        .compare-box {
+            display: flex;
+            gap: 20px;
+            margin-top: 25px;
+        }
+
+        .foreign, .bnk {
+            flex: 1;
+            background: #fafafa;
+            border: 1px solid #E5E7EB;
+            padding: 20px;
+            border-radius: 12px;
+        }
+
+        .bnk-card {
+            background: #fff;
+            border: 1px solid #E5E7EB;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        /* 제목 + 가입 버튼을 같은 라인에 */
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn {
+            background: linear-gradient(180deg, #F03A3A, #D91A1A);
+            border: none;
+            border-radius: 8px;
+            padding: 10px 16px;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            float: right;
+        }
+
+        /*필터영역*/
+        /* 필터 박스 */
+        .filter-box {
+            display: flex;
+            gap: 12px;
+            margin: 25px 0;
+        }
+
+        /* 기본 버튼 */
+        .filter-btn {
+            background: #fff;
+            border: 1px solid #D1D5DB;
+            padding: 8px 14px;
+            font-size: 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: .15s ease;
+            color: #2B2F36;
+        }
+
+        /* Hover */
+        .filter-btn:hover {
+            background: #F9FAFB;
+            border-color: #C7CBD1;
+        }
+
+        /* 선택된 버튼 (active) — BNK 레드 스타일 */
+        .filter-btn.active {
+            background: linear-gradient(180deg, #F03A3A, #D91A1A);
+            color: white;
+            border: none;
+            box-shadow: 0 2px 6px rgba(217, 26, 26, 0.25);
+        }
+
+        .filter-btn.active:hover {
+            background: linear-gradient(180deg, #f24949, #d11a1a);
+        }
+    </style>
+</head>
+
+<body>
+
+    <header><div th:replace="~{layouts/header.html}"></div></header>
+
+    <main style="padding-top:100px;">
+        <div class="card">
+
+            <h2>타행 상품과 BNK 상품 비교</h2>
+
+            <!-- 선택한 타행 계좌 -->
+            <div class="foreign">
+                <h3>내 타행 계좌</h3>
+                <p><b th:text="${foreign.institution}"></b></p>
+                <p th:text="${foreign.productname}"></p>
+                <p>잔액: <span th:text="${#numbers.formatInteger(foreign.balance, 3, 'COMMA')}"></span> 원</p>
+                <p>수익률: <span th:text="${foreign.yieldrate}"></span> %</p>
+            </div>
+
+            <h3 style="margin-top:40px;">BNK 추천 퇴직연금 상품</h3>
+
+            <!-- 필터 영역 -->
+            <div class="filter-box">
+
+                <button class="filter-btn"
+                        th:classappend="${riskFilter} == 'deposit' ? ' active' : ''"
+                        th:onclick="|location.href='@{/mypage/compare(myaccid=${foreign.myaccid}, risk='deposit')}'|">
+                    예금상품
+                </button>
+
+                <button class="filter-btn"
+                        th:classappend="${riskFilter} == 'low' ? ' active' : ''"
+                        th:onclick="|location.href='@{/mypage/compare(myaccid=${foreign.myaccid}, risk='low')}'|">
+                    안정형 (1~2등급)
+                </button>
+
+                <button class="filter-btn"
+                        th:classappend="${riskFilter} == 'mid' ? ' active' : ''"
+                        th:onclick="|location.href='@{/mypage/compare(myaccid=${foreign.myaccid}, risk='mid')}'|">
+                    중위험 (3~4등급)
+                </button>
+
+                <button class="filter-btn"
+                        th:classappend="${riskFilter} == 'high' ? ' active' : ''"
+                        th:onclick="|location.href='@{/mypage/compare(myaccid=${foreign.myaccid}, risk='high')}'|">
+                    고위험 (5~6등급)
+                </button>
+
+            </div>
+
+
+            <hr style="margin:25px 0; border:0; border-top:1px solid #E5E7EB;">
+
+
+            <!-- BNK 상품 목록 -->
+            <div class="bnk">
+                <div th:each="p : ${productList}" class="bnk-card">
+                        <h4 th:text="${p.name}"></h4>
+                    <div class="item-header">
+                        <p>기본 금리: <span th:text="${p.rate}"></span> %</p>
+
+                        <!-- 이동 경로 분기 -->
+                        <button class="btn"
+                                th:if="${p.type == 'PRODUCT'}"
+                                th:onclick="|location.href='@{/product/view/{pid}(pid=${p.id})}'|">
+                            가입하기
+                        </button>
+
+                        <button class="btn"
+                                th:if="${p.type == 'FUND'}" th:onclick="|location.href='@{/product/fund/list}'|">
+                            상품보기
+                        </button>
+
+
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn" th:onclick="|location.href='@{/mypage/mydata}'|" style="margin-top: 20px ">뒤로가기</button>
+
+            <br><br>
+
+        </div>
+    </main>
+
+    <script>
+        function goToFundPage(btn) {
+            const name = btn.dataset.name;
+            const encoded = encodeURIComponent(name);
+            location.href = `/BNK/product/fund/list?keyword=${encoded}`;
+        }
+    </script>
+
+    <footer><div th:replace="~{layouts/footer.html}"></div></footer>
+
+</body>
+</html>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.bnkfirst.mapper.StockMapper">
+
+<!--    주식 구매 프로세스-->
+
+    <insert id="buyStock">
+        INSERT INTO ETF (pcuid, pstock, pprice, psum, pname, pacc, code)
+        VALUES (#{pcuid}, #{pstock}, #{pprice}, #{psum}, #{pname}, #{pacc}, #{code})
+    </insert>
+
+    <update id="downBalance">
+        update pcontract set pbalance = pbalance - (#{psum}) where pacc = #{pacc} and type = 'IRP'
+    </update>
+
+<!--    판매할 주식이 있는지 찾기(판매)-->
+    <select id="findByStock" resultType="kr.co.bnkfirst.kiwoomETF.EtfDTO">
+        SELECT * FROM etf WHERE pacc = #{pacc} AND pname = #{pname}
+    </select>
+
+<!--    주식 판매 프로세스-->
+
+    <update id="upBalance">
+        UPDATE pcontract SET pbalance = pbalance + #{psum} WHERE pacc = #{pacc} and type = 'IRP'
+    </update>
+
+    <delete id="sellStock">
+        DELETE FROM etf WHERE pname = #{pname} AND pcuid = #{pcuid}
+    </delete>
+</mapper>

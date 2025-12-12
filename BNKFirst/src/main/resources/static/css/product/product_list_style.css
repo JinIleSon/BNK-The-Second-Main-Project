@@ -1,0 +1,721 @@
+/* ============================= 공통 디자인 ============================== */
+body {
+    background-color: #F6F6F8;
+}
+
+main {
+    width: 1200px;
+    background-color: #F6F6F8;
+    padding: 80px 20px;
+    margin: 0 auto;
+}
+
+.btn-red {
+    --bg1: #D91A1A;
+    --bg2: #F03A3A;
+    --shadow: rgba(217, 26, 26, .45);
+    position: relative;
+    box-sizing: border-box;
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    cursor: pointer;
+    background: linear-gradient(180deg, var(--bg2), var(--bg1));
+    outline: none;
+    box-shadow: 0 6px 14px -10px var(--shadow);
+    transition:
+        background .18s ease,
+        box-shadow .18s ease,
+        /* 프레스만 사용할 예정 */
+        transform .12s ease;
+    will-change: background, box-shadow, transform;
+}
+
+.btn-red svg path {
+    fill: white;
+}
+
+/* Hover: 컬러와 섀도우만 아주 미세하게 (리프트 없음) */
+.btn-red:hover {
+    background: linear-gradient(180deg, #f24a4a, #d61a1a);
+    box-shadow: 0 8px 18px -12px var(--shadow);
+    /* 확실하게 떠오르지 않도록 고정 */
+    transform: none;
+}
+
+/* Active: 살짝 눌리는 프레스 효과만 */
+.btn-red:active {
+    transform: scale(.98);
+    box-shadow: 0 4px 10px -10px var(--shadow);
+}
+
+/* 키보드 포커스 접근성 */
+.btn-red:focus-visible {
+    outline: 3px solid rgba(240, 58, 58, .55);
+    outline-offset: 2px;
+}
+
+/* 모션 최소화 존중 */
+@media (prefers-reduced-motion: reduce) {
+    .btn-red {
+        transition: none !important;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    .btn-red {
+        --shadow: rgba(240, 58, 58, .35);
+    }
+}
+
+.btn-white {
+    --bg1: #ffffff;
+    --bg2: #f9f9f9;
+    --shadow: rgba(0, 0, 0, .08);
+    position: relative;
+    box-sizing: border-box;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    color: #111827;
+    cursor: pointer;
+    background: var(--bg1);
+    outline: none;
+    box-shadow: 0 4px 10px -8px var(--shadow);
+    transition:
+        background .18s ease,
+        box-shadow .18s ease,
+        transform .12s ease;
+    will-change: background, box-shadow, transform;
+}
+
+.btn-white svg path {
+    fill: #111827;
+}
+
+/* Hover: 살짝 강조된 밝은 회색 */
+.btn-white:hover {
+    background: linear-gradient(180deg, var(--bg1), var(--bg2));
+    box-shadow: 0 6px 14px -10px var(--shadow);
+    transform: none;
+}
+
+/* Active: 프레스 효과 */
+.btn-white:active {
+    transform: scale(.98);
+    box-shadow: 0 3px 8px -8px var(--shadow);
+}
+
+/* 포커스 */
+.btn-white:focus-visible {
+    outline: 3px solid rgba(0, 0, 0, .15);
+    outline-offset: 2px;
+}
+
+/* 모션 최소화 */
+@media (prefers-reduced-motion: reduce) {
+    .btn-white {
+        transition: none !important;
+    }
+}
+
+/* 다크모드 대응 */
+@media (prefers-color-scheme: dark) {
+    .btn-white {
+        --bg1: #f3f4f6;
+        --bg2: #e5e7eb;
+        --shadow: rgba(0, 0, 0, .25);
+        color: #111;
+        border-color: #d1d5db;
+    }
+}
+
+
+/* =============================== 검색창 디자인 ============================== */
+.list-title {
+    margin-bottom: 30px;
+}
+
+.list-title h1 {
+    margin-bottom: 5px;
+}
+
+.search-form {
+    padding: 20px;
+    background-color: white;
+    border: 1px solid #F3F4F6;
+    border-radius: 15px;
+}
+
+.search-bar {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 20px;
+    max-width: 700px;
+    margin: 0 auto;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+}
+
+.search-box {
+    position: relative;
+    width: 100%;
+}
+
+.search-box input {
+    width: -webkit-fill-available;
+    /* FireFox 전용 속성값 */
+    width: -moz-available;
+    /* 왼쪽 여백 확보 (아이콘 공간) */
+    padding: 10px 14px 10px 46px;
+    font-size: 14px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    outline: none;
+    color: #374151;
+    background: url('/BNK/images/product/searchIcon.png') no-repeat left 14px center;
+    background-color: white;
+    background-size: 16px;
+}
+
+.search-box input::placeholder {
+    color: #9ca3af;
+}
+
+.search-box .icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 15px;
+    color: #9ca3af;
+    pointer-events: none;
+}
+
+/* 추천 키워드 */
+.keywords {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.keywords .label {
+    font-weight: 500;
+    color: #6b7280;
+    margin-right: 4px;
+}
+
+.keywords button {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 9999px;
+    padding: 4px 10px;
+    font-size: 13px;
+    color: #374151;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.keywords button:hover {
+    background: #fee2e2;
+    border-color: #fecaca;
+    color: #b91c1c;
+}
+
+
+/* ------------------------------- list-content 스타일 ------------------------- */
+:root {
+    --red: #dc2626;
+    --red-dark: #b91c1c;
+    --text: #111827;
+    --muted: #6b7280;
+    --line: #e5e7eb;
+    --soft: #f3f4f6;
+    --card-bd: #f1f5f9;
+    --shadow: 0 2px 6px rgba(0, 0, 0, .06);
+}
+
+.list-content .wrap {
+    max-width: 1200px;
+    margin: 24px auto;
+    padding: 0 16px;
+}
+
+/* 툴바 */
+.list-content .toolbar {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 14px
+}
+
+.list-content .toolbar .view-toggle {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    overflow: hidden
+}
+
+.list-content .toolbar .view-toggle button {
+    padding: 6px 10px;
+    border: 0;
+    background: #fff;
+    cursor: pointer
+}
+
+.list-content .toolbar .view-toggle button.active {
+    background: #D81921;
+    color: #fff
+}
+
+.list-content .toolbar .sort {
+    margin-left: auto
+}
+
+.list-content .toolbar select {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 14px
+}
+
+/* 칩 필터 바 */
+.list-content .filterChipbar {
+  margin: 10px 0 14px;
+  padding: 10px 12px;
+  background: #fff;
+  border: 1px solid #eef2f7;
+  border-radius: 12px;
+}
+
+/* 그룹 라인 */
+.list-content .Chip-group {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  align-items: start;
+  gap: 8px 10px;
+  padding: 8px 0;
+  border-top: 1px solid #f3f4f6;
+}
+.list-content .Chip-group:first-child { border-top: 0; }
+
+.list-content .Chip-group .glabel {
+  font-weight: 700; color:#374151; padding-top:4px; text-align: center;
+}
+
+/* 칩 리스트 (가로 스크롤 가능) */
+.list-content .Chip-row {
+  display: flex; gap: 8px; flex-wrap: wrap;
+  overflow-x: auto; scrollbar-width: thin;
+}
+
+/* 칩 */
+.list-content .Chip {
+  height: 32px; padding: 0 14px;
+    border: 1px solid var(--line); background:#f9fafb; color:#374151;
+  border-radius: 9999px; font-weight: 600; font-size: 13px;
+  cursor: pointer; white-space: nowrap; display: flex; align-items: center;
+  transition: background .18s ease, border-color .18s ease, color .18s ease;
+}
+
+.list-content .Chip:hover { background:#f9fafb; }
+
+.list-content .Chip.active {
+  background:#dc2626; border-color:#dc2626; color:#fff;
+}
+
+/* ===== 그리드 뷰 ===== */
+.list-content .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px
+}
+
+@media (max-width:920px) {
+    .list-content .grid {
+        grid-template-columns: repeat(2, 1fr)
+    }
+}
+
+@media (max-width:560px) {
+    .list-content .grid {
+        grid-template-columns: 1fr
+    }
+}
+
+.list-content .card {
+    background: #fff;
+    border: 1px solid var(--card-bd);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    padding: 16px
+}
+
+.list-content .badge {
+    display: inline-block;
+    font-size: 11px;
+    border-radius: 9999px;
+    border: 1px solid #fee2e2;
+    background: #fef2f2;
+    color: var(--red);
+    padding: 3px 8px
+}
+
+.list-content .name {
+    margin: 8px 0 2px;
+    font-weight: 700
+}
+
+.list-content .rate-big {
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--red);
+    margin: 6px 0 4px;
+    text-align: center;
+}
+
+.list-content .meta {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+.list-content .Chips {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin: 8px 0 10px
+}
+
+.list-content .btns {
+    display: flex;
+    gap: 8px
+}
+
+.list-content .btn {
+    flex: 1;
+    border-radius: 9999px;
+    padding: 10px 0;
+    font-weight: 600;
+}
+
+.list-content .btn-primary {
+    background: var(--red);
+    border-color: var(--red);
+    color: #fff
+}
+
+.list-content .btn-primary:hover {
+    background: var(--red-dark);
+    border-color: var(--red-dark)
+}
+
+/* ===== 리스트(표) 뷰 ===== */
+.list-content .list-wrap {
+    background: #fff;
+    border: 1px solid #eef2f7;
+    border-radius: 12px;
+    padding: 6px
+}
+
+.list-content .table {
+    width: 100%
+}
+
+.list-content .thead,
+.list-content .trow {
+    display: grid;
+    grid-template-columns: 1.6fr .7fr minmax(110px, .4fr);
+    align-items: center;
+    column-gap: 0;
+}
+
+/* 선택: 헤더의 ‘신청’ 텍스트도 오른쪽 정렬하고 싶다면 */
+.list-content .thead .cell:last-child {
+    text-align: center;
+}
+
+.list-content .thead {
+    color: #6b7280;
+    font-size: 13px;
+    padding: 12px 16px;
+    margin: 8px 6px;
+}
+
+.list-content .trow {
+    background: #fff;
+    border: 1px solid var(--card-bd);
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin: 8px 6px;
+    box-shadow: var(--shadow);
+    height: 110px;
+    box-sizing: border-box;
+}
+
+.list-content .cell {
+    padding: 2px 6px;
+    text-align: center;
+}
+
+.list-content .cell.name-col {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    text-align: left;
+    margin-left: 25px;
+}
+
+.list-content .title {
+    font-weight: 700;
+    margin-bottom: 2px
+}
+
+.list-content .subtitle {
+    font-size: 12px;
+    color: #6b7280;
+    text-align: initial;
+}
+
+.list-content .new-prod {
+    height: 15px;
+}
+
+.list-content .rate-col {
+    font-weight: 800;
+}
+
+.list-content .rate-base {
+    font-size: 18px
+}
+
+.list-content .rate-max {
+    font-size: 20px;
+    color: var(--red)
+}
+
+.list-content .rate-suffix {
+    font-weight: 600;
+    margin-left: 3px;
+    color: #6b7280
+}
+
+.list-content .term {
+    font-size: 14px;
+    color: #374151
+}
+
+.list-content .method {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.list-content .badge-soft {
+    font-size: 11px;
+    background: #eef6ff;
+    border: 1px solid #dbeafe;
+    color: #2563eb;
+    border-radius: 9999px;
+    padding: 3px 8px
+}
+
+.list-content .benefits {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.list-content .badge-green {
+    font-size: 11px;
+    background: #eefcf3;
+    border: 1px solid #dcfce7;
+    color: #16a34a;
+    border-radius: 9999px;
+    padding: 3px 8px
+}
+
+.list-content .btn-apply {
+    justify-self: center
+}
+
+.list-content .btn-apply .btn {
+    width: 100%;
+    min-width: 96px;
+    border-radius: 10px
+}
+
+/* 페이지네이션(공용) */
+.list-content .pagination {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin: 18px 0 8px
+}
+
+.list-content .page-btn {
+    min-width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    background: #fff;
+    cursor: pointer
+}
+
+.list-content .page-btn:first-child {
+    text-align: left;
+}
+.list-content .page-btn:last-child {
+    text-align: right;
+}
+
+.list-content .page-btn.active {
+    background: var(--red);
+    border-color: var(--red);
+    color: #fff;
+    font-weight: 700
+}
+
+.list-content .page-btn:disabled {
+    opacity: .5;
+    cursor: not-allowed
+}
+
+/* ======================== notice-box 스타일 ==================== */
+/* 안내 박스 스타일 */
+.notice-box{
+  display:flex; gap:5px;
+  padding:16px 18px;
+  border-radius:16px;
+  background:#f9fafb;                  /* 아주 연한 회색 */
+  border:1px solid #eef2f7;
+  box-shadow: inset 0 0 0 0 rgba(0,0,0,0);
+}
+
+/* 아이콘 */
+.notice-icon{
+  flex:0 0 auto;
+  width:28px; height:20px;
+  display:grid; place-items:center;
+  border-radius:9999px;
+}
+
+/* 텍스트 영역 */
+.notice-title{
+  margin:0 0 6px;
+  font-size:14px; font-weight:700; color:#111827;
+}
+.notice-list{
+  margin:0; padding-left:18px;         /* 기본 불릿 사용 */
+  color:#4b5563; line-height:1.65; font-size:13px;
+}
+.notice-list li{ margin:2px 0; }
+
+/* 반응형 여백 */
+@media (max-width:560px){
+  .notice-box{ padding:14px 14px; border-radius:12px; }
+}
+
+/* 다크모드(선택) */
+@media (prefers-color-scheme: dark){
+  .notice-box{ background:#0b0f14; border-color:#1f2937; }
+  .notice-title{ color:#e5e7eb; }
+  .notice-list{ color:#9ca3af; }
+  .notice-icon{ background:#7f1d1d; border-color:#991b1b; }
+}
+
+/* 펀드 */
+.fund-card {
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    padding: 16px 20px;
+    margin-bottom: 12px;
+    background: #fff;
+}
+
+.fund-card-header {
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 8px;
+    margin-bottom: 12px;
+}
+
+.fund-card-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.fund-card-subtitle {
+    font-size: 12px;
+    color: #dc2626; /* 빨간 글씨 느낌 */
+}
+
+.fund-card-meta {
+    font-size: 12px;
+    color: #6b7280;
+    margin-top: 4px;
+}
+.fund-meta-item + .fund-meta-item {
+    margin-left: 8px;
+}
+
+.fund-card-returns {
+    display: flex;
+    gap: 8px;
+}
+
+.fund-return-box {
+    width:76px;
+    text-align: center;
+    border: 1px solid #e5e7eb;
+    padding: 10px 4px;
+    border-radius: 8px;
+}
+
+.fund-return-value {
+    color: #dc2626;
+    font-size: 18px;
+    font-weight: 500;
+}
+
+/* 카드형에서만 override */
+.fund-grid .fund-return-value {
+    font-size: 13px;
+}
+
+.fund-return-label {
+    font-size: 11px;
+    color: #6b7280;
+}
+
+.fund-card-footer {
+    margin-top: 12px;
+    text-align: right;
+}
+
+/* grid / list 레이아웃만 다르게 */
+.fund-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 12px;
+}
+
+.fund-list {
+    display: block;
+}
+
+.fund-list .fund-card-meta {
+    text-align: end;
+}
+
+.fund-list .fund-card-returns {
+    justify-content: flex-end;   /* 오른쪽 정렬 */
+}

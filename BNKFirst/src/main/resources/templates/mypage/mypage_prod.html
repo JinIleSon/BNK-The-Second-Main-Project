@@ -1,0 +1,1833 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>mypage_prod</title>
+    <style>
+        main {
+            background-color: #F6F6F8;
+            padding: 10px 20px 80px;
+        }
+        body {
+            background-color: #F6F6F8;
+        }
+        /* 공통 링크(카드 전체 클릭) */
+        .menu-link{ text-decoration:none; color:inherit; display:block; }
+
+        /* 카드 기본 */
+        .menu-card{
+            background:#fff; width:280px; height:200px; border-radius:16px;
+            border:1px solid #E5E7EB; box-shadow:0 2px 8px rgba(0,0,0,.05);
+            transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease, background-color .22s ease;
+            cursor:pointer; will-change: transform;
+        }
+
+        /* Hover: 살짝 떠오르고 그림자 강화, 보더 강조 */
+        .menu-card:hover{
+            transform: translateY(-4px);
+            box-shadow:0 10px 24px rgba(0,0,0,.10);
+            border-color:#D1D5DB;        /* 더 선명한 테두리 */
+            background-color:#FCFCFD;    /* 아주 미세한 톤 변화 */
+        }
+
+        /* Active(눌렀을 때): 프레스 느낌 */
+        .menu-card:active{
+            transform: translateY(-1px) scale(.995);
+            box-shadow:0 6px 16px rgba(0,0,0,.08);
+        }
+
+        /* 키보드 포커스 접근성: 트렌디한 링 */
+        .menu-link:focus-visible .menu-card{
+            outline:none;
+            box-shadow:0 0 0 2px #fff, 0 0 0 4px rgba(59,130,246,.55); /* 흰색-파랑 이중링 */
+            transform: translateY(-2px);
+        }
+
+        /* 모션 최소화 선호 사용자 배려 */
+        @media (prefers-reduced-motion: reduce){
+            .menu-card, .menu-card:hover, .menu-card:active{
+            transition:none; transform:none; box-shadow:0 2px 8px rgba(0,0,0,.05);
+            }
+            .menu-link:focus-visible .menu-card{ box-shadow:0 0 0 3px rgba(59,130,246,.55); }
+        }
+        </style>
+        <style>
+            .btn-register {
+            --bg1: #D91A1A;
+            --bg2: #F03A3A;
+            --shadow: rgba(217,26,26,.45);
+            position: relative;
+            box-sizing: border-box;
+            width: 90px; height: 42px;
+            border: none; border-radius: 8px;
+            color: #fff; cursor: pointer;
+            background: linear-gradient(180deg, var(--bg2), var(--bg1));
+            outline: none;
+            box-shadow: 0 6px 14px -10px var(--shadow);
+            transition:
+                background .18s ease,
+                box-shadow .18s ease,
+                transform .12s ease; /* 프레스만 사용할 예정 */
+            will-change: background, box-shadow, transform;
+            }
+            
+            /* Hover: 컬러와 섀도우만 아주 미세하게 (리프트 없음) */
+            .btn-register:hover {
+            background: linear-gradient(180deg, #f24a4a, #d61a1a);
+            box-shadow: 0 8px 18px -12px var(--shadow);
+            transform: none; /* 확실하게 떠오르지 않도록 고정 */
+            }
+            
+            /* Active: 살짝 눌리는 프레스 효과만 */
+            .btn-register:active {
+            transform: scale(.98);
+            box-shadow: 0 4px 10px -10px var(--shadow);
+            }
+            
+            /* 키보드 포커스 접근성 */
+            .btn-register:focus-visible {
+            outline: 3px solid rgba(240,58,58,.55);
+            outline-offset: 2px;
+            }
+            
+            /* 모션 최소화 존중 */
+            @media (prefers-reduced-motion: reduce) {
+            .btn-register { transition: none !important; }
+            }
+            
+            @media (prefers-color-scheme: dark) {
+            .btn-register { --shadow: rgba(240,58,58,.35); }
+            }
+        </style>
+    <style>
+          /* 공통 링크(카드 전체 클릭) */
+          .menu-link{ text-decoration:none; color:inherit; display:block; }
+
+          /* 카드 기본 */
+          .menu-card{
+            background:#fff; width:280px; height:200px; border-radius:16px;
+            border:1px solid #E5E7EB; box-shadow:0 2px 8px rgba(0,0,0,.05);
+            transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease, background-color .22s ease;
+            cursor:pointer; will-change: transform;
+          }
+
+          /* Hover: 살짝 떠오르고 그림자 강화, 보더 강조 */
+          .menu-card:hover{
+            transform: translateY(-4px);
+            box-shadow:0 10px 24px rgba(0,0,0,.10);
+            border-color:#D1D5DB;        /* 더 선명한 테두리 */
+            background-color:#FCFCFD;    /* 아주 미세한 톤 변화 */
+          }
+
+          /* Active(눌렀을 때): 프레스 느낌 */
+          .menu-card:active{
+            transform: translateY(-1px) scale(.995);
+            box-shadow:0 6px 16px rgba(0,0,0,.08);
+          }
+
+          /* 키보드 포커스 접근성: 트렌디한 링 */
+          .menu-link:focus-visible .menu-card{
+            outline:none;
+            box-shadow:0 0 0 2px #fff, 0 0 0 4px rgba(59,130,246,.55); /* 흰색-파랑 이중링 */
+            transform: translateY(-2px);
+          }
+
+          /* 모션 최소화 선호 사용자 배려 */
+          @media (prefers-reduced-motion: reduce){
+            .menu-card, .menu-card:hover, .menu-card:active{
+              transition:none; transform:none; box-shadow:0 2px 8px rgba(0,0,0,.05);
+            }
+            .menu-link:focus-visible .menu-card{ box-shadow:0 0 0 3px rgba(59,130,246,.55); }
+          }
+        </style>
+        <style>
+          #aiReco{
+            opacity: 1;
+            /* opacity는 1.2s로 페이드, visibility는 1.2s 뒤에 적용(즉, 페이드 끝난 후 숨김) */
+            transition: opacity .9s cubic-bezier(.22,.61,.36,1),
+                        visibility 0s linear 1.2s;
+            will-change: opacity;
+          }
+
+          #aiReco.is-fading{
+            opacity: 0;
+            visibility: hidden;   /* 지연되어 끝나고 적용됨 -> 모션 살아있음 */
+            pointer-events: none; /* 클릭만 막기 */
+          }
+
+          /* X 아이콘(svg[data-close])의 포커스 아웃라인 제거 */
+          #aiReco [data-close]:focus,
+          #aiReco [data-close]:focus-visible {
+            outline: none;
+            box-shadow: none;
+          }
+
+
+          /* 오류 수정중 */
+          /* 모바일 클릭 시 파란/회색 하이라이트 제거 */
+          #aiReco [data-close]{
+            -webkit-tap-highlight-color: transparent;
+          }
+        </style>
+    <style>
+        .bnk-toast{
+            position: fixed;
+            left: 50%;
+            transform: translate(-50%, 12px);
+            bottom: 24px;
+            background: #111827;
+            color: #fff;
+            border: 1px solid #374151;
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-size: 14px;
+            box-shadow: 0 8px 24px rgba(0,0,0,.25);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .18s ease, transform .18s ease;
+            z-index: 10000;
+        }
+        .bnk-toast.show{
+            opacity: 1;
+            transform: translate(-50%, 0);
+            pointer-events: auto;
+        }
+        @media (prefers-reduced-motion: reduce){
+            .bnk-toast{ transition: none; transform: translate(-50%, 0); }
+        }
+    </style>
+    <style>
+        .etf-metrics{
+            margin-top: 18px;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            row-gap: 4px;
+            column-gap: 61px;
+            font-size: 15px;
+            color: #4B5563;
+            padding-left: 10px;
+            padding-right: 30px;
+        }
+        .etf-row{
+            width: 226px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .etf-label{
+            color: black;
+        }
+        .etf-total-amount,
+        .etf-current-amount,
+        .etf-profit,
+        .etf-profit-rate{
+            font-size: 17px;
+        }
+    </style>
+</head>
+<body>
+  <svg id="icon-plus" style="display:none;" width="12" height="16" viewBox="0 0 12 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g clip-path="url(#clip0_257_241)">
+  <path d="M6 14.5C7.5913 14.5 9.11742 13.8679 10.2426 12.7426C11.3679 11.6174 12 10.0913 12 8.5C12 6.9087 11.3679 5.38258 10.2426 4.25736C9.11742 3.13214 7.5913 2.5 6 2.5C4.4087 2.5 2.88258 3.13214 1.75736 4.25736C0.632141 5.38258 0 6.9087 0 8.5C0 10.0913 0.632141 11.6174 1.75736 12.7426C2.88258 13.8679 4.4087 14.5 6 14.5ZM5.4375 10.5625V9.0625H3.9375C3.62578 9.0625 3.375 8.81172 3.375 8.5C3.375 8.18828 3.62578 7.9375 3.9375 7.9375H5.4375V6.4375C5.4375 6.12578 5.68828 5.875 6 5.875C6.31172 5.875 6.5625 6.12578 6.5625 6.4375V7.9375H8.0625C8.37422 7.9375 8.625 8.18828 8.625 8.5C8.625 8.81172 8.37422 9.0625 8.0625 9.0625H6.5625V10.5625C6.5625 10.8742 6.31172 11.125 6 11.125C5.68828 11.125 5.4375 10.8742 5.4375 10.5625Z" fill="white"/>
+  </g>
+  <defs>
+  <clipPath id="clip0_257_241">
+  <path d="M0 2.5H12V14.5H0V2.5Z" fill="white"/>
+  </clipPath>
+  </defs>
+</svg>
+<svg id="icon-minus" style="display:none;" width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g clip-path="url(#clip0_257_265)">
+  <path d="M6 12C7.5913 12 9.11742 11.3679 10.2426 10.2426C11.3679 9.11742 12 7.5913 12 6C12 4.4087 11.3679 2.88258 10.2426 1.75736C9.11742 0.632141 7.5913 0 6 0C4.4087 0 2.88258 0.632141 1.75736 1.75736C0.632141 2.88258 0 4.4087 0 6C0 7.5913 0.632141 9.11742 1.75736 10.2426C2.88258 11.3679 4.4087 12 6 12ZM4.3125 5.4375H7.6875C7.99922 5.4375 8.25 5.68828 8.25 6C8.25 6.31172 7.99922 6.5625 7.6875 6.5625H4.3125C4.00078 6.5625 3.75 6.31172 3.75 6C3.75 5.68828 4.00078 5.4375 4.3125 5.4375Z" fill="white"/>
+  </g>
+  <defs>
+  <clipPath id="clip0_257_265">
+  <path d="M0 0H12V12H0V0Z" fill="white"/>
+  </clipPath>
+  </defs>
+</svg>
+    <header>
+        <div th:replace="~{layouts/header.html}"></div>
+    </header>
+    
+    <main style=" display: flex; justify-content: center;">
+        <div style="width: 1200px; ">
+            <div style="margin-top:25px; padding:30px; box-sizing: border-box; background-color: #D91A1A; width: 100%; height: 184px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); border: 1px solid #E5E7EB;">
+                <div style="display: flex;">
+                    <div>
+                        <div style="color: white; font-size: 18px; font-weight: 300;">총 보유 자산</div>
+                        <div class="money-scope" style="color: white; font-size: 36px; font-weight: 300;">
+                            <span th:text="${#numbers.formatInteger(balance, 3, 'COMMA')}"></span>원
+                        </div>
+                        <div style="display: flex; margin-top: 10px;">
+                          <div style="display: flex; margin-right: 20px;">
+                            <div style="margin-right: 10px;">
+                              <svg width="11" height="14" viewBox="0 0 11 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <g clip-path="url(#clip0_257_235)">
+                                <path d="M5.86807 1.13184C5.52627 0.790039 4.97119 0.790039 4.6294 1.13184L0.254395 5.50684C-0.0874024 5.84863 -0.0874024 6.40371 0.254395 6.74551C0.596191 7.0873 1.15127 7.0873 1.49307 6.74551L4.3751 3.86074V12.2498C4.3751 12.7338 4.76611 13.1248 5.2501 13.1248C5.73408 13.1248 6.1251 12.7338 6.1251 12.2498V3.86074L9.00713 6.74277C9.34893 7.08457 9.90401 7.08457 10.2458 6.74277C10.5876 6.40098 10.5876 5.8459 10.2458 5.5041L5.8708 1.1291L5.86807 1.13184Z" fill="white"/>
+                                </g>
+                                <defs>
+                                <clipPath id="clip0_257_235">
+                                <path d="M0 0H10.5V14H0V0Z" fill="white"/>
+                                </clipPath>
+                                </defs>
+                              </svg>
+                            </div>
+                            <div style="display: flex; color: white; font-size: 14px; font-weight: 300;">
+                              <div style="margin-right: 5px;">이번 달 입금</div>
+                              <div class="amount"><span th:text="${plus}"></span>원</div>
+                            </div>
+                          </div>
+                          <div style="display: flex;">
+                            <div style="margin-right: 10px;">
+                              <svg width="11" height="14" viewBox="0 0 11 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <g clip-path="url(#clip0_257_239)">
+                                <path d="M4.63213 12.868C4.97393 13.2098 5.529 13.2098 5.8708 12.868L10.2458 8.49297C10.5876 8.15117 10.5876 7.59609 10.2458 7.2543C9.90401 6.9125 9.34893 6.9125 9.00713 7.2543L6.1251 10.1391V1.75C6.1251 1.26602 5.73408 0.875 5.2501 0.875C4.76611 0.875 4.3751 1.26602 4.3751 1.75V10.1363L1.49307 7.25703C1.15127 6.91523 0.596191 6.91523 0.254395 7.25703C-0.0874024 7.59883 -0.0874024 8.15391 0.254395 8.4957L4.6294 12.8707L4.63213 12.868Z" fill="white"/>
+                                </g>
+                                <defs>
+                                <clipPath id="clip0_257_239">
+                                <path d="M0 0H10.5V14H0V0Z" fill="white"/>
+                                </clipPath>
+                                </defs>
+                              </svg>
+                            </div>
+                            <div style="display: flex; color: white; font-size: 14px; font-weight: 300;">
+                              <div style="margin-right: 5px;">이번 달 출금</div> 
+                              <div class="amount"><span th:text="${minus}"></span>원</div>
+                            </div>
+                          </div>
+                        </div>
+                    </div>
+                    <div style="margin-left: auto; width: 368px;">
+                      <div style="color: white; font-size: 14px; font-weight: 300; margin-bottom: 15px;">최근 거래</div>
+                      <div th:each="deal:${dealList}"
+                              style="display: flex; margin-top:7px;">
+                        <div class="icon" style="margin-right: 9px;">
+                        </div>
+                        <div style="display: flex; align-items: center;color: white; font-size: 14px; font-weight: 300;">
+                            <span th:text="${deal.dbalance >= 0 ? '계좌 입금' : '계좌 이체'}"></span>
+                        </div>
+                        <div class="amount" style="margin-left:auto; color: white; font-size: 14px; font-weight: 300;">
+                            <span th:text="${deal.dbalance}"></span>원
+                        </div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div id="summary-cards" style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; margin-top: 25px;">
+              <a href="#" id="transfer-card" style="text-decoration: none;">
+                <div class="menu-card" style="background-color: white; height: 90px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); border: 1px solid #E5E7EB;">
+                  <div style="padding: 21px;">
+                    <div>
+                      <div style="display: flex;">
+                        <div style="">
+                          <div style="display: flex; justify-content: center;">
+                            <div style="display: flex; justify-content: center; align-items: center; border-radius: 8px; background-color: #e9f8fb; width: 48px; height: 48px;">
+                              <svg width="18" height="28" viewBox="0 0 18 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <g clip-path="url(#clip0_257_130)">
+                                <path d="M1.1251 9.625H12.3751V7.375C12.3751 6.92149 12.6493 6.51016 13.0712 6.33438C13.4931 6.1586 13.9747 6.25704 14.2981 6.57696L17.6731 9.95196C17.8841 10.1629 18.0036 10.4477 18.0036 10.7465C18.0036 11.0453 17.8841 11.3301 17.6731 11.541L14.2981 14.916C13.9747 15.2395 13.4931 15.3344 13.0712 15.1586C12.6493 14.9828 12.3751 14.575 12.3751 14.118V11.875H1.1251C0.502832 11.875 9.76564e-05 11.3723 9.76564e-05 10.75C9.76564e-05 10.1277 0.502832 9.625 1.1251 9.625ZM16.8751 18.625C17.4974 18.625 18.0001 19.1277 18.0001 19.75C18.0001 20.3723 17.4974 20.875 16.8751 20.875H5.6251V23.125C5.6251 23.5785 5.35088 23.9898 4.929 24.1656C4.50713 24.3414 4.02549 24.243 3.70205 23.9231L0.327051 20.5481C0.116113 20.3371 -0.00341797 20.0523 -0.00341797 19.7535C-0.00341797 19.4547 0.116113 19.1699 0.327051 18.959L3.70205 15.584C4.02549 15.2606 4.50713 15.1656 4.929 15.3414C5.35088 15.5172 5.6251 15.925 5.6251 16.382V18.632H16.8751V18.625Z" fill="#06B6D4"/>
+                                </g>
+                                <defs>
+                                <clipPath id="clip0_257_130">
+                                <path d="M0 6.25H18V24.25H0V6.25Z" fill="white"/>
+                                </clipPath>
+                                </defs>
+                              </svg>
+                            </div>
+                            <div style="margin-left: 15px;">
+                                <div style="color: #2B2F36; font-size: 16px;">계좌이체</div>
+                                <div style="color: #6B7280; font-size: 14px;">빠른 송금 서비스</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </a>
+              <a th:href="@{/product/main}" style="text-decoration: none;">
+                <div class="menu-card" style="margin-left:25px; background-color: white; height: 90px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); border: 1px solid #E5E7EB;">
+                  <div style="padding: 21px;">
+                    <div>
+                      <div style="display: flex;">
+                        <div style="">
+                              <div style="display: flex; justify-content: center;">
+                                <div style="display: flex; justify-content: center; align-items: center; border-radius: 8px; background-color: #eaf8f3; width: 48px; height: 48px;">
+                                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <g clip-path="url(#clip0_257_197)">
+                                    <path d="M9 18C11.3869 18 13.6761 17.0518 15.364 15.364C17.0518 13.6761 18 11.3869 18 9C18 6.61305 17.0518 4.32387 15.364 2.63604C13.6761 0.948212 11.3869 0 9 0C6.61305 0 4.32387 0.948212 2.63604 2.63604C0.948212 4.32387 0 6.61305 0 9C0 11.3869 0.948212 13.6761 2.63604 15.364C4.32387 17.0518 6.61305 18 9 18ZM8.15625 12.0938V9.84375H5.90625C5.43867 9.84375 5.0625 9.46758 5.0625 9C5.0625 8.53242 5.43867 8.15625 5.90625 8.15625H8.15625V5.90625C8.15625 5.43867 8.53242 5.0625 9 5.0625C9.46758 5.0625 9.84375 5.43867 9.84375 5.90625V8.15625H12.0938C12.5613 8.15625 12.9375 8.53242 12.9375 9C12.9375 9.46758 12.5613 9.84375 12.0938 9.84375H9.84375V12.0938C9.84375 12.5613 9.46758 12.9375 9 12.9375C8.53242 12.9375 8.15625 12.5613 8.15625 12.0938Z" fill="#10B981"/>
+                                    </g>
+                                    <defs>
+                                    <clipPath id="clip0_257_197">
+                                    <path d="M0 0H18V18H0V0Z" fill="white"/>
+                                    </clipPath>
+                                    </defs>
+                                  </svg>
+                                </div>
+                                <div style="margin-left: 15px;">
+                                    <div style="color: #2B2F36; font-size: 16px;">상품 가입</div>
+                                    <div style="color: #6B7280; font-size: 14px;">새로운 금융상품</div>
+                                </div>
+                              </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </a>
+              <a th:href="@{/mypage/prod/cancel}" style="text-decoration: none;">
+                <div class="menu-card" style="margin-left:25px; background-color: white; height: 90px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); border: 1px solid #E5E7EB;">
+                  <div style="padding: 21px;">
+                    <div>
+                      <div style="display: flex;">
+                        <div style="">
+                          <div style="display: flex; justify-content: center;">
+                            <div style="display: flex; justify-content: center; align-items: center; border-radius: 8px; background-color: #f8e6e6; width: 48px; height: 48px;">
+                              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <g clip-path="url(#clip0_257_200)">
+                                <path d="M9 18C11.3869 18 13.6761 17.0518 15.364 15.364C17.0518 13.6761 18 11.3869 18 9C18 6.61305 17.0518 4.32387 15.364 2.63604C13.6761 0.948212 11.3869 0 9 0C6.61305 0 4.32387 0.948212 2.63604 2.63604C0.948212 4.32387 0 6.61305 0 9C0 11.3869 0.948212 13.6761 2.63604 15.364C4.32387 17.0518 6.61305 18 9 18ZM6.15234 6.15234C6.48281 5.82188 7.01719 5.82188 7.34414 6.15234L8.99648 7.80469L10.6488 6.15234C10.9793 5.82188 11.5137 5.82188 11.8406 6.15234C12.1676 6.48281 12.1711 7.01719 11.8406 7.34414L10.1883 8.99648L11.8406 10.6488C12.1711 10.9793 12.1711 11.5137 11.8406 11.8406C11.5102 12.1676 10.9758 12.1711 10.6488 11.8406L8.99648 10.1883L7.34414 11.8406C7.01367 12.1711 6.4793 12.1711 6.15234 11.8406C5.82539 11.5102 5.82188 10.9758 6.15234 10.6488L7.80469 8.99648L6.15234 7.34414C5.82188 7.01367 5.82188 6.4793 6.15234 6.15234Z" fill="#EF4444"/>
+                                </g>
+                                <defs>
+                                <clipPath id="clip0_257_200">
+                                <path d="M0 0H18V18H0V0Z" fill="white"/>
+                                </clipPath>
+                                </defs>
+                              </svg>
+                            </div>
+                            <div style="margin-left: 15px;">
+                                <div style="color: #2B2F36; font-size: 16px;">상품 해지</div>
+                                <div style="color: #6B7280; font-size: 14px;">계약 종료 신청</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </a>
+              <a th:href="@{/mypage/prod/edit}" style="text-decoration: none;">
+                <div class="menu-card" style="margin-left:25px; background-color: white; height: 90px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); border: 1px solid #E5E7EB;">
+                  <div style="padding: 21px;">
+                    <div>
+                      <div style="display: flex;">
+                        <div style="">
+                          <div style="display: flex; justify-content: center;">
+                            <div style="display: flex; justify-content: center; align-items: center; border-radius: 8px; background-color: #f8e6e6; width: 48px; height: 48px;">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                     xmlns="http://www.w3.org/2000/svg">
+                                    <!-- 위 슬라이더 -->
+                                    <line x1="3" y1="7" x2="21" y2="7"
+                                          stroke="#EF4444" stroke-width="2" stroke-linecap="round"/>
+                                    <circle cx="9" cy="7" r="2.4"
+                                            fill="white" stroke="#EF4444" stroke-width="2"/>
+
+                                    <!-- 가운데 슬라이더 -->
+                                    <line x1="3" y1="12" x2="21" y2="12"
+                                          stroke="#EF4444" stroke-width="2" stroke-linecap="round"/>
+                                    <circle cx="16" cy="12" r="2.4"
+                                            fill="white" stroke="#EF4444" stroke-width="2"/>
+
+                                    <!-- 아래 슬라이더 -->
+                                    <line x1="3" y1="17" x2="21" y2="17"
+                                          stroke="#EF4444" stroke-width="2" stroke-linecap="round"/>
+                                    <circle cx="11" cy="17" r="2.4"
+                                            fill="white" stroke="#EF4444" stroke-width="2"/>
+                                </svg>
+                            </div>
+                            <div style="margin-left: 15px;">
+                                <div style="color: #2B2F36; font-size: 16px;">상품 변경</div>
+                                <div style="color: #6B7280; font-size: 12px; margin-top:2px;">매도/매수 신청 및 운용비율 조정</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </a>
+            </div>
+            <div class="money-scope" style="display: flex;">
+                <div style="margin-top:25px; padding:30px; padding-bottom: 60px; box-sizing: border-box; background-color: white; width: 100%; border-radius: 16px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); border: 1px solid #E5E7EB;">
+                    <div style="display: flex; align-items: center; color: #111827; font-size: 18px;margin-bottom: 25px; height: 40px;">
+                      <div>나의 금융상품</div>
+                      <div style="margin-left: auto;">
+                        <div>
+                          <select id="product-sort" name="condition" style="margin-top: 13px; box-sizing: border-box; outline:none; padding-left:10px; font-size: 14px; width: 150px; height: 42px; border:1px solid #D1D5DB; border-radius: 6px;">
+                            <option value="all">전체</option>
+                            <option value="high">잔액 높은 순</option>
+                            <option value="low">잔액 낮은 순</option>
+                            <option value="name">이름순 (가나다순)</option>
+                            <option value="new">가입일 최신순</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                    <div th:each="i : ${#numbers.sequence(0, contractList.size() - 1, 2)}"
+                    style="display: flex; gap: 25px; margin-bottom: 25px;">
+                        <div style="display: flex; gap: 25px;">
+                          <div th:if="${i < contractList.size()}" th:object="${contractList[i]}" class="menu-card" style="background-color: white; width: 555px; height: 170px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); border: 1px solid #E5E7EB;"
+                               th:attr="data-product-type=${contractList[i].ptype},
+                                          data-pname=${contractList[i].pname},
+                                          data-pstock=${contractList[i].pstock},
+                                          data-pprice=${contractList[i].pprice},
+                                          data-psum=${contractList[i].psum}">
+                            <div style="padding: 21px;">
+                              <div>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                  <div style="">
+                                    <div style="display: flex; width: 500px;">
+                                      <div style="display: flex; justify-content: center; align-items: center; border-radius: 8px; background-color: #e9ecf4; width: 48px; height: 48px;"
+                                           th:styleappend="${
+                                                              (#strings.equalsIgnoreCase(contractList[i].ptype,'IRP')
+                                                               or #strings.equalsIgnoreCase(contractList[i].ptype,'DC')
+                                                               or #strings.equalsIgnoreCase(contractList[i].ptype,'DB'))
+                                                                ? 'background-color:#e9ecf4;' :
+                                                              (#strings.equalsIgnoreCase(contractList[i].ptype,'적금') ? 'background-color:#eaf8f3;' :
+                                                              (#strings.equalsIgnoreCase(contractList[i].ptype,'ETF') ? 'background-color:#eaf8f3;' :
+                                                               (
+                                                                 (#strings.equalsIgnoreCase(contractList[i].ptype,'펀드')
+                                                                  or (contractList[i].fid != null and #strings.contains(contractList[i].fid, 'FD')))
+                                                                 ? 'background-color:#f2e8ff;' :
+                                                                   'background-color:#f3f4f6;'
+                                                               )))
+                                                        }">
+                                          <th:block th:with="isFund=${
+                                                                            #strings.equalsIgnoreCase(contractList[i].ptype, '펀드')
+                                                                            or (contractList[i].fid != null and #strings.contains(contractList[i].fid, 'FD'))
+                                                                        }"
+                                                    th:switch="${isFund} ? '펀드' : contractList[i].ptype">
+
+                                              <!-- IRP / DC / DB 공통 아이콘 -->
+                                              <svg th:if="${!isFund
+                                                              and i < #lists.size(contractList)
+                                                              and contractList[i].ptype != null
+                                                              and (
+                                                                    #strings.containsIgnoreCase(contractList[i].ptype, 'IRP')
+                                                                 or #strings.containsIgnoreCase(contractList[i].ptype, 'DC')
+                                                                 or #strings.containsIgnoreCase(contractList[i].ptype, 'DB')
+                                                              )}" width="18" height="16" viewBox="0 0 18 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                  <g clip-path="url(#clip0_257_250)">
+                                                      <path d="M12.5 3V3.02187C12.3344 3.00937 12.1687 3 12 3H8C7.48438 3 6.98438 3.06562 6.50625 3.1875C6.50312 3.125 6.5 3.0625 6.5 3C6.5 1.34375 7.84375 0 9.5 0C11.1562 0 12.5 1.34375 12.5 3ZM12 4C12.1094 4 12.2188 4.00313 12.325 4.00938C12.4563 4.01875 12.5875 4.03125 12.7188 4.05C13.2688 3.40938 14.0875 3 15 3H15.3594C15.6844 3 15.9219 3.30625 15.8438 3.62188L15.4125 5.34688C15.9062 5.80938 16.3094 6.37187 16.5844 7H17C17.5531 7 18 7.44688 18 8V11C18 11.5531 17.5531 12 17 12H16C15.7156 12.3781 15.3781 12.7156 15 13V15C15 15.5531 14.5531 16 14 16H13C12.4469 16 12 15.5531 12 15V14H8V15C8 15.5531 7.55312 16 7 16H6C5.44688 16 5 15.5531 5 15V13C3.90937 12.1812 3.16563 10.9281 3.025 9.5H2.125C0.95 9.5 0 8.55 0 7.375C0 6.2 0.95 5.25 2.125 5.25H2.25C2.66563 5.25 3 5.58437 3 6C3 6.41563 2.66563 6.75 2.25 6.75H2.125C1.78125 6.75 1.5 7.03125 1.5 7.375C1.5 7.71875 1.78125 8 2.125 8H3.1C3.47812 6.13125 4.90312 4.64062 6.73438 4.1625C7.1375 4.05625 7.5625 4 8 4H12ZM14 8.25C14 8.05109 13.921 7.86032 13.7803 7.71967C13.6397 7.57902 13.4489 7.5 13.25 7.5C13.0511 7.5 12.8603 7.57902 12.7197 7.71967C12.579 7.86032 12.5 8.05109 12.5 8.25C12.5 8.44891 12.579 8.63968 12.7197 8.78033C12.8603 8.92098 13.0511 9 13.25 9C13.4489 9 13.6397 8.92098 13.7803 8.78033C13.921 8.63968 14 8.44891 14 8.25Z" fill="#1E3A8A"/>
+                                                  </g>
+                                                  <defs><clipPath id="clip0_257_250"><path d="M0 0H18V16H0V0Z" fill="white"/></clipPath></defs>
+                                              </svg>
+
+                                              <!-- 적금 -->
+                                              <svg th:if="${!isFund
+                                                            and contractList[i].ptype != null
+                                                            and #strings.contains(contractList[i].ptype, '적금')}" width="16" height="24" viewBox="0 0 16 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                  <path d="M2 7C2 6.44687 1.55313 6 1 6C0.446875 6 0 6.44687 0 7V17.5C0 18.8813 1.11875 20 2.5 20H15C15.5531 20 16 19.5531 16 19C16 18.4469 15.5531 18 15 18H2.5C2.225 18 2 17.775 2 17.5V7ZM14.7063 9.70625C15.0969 9.31563 15.0969 8.68125 14.7063 8.29063C14.3156 7.9 13.6812 7.9 13.2906 8.29063L10 11.5844L8.20625 9.79063C7.81563 9.4 7.18125 9.4 6.79063 9.79063L3.29063 13.2906C2.9 13.6812 2.9 14.3156 3.29063 14.7063C3.68125 15.0969 4.31563 15.0969 4.70625 14.7063L7.5 11.9156L9.29375 13.7094C9.68437 14.1 10.3188 14.1 10.7094 13.7094L14.7094 9.70937L14.7063 9.70625Z" fill="#10B981"/>
+                                              </svg>
+
+                                              <!-- 펀드 -->
+                                              <svg th:if="${isFund}" width="18" height="16" viewBox="0 0 18 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                  <path d="M9.5 7.5V0.51875C9.5 0.2375 9.71875 0 10 0C13.8656 0 17 3.13438 17 7C17 7.28125 16.7625 7.5 16.4813 7.5H9.5ZM1 8.5C1 4.70937 3.81562 1.57187 7.46875 1.07187C7.75625 1.03125 8 1.2625 8 1.55313V9L12.8906 13.8906C13.1 14.1 13.0844 14.4438 12.8438 14.6125C11.6187 15.4875 10.1187 16 8.5 16C4.35938 16 1 12.6438 1 8.5ZM17.45 9C17.7406 9 17.9688 9.24375 17.9312 9.53125C17.6906 11.2781 16.85 12.8312 15.6219 13.9781C15.4344 14.1531 15.1406 14.1406 14.9594 13.9563L10 9H17.45Z" fill="#9333EA"/>
+                                              </svg>
+
+                                              <!-- ETF -->
+                                              <svg th:if="${#strings.equalsIgnoreCase(contractList[i].ptype, 'ETF')}"
+                                                   width="16" height="16" viewBox="0 0 16 16" fill="none"
+                                                   xmlns="http://www.w3.org/2000/svg">
+                                                  <path d="M16 16H0V0H16V16Z" stroke="#E5E7EB"/>
+                                                  <path d="M2 2C2 1.44687 1.55313 1 1 1C0.446875 1 0 1.44687 0 2V12.5C0 13.8813 1.11875 15 2.5 15H15C15.5531 15 16 14.5531 16 14C16 13.4469 15.5531 13 15 13H2.5C2.225 13 2 12.775 2 12.5V2ZM14.7063 4.70625C15.0969 4.31563 15.0969 3.68125 14.7063 3.29063C14.3156 2.9 13.6812 2.9 13.2906 3.29063L10 6.58437L8.20625 4.79063C7.81563 4.4 7.18125 4.4 6.79063 4.79063L3.29063 8.29062C2.9 8.68125 2.9 9.31563 3.29063 9.70625C3.68125 10.0969 4.31563 10.0969 4.70625 9.70625L7.5 6.91563L9.29375 8.70938C9.68437 9.1 10.3188 9.1 10.7094 8.70938L14.7094 4.70937L14.7063 4.70625Z" fill="#10B981"/>
+                                              </svg>
+                                          </th:block>
+                                      </div>
+                                      <div style="margin-left: 15px;">
+                                          <div style="color: #2B2F36; font-size: 16px;"><span th:text="${
+                                                                                (contractList[i].fid != null and #strings.contains(contractList[i].fid, 'FD'))
+                                                                                  ? contractList[i].fname
+                                                                                  : contractList[i].pname
+                                                                            }"></span></div>
+                                          <div style="color: #6B7280; font-size: 14px;"><span th:text="${contractList[i].pacc}"></span></div>
+                                      </div>
+                                      <div style="display: flex; align-items: center; margin-left: auto;">
+                                          <!-- ① ETF인 경우: ETF 주문 화면 -->
+                                          <a th:if="${#strings.equalsIgnoreCase(contractList[i].ptype, 'ETF')}"
+                                             th:href="@{/stock/orderEtf(code=${contractList[i].code}, name=${contractList[i].pname})}"
+                                             style="text-decoration: none; display:flex; align-items:center;">
+                                              <div style="color: #3B82F6; font-size: 14px; margin-right: 7px;"
+                                                   th:text="'매도하러 가기'">매도하러 가기</div>
+                                              <div>
+                                                  <svg width="9" height="20" viewBox="0 0 9 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                      <path d="M8.49307 10.1321C8.83486 10.4739 8.83486 11.029 8.49307 11.3708L3.24307 16.6208C2.90127 16.9626 2.34619 16.9626 2.00439 16.6208C1.6626 16.279 1.6626 15.7239 2.00439 15.3821L6.63643 10.7501L2.00713 6.11807C1.66533 5.77627 1.66533 5.22119 2.00713 4.87939C2.34893 4.5376 2.904 4.5376 3.2458 4.87939L8.4958 10.1294L8.49307 10.1321Z" fill="#3B82F6"/>
+                                                  </svg>
+                                              </div>
+                                          </a>
+
+                                          <!-- ② 펀드인 경우: 펀드 상세(또는 주문) 화면 -->
+                                          <a th:if="${#strings.equalsIgnoreCase(contractList[i].ptype, 'FUND')
+                                                        or (contractList[i].fid != null and #strings.contains(contractList[i].fid, 'FD'))}"
+                                             th:href="@{/product/fund/list}"
+                                          style="text-decoration: none; display:flex; align-items:center;">
+                                          <div style="color: #3B82F6; font-size: 14px; margin-right: 7px;">
+                                              자세히 보기
+                                          </div>
+                                          <div>
+                                              <svg width="9" height="20" viewBox="0 0 9 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                  <path d="M8.49307 10.1321C8.83486 10.4739 8.83486 11.029 8.49307 11.3708L3.24307 16.6208C2.90127 16.9626 2.34619 16.9626 2.00439 16.6208C1.6626 16.279 1.6626 15.7239 2.00439 15.3821L6.63643 10.7501L2.00713 6.11807C1.66533 5.77627 1.66533 5.22119 2.00713 4.87939C2.34893 4.5376 2.904 4.5376 3.2458 4.87939L8.4958 10.1294L8.49307 10.1321Z" fill="#3B82F6"/>
+                                              </svg>
+                                          </div>
+                                          </a>
+
+                                          <!-- ③ 나머지 상품(예금, 적금 등): 링크만 비활성 -->
+                                          <a th:if="${!(#strings.equalsIgnoreCase(contractList[i].ptype, 'ETF')
+                                                       or #strings.equalsIgnoreCase(contractList[i].ptype, 'FUND')
+                                                       or (contractList[i].fid != null and #strings.contains(contractList[i].fid, 'FD')))}"
+                                             th:href="@{/product/list}"
+                                             style="text-decoration: none; display:flex; align-items:center;">
+                                              <div style="color: #3B82F6; font-size: 14px; margin-right: 7px;">
+                                                  자세히 보기
+                                              </div>
+                                              <div>
+                                                  <svg width="9" height="20" viewBox="0 0 9 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                      <path d="M8.49307 10.1321C8.83486 10.4739 8.83486 11.029 8.49307 11.3708L3.24307 16.6208C2.90127 16.9626 2.34619 16.9626 2.00439 16.6208C1.6626 16.279 1.6626 15.7239 2.00439 15.3821L6.63643 10.7501L2.00713 6.11807C1.66533 5.77627 1.66533 5.22119 2.00713 4.87939C2.34893 4.5376 2.904 4.5376 3.2458 4.87939L8.4958 10.1294L8.49307 10.1321Z" fill="#3B82F6"/>
+                                                  </svg>
+                                              </div>
+                                          </a>
+                                      </div>
+                                    </div>
+                                      <div th:if="${#strings.equalsIgnoreCase(contractList[i].ptype,'ETF')}"
+                                           class="etf-metrics"
+                                           style="padding-right: 30px; padding-left: 10px;">
+                                          <div class="etf-row">
+                                              <span class="etf-label">총 금액</span>
+                                              <span class="etf-total-amount">-</span>
+                                          </div>
+                                          <div class="etf-row">
+                                              <span class="etf-label">평가금액</span>
+                                              <span class="etf-current-amount">-</span>
+                                          </div>
+                                          <div class="etf-row" style="margin-top: 4px;">
+                                              <span class="etf-label">현재 수익</span>
+                                              <span class="etf-profit">-</span>
+                                          </div>
+                                          <div class="etf-row" style="margin-top: 4px;">
+                                              <span class="etf-label">수익률</span>
+                                              <span class="etf-profit-rate">-</span>
+                                          </div>
+                                      </div>
+                                    <div th:if="${!#strings.equalsIgnoreCase(contractList[i].ptype,'ETF')}"
+                                            style="margin-top: 10px; font-size: 24px; height: 35px">
+                                      <span th:text="${#numbers.formatInteger(contractList[i].pbalance, 3, 'COMMA')}"></span>원
+                                    </div>
+                                      <div th:if="${!#strings.equalsIgnoreCase(contractList[i].ptype,'ETF')}"
+                                              style="display:flex; margin-top: 7px; color: #6B7280; font-size: 14px;">
+                                          <div>가입일:&nbsp;<span th:text="${#temporals.format(contractList[i].pnew, 'yyyy.MM.dd')}"></span></div>
+                                          <div>&nbsp;/ 만기:&nbsp;<span th:text="${#temporals.format(contractList[i].pend, 'yyyy.MM.dd')}"></span></div>
+                                      </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div th:if="${i + 1 < contractList.size()}"
+                               th:object="${contractList[i + 1]}"
+                                  class="menu-card" style="background-color: white; width: 555px; height: 170px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); border: 1px solid #E5E7EB;"
+                               th:attr="data-product-type=${contractList[i + 1].ptype},
+                                          data-pname=${contractList[i + 1].pname},
+                                          data-pstock=${contractList[i + 1].pstock},
+                                          data-pprice=${contractList[i + 1].pprice},
+                                          data-psum=${contractList[i + 1].psum}">
+                            <div style="padding: 21px;">
+                              <div>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                  <div style="">
+                                    <div style="display: flex; width: 500px;">
+                                        <div style="display: flex; justify-content: center; align-items: center; border-radius: 8px; background-color: #e9ecf4; width: 48px; height: 48px;"
+                                             th:styleappend="${
+                                                                  (#strings.equalsIgnoreCase(contractList[i+1].ptype,'IRP')
+                                                                   or #strings.equalsIgnoreCase(contractList[i+1].ptype,'DC')
+                                                                   or #strings.equalsIgnoreCase(contractList[i+1].ptype,'DB'))
+                                                                    ? 'background-color:#e9ecf4;' :
+                                                                  (#strings.equalsIgnoreCase(contractList[i+1].ptype,'적금') ? 'background-color:#eaf8f3;' :
+                                                                  (#strings.equalsIgnoreCase(contractList[i+1].ptype,'ETF') ? 'background-color:#eaf8f3;' :
+                                                                   (
+                                                                     (#strings.equalsIgnoreCase(contractList[i+1].ptype,'펀드')
+                                                                      or (contractList[i+1].fid != null and #strings.contains(contractList[i+1].fid, 'FD')))
+                                                                     ? 'background-color:#f2e8ff;' :
+                                                                       'background-color:#f3f4f6;'
+                                                                   )))
+                                                            }">
+                                            <th:block th:with="isFund=${
+                                                                            #strings.equalsIgnoreCase(contractList[i+1].ptype, '펀드')
+                                                                            or (contractList[i+1].fid != null and #strings.contains(contractList[i+1].fid, 'FD'))
+                                                                        }"
+                                                      th:switch="${isFund} ? '펀드' : contractList[i+1].ptype">
+
+                                                <!-- IRP / DC / DB 공통 아이콘 -->
+                                                <svg th:if="${!isFund
+                                                              and i + 1 < #lists.size(contractList)
+                                                              and contractList[i+1].ptype != null
+                                                              and (
+                                                                    #strings.containsIgnoreCase(contractList[i+1].ptype, 'IRP')
+                                                                 or #strings.containsIgnoreCase(contractList[i+1].ptype, 'DC')
+                                                                 or #strings.containsIgnoreCase(contractList[i+1].ptype, 'DB')
+                                                              )}" width="18" height="16" viewBox="0 0 18 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <g clip-path="url(#clip0_257_250)">
+                                                        <path d="M12.5 3V3.02187C12.3344 3.00937 12.1687 3 12 3H8C7.48438 3 6.98438 3.06562 6.50625 3.1875C6.50312 3.125 6.5 3.0625 6.5 3C6.5 1.34375 7.84375 0 9.5 0C11.1562 0 12.5 1.34375 12.5 3ZM12 4C12.1094 4 12.2188 4.00313 12.325 4.00938C12.4563 4.01875 12.5875 4.03125 12.7188 4.05C13.2688 3.40938 14.0875 3 15 3H15.3594C15.6844 3 15.9219 3.30625 15.8438 3.62188L15.4125 5.34688C15.9062 5.80938 16.3094 6.37187 16.5844 7H17C17.5531 7 18 7.44688 18 8V11C18 11.5531 17.5531 12 17 12H16C15.7156 12.3781 15.3781 12.7156 15 13V15C15 15.5531 14.5531 16 14 16H13C12.4469 16 12 15.5531 12 15V14H8V15C8 15.5531 7.55312 16 7 16H6C5.44688 16 5 15.5531 5 15V13C3.90937 12.1812 3.16563 10.9281 3.025 9.5H2.125C0.95 9.5 0 8.55 0 7.375C0 6.2 0.95 5.25 2.125 5.25H2.25C2.66563 5.25 3 5.58437 3 6C3 6.41563 2.66563 6.75 2.25 6.75H2.125C1.78125 6.75 1.5 7.03125 1.5 7.375C1.5 7.71875 1.78125 8 2.125 8H3.1C3.47812 6.13125 4.90312 4.64062 6.73438 4.1625C7.1375 4.05625 7.5625 4 8 4H12ZM14 8.25C14 8.05109 13.921 7.86032 13.7803 7.71967C13.6397 7.57902 13.4489 7.5 13.25 7.5C13.0511 7.5 12.8603 7.57902 12.7197 7.71967C12.579 7.86032 12.5 8.05109 12.5 8.25C12.5 8.44891 12.579 8.63968 12.7197 8.78033C12.8603 8.92098 13.0511 9 13.25 9C13.4489 9 13.6397 8.92098 13.7803 8.78033C13.921 8.63968 14 8.44891 14 8.25Z" fill="#1E3A8A"/>
+                                                    </g>
+                                                    <defs><clipPath id="clip0_257_250"><path d="M0 0H18V16H0V0Z" fill="white"/></clipPath></defs>
+                                                </svg>
+
+                                                <!-- 적금 -->
+                                                <svg th:if="${!isFund
+                                                                and i + 1 < #lists.size(contractList)
+                                                                and contractList[i+1].ptype != null
+                                                                and #strings.contains(contractList[i+1].ptype, '적금')}" width="16" height="24" viewBox="0 0 16 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M2 7C2 6.44687 1.55313 6 1 6C0.446875 6 0 6.44687 0 7V17.5C0 18.8813 1.11875 20 2.5 20H15C15.5531 20 16 19.5531 16 19C16 18.4469 15.5531 18 15 18H2.5C2.225 18 2 17.775 2 17.5V7ZM14.7063 9.70625C15.0969 9.31563 15.0969 8.68125 14.7063 8.29063C14.3156 7.9 13.6812 7.9 13.2906 8.29063L10 11.5844L8.20625 9.79063C7.81563 9.4 7.18125 9.4 6.79063 9.79063L3.29063 13.2906C2.9 13.6812 2.9 14.3156 3.29063 14.7063C3.68125 15.0969 4.31563 15.0969 4.70625 14.7063L7.5 11.9156L9.29375 13.7094C9.68437 14.1 10.3188 14.1 10.7094 13.7094L14.7094 9.70937L14.7063 9.70625Z" fill="#10B981"/>
+                                                </svg>
+
+                                                <!-- 펀드 -->
+                                                <svg th:if="${isFund}" width="18" height="16" viewBox="0 0 18 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M9.5 7.5V0.51875C9.5 0.2375 9.71875 0 10 0C13.8656 0 17 3.13438 17 7C17 7.28125 16.7625 7.5 16.4813 7.5H9.5ZM1 8.5C1 4.70937 3.81562 1.57187 7.46875 1.07187C7.75625 1.03125 8 1.2625 8 1.55313V9L12.8906 13.8906C13.1 14.1 13.0844 14.4438 12.8438 14.6125C11.6187 15.4875 10.1187 16 8.5 16C4.35938 16 1 12.6438 1 8.5ZM17.45 9C17.7406 9 17.9688 9.24375 17.9312 9.53125C17.6906 11.2781 16.85 12.8312 15.6219 13.9781C15.4344 14.1531 15.1406 14.1406 14.9594 13.9563L10 9H17.45Z" fill="#9333EA"/>
+                                                </svg>
+
+                                                <!-- ETF -->
+                                                <svg th:if="${!isFund
+                                                                and i + 1 < #lists.size(contractList)
+                                                                and contractList[i+1].ptype != null
+                                                                and #strings.contains(contractList[i+1].ptype, 'ETF')}"
+                                                     width="16" height="16" viewBox="0 0 16 16" fill="none"
+                                                     xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M2 2C2 1.44687 1.55313 1 1 1C0.446875 1 0 1.44687 0 2V12.5C0 13.8813 1.11875 15 2.5 15H15C15.5531 15 16 14.5531 16 14C16 13.4469 15.5531 13 15 13H2.5C2.225 13 2 12.775 2 12.5V2ZM14.7063 4.70625C15.0969 4.31563 15.0969 3.68125 14.7063 3.29063C14.3156 2.9 13.6812 2.9 13.2906 3.29063L10 6.58437L8.20625 4.79063C7.81563 4.4 7.18125 4.4 6.79063 4.79063L3.29063 8.29062C2.9 8.68125 2.9 9.31563 3.29063 9.70625C3.68125 10.0969 4.31563 10.0969 4.70625 9.70625L7.5 6.91563L9.29375 8.70938C9.68437 9.1 10.3188 9.1 10.7094 8.70938L14.7094 4.70937L14.7063 4.70625Z" fill="#10B981"/>
+                                                </svg>
+                                            </th:block>
+                                        </div>
+                                      <div style="margin-left: 15px;">
+                                          <div style="color: #2B2F36; font-size: 16px;"><span th:text="${
+                                                                                (contractList[i+1].fid != null and #strings.contains(contractList[i+1].fid, 'FD'))
+                                                                                  ? contractList[i+1].fname
+                                                                                  : contractList[i+1].pname
+                                                                            }"></span></div>
+                                          <div style="color: #6B7280; font-size: 14px;"><span th:text="${contractList[i+1].pacc}"></span></div>
+                                      </div>
+
+                                      <div style="display: flex; align-items: center; margin-left: auto;">
+                                          <!-- ① ETF인 경우: ETF 주문 화면 -->
+                                          <a th:if="${#strings.equalsIgnoreCase(contractList[i+1].ptype, 'ETF')}"
+                                             th:href="@{/stock/orderEtf(code=${contractList[i+1].code}, name=${contractList[i+1].pname})}"
+                                             style="text-decoration: none; display:flex; align-items:center;">
+                                              <div style="color: #3B82F6; font-size: 14px; margin-right: 7px;"
+                                                   th:text="'매도하러 가기'">매도하러 가기</div>
+                                              <div>
+                                                  <svg width="9" height="20" viewBox="0 0 9 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                      <path d="M8.49307 10.1321C8.83486 10.4739 8.83486 11.029 8.49307 11.3708L3.24307 16.6208C2.90127 16.9626 2.34619 16.9626 2.00439 16.6208C1.6626 16.279 1.6626 15.7239 2.00439 15.3821L6.63643 10.7501L2.00713 6.11807C1.66533 5.77627 1.66533 5.22119 2.00713 4.87939C2.34893 4.5376 2.904 4.5376 3.2458 4.87939L8.4958 10.1294L8.49307 10.1321Z" fill="#3B82F6"/>
+                                                  </svg>
+                                              </div>
+                                          </a>
+
+                                          <!-- ② 펀드인 경우: 펀드 상세(또는 주문) 화면 -->
+                                          <a th:if="${#strings.equalsIgnoreCase(contractList[i+1].ptype, 'FUND')
+                                                        or (contractList[i+1].fid != null and #strings.contains(contractList[i+1].fid, 'FD'))}"
+                                             th:href="@{/product/fund/list}"
+                                             style="text-decoration: none; display:flex; align-items:center;">
+                                              <div style="color: #3B82F6; font-size: 14px; margin-right: 7px;">
+                                                  자세히 보기
+                                              </div>
+                                              <div>
+                                                  <svg width="9" height="20" viewBox="0 0 9 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                      <path d="M8.49307 10.1321C8.83486 10.4739 8.83486 11.029 8.49307 11.3708L3.24307 16.6208C2.90127 16.9626 2.34619 16.9626 2.00439 16.6208C1.6626 16.279 1.6626 15.7239 2.00439 15.3821L6.63643 10.7501L2.00713 6.11807C1.66533 5.77627 1.66533 5.22119 2.00713 4.87939C2.34893 4.5376 2.904 4.5376 3.2458 4.87939L8.4958 10.1294L8.49307 10.1321Z" fill="#3B82F6"/>
+                                                  </svg>
+                                              </div>
+                                          </a>
+
+                                          <!-- ③ 나머지 상품(예금, 적금 등): 링크만 비활성 -->
+                                          <a th:if="${!(#strings.equalsIgnoreCase(contractList[i+1].ptype, 'ETF')
+                                                       or #strings.equalsIgnoreCase(contractList[i+1].ptype, 'FUND')
+                                                       or (contractList[i+1].fid != null and #strings.contains(contractList[i+1].fid, 'FD')))}"
+                                             th:href="@{/product/list}"
+                                             style="text-decoration: none; display:flex; align-items:center;">
+                                              <div style="color: #3B82F6; font-size: 14px; margin-right: 7px;">
+                                                  자세히 보기
+                                              </div>
+                                              <div>
+                                                  <svg width="9" height="20" viewBox="0 0 9 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                      <path d="M8.49307 10.1321C8.83486 10.4739 8.83486 11.029 8.49307 11.3708L3.24307 16.6208C2.90127 16.9626 2.34619 16.9626 2.00439 16.6208C1.6626 16.279 1.6626 15.7239 2.00439 15.3821L6.63643 10.7501L2.00713 6.11807C1.66533 5.77627 1.66533 5.22119 2.00713 4.87939C2.34893 4.5376 2.904 4.5376 3.2458 4.87939L8.4958 10.1294L8.49307 10.1321Z" fill="#3B82F6"/>
+                                                  </svg>
+                                              </div>
+                                          </a>
+                                      </div>
+                                    </div>
+                                      <div th:if="${#strings.equalsIgnoreCase(contractList[i + 1].ptype,'ETF')}"
+                                           class="etf-metrics">
+                                          <div class="etf-row">
+                                              <span class="etf-label">총 금액</span>
+                                              <span class="etf-total-amount">-</span>
+                                          </div>
+                                          <div class="etf-row">
+                                              <span class="etf-label">평가금액</span>
+                                              <span class="etf-current-amount">-</span>
+                                          </div>
+                                          <div class="etf-row" style="margin-top: 4px;">
+                                              <span class="etf-label">현재 수익</span>
+                                              <span class="etf-profit">-</span>
+                                          </div>
+                                          <div class="etf-row" style="margin-top: 4px;">
+                                              <span class="etf-label">수익률</span>
+                                              <span class="etf-profit-rate">-</span>
+                                          </div>
+                                      </div>
+                                    <div th:if="${!#strings.equalsIgnoreCase(contractList[i+1].ptype,'ETF')}"
+                                            style="margin-top: 10px; font-size: 24px; height: 35px">
+                                        <span th:text="${#numbers.formatInteger(contractList[i+1].pbalance, 3, 'COMMA')}"></span>원
+                                    </div>
+                                    <div th:if="${!#strings.equalsIgnoreCase(contractList[i+1].ptype,'ETF')}"
+                                            style="display:flex; margin-top: 7px; color: #6B7280; font-size: 14px;">
+                                      <div>가입일:&nbsp;<span th:text="${#temporals.format(contractList[i+1].pnew, 'yyyy.MM.dd')}"></span></div>
+                                      <div>&nbsp;/ 만기:&nbsp;<span th:text="${#temporals.format(contractList[i+1].pend, 'yyyy.MM.dd')}"></span></div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="display: flex;">
+                <div id="aiReco" style="margin-top:25px; padding:20px; box-sizing: border-box; background-color: white; width: 100%; border-radius: 16px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); border: 1px solid #E5E7EB;">
+                  <div style="display: flex;">
+                    <div style="margin-top:auto; margin-bottom: 1px; display: flex; justify-content: center; align-items: center; border-radius: 8px; background-color: #e18485; width: 40px; height: 40px;">
+                      <svg width="12" height="16" viewBox="0 0 12 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <g clip-path="url(#clip0_257_168)">
+                        <path d="M8.5 12C8.8 11.0031 9.42188 10.1531 10.0375 9.30625C10.2 9.08437 10.3625 8.8625 10.5188 8.6375C11.1375 7.74687 11.5 6.66875 11.5 5.50313C11.5 2.4625 9.0375 0 6 0C2.9625 0 0.5 2.4625 0.5 5.5C0.5 6.66563 0.8625 7.74687 1.48125 8.63437C1.6375 8.85938 1.8 9.08125 1.9625 9.30313C2.58125 10.15 3.20312 11.0031 3.5 11.9969H8.5V12ZM6 16C7.38125 16 8.5 14.8813 8.5 13.5V13H3.5V13.5C3.5 14.8813 4.61875 16 6 16ZM3.5 5.5C3.5 5.775 3.275 6 3 6C2.725 6 2.5 5.775 2.5 5.5C2.5 3.56562 4.06562 2 6 2C6.275 2 6.5 2.225 6.5 2.5C6.5 2.775 6.275 3 6 3C4.61875 3 3.5 4.11875 3.5 5.5Z" fill="#D91A1A"/>
+                        </g>
+                        <defs>
+                        <clipPath id="clip0_257_168">
+                        <path d="M0 0H12V16H0V0Z" fill="white"/>
+                        </clipPath>
+                        </defs>
+                      </svg>
+                    </div>
+                    <div style="margin-left: 15px; width: 100%;">
+                        <div style="color: #2B2F36; font-size: 16px; display: flex;">
+                          <div>AI 맞춤 추천</div>
+                          <div style="margin-left: auto; margin-right: 10px;">
+                            <svg data-close width="12" height="16" viewBox="0 0 12 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M10.7062 4.70615C11.0968 4.31553 11.0968 3.68115 10.7062 3.29053C10.3155 2.8999 9.68115 2.8999 9.29053 3.29053L5.9999 6.58428L2.70615 3.29365C2.31553 2.90303 1.68115 2.90303 1.29053 3.29365C0.899902 3.68428 0.899902 4.31865 1.29053 4.70928L4.58428 7.9999L1.29365 11.2937C0.903027 11.6843 0.903027 12.3187 1.29365 12.7093C1.68428 13.0999 2.31865 13.0999 2.70928 12.7093L5.9999 9.41553L9.29365 12.7062C9.68428 13.0968 10.3187 13.0968 10.7093 12.7062C11.0999 12.3155 11.0999 11.6812 10.7093 11.2905L7.41553 7.9999L10.7062 4.70615Z" fill="#D91A1A"/>
+                            </svg>
+                          </div>
+                        </div>
+                        <div style="color: #6B7280; font-size: 14px;">현재 보유하신 자산 현황을 분석한 결과, 고금리 정기예금 가입을 추천드립니다.</div>
+                    </div>
+                  </div>
+                  <button class="btn-register" style="margin-left: 54px; margin-top: 10px; gap:6px; box-sizing: border-box; width: 90px; height: 35px; background-color: #D91A1A; color: white; border:none; border-radius: 8px; cursor: pointer;">
+                    <div style="display: flex; justify-content: center; align-items: center; gap: 8px;">
+                      <svg  width="16" height="24" viewBox="0 0 16 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <g clip-path="url(#clip0_191_162)">
+                        <path d="M13 11.5C13 12.9344 12.5344 14.2594 11.75 15.3344L15.7063 19.2937C16.0969 19.6844 16.0969 20.3188 15.7063 20.7094C15.3156 21.1 14.6812 21.1 14.2906 20.7094L10.3344 16.75C9.25938 17.5375 7.93437 18 6.5 18C2.90937 18 0 15.0906 0 11.5C0 7.90937 2.90937 5 6.5 5C10.0906 5 13 7.90937 13 11.5ZM6.5 16C7.09095 16 7.67611 15.8836 8.22208 15.6575C8.76804 15.4313 9.26412 15.0998 9.68198 14.682C10.0998 14.2641 10.4313 13.768 10.6575 13.2221C10.8836 12.6761 11 12.0909 11 11.5C11 10.9091 10.8836 10.3239 10.6575 9.77792C10.4313 9.23196 10.0998 8.73588 9.68198 8.31802C9.26412 7.90016 8.76804 7.56869 8.22208 7.34254C7.67611 7.1164 7.09095 7 6.5 7C5.90905 7 5.32389 7.1164 4.77792 7.34254C4.23196 7.56869 3.73588 7.90016 3.31802 8.31802C2.90016 8.73588 2.56869 9.23196 2.34254 9.77792C2.1164 10.3239 2 10.9091 2 11.5C2 12.0909 2.1164 12.6761 2.34254 13.2221C2.56869 13.768 2.90016 14.2641 3.31802 14.682C3.73588 15.0998 4.23196 15.4313 4.77792 15.6575C5.32389 15.8836 5.90905 16 6.5 16Z" fill="white"/>
+                        </g>
+                        <defs>
+                        <clipPath id="clip0_191_162">
+                        <path d="M0 5H16V21H0V5Z" fill="white"/>
+                        </clipPath>
+                        </defs>
+                      </svg>
+                      <div>
+                        상품 보기
+                      </div>
+                    </div>
+                  </button>
+                </div>
+            </div>
+      </div>
+    </main>
+
+    <footer>
+        <div th:replace="~{layouts/footer.html}"></div>
+    </footer>
+    <script>
+    // 요약 카드의 '계좌이체' 카드 클릭 시 모달 열기
+    document.addEventListener('DOMContentLoaded', () => {
+      const transferCard = document.getElementById('transfer-card'); // ← 방금 단 id
+      if (transferCard) {
+        transferCard.addEventListener('click', (e) => {
+          e.preventDefault();          // 앵커 기본 동작 막기
+          overlay.classList.add('show'); // 모달 보이기
+          resetFlow();                 // 1단계로 초기화
+        });
+      }
+    });
+  </script>
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+        const BADGE = {
+            'Royal VIP': { color:'white', bg:'#3c4249', w:57, h:22 },
+            'Gold VIP'  : { color:'#B8860B', bg:'#FFF6DC', w:46, h:24 },
+            'Silver VIP': { color:'#6B7280', bg:'#F3F4F6', w:46, h:24 },
+            'Green VIP' : { color:'#15803D', bg:'#DCFCE7', w:46, h:24 },
+            'Family'    : { color:'#2563EB', bg:'#DBEAFE', w:46, h:24 },
+        };
+
+        document.querySelectorAll('.status-badge').forEach(el => {
+            const key = el.textContent.trim();
+            const s = BADGE[key];
+            if (!s) return;
+
+            Object.assign(el.style, {
+            display: 'inline-flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            padding: '0 8px',
+            fontSize: '12px',
+            fontWeight: '500',
+            lineHeight: '1',
+            color: s.color,
+            backgroundColor: s.bg,
+            borderRadius: '20px',
+            height: s.h + 'px',
+            minWidth: s.w + 'px',
+            boxSizing: 'border-box',
+            });
+        });
+        });
+    </script>
+    <script>
+        // ---- 마스킹 규칙 ----
+        function maskCustomerNo(raw) {
+            // 숫자만 추출 후 4-4-나머지 형태로 다시 묶고, 앞 8자리는 ****-****
+            const digits = raw.replace(/\D/g, "");
+            const a = digits.slice(0, 4);
+            const b = digits.slice(4, 8);
+            const rest = digits.slice(8); // 나머지
+            const last = rest ? rest : "";
+            return `****-****-${last}`;
+        }
+
+        function maskEmail(raw) {
+            const [local, domain = ""] = raw.split("@");
+            const shown = (local || "").slice(0, 3);
+            const maskedLen = Math.max((local || "").length - 3, 0);
+            const masked = "*".repeat(maskedLen);
+            return `${shown}${masked}${domain ? "@" + domain : ""}`;
+        }
+
+        function normalizePhoneDigits(raw) {
+            // 숫자만 추출 후 한국형 기본 포맷(3-4-4 or 2-3-4 등)으로 리턴
+            const d = raw.replace(/\D/g, "");
+            // 02로 시작(서울) 케이스
+            if (d.startsWith("02")) {
+            const a = d.slice(0, 2);
+            const b = d.length === 9 ? d.slice(2, 5) : d.slice(2, 6);
+            const c = d.slice(2 + b.length);
+            return [a, b, c];
+            }
+            // 그 외(010, 011 등)
+            const a = d.slice(0, 3);
+            const b = d.length >= 10 ? d.slice(3, d.length - 4) : d.slice(3, d.length - 4); // 중간 전부
+            const c = d.slice(-4);
+            return [a, b, c];
+        }
+
+        function formatPhone(groups) {
+            return groups.filter(Boolean).join("-");
+        }
+
+        function maskPhone(raw) {
+            const groups = normalizePhoneDigits(raw);
+            // 가운데 그룹만 **** 고정
+            if (groups.length >= 2) groups[1] = "****";
+            return formatPhone(groups);
+        }
+
+        // ---- 렌더링 & 토글 ----
+        function renderMasked(el) {
+            const type = el.dataset.type;
+            const raw = el.dataset.raw || "";
+            let masked = raw;
+            if (type === "custno") masked = maskCustomerNo(raw);
+            else if (type === "email") masked = maskEmail(raw);
+            else if (type === "mobile") masked = maskPhone(raw);
+            el.textContent = masked;
+            el.dataset.state = "masked";
+        }
+
+        function renderRaw(el) {
+            el.textContent = el.dataset.raw || "";
+            el.dataset.state = "visible";
+        }
+
+        function toggleVisibility(targetId) {
+            const el = document.getElementById(targetId);
+            if (!el) return;
+            if (el.dataset.state === "visible") renderMasked(el);
+            else renderRaw(el);
+        }
+
+        // 초기 마스킹
+        document.querySelectorAll(".maskable").forEach(renderMasked);
+
+        // 눈 아이콘 클릭 핸들러
+        document.querySelectorAll(".eye-btn").forEach(btn => {
+            btn.addEventListener("click", () => toggleVisibility(btn.dataset.target));
+            // 키보드 접근성(Enter/Space)
+            btn.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                toggleVisibility(btn.dataset.target);
+            }
+            });
+        });
+    </script>
+    <script>
+  // "보유계좌 목록" 테이블의 5번째 열(잔액)만 3자리 콤마 적용
+  document.addEventListener('DOMContentLoaded', function () {
+    const table = document.getElementById('accounts-table');
+    if (!table) return;
+
+    // 헤더를 제외한 모든 행의 5번째 셀(td:nth-child(5)) 대상
+    table.querySelectorAll('tr td:nth-child(5)').forEach(td => {
+      const raw = (td.textContent || '').trim();
+      if (/^\d+$/.test(raw)) { // 숫자만 있는 경우에만 포맷
+        td.textContent = Number(raw).toLocaleString('ko-KR');
+      }
+    });
+  });
+</script>
+<script>
+  // 요약 카드(#summary-cards) 안의 텍스트만 가공
+  document.addEventListener('DOMContentLoaded', () => {
+    const root = document.getElementById('summary-cards');
+    if (!root) return;
+
+    // 텍스트 노드만 순회
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+      acceptNode(node) {
+        const t = node.nodeValue;
+        return (!t || !t.trim()) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT;
+      }
+    });
+
+    const nodes = [];
+    for (let n = walker.nextNode(); n; n = walker.nextNode()) nodes.push(n);
+
+    nodes.forEach(node => {
+      let text = node.nodeValue;
+
+      // 1) 이름 마스킹: '김철수님/님께' → '김○○님/님께'
+      text = text.replace(/([가-힣])([가-힣]{1,3})(?=님(?:께)?)/g,
+        (_, s, rest) => s + '○'.repeat(rest.length)
+      );
+
+      // 2) 금액 3자리 콤마: '16480000원', '3000000 원' 등
+      // - '원' 앞의 모든 공백(일반/개행/NBSP 등)을 허용
+      // - 이미 콤마가 있어도 정상화
+      text = text.replace(/(\d[\d,]{3,})(?=(?:\s|\u00A0)*원)/g, (m) => {
+        const num = m.replace(/,/g, '');
+        return Number(num).toLocaleString('ko-KR');
+      });
+
+      node.nodeValue = text;
+    });
+  });
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.amount').forEach(amountEl => {
+      // 같은 행(부모) 안의 아이콘 자리 찾기
+      const row = amountEl.parentElement;
+      const iconEl = row ? row.querySelector('.icon') : null;
+
+      // 숫자 파싱
+      const raw = amountEl.textContent.replace(/원/g, '').replace(/,/g, '').trim();
+      const num = Number(raw);
+      if (!Number.isFinite(num)) return;
+
+      // 표시용 문자열(+/- + 콤마)
+      const fmt = Math.abs(num).toLocaleString('ko-KR');
+      if (num > 0) {
+        amountEl.textContent = `+${fmt}원`;
+        if (iconEl) setIcon(iconEl, 'plus');
+      } else if (num < 0) {
+        amountEl.textContent = `-${fmt}원`;
+        if (iconEl) setIcon(iconEl, 'minus');
+      } else {
+        amountEl.textContent = `0원`;
+        if (iconEl) iconEl.innerHTML = ''; // 0원은 아이콘 없음(원하면 바꿔도 됨)
+      }
+    });
+
+    // 아이콘 세팅: 숨겨둔 SVG를 복제해 id 제거 후 표시
+    function setIcon(holder, type) {
+      const tpl = document.getElementById(type === 'plus' ? 'icon-plus' : 'icon-minus');
+      if (!tpl) return;
+      const clone = tpl.cloneNode(true);
+      clone.removeAttribute('id');
+      clone.style.display = ''; // 보이게
+      holder.replaceChildren(clone);
+    }
+  });
+</script>
+<script>
+  // 숫자→콤마 포맷터 (부호 유지)
+  function formatNumberKR(raw) {
+    const sign = raw.startsWith('+') || raw.startsWith('-') ? raw[0] : '';
+    const digits = raw.replace(/[^\d]/g, '');
+    return sign + Number(digits || '0').toLocaleString('ko-KR');
+  }
+
+  // .money-scope 내부에서만 "…원"으로 끝나는 숫자에 콤마 적용
+  document.addEventListener('DOMContentLoaded', () => {
+    // 여러 개의 .money-scope 선택
+    const scopes = document.querySelectorAll('.money-scope');
+    if (!scopes.length) return;
+
+    const skip = new Set(['SCRIPT', 'STYLE', 'TEXTAREA', 'CODE']);
+
+    // 각 영역별로 처리
+    scopes.forEach(scope => {
+      const walker = document.createTreeWalker(scope, NodeFilter.SHOW_TEXT, {
+        acceptNode(node) {
+          if (skip.has(node.parentNode?.nodeName)) return NodeFilter.FILTER_REJECT;
+          const t = node.nodeValue;
+          // 숫자 있고 '원'이 있을 때만 후보
+          return (/\d/.test(t) && /원/.test(t))
+            ? NodeFilter.FILTER_ACCEPT
+            : NodeFilter.FILTER_REJECT;
+        }
+      });
+
+      const targets = [];
+      for (let n = walker.nextNode(); n; n = walker.nextNode()) targets.push(n);
+
+      targets.forEach(node => {
+        node.nodeValue = node.nodeValue.replace(
+          /([+\-]?\d[\d,]*)(?=(?:\s|\u00A0)*원)/g, // '원' 앞 숫자(콤마/부호 포함)
+          m => formatNumberKR(m)
+        );
+      });
+    });
+  });
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const panel = document.querySelector('.money-scope > div[style*="background-color: white"][style*="padding:30px"]');
+  const sortSelect = document.getElementById('product-sort');
+  if (!panel || !sortSelect) return;
+
+  // 래핑 컨테이너(2열 고정)
+  const rows = panel.querySelectorAll(':scope > div[style*="display: flex"][style*="gap: 25px"]');
+  const grid = document.createElement('div');
+  grid.className = 'products-grid';
+  Object.assign(grid.style, {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: '25px',
+    justifyContent: 'space-between' // 좌우 꽉 채우기
+  });
+
+  const headerRow = panel.querySelector(':scope > div[style*="font-size: 18px"]');
+  headerRow.after(grid);
+
+  // 카드 이동 + 폭을 2열 비율로 강제
+  rows.forEach(r => {
+    r.querySelectorAll('.menu-card').forEach(card => {
+      // 폭을 고정값(555px)에서 2열 비율로 전환
+      card.style.width = 'calc(50% - 12.5px)'; // 12.5px = gap/2
+      card.style.boxSizing = 'border-box';     // 보더 포함 계산
+      grid.appendChild(card);
+    });
+    r.remove();
+  });
+
+  // --- 이하 정렬 로직 그대로 ---
+  function extractBalance(card) {
+    const m = card.textContent.match(/([+-]?\d[\d,]*)\s*원/);
+    return m ? Number(m[1].replace(/,/g, '')) : 0;
+  }
+  function extractName(card) {
+    const nameEl = card.querySelector('div[style*="font-size: 16px"][style*="color: #2B2F36"]');
+    return (nameEl?.textContent || '').trim();
+  }
+  function extractJoinDate(card) {
+    const m = card.textContent.match(/가입일:\s*(\d{4})\.(\d{2})\.(\d{2})/);
+    return m ? new Date(`${m[1]}-${m[2]}-${m[3]}T00:00:00`).getTime() : 0;
+  }
+
+  const cards = Array.from(grid.querySelectorAll('.menu-card'));
+  cards.forEach((card, idx) => {
+    card.dataset.index = String(idx);
+    card.dataset.balance = String(extractBalance(card));
+    card.dataset.name = extractName(card);
+    card.dataset.joinTs = String(extractJoinDate(card));
+  });
+
+  function applySort(type) {
+    const arr = Array.from(grid.querySelectorAll('.menu-card'));
+    arr.sort((a, b) => {
+      switch (type) {
+        case 'high': return b.dataset.balance - a.dataset.balance;
+        case 'low' : return a.dataset.balance - b.dataset.balance;
+        case 'name': return (a.dataset.name||'').localeCompare(b.dataset.name||'', 'ko');
+        case 'new' : return b.dataset.joinTs - a.dataset.joinTs;
+        default    : return a.dataset.index - b.dataset.index;
+      }
+    });
+    arr.forEach(card => grid.appendChild(card));
+  }
+
+  applySort(sortSelect.value || 'all');
+  sortSelect.addEventListener('change', e => applySort(e.target.value));
+});
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const panel = document.getElementById('aiReco');
+  if (!panel) return;
+
+  // X 버튼
+  const closeBtn = panel.querySelector('[data-close]');
+  if (!closeBtn) return;
+
+  // 공간 고정이 더 확실하길 원하면 최초 높이를 최소높이로 잠가도 됨 (선택)
+  // const h = panel.getBoundingClientRect().height;
+  // panel.style.minHeight = h + 'px';
+
+  const fadeOut = () => {
+    panel.classList.add('is-fading');   // opacity만 0으로
+    panel.setAttribute('aria-hidden', 'true');
+    // transitionend 콜백에서 아무 것도 하지 마세요! (공간 유지 위해)
+  };
+
+  closeBtn.style.cursor = 'pointer';
+  closeBtn.setAttribute('role', 'button');
+  closeBtn.setAttribute('tabindex', '0');
+  closeBtn.addEventListener('click', fadeOut);
+  closeBtn.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fadeOut(); }
+  });
+});
+</script>
+<!-- ① head에 추가: 모달/폼 스타일 -->
+<style>
+  :root{
+    --bnk-red:#D91A1A;
+    --bnk-red-2:#F03A3A;
+    --ink:#111827;
+    --sub:#4B5563;
+    --line:#E5E7EB;
+    --panel:#FFFFFF;
+    --bg:#F6F6F8;
+  }
+  /* 오버레이 */
+  .bnk-transfer__overlay{
+    position:fixed; inset:0; background:rgba(17,24,39,.55);
+    display:none; align-items:flex-end; justify-content:center; z-index:9990;
+  }
+  /* 컨테이너(바텀시트형) */
+  .bnk-transfer__sheet{
+    width:720px; max-width:100%; background:#111827; color:#fff;
+    border-top-left-radius:16px; border-top-right-radius:16px;
+    box-shadow:0 -12px 40px rgba(0,0,0,.35); overflow:hidden;
+    /* BNK 느낌 살리기: 상단 바에 레드 그라데이션 */
+    position:relative;
+  }
+  .bnk-transfer__topbar{
+    height:6px; background:linear-gradient(90deg,var(--bnk-red-2),var(--bnk-red));
+  }
+  .bnk-transfer__body{ padding:28px 24px 20px; }
+  .bnk-transfer__title{ font-size:24px; font-weight:800; letter-spacing:-.3px; }
+  .bnk-transfer__subtitle{ margin-top:8px; color:#cbd5e1; font-size:14px; }
+
+  /* 입력 카드(다크 안쪽 화이트 입력 UI로 토스 느낌) */
+  .bnk-inputcard{
+    background:#0f172a; border:1px solid #1f2937; border-radius:12px;
+    padding:18px; margin-top:18px;
+  }
+  .bnk-label{ color:#9CA3AF; font-size:13px; margin-bottom:6px; }
+  .bnk-field{
+    display:flex; align-items:center; gap:10px;
+    background:#111827; border:1px solid #374151; border-radius:10px;
+    padding:14px 12px;
+  }
+  .bnk-field input, .bnk-field select{
+    background:transparent; border:none; outline:none; color:#fff; width:100%;
+    font-size:18px;
+  }
+  .bnk-help{ margin-top:8px; color:#94a3b8; font-size:12px; }
+  .bnk-banktag{
+    padding:6px 10px; border-radius:999px; background:#0b1220; border:1px solid #334155;
+    font-size:12px; color:#cbd5e1;
+  }
+
+  /* 액션 바 */
+  .bnk-actions{ display:flex; gap:10px; margin-top:20px; }
+  .bnk-btn{
+    flex:1; height:48px; border:none; border-radius:10px; cursor:pointer;
+    font-weight:700; font-size:16px; transition:.15s ease; 
+  }
+  .bnk-btn--ghost{ background:#0b1220; color:#e5e7eb; border:1px solid #334155; }
+  .bnk-btn--primary{
+    background:linear-gradient(180deg,var(--bnk-red-2),var(--bnk-red));
+    color:#fff; box-shadow:0 6px 14px -10px rgba(217,26,26,.45);
+  }
+  .bnk-btn:disabled{ opacity:.45; cursor:not-allowed; }
+
+  /* 진행 인디케이터 */
+  .bnk-steps{ display:flex; gap:6px; align-items:center; margin-top:6px;}
+  .bnk-dot{ width:6px;height:6px;border-radius:999px;background:#334155; }
+  .bnk-dot.active{ background:#fda4a4; }
+
+  /* 확인 단계 큰 타이포 */
+  .bnk-confirm{
+    text-align:center; padding:22px 12px 10px;
+    font-size:28px; line-height:1.35; font-weight:800;
+  }
+  .bnk-kv{ display:flex; justify-content:space-between; color:#cbd5e1; font-size:14px; margin:8px 0;}
+  .bnk-divider{ height:1px; background:#1f2937; margin:14px 0; }
+
+  /* 상단 닫기 버튼 */
+  .bnk-close{
+    position:absolute; right:12px; top:12px; width:36px;height:36px; border-radius:10px;
+    display:grid; place-items:center; background:#0b1220; border:1px solid #334155; cursor:pointer;
+  }
+
+  /* 접근성 & 애니메이션 */
+  .bnk-transfer__overlay.show{ display:flex; }
+  .bnk-transfer__sheet{ transform:translateY(8%); opacity:0; transition:.18s ease; }
+  .bnk-transfer__overlay.show .bnk-transfer__sheet{ transform:translateY(0); opacity:1; }
+  @media (max-width: 640px){
+    .bnk-transfer__sheet{ border-radius:14px 14px 0 0; }
+  }
+
+  /* (옵션) 에러 텍스트 */
+  .bnk-error{ color:#fecaca; font-size:12px; margin-top:6px; display:none;}
+  .bnk-error.show{ display:block; }
+  /* 드롭다운 내 option 글자색을 강제로 어둡게 */
+  .bnk-field select option,
+  .bnk-field select optgroup {
+    color: #111827;  /* 검정 */
+  }
+
+  /* (선택) 일부 UA에서 배경도 설정하고 싶다면 — 지원 안 하는 브라우저도 있음 */
+  .bnk-field select option {
+    background: #ffffff; /* 기본 흰 배경 */
+  }
+  /* 오버레이: 페이드 인/아웃 */
+  .bnk-transfer__overlay{
+    position:fixed; inset:0; 
+    background:rgba(17,24,39,.55);
+    display:flex; align-items:flex-end; justify-content:center;
+    z-index:9990;
+    opacity:0; visibility:hidden;
+    transition: opacity .28s ease;
+  }
+
+  .bnk-transfer__overlay.show{
+    opacity:1; visibility:visible;
+  }
+
+  /* 시트: 아래(화면 밖)에서 위로 슬라이드 인 */
+  .bnk-transfer__sheet{
+    width:720px; max-width:100%;
+    background:#111827; color:#fff;
+    border-top-left-radius:16px; border-top-right-radius:16px;
+    box-shadow:0 -12px 40px rgba(0,0,0,.35); overflow:hidden;
+    position:relative;
+
+    transform: translateY(100%); /* 처음엔 화면 아래 */
+    opacity:0;
+    transition:
+      transform 1s cubic-bezier(.22,.61,.36,1),
+      opacity .24s ease;
+    will-change: transform, opacity;
+  }
+
+  .bnk-transfer__overlay.show .bnk-transfer__sheet{
+    transform: translateY(0);
+    opacity:1;
+  }
+
+  /* 모션 최소화 사용자 배려 */
+  @media (prefers-reduced-motion: reduce){
+    .bnk-transfer__overlay{ transition:none; }
+    .bnk-transfer__sheet{ transition:none; transform:none; opacity:1; }
+  }
+  .bnk-transfer__overlay {
+    background: rgba(17, 24, 39, 0.35);
+  }
+
+  .bnk-transfer__sheet {
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  /* 1) 배경 어둠은 유지하되 흐림감 제거 */
+  .bnk-transfer__overlay{
+    background: rgba(0,0,0,.28) !important;   /* 살짝 더 투명 → 내부 요소가 또렷 */
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  /* 2) 패널/텍스트 렌더링 선명도 ↑ + 과한 그림자 ↓ */
+  .bnk-transfer__sheet{
+    -webkit-font-smoothing: antialiased;  /* 다크 배경에서 글자 경계 선명 */
+    text-rendering: optimizeLegibility;
+    box-shadow: 0 -8px 24px rgba(0,0,0,.32); /* 번짐 줄인 샤도우 */
+  }
+
+  /* 3) 카드/입력 영역 대비 강화(배경 조금 더 밝고, 테두리 선명) */
+  .bnk-inputcard{
+    background:#0c1220 !important;
+    border-color:#2b3340 !important;
+  }
+  .bnk-field{
+    background:#0e1524 !important;
+    border-color:#3a4354 !important;
+  }
+  .bnk-label{ color:#d1d5db !important; }
+  .bnk-help{ color:#a9b4c4 !important; }
+
+  /* 4) placeholder도 흐리게 보이지 않게 불투명도 고정 */
+  .bnk-field input::placeholder,
+  .bnk-field select::placeholder{
+    color:#9aa3b2; opacity:1;
+  }
+
+  /* 5) 버튼 그림자 살짝 축소해 가장자리 번짐 최소화 */
+  .bnk-btn--primary{
+    box-shadow: 0 6px 14px -12px rgba(217,26,26,.45);
+  }
+  
+</style>
+
+<!-- ③ main 끝나기 직전(</main> 위) 모달 HTML 추가 -->
+<div class="bnk-transfer__overlay" id="bnkTransfer">
+  <div class="bnk-transfer__sheet" role="dialog" aria-modal="true" aria-labelledby="bnkTransferTitle">
+    <div class="bnk-transfer__topbar"></div>
+    <button class="bnk-close" id="bnkClose" aria-label="닫기">
+      <svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+        <path d="M5 5l10 10M15 5L5 15" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </button>
+
+    <div class="bnk-transfer__body">
+      <div class="bnk-steps" aria-hidden="true">
+        <span class="bnk-dot active" id="dot1"></span>
+        <span class="bnk-dot" id="dot2"></span>
+        <span class="bnk-dot" id="dot3"></span>
+      </div>
+      <div class="bnk-transfer__title" id="bnkTransferTitle">어떤 계좌로 보낼까요?</div>
+      <div class="bnk-transfer__subtitle" id="bnkSubtitle">계좌번호를 입력하면 은행을 찾아드릴게요.</div>
+
+      <!-- Step 1: 수취계좌 -->
+        <form th:action="@{/mypage/prod}" method="post">
+      <section class="bnk-inputcard" id="step1">
+        <!-- (추가) 수취인 이름 -->
+        <div class="bnk-label" style="margin-top:14px;">수취인 이름 (선택)</div>
+        <div class="bnk-field">
+          <input id="recvName" name="dwho" autocomplete="off" placeholder="예: 김민수" />
+        </div>
+        <div class="bnk-help" style="margin-bottom: 10px;">입력하시면 확인 단계에 표시됩니다. 작성하지 않으면 수취인으로 표기됩니다.</div>
+        <div class="bnk-label">자신의 계좌번호 입력</div>
+        <div class="bnk-field" style="margin-bottom: 10px;">
+            <input id="recvNum" name="myAcc" autocomplete="off" placeholder="자신의 계좌번호를 입력해주세요" />
+        </div>
+        <div class="bnk-label">계좌번호 입력</div>
+        <div class="bnk-field">
+          <input id="recvAccount" name="yourAcc" inputmode="tel" autocomplete="off" placeholder="수취인 계좌번호를 입력해주세요" />
+          <span class="bnk-banktag" id="bankBadge" style="width: 70px; display: flex; justify-content: center;">은행 선택</span>
+        </div>
+        <div class="bnk-help">예: 0102596894009 → NH농협 자동 인식</div>
+        <div class="bnk-error" id="accErr">유효한 계좌번호를 입력해 주세요.</div>
+
+        <div class="bnk-label" style="margin-top:14px;">은행 선택</div>
+        <div class="bnk-field">
+          <select id="bankSelect" aria-label="은행 선택">
+            <option value="">자동 선택(권장)</option>
+            <option>NH농협</option>
+            <option>KB국민</option>
+            <option>신한</option>
+            <option>우리</option>
+            <option>IBK기업</option>
+            <option>하나</option>
+            <option>BNK부산</option>
+          </select>
+        </div>
+      </section>
+
+      <!-- Step 2: 금액 -->
+      <section class="bnk-inputcard" id="step2" style="display:none;">
+        <div class="bnk-label">얼마나 보낼까요?</div>
+        <div class="bnk-field">
+          <input id="amount" name="dbalance" inputmode="numeric" placeholder="0" />
+          <span style="color:#cbd5e1;font-size:18px;">원</span>
+        </div>
+        <div class="bnk-help">최대 · 5,000,000원 입력</div>
+        <div class="bnk-error" id="amtErr">한도를 초과했거나 금액 형식이 올바르지 않습니다.</div>
+      </section>
+
+      <!-- Step 3: 확인 -->
+      <section class="bnk-inputcard" id="step3" style="display:none;">
+        <div class="bnk-confirm">
+          <span id="confirmName" style="color:#60a5fa;">수취인</span>님에게<br/>
+          <span id="confirmAmt">0원</span>을 보낼까요?
+        </div>
+        <div class="bnk-divider"></div>
+        <div class="bnk-kv"><span>출금 계좌</span><strong>내 자립예탁금 계좌</strong></div>
+        <div class="bnk-kv"><span>입금 은행/계좌</span><strong id="confirmBank">-</strong></div>
+        <div class="bnk-kv"><span>수수료</span><strong>평생 수수료 무료</strong></div>
+      </section>
+
+      <!-- 액션버튼 -->
+      <div class="bnk-actions">
+        <button type="button" class="bnk-btn bnk-btn--ghost" id="btnPrev">이전</button>
+        <button type="button" class="bnk-btn bnk-btn--primary" id="btnNext">다음</button>
+      </div>
+        </form>
+    </div>
+  </div>
+</div>
+
+<!-- ④ body 맨 아래 JS: 열기/닫기 + 단계 진행 + 포맷팅/검증 -->
+<script>
+  // 열기/닫기
+  const openBtn = document.getElementById('quick-transfer-card');
+  const overlay = document.getElementById('bnkTransfer');
+  const closeBtn = document.getElementById('bnkClose');
+  openBtn?.addEventListener('click', () => { overlay.classList.add('show'); resetFlow(); });
+  function closeOverlaySmooth() {
+  const sheet = overlay.querySelector('.bnk-transfer__sheet');
+  if (!sheet) return;
+
+  // 닫히는 애니메이션: translateY(100%)
+  sheet.style.transform = 'translateY(100%)';
+  sheet.style.opacity = '0';
+  overlay.style.opacity = '0';
+
+  // 애니메이션 종료 후 완전히 숨김 처리
+  setTimeout(() => {
+    overlay.classList.remove('show');
+    sheet.style.transform = '';
+    sheet.style.opacity = '';
+    overlay.style.opacity = '';
+  }, 400); // transition 시간과 동일
+}
+
+// 닫기 버튼 / 오버레이 클릭 시
+closeBtn.addEventListener('click', closeOverlaySmooth);
+overlay.addEventListener('click', (e) => {
+  if (e.target === overlay) closeOverlaySmooth();
+});
+
+  // 단계 요소
+  const steps = [document.getElementById('step1'), document.getElementById('step2'), document.getElementById('step3')];
+  const dots = [document.getElementById('dot1'), document.getElementById('dot2'), document.getElementById('dot3')];
+  const title = document.querySelector('.bnk-transfer__title');
+  const subtitle = document.getElementById('bnkSubtitle');
+  const btnPrev = document.getElementById('btnPrev');
+  const btnNext = document.getElementById('btnNext');
+
+  const form = document.querySelector('#bnkTransfer form');
+  // 입력 요소
+  const recvAccount = document.getElementById('recvAccount');
+  const bankBadge = document.getElementById('bankBadge');
+  const bankSelect = document.getElementById('bankSelect');
+  const accErr = document.getElementById('accErr');
+
+  const recvNameEl  = document.getElementById('recvName');
+  const amount = document.getElementById('amount');
+  const amtErr = document.getElementById('amtErr');
+
+  const recvNum     = document.getElementById('recvNum');
+  const confirmName = document.getElementById('confirmName');
+  const confirmAmt = document.getElementById('confirmAmt');
+  const confirmBank = document.getElementById('confirmBank');
+
+  let step = 0;
+
+  function resetFlow(){
+    step = 0;
+    steps.forEach((s,i)=> s.style.display = i===0 ? 'block':'none');
+    dots.forEach((d,i)=> d.classList.toggle('active', i===0));
+    title.textContent = '어떤 계좌로 보낼까요?';
+    subtitle.textContent = '계좌번호를 입력해주세요.';
+    btnPrev.textContent = '닫기';
+    btnNext.textContent = '다음';
+    recvNameEl.value = '';
+    recvAccount.value = '';
+    bankSelect.value = '';
+    bankBadge.textContent = '은행 선택';
+    accErr.classList.remove('show');
+    amount.value = '';
+    amtErr.classList.remove('show');
+    confirmName.textContent = '수취인';
+    confirmAmt.textContent = '0원';
+    confirmBank.textContent = '-';
+  }
+
+  // 간단 자동 은행 인식(데모): 앞자리 규칙 예시
+  function detectBank(acct){
+    if(/^010/.test(acct)) return 'NH농협';
+    if(/^101/.test(acct)) return 'BNK부산';
+    if(/^004/.test(acct)) return 'KB국민';
+    return '';
+  }
+  // ① 계좌 입력 시: '자동 선택(권장)' 상태일 때만 자동 인식으로 배지 업데이트
+  recvAccount.addEventListener('input', () => {
+      // 숫자와 하이픈만 허용
+      recvAccount.value = recvAccount.value.replace(/[^\d-]/g, '');
+      // 연속 하이픈을 하나로 축소(선택)
+      recvAccount.value = recvAccount.value.replace(/-+/g, '-');
+
+      // 자동인식은 숫자만으로 판단
+      const auto = detectBank(recvAccount.value.replace(/\D/g, ''));
+      if (!bankSelect.value) bankBadge.textContent = auto || '은행 선택';
+      if (auto && !bankSelect.value) bankSelect.value = auto;
+  });
+
+  // ② 드롭다운 변경 시: 배지를 즉시 선택한 은행으로 동기화
+  bankSelect.addEventListener('change', () => {
+    const v = (bankSelect.value || '').trim();
+
+    if (v) {
+      // 사용자가 직접 고른 은행 → 배지에 그대로 표시
+      bankBadge.textContent = v;
+    } else {
+      // '자동 선택(권장)'으로 되돌리면 자동 인식(또는 기본 문구)로 복원
+      const auto = detectBank(recvAccount.value);
+      bankBadge.textContent = auto || '은행 선택';
+    }
+  });
+
+  // 금액 포맷
+  function formatWon(v){
+    if(!v) return '0원';
+    return parseInt(v,10).toLocaleString('ko-KR')+'원';
+  }
+  amount.addEventListener('input', ()=>{
+    amount.value = amount.value.replace(/\D/g,'');
+  });
+
+  // 버튼 동작
+  btnPrev.addEventListener('click', ()=>{
+    if(step===0){ overlay.classList.remove('show'); return; }
+    step--;
+    updateStepUI();
+  });
+
+  btnNext.addEventListener('click', ()=>{
+    if(step===0){
+      // 계좌 검증
+      const acctOk = recvAccount.value.length >= 10;
+      if(!acctOk){ accErr.classList.add('show'); return; }
+      accErr.classList.remove('show');
+      step=1;
+      updateStepUI();
+    }else if(step===1){
+      const won = parseInt(amount.value||'0',10);
+      const limit = 5000000; // 데모 한도
+      if(!(won>0) || won>limit){ amtErr.classList.add('show'); return; }
+      amtErr.classList.remove('show');
+      // 확인 데이터 채우기(수취인 이름은 데모로 계좌 끝4자리 사용)
+      const name = (recvNameEl.value || '').trim() || '수취인';
+      confirmName.textContent = name;
+      confirmAmt.textContent = formatWon(won);
+      confirmBank.textContent = `${bankSelect.value||bankBadge.textContent||'-'} ${recvAccount.value}`;
+      step=2;
+      updateStepUI(true);
+      btnNext.textContent = '보내기';
+    }else{
+        // ✅ 실제 서버로 폼 제출
+        btnNext.disabled = true;
+        btnNext.textContent = '처리 중...';
+
+        // 숫자만(금액)
+        amount.value = (amount.value || '').replace(/\D/g, '');
+
+        // 계좌번호: 하이픈 유지
+        const normalizeAcct = (v) =>
+            (v || '')
+                .replace(/[^0-9-]/g, '') // 숫자와 -만 허용
+                .replace(/-+/g, '-')      // 연속 하이픈 1개로 축소
+                .replace(/^-|-$/g, '');   // 맨 앞/뒤 하이픈 제거
+
+        recvAccount.value = normalizeAcct(recvAccount.value);
+        recvNum.value     = normalizeAcct(recvNum.value);
+
+        showToast('출금이 완료되었습니다');                    // 현재 페이지에서도 바로 보이게
+        sessionStorage.setItem('bnk_toast_msg','출금이 완료되었습니다'); // 리다이렉트 후에도 보이게
+
+        form.submit();
+    }
+  });
+
+  function updateStepUI(final=false){
+    steps.forEach((s,i)=> s.style.display = i===step ? 'block':'none');
+    dots.forEach((d,i)=> d.classList.toggle('active', i===step));
+    if(step===0){
+      title.textContent = '어떤 계좌로 보낼까요?';
+      subtitle.textContent = '계좌번호를 입력하면 은행을 찾아드릴게요.';
+      btnPrev.textContent = '닫기';
+      btnNext.textContent = '다음';
+    }
+    if(step===1){
+      title.textContent = '얼마나 보낼까요?';
+      subtitle.textContent = '최대 한도 내에서 금액을 입력해 주세요.';
+      btnPrev.textContent = '이전';
+      btnNext.textContent = '다음';
+      amount.focus();
+    }
+    if(step===2){
+      title.textContent = '';
+      subtitle.textContent = '';
+      btnPrev.textContent = '이전';
+      btnNext.textContent = final ? '보내기' : '다음';
+    }
+  }
+</script>
+  <!-- Toast -->
+  <div class="bnk-toast" id="bnkToast" role="status" aria-live="polite" aria-atomic="true">
+      <span class="bnk-toast__msg">알림</span>
+  </div>
+  <script>
+      // --- Toast 유틸 ---
+      (function(){
+          const toast = document.getElementById('bnkToast');
+          let timer = null;
+
+          window.showToast = function(msg, duration = 2500){
+              if(!toast) return;
+              toast.querySelector('.bnk-toast__msg').textContent = msg || '';
+              toast.classList.add('show');
+              clearTimeout(timer);
+              timer = setTimeout(()=> toast.classList.remove('show'), duration);
+          };
+
+          // 클릭하면 즉시 닫기
+          toast?.addEventListener('click', ()=> toast.classList.remove('show'));
+
+          // 페이지 리다이렉트 뒤에도 토스트를 보여주고 싶으면 sessionStorage 사용
+          document.addEventListener('DOMContentLoaded', () => {
+              const msg = sessionStorage.getItem('bnk_toast_msg');
+              if(msg){
+                  showToast(msg);
+                  sessionStorage.removeItem('bnk_toast_msg');
+              }
+          });
+      })();
+  </script>
+  <script>
+      // 원화 포맷
+      function fmtKRW(v) {
+          return Number(v || 0).toLocaleString('ko-KR') + '원';
+      }
+
+      // ETF 카드 1개 업데이트
+      function updateEtfCardMetrics(card, nowPrice) {
+          const psum   = Number(card.dataset.psum   || 0); // 총 매수금액(DB)
+          const pprice = Number(card.dataset.pprice || 0); // 매수 단가
+          const pstock = Number(card.dataset.pstock || 0); // 수량(주)
+
+          // 총 금액(매수금액) = 원 * 주
+          const buyAmount = psum || (pprice * pstock);
+
+          // 평가금액 = 현재가 * 수량(주)
+          const currentAmount = nowPrice * pstock;
+
+          // 평가손익 = 현재 평가금액 - 매수금액
+          const profit = currentAmount - buyAmount;
+
+          // 수익률 = 평가손익 / 매수금액 × 100
+          const profitRate = buyAmount ? (profit / buyAmount) * 100 : 0;
+
+          const totalEl   = card.querySelector('.etf-total-amount');
+          const currentEl = card.querySelector('.etf-current-amount');
+          const profitEl  = card.querySelector('.etf-profit');
+          const rateEl    = card.querySelector('.etf-profit-rate');
+
+          if (totalEl)   totalEl.textContent   = fmtKRW(buyAmount);
+          if (currentEl) currentEl.textContent = fmtKRW(currentAmount);
+
+          if (profitEl) {
+              const abs = Math.abs(profit);
+              const sign = profit > 0 ? '+' : (profit < 0 ? '-' : '');
+              profitEl.textContent = sign + abs.toLocaleString('ko-KR') + '원';
+              profitEl.style.color =
+                  profit > 0 ? '#b91c1c' :      // 수익
+                      profit < 0 ? '#1d4ed8' :      // 손실
+                          '#6b7280';       // 0
+          }
+
+          if (rateEl) {
+              const sign = profitRate > 0 ? '+' : (profitRate < 0 ? '-' : '');
+              const absRate = Math.abs(profitRate).toFixed(2);
+              rateEl.textContent = `${sign}${absRate}%`;
+              rateEl.style.color =
+                  profitRate > 0 ? '#b91c1c' :
+                      profitRate < 0 ? '#1d4ed8' :
+                          '#6b7280';
+          }
+      }
+
+      // /BNK/api/etf 에서 실시간 현재가 가져와서 ETF 카드들 갱신 (pname 기준 매칭)
+      async function refreshEtfCardsFromApi() {
+          console.log('[ETF] refresh 호출', new Date().toLocaleTimeString());
+
+          try {
+              const res = await fetch('/BNK/api/etf', { cache: 'no-store' });
+              if (!res.ok) {
+                  console.error('/BNK/api/etf 실패', res.status);
+                  return;
+              }
+
+              const list = await res.json();
+              if (!Array.isArray(list)) return;
+
+              const mapByName = new Map();
+              list.forEach(item => {
+                  const n = item.pname || item.name;
+                  if (!n) return;
+                  mapByName.set(n.trim(), item);
+              });
+
+              document
+                  .querySelectorAll('.menu-card[data-product-type="ETF"]')
+                  .forEach(card => {
+                      const pname = (card.dataset.pname || '').trim();
+                      if (!pname) return;
+
+                      const item = mapByName.get(pname);
+                      if (!item) return;
+
+                      const nowPrice = Number(item.price);
+                      if (isNaN(nowPrice)) return;
+
+                      console.log(
+                          '[ETF] 카드:', pname,
+                          '현재가:', nowPrice
+                      );
+
+                      updateEtfCardMetrics(card, nowPrice);
+                  });
+          } catch (e) {
+              console.error('refreshEtfCardsFromApi 에러', e);
+          }
+      }
+
+      function startEtfRealtimeLoop() {
+          // 처음 한 번
+          refreshEtfCardsFromApi();
+          // 이후 주기적으로 (2초 정도, 필요하면 조절)
+          setInterval(refreshEtfCardsFromApi, 1500);
+      }
+
+      // DOM 상태에 따라 바로 실행 or 이벤트 등록
+      if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', startEtfRealtimeLoop);
+      } else {
+          // 이미 DOMContentLoaded가 끝난 상태면 바로 실행
+          startEtfRealtimeLoop();
+      }
+
+  </script>
+  <script>
+
+      // 2) ETF 카드 데이터 보기
+      document.querySelectorAll('.menu-card').forEach(c => {
+          console.log('card pname:', c.dataset.pname, 'ptype:', c.dataset.productType);
+      });
+  </script>
+</body>
+</html>

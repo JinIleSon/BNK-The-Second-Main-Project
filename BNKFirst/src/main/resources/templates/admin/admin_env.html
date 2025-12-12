@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>admin_env</title>
+    
+</head>
+<body>
+  <header>
+      <div th:replace="~{layouts/admin_header.html}"></div>
+  </header>
+  <script>
+    async function includeWithScripts(targetSelector, url) {
+      const res = await fetch(url, { credentials: 'same-origin' });
+      if (!res.ok) throw new Error(`Failed to load ${url}`);
+      const html = await res.text();
+
+      const target = document.querySelector(targetSelector);
+      target.innerHTML = html;
+
+      // 삽입된 영역 안의 <script>들을 실행되도록 교체
+      const scripts = target.querySelectorAll('script');
+      for (const oldScript of scripts) {
+        const newScript = document.createElement('script');
+
+        // type, src, async, defer 등 속성 복사
+        for (const { name, value } of [...oldScript.attributes]) {
+          newScript.setAttribute(name, value);
+        }
+        // inline 스크립트라면 코드 복사
+        if (!oldScript.src) newScript.text = oldScript.textContent;
+
+        // 실행을 위해 문서에 부착
+        // (src가 있으면 네트워크 로드, 없으면 즉시 실행)
+        oldScript.replaceWith(newScript);
+
+        // src 스크립트 로드를 기다려야 한다면:
+        if (newScript.src) {
+          await new Promise((res) => {
+            newScript.addEventListener('load', res, { once: true });
+            newScript.addEventListener('error', res, { once: true });
+          });
+        }
+      }
+    }
+
+    // (2) includeWithScripts - 올바른 방법
+    includeWithScripts('#header', '/layouts/admin_header.html')
+    .then(() => {
+      // 환경설정 메뉴 활성화
+      window.initAdminHeader && window.initAdminHeader('env');
+    })
+    .catch(console.error);
+    document.addEventListener('DOMContentLoaded', () => {
+        if (window.initAdminHeader) window.initAdminHeader('env');
+    });
+  </script>
+
+  <main style="background: var(--bg); display: flex; justify-content: center;">
+    <div style="width: 1200px; ">
+      <div>
+        <div class="on-bg" style="font-size: 24px; color: #4B5563 !important;">환경설정</div>
+        <div style="display: flex;">
+          <div class="on-bg" style="font-size: 16px; color: #4B5563 !important;">사이트 기본 설정, 로고, 테마 등 시스템 환경을 관리합니다.</div>
+          <div style="margin-left: auto; display: flex; justify-content: center; align-items: center; font-size: 14px; background-color: white; width: 165px; height: 40px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); border: 1px solid #E5E7EB;">
+            <div style="display: flex; align-items: center;">
+              <svg width="20" height="16" viewBox="0 0 20 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <g clip-path="url(#clip0_194_44)">
+                <path d="M7 8C8.06087 8 9.07828 7.57857 9.82843 6.82843C10.5786 6.07828 11 5.06087 11 4C11 2.93913 10.5786 1.92172 9.82843 1.17157C9.07828 0.421427 8.06087 0 7 0C5.93913 0 4.92172 0.421427 4.17157 1.17157C3.42143 1.92172 3 2.93913 3 4C3 5.06087 3.42143 6.07828 4.17157 6.82843C4.92172 7.57857 5.93913 8 7 8ZM5.57188 9.5C2.49375 9.5 0 11.9937 0 15.0719C0 15.5844 0.415625 16 0.928125 16H13.0719C13.1281 16 13.1813 15.9938 13.2375 15.9844C10.8531 14.2625 10.1187 11.5781 10.0156 9.72812C9.5125 9.57812 8.98125 9.5 8.43125 9.5H5.57188ZM15.2219 7.05312L11.4719 8.55313C11.1875 8.66875 11 8.94375 11 9.25C11 11.2281 11.8094 14.525 15.2125 15.9438C15.3969 16.0219 15.6062 16.0219 15.7906 15.9438C19.1906 14.525 20 11.2281 20 9.25C20 8.94375 19.8125 8.66875 19.5281 8.55313L15.7781 7.05312C15.6 6.98125 15.4 6.98125 15.2219 7.05312ZM18.4813 9.75C18.3594 11.3344 17.6312 13.3969 15.5 14.4281V8.55625L18.4813 9.75Z" fill="#E6002D"/>
+                </g>
+                <defs>
+                <clipPath id="clip0_194_44">
+                <path d="M0 0H20V16H0V0Z" fill="white"/>
+                </clipPath>
+                </defs>
+              </svg>
+              <div style="margin-left: 10px;">관리자: Admin</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="display: flex; margin-top: 25px;">
+        <div style="padding:30px; box-sizing: border-box; background-color: white; width: 587.5px; height: 571px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); border: 1px solid #E5E7EB;">
+          <div>
+            <div style="display: flex; align-items: center;">
+              <div>
+                <svg style="display:block" width="14" height="18" viewBox="0 0 14 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <g clip-path="url(#clip0_185_607)">
+                  <path d="M1.6875 0C0.755859 0 0 0.755859 0 1.6875V16.3125C0 17.2441 0.755859 18 1.6875 18H5.0625V15.1875C5.0625 14.2559 5.81836 13.5 6.75 13.5C7.68164 13.5 8.4375 14.2559 8.4375 15.1875V18H11.8125C12.7441 18 13.5 17.2441 13.5 16.3125V1.6875C13.5 0.755859 12.7441 0 11.8125 0H1.6875ZM2.25 8.4375C2.25 8.12813 2.50312 7.875 2.8125 7.875H3.9375C4.24687 7.875 4.5 8.12813 4.5 8.4375V9.5625C4.5 9.87187 4.24687 10.125 3.9375 10.125H2.8125C2.50312 10.125 2.25 9.87187 2.25 9.5625V8.4375ZM6.1875 7.875H7.3125C7.62187 7.875 7.875 8.12813 7.875 8.4375V9.5625C7.875 9.87187 7.62187 10.125 7.3125 10.125H6.1875C5.87813 10.125 5.625 9.87187 5.625 9.5625V8.4375C5.625 8.12813 5.87813 7.875 6.1875 7.875ZM9 8.4375C9 8.12813 9.25313 7.875 9.5625 7.875H10.6875C10.9969 7.875 11.25 8.12813 11.25 8.4375V9.5625C11.25 9.87187 10.9969 10.125 10.6875 10.125H9.5625C9.25313 10.125 9 9.87187 9 9.5625V8.4375ZM2.8125 3.375H3.9375C4.24687 3.375 4.5 3.62812 4.5 3.9375V5.0625C4.5 5.37187 4.24687 5.625 3.9375 5.625H2.8125C2.50312 5.625 2.25 5.37187 2.25 5.0625V3.9375C2.25 3.62812 2.50312 3.375 2.8125 3.375ZM5.625 3.9375C5.625 3.62812 5.87813 3.375 6.1875 3.375H7.3125C7.62187 3.375 7.875 3.62812 7.875 3.9375V5.0625C7.875 5.37187 7.62187 5.625 7.3125 5.625H6.1875C5.87813 5.625 5.625 5.37187 5.625 5.0625V3.9375ZM9.5625 3.375H10.6875C10.9969 3.375 11.25 3.62812 11.25 3.9375V5.0625C11.25 5.37187 10.9969 5.625 10.6875 5.625H9.5625C9.25313 5.625 9 5.37187 9 5.0625V3.9375C9 3.62812 9.25313 3.375 9.5625 3.375Z" fill="#D91A1A"/>
+                  </g>
+                  <defs>
+                  <clipPath id="clip0_185_607">
+                  <path d="M0 0H13.5V18H0V0Z" fill="white"/>
+                  </clipPath>
+                  </defs>
+                </svg>
+              </div>
+              <div style="font-size: 18px; color: #2B2F36; margin-left: 10px;">기본 정보</div>
+            </div>
+          </div>
+          <div style="margin-top: 20px; font-size: 16px; color: #2B2F36;">회사명</div>
+          <div>
+            <input value="부산은행" type="text" style="margin-top: 13px; box-sizing: border-box; outline:none; padding-left:15px; font-size: 16px; width: 100%; height: 42px; border:1px solid #D1D5DB; border-radius: 6px;">
+          </div>
+          <div style="margin-top: 15px;font-size: 16px; color: #2B2F36;">대표 이메일</div>
+          <div>
+            <input value="admin@bnkfg.com" type="text" style="margin-top: 13px;box-sizing: border-box;outline:none; padding-left:15px; font-size: 16px; width: 100%; height: 42px; border:1px solid #D1D5DB; border-radius: 6px;">
+          </div>
+          <div style="margin-top: 15px;font-size: 16px; color: #2B2F36;">대표 전화</div>
+          <div>
+            <input value="1588-6200" type="text" style="margin-top: 13px;box-sizing: border-box;outline:none; padding-left:15px; font-size: 16px; width: 100%; height: 42px; border:1px solid #D1D5DB; border-radius: 6px;">
+          </div>
+          <div style="margin-top: 15px;font-size: 16px; color: #2B2F36;">주소</div>
+          <div>
+            <textarea name="" id="" style="margin-top: 13px;box-sizing: border-box; resize:none; padding: 20px; height: 130px; size-adjust: none; outline:none; padding-left:15px; font-size: 16px; width: 100%; border:1px solid #D1D5DB; border-radius: 6px;">부산광역시 남구 문현금융로 30 (문현동)</textarea>
+          </div>
+        </div>
+        <div style="margin-left:25px; padding:30px; box-sizing: border-box; background-color: white; width: 587.5px; height: 571px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); border: 1px solid #E5E7EB;">
+          <div>
+            <div style="display: flex; align-items: center;">
+              <div>
+                <svg style="display: block;" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M18 18H0V0H18V18Z" stroke="#E5E7EB"/>
+                  <path d="M0 3.375C0 2.13398 1.00898 1.125 2.25 1.125H15.75C16.991 1.125 18 2.13398 18 3.375V14.625C18 15.866 16.991 16.875 15.75 16.875H2.25C1.00898 16.875 0 15.866 0 14.625V3.375ZM11.3836 7.11914C11.2254 6.88711 10.9652 6.75 10.6875 6.75C10.4098 6.75 10.1461 6.88711 9.99141 7.11914L6.93281 11.6051L6.00117 10.4414C5.83945 10.241 5.59688 10.125 5.34375 10.125C5.09062 10.125 4.84453 10.241 4.68633 10.4414L2.43633 13.2539C2.23242 13.507 2.19375 13.8551 2.33438 14.1469C2.475 14.4387 2.77031 14.625 3.09375 14.625H6.46875H7.59375H14.9062C15.2191 14.625 15.5074 14.4527 15.6516 14.175C15.7957 13.8973 15.7781 13.5633 15.6023 13.3066L11.3836 7.11914ZM3.9375 6.75C4.38505 6.75 4.81428 6.57221 5.13074 6.25574C5.44721 5.93928 5.625 5.51005 5.625 5.0625C5.625 4.61495 5.44721 4.18572 5.13074 3.86926C4.81428 3.55279 4.38505 3.375 3.9375 3.375C3.48995 3.375 3.06072 3.55279 2.74426 3.86926C2.42779 4.18572 2.25 4.61495 2.25 5.0625C2.25 5.51005 2.42779 5.93928 2.74426 6.25574C3.06072 6.57221 3.48995 6.75 3.9375 6.75Z" fill="#D91A1A"/>
+                </svg>
+              </div>
+              <div style="margin-left: 10px; font-size: 18px; color: #2B2F36;">로고 관리</div>
+            </div>
+          </div>
+          <div style="margin-top: 20px; font-size: 16px; color: #2B2F36;">현재 로고</div>
+          <div style="margin-top: 13px;display: flex; justify-content: center; align-items: center; border: 2px dotted #D1D5DB; border-radius: 12px; background-color: #F9FAFB; width: 100%; height: 164px;">
+            <div>
+              <div>
+                <img id="logoPreview"
+                     th:src="@{/upload/images/bnk_logo.svg}"
+                    alt="현재 로고 미리보기"
+                    style="width:161px; height:43px;">
+              </div>
+              <div data-brand-text-exempt style="font-size: 14px; color: #6B7280; text-align: center; margin-top: 10px;">
+                현재 로고 미리보기
+              </div>
+            </div>
+          </div>
+          <div style="margin-top: 20px;">
+              <form th:action="@{/tologo}" method="post" enctype="multipart/form-data" id="logoForm">
+                <!-- 실제 파일 입력: 숨김 -->
+                <input id="logoFile" name="file" type="file" accept="image/*" class="visually-hidden">
+
+                <!-- 커스텀 업로드 버튼 -->
+                <label for="logoFile" class="file-cta">
+                  <!-- 가운데 아이콘 -->
+                  <span class="cta-icon" aria-hidden="true">
+                    <!-- 너가 준 SVG (흰색) -->
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <g clip-path="url(#clip0_185_661)">
+                        <path d="M9 3.41582V11.0002C9 11.5533 8.55313 12.0002 8 12.0002C7.44688 12.0002 7 11.5533 7 11.0002V3.41582L4.70625 5.70957C4.31563 6.1002 3.68125 6.1002 3.29063 5.70957C2.9 5.31895 2.9 4.68457 3.29063 4.29395L7.29063 0.293945C7.68125 -0.0966797 8.31563 -0.0966797 8.70625 0.293945L12.7063 4.29395C13.0969 4.68457 13.0969 5.31895 12.7063 5.70957C12.3156 6.1002 11.6812 6.1002 11.2906 5.70957L9 3.41582ZM2 11.0002H6C6 12.1033 6.89687 13.0002 8 13.0002C9.10312 13.0002 10 12.1033 10 11.0002H14C15.1031 11.0002 16 11.8971 16 13.0002V14.0002C16 15.1033 15.1031 16.0002 14 16.0002H2C0.896875 16.0002 0 15.1033 0 14.0002V13.0002C0 11.8971 0.896875 11.0002 2 11.0002ZM13.5 14.2502C13.6989 14.2502 13.8897 14.1712 14.0303 14.0305C14.171 13.8899 14.25 13.6991 14.25 13.5002C14.25 13.3013 14.171 13.1105 14.0303 12.9699C13.8897 12.8292 13.6989 12.7502 13.5 12.7502C13.3011 12.7502 13.1103 12.8292 12.9697 12.9699C12.829 13.1105 12.75 13.3013 12.75 13.5002C12.75 13.6991 12.829 13.8899 12.9697 14.0305C13.1103 14.1712 13.3011 14.2502 13.5 14.2502Z" fill="white"/>
+                      </g>
+                      <defs><clipPath id="clip0_185_661"><path d="M0 0H16V16H0V0Z" fill="white"/></clipPath></defs>
+                    </svg>
+                  </span>
+
+                  <!-- 오른쪽 텍스트 -->
+                  <span class="cta-text">로고 변경</span>
+                </label>
+              </form>
+            <style>
+              /* 완전 숨김(접근성 안전) */
+              .visually-hidden{
+                position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+                overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
+              }
+
+              /* 빨간 풀폭 버튼 */
+              .file-cta{
+                position:relative; display:block; width:100%; height:48px;
+                background:#D91A1A; color:#fff; border-radius:8px;
+                cursor:pointer; user-select:none; overflow:hidden;
+                /* 부드러운 모션 */
+                transition: transform .08s ease, box-shadow .22s ease, filter .22s ease;
+                box-shadow: 0 3px 8px -4px rgba(0,0,0,.22);
+              }
+
+              /* 아이콘: 정확히 가운데 */
+              .file-cta .cta-icon{
+                position:absolute; left:42%; top:50%;
+                transform:translate(-50%, -50%);
+                display:inline-flex; align-items:center; justify-content:center;
+              }
+
+              /* 텍스트: 오른쪽 중앙 정렬 */
+              .file-cta .cta-text{
+                position:absolute; right:40%; top:50%;
+                transform:translateY(-50%);
+                font-size:16px; letter-spacing:-0.2px;
+              }
+
+              /* 상태 */
+              /* 호버: 살짝 떠오름 */
+              .file-cta:hover{
+                box-shadow: 0 10px 14px -8px rgba(0,0,0,.28);
+                filter: brightness(0.98);
+              }
+
+              /* 프레스: 약간 눌림 */
+              .file-cta:active{
+                transform: translateY(1px) scale(.997);
+              }
+
+              /* 키보드 포커스 링 */
+              .file-cta:focus-visible{
+                outline: 2px solid #fff;
+                box-shadow: 0 0 0 4px rgba(217,26,26,.45), 0 10px 24px rgba(0,0,0,.18);
+                border-radius: 8px;
+              }
+              /* --- Ripple 효과 --- */
+              .file-cta::after{
+                content:"";
+                position:absolute;
+                left: var(--ripple-x, 50%);
+                top:  var(--ripple-y, 50%);
+                transform: translate(-50%, -50%);
+                width: 0; height: 0;
+                background: radial-gradient(circle, rgba(255,255,255,.45) 0%, rgba(255,255,255,0) 65%);
+                opacity: 0;
+                pointer-events: none;
+              }
+
+              .file-cta.is-rippling::after{
+                animation: cta-ripple .6s ease-out forwards;
+              }
+
+              @keyframes cta-ripple{
+                0%   { width: 0; height: 0; opacity: .6; }
+                100% { width: 480px; height: 480px; opacity: 0; }
+              }
+
+              /* 모션 최소화 선호 시 리플/애니메이션 제거 */
+              @media (prefers-reduced-motion: reduce){
+                .file-cta,
+                .file-cta:hover,
+                .file-cta:active,
+                .file-cta:focus-visible{ transition:none; transform:none; box-shadow:none; }
+                .file-cta.is-rippling::after{ animation:none; }
+              }
+            </style>
+          </div>
+          <div data-brand-exempt style="padding: 15px; margin-top: 20px; background-color: #FFECEC; border-radius: 8px;">
+            <div style="color: #D91A1A; font-size: 14px;">권장 사양</div>
+            <div style="color: #4B5563; font-size: 14px;">PNG, JPG 형식 / 최대 2MB / 200x80px 권장</div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:25px; padding:30px; box-sizing: border-box; background-color: white; width: 100%; height: 404px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); border: 1px solid #E5E7EB;">
+        <div style="display: flex; gap: 30px;">
+          <div style="width: 550px;">
+            <div style="display: flex; align-items: center;">
+              <div>
+                <svg style="display: block;" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <g clip-path="url(#clip0_185_589)">
+                  <path d="M18 9C18 9.03164 18 9.06328 18 9.09492C17.9859 10.3781 16.8188 11.25 15.5355 11.25H12.0938C11.1621 11.25 10.4062 12.0059 10.4062 12.9375C10.4062 13.057 10.4203 13.173 10.4414 13.2855C10.5152 13.6441 10.6699 13.9887 10.8211 14.3367C11.0355 14.8219 11.2465 15.3035 11.2465 15.8133C11.2465 16.9312 10.4871 17.9473 9.36914 17.993C9.24609 17.9965 9.12305 18 8.99648 18C4.02891 18 0 13.9711 0 9C0 4.02891 4.02891 0 9 0C13.9711 0 18 4.02891 18 9ZM4.5 10.125C4.5 9.82663 4.38147 9.54048 4.1705 9.3295C3.95952 9.11853 3.67337 9 3.375 9C3.07663 9 2.79048 9.11853 2.5795 9.3295C2.36853 9.54048 2.25 9.82663 2.25 10.125C2.25 10.4234 2.36853 10.7095 2.5795 10.9205C2.79048 11.1315 3.07663 11.25 3.375 11.25C3.67337 11.25 3.95952 11.1315 4.1705 10.9205C4.38147 10.7095 4.5 10.4234 4.5 10.125ZM4.5 6.75C4.79837 6.75 5.08452 6.63147 5.2955 6.4205C5.50647 6.20952 5.625 5.92337 5.625 5.625C5.625 5.32663 5.50647 5.04048 5.2955 4.8295C5.08452 4.61853 4.79837 4.5 4.5 4.5C4.20163 4.5 3.91548 4.61853 3.7045 4.8295C3.49353 5.04048 3.375 5.32663 3.375 5.625C3.375 5.92337 3.49353 6.20952 3.7045 6.4205C3.91548 6.63147 4.20163 6.75 4.5 6.75ZM10.125 3.375C10.125 3.07663 10.0065 2.79048 9.7955 2.5795C9.58452 2.36853 9.29837 2.25 9 2.25C8.70163 2.25 8.41548 2.36853 8.2045 2.5795C7.99353 2.79048 7.875 3.07663 7.875 3.375C7.875 3.67337 7.99353 3.95952 8.2045 4.1705C8.41548 4.38147 8.70163 4.5 9 4.5C9.29837 4.5 9.58452 4.38147 9.7955 4.1705C10.0065 3.95952 10.125 3.67337 10.125 3.375ZM13.5 6.75C13.7984 6.75 14.0845 6.63147 14.2955 6.4205C14.5065 6.20952 14.625 5.92337 14.625 5.625C14.625 5.32663 14.5065 5.04048 14.2955 4.8295C14.0845 4.61853 13.7984 4.5 13.5 4.5C13.2016 4.5 12.9155 4.61853 12.7045 4.8295C12.4935 5.04048 12.375 5.32663 12.375 5.625C12.375 5.92337 12.4935 6.20952 12.7045 6.4205C12.9155 6.63147 13.2016 6.75 13.5 6.75Z" fill="#D91A1A"/>
+                  </g>
+                  <defs>
+                  <clipPath id="clip0_185_589">
+                  <path d="M0 0H18V18H0V0Z" fill="white"/>
+                  </clipPath>
+                  </defs>
+                </svg>
+              </div>
+              <div style="margin-left: 10px; font-size: 18px; color: #2B2F36;">테마 설정</div>
+            </div>
+            <div style="font-size: 16px; color: #2B2F36; margin-top: 20px;">
+              포인트 컬러
+            </div>
+            <div style="margin-top: 15px;">
+              <div style="display: flex;">
+                <div style="width: 48px; height: 48px; background-color: #D91A1A; border-radius: 8px; border:1px solid #D1D5DB;"></div>
+                <div style="margin-left: 13px;">
+                  <div id="brandHex" style="font-size: 16px; color:#2B2F36;">#D91A1A</div>
+                  <div id="brandName" style="font-size: 14px; color: #6B7280;">BNK 시그니처 레드</div>
+                </div>
+              </div>
+              <div style="box-sizing: border-box; color: #2B2F36; font-size: 16px; padding:15px; margin-top: 15px; background-color: #F9FAFB; width: 100%; border-radius: 12px;">
+                <!-- 1) 토글 스위치 -->
+                <label class="switch">
+                  <input id="themeToggle" type="checkbox" aria-label="다크 모드">
+                  <div class="slider" style="cursor: pointer;"></div>
+                  <div class="switch-label" style="margin-left: 10px;">다크 모드</div>
+                </label>
+                <style>
+                  /* 2) 테마 변수: 기본(라이트) */
+                  :root{
+                    /* 라이트 */
+                    --bg: #F6F6F8;
+                    --text-on-bg: #2B2F36;
+                  }
+                  html[data-theme="dark"]{
+                    /* 다크 */
+                    --bg: #0F1115;
+                    --text-on-bg: #ECEFF4;
+                  }
+
+                  /* 전역 배경만 교체 */
+                  body{ background: var(--bg); }
+
+                  /* 배경 위 글 전용 유틸 (inline color를 이겨야 해서 !important) */
+                  .on-bg{ color: var(--text-on-bg) !important; }
+                  /* 3) 페이지 전역에 변수 적용 */
+                  body{ background:var(--bg); color:var(--text); }
+                  .card{
+                    background:var(--surface); border:1px solid var(--border);
+                    border-radius:16px; box-shadow:var(--shadow-1);
+                  }
+                  .card:hover{ box-shadow:var(--shadow-2); }
+                  .input, textarea, select{
+                    background:var(--surface); color:var(--text);
+                    border:1px solid var(--border-strong);
+                  }
+                  .input::placeholder, textarea::placeholder{ color:var(--muted); }
+                  .dotted-box{ border:2px dotted var(--border-strong); background:var(--surface-weak); }
+                  .helper-warn{ background:var(--warn-bg); color:var(--muted); }
+                  .helper-warn .title{ color:var(--warn-text); }
+
+                  /* 업로드 버튼(네가 만든 file-cta)도 변수 사용 */
+                  .file-cta{ background:var(--brand); box-shadow:var(--shadow-1); }
+                  .file-cta:hover{ box-shadow:var(--shadow-2); }
+
+                  /* 토글 스위치 데모 스타일(원하는 디자인으로 수정 가능) */
+                  .switch{ display:inline-flex; align-items:center; gap:10px; }
+                  .switch .slider{
+                    position:relative; width:44px; height:24px; border-radius:999px;
+                    background:#9e9e9e; border:1px solid var(--border-strong); display:inline-block;
+                    transition:background .2s;
+                  }
+                  .switch input{ display:none; }
+                  .switch .slider::after{
+                    cursor: pointer;
+                    content:""; position:absolute; left:2px; top:2px; width:18px; height:18px; border-radius:50%;
+                    background:#d3d3d3; transition: transform .2s;
+                  }
+                  .switch input:checked + .slider{ background:#2F394A; }
+                  .switch input:checked + .slider::after{ transform: translateX(20px); }
+                  .switch .switch-label{ color:var(--muted); font-size:14px; }
+                  main, .on-bg {
+                  transition: background-color 0.4s ease, color 0.4s ease;
+                }
+                :root{
+                  --brand:#D91A1A;           /* 복구 */
+                }
+                html[data-theme="dark"]{
+                  --brand:#D91A1A;           /* 다크에서도 동일 */
+                }
+                </style>
+                <script>
+                  
+                  // 초기 적용
+                  const saved = localStorage.getItem('theme');
+                  const sys = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+                  document.documentElement.setAttribute('data-theme', saved || sys);
+
+                  // 스위치 동기화
+                  const t = document.getElementById('themeToggle');
+                  if (t) t.checked = (saved || sys) === 'dark';
+                  t?.addEventListener('change', e => {
+                    const next = e.target.checked ? 'dark' : 'light';
+                    document.documentElement.setAttribute('data-theme', next);
+                    localStorage.setItem('theme', next);
+                  });
+                </script>
+              </div>
+            </div>
+          </div>
+          <div style=" width: 550px; padding-top: 46px;">
+            <div style="font-size: 16px; color: #2B2F36;">
+              테마 미리보기
+            </div>
+            <div style="margin-top: 20px; width: 100%; box-sizing: border-box; height: 182px; border:1px #D1D5DB solid; border-radius: 8px;">
+              <div style="padding: 20px;">
+                <div style="display: flex; align-items: center;">
+                  <div style="width: 32px; height: 32px; background-color: #D91A1A; border-radius: 8px; border:1px solid #D1D5DB;"></div>
+                  <div style="margin-left: 13px;">
+                    <div style="font-size: 16px; color:#2B2F36;">BNK 관리자</div>
+                  </div>
+                  <div style="margin-left: auto; width: 24px; height: 24px; border-radius: 100%; background-color: #D1D5DB;"></div>
+                </div>
+                <div style="margin-top: 15px; width: 387.75px; height: 12px; border-radius: 8px; background-color: #E5E7EB;"></div>
+                <div style="margin-top: 10px; width: 258.5px; height: 12px; border-radius: 8px; background-color: #E5E7EB;"></div>
+              </div>
+            </div>
+            <button class="btn-outline-brand" style="width: 100%; padding: 10px; margin-top: 10px; cursor: pointer; border:1px solid #D91A1A; box-sizing: border-box; background-color: white; border-radius: 8px; color: #D91A1A;">
+              테마 변경하기
+            </button>
+            <style>
+  /* 팔레트 오버레이 */
+  .brand-palette {
+    position: fixed; right: 20px; bottom: 78px; z-index: 10000;
+    background: #fff; border: 1px solid #E5E7EB; border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.12); padding: 12px; width: 268px;
+    display: none;
+  }
+  html[data-theme="dark"] .brand-palette {
+    background: #0F1115; border-color: #2F394A;
+  }
+  .brand-palette.show { display: block; }
+  .brand-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 8px; }
+  .brand-swatch {
+    width: 24px; height: 24px; border-radius: 6px; border: 1px solid rgba(0,0,0,.08);
+    cursor: pointer;
+  }
+  html[data-theme="dark"] .brand-swatch { border-color: rgba(255,255,255,.12); }
+  .brand-head {
+    font-size: 13px; color: #4B5563; margin-bottom: 8px; display:flex; justify-content:space-between; align-items:center;
+  }
+  html[data-theme="dark"] .brand-head { color: #C7CED6; }
+  .brand-reset {
+    font-size: 12px; border: 1px solid #E5E7EB; padding: 4px 8px; border-radius: 6px; background:#fff; cursor:pointer;
+  }
+  html[data-theme="dark"] .brand-reset { background:#0F1115; border-color:#2F394A; color:#ECEFF4; }
+  /* 공통 전환 */
+  .btn-outline-brand,
+  .btn-brand{
+    transition: background-color .18s ease, color .18s ease,
+                border-color .18s ease, box-shadow .22s ease,
+                transform .08s ease;
+    border-radius: 8px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* 외곽선 버튼 기본 */
+  .btn-outline-brand{
+    background:#fff;
+    color: var(--brand);
+    border: 1px solid var(--brand);
+  }
+  /* 외곽선 버튼 :hover / :focus-visible */
+  .btn-outline-brand:hover{
+    background: var(--brand);
+    color:#fff;
+    box-shadow:
+    0 2px 8px rgba(0,0,0,.05),   /* 메인 그림자(블러/알파↓) */
+    0 1px 2px rgba(0,0,0,.04);  /* 살짝 입체감 */
+  }
+  .btn-outline-brand:focus-visible{
+    outline: 2px solid #fff;
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--brand) 40%, transparent);
+  }
+  .btn-outline-brand:active{ transform: translateY(1px); }
+
+  /* 프리뷰의 기본(채움) 버튼 */
+  .btn-brand{
+    background: var(--brand);
+    color:#fff;
+    border: none;
+  }
+  .btn-brand:focus-visible{
+    outline: 2px solid #fff;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 45%, transparent);
+  }
+  .btn-brand:active{ transform: translateY(1px); }
+</style>
+<style>
+    .btn-register {
+      --bg1: #D91A1A;
+      --bg2: #F03A3A;
+      --shadow: rgba(217,26,26,.45);
+      position: relative;
+      box-sizing: border-box;
+      width: 90px; height: 42px;
+      border: none; border-radius: 8px;
+      color: #fff; cursor: pointer;
+      background: linear-gradient(180deg, var(--bg2), var(--bg1));
+      outline: none;
+      box-shadow: 0 6px 14px -10px var(--shadow);
+      transition:
+        background .18s ease,
+        box-shadow .18s ease,
+        transform .12s ease; /* 프레스만 사용할 예정 */
+      will-change: background, box-shadow, transform;
+    }
+
+    /* Hover: 컬러와 섀도우만 아주 미세하게 (리프트 없음) */
+    .btn-register:hover {
+      background: linear-gradient(180deg, #f24a4a, #d61a1a);
+      box-shadow: 0 8px 18px -12px var(--shadow);
+      transform: none; /* 확실하게 떠오르지 않도록 고정 */
+    }
+
+    /* Active: 살짝 눌리는 프레스 효과만 */
+    .btn-register:active {
+      transform: scale(.98);
+      box-shadow: 0 4px 10px -10px var(--shadow);
+    }
+
+    /* 키보드 포커스 접근성 */
+    .btn-register:focus-visible {
+      outline: 3px solid rgba(240,58,58,.55);
+      outline-offset: 2px;
+    }
+
+    /* 모션 최소화 존중 */
+    @media (prefers-reduced-motion: reduce) {
+      .btn-register { transition: none !important; }
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .btn-register { --shadow: rgba(240,58,58,.35); }
+    }
+  </style>
+
+<div id="brandPalette" class="brand-palette" role="dialog" aria-label="포인트 컬러 선택">
+  <div class="brand-head">
+    <span>포인트 컬러 선택</span>
+    <button id="brandResetBtn" class="brand-reset" type="button" title="기본값(#D91A1A)로">기본값</button>
+  </div>
+  <div class="brand-grid" id="brandGrid" aria-label="색상표"></div>
+</div>
+
+<script>
+  /* ▼ 추가: HSL → HEX, 균등 팔레트 생성 */
+  function hslToHex(h, s, l){
+    s /= 100; l /= 100;
+    const k = n => (n + h/30) % 12;
+    const a = s * Math.min(l, 1 - l);
+    const f = n => l - a * Math.max(-1, Math.min(k(n)-3, Math.min(9-k(n), 1)));
+    const toHex = x => Math.round(x*255).toString(16).padStart(2,'0');
+    return `#${toHex(f(0))}${toHex(f(8))}${toHex(f(4))}`.toUpperCase();
+  }
+  function makePalette(n=20, sat=78, light=50, startHue=0){
+    const golden = 0.618033988749895;          // 골든앵글 간격
+    let h = startHue % 360;
+    const out = [];
+    for (let i=0;i<n;i++){
+      h = (h + golden*360) % 360;
+      out.push(hslToHex(h, sat, light));
+    }
+    return out;
+  }
+  // === 설정 ===
+  const BRAND_KEY = 'brandColor';
+  const DEFAULT_BRAND = '#D91A1A';
+  const VIVID = makePalette(11, 78, 50, 5);      // 선명한 20색(모두 다른 색)
+  const NEUTRALS = ['#111827','#374151','#6B7280','#9CA3AF'];  // 무채계열 4색
+  // 기본색을 맨 앞으로, 중복 제거
+  const PALETTE = Array.from(new Set([DEFAULT_BRAND, ...VIVID, ...NEUTRALS]));
+
+  
+  // 1) 초기화: 저장된 포인트 컬러 적용
+  const savedBrand = localStorage.getItem(BRAND_KEY) || DEFAULT_BRAND;
+  setBrand(savedBrand, {initial:true});
+
+  // 2) 팔레트 DOM 만들기
+  const grid = document.getElementById('brandGrid');
+  PALETTE.forEach(color => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'brand-swatch';
+    b.style.background = color;
+    b.setAttribute('aria-label', color);
+    b.addEventListener('click', () => onPick(color));
+    grid.appendChild(b);
+  });
+
+  // 3) "테마 변경하기" 버튼을 팔레트 토글로 사용
+  (function wireThemeButton(){
+    const btn = [...document.querySelectorAll('button')]
+      .find(b => (b.textContent||'').trim() === '테마 변경하기');
+    if (!btn) return;
+    const panel = document.getElementById('brandPalette');
+    btn.addEventListener('click', () => {
+      panel.classList.toggle('show');
+    });
+    // 팔레트 밖 클릭 시 닫기
+    document.addEventListener('click', (e)=>{
+      if (!panel.classList.contains('show')) return;
+      if (panel.contains(e.target) || btn.contains(e.target)) return;
+      panel.classList.remove('show');
+    });
+  })();
+
+  // 4) 기본값 복원 버튼
+  document.getElementById('brandResetBtn').addEventListener('click', () => {
+    if (confirm('포인트 컬러를 기본값(#D91A1A)으로 되돌릴까요?')) {
+      setBrand(DEFAULT_BRAND);
+      alert('기본값으로 변경되었습니다.');
+    }
+  });
+
+  // === 이벤트 핸들러 ===
+  function onPick(color){
+    if (!confirm(`정말로 ${color} 색상으로 변경하시겠습니까?`)) return;
+    setBrand(color);
+    alert('포인트 컬러가 변경되었습니다.');
+    document.getElementById('brandPalette').classList.remove('show');
+  }
+
+  // === 핵심 적용 함수 ===
+  function setBrand(color, {initial=false} = {}){
+    // 1) CSS 변수로 전역 적용
+    document.documentElement.style.setProperty('--brand', color);
+    if (!initial) localStorage.setItem(BRAND_KEY, color);
+
+    // 2) 페이지 안의 하드코딩(#D91A1A)된 인라인 스타일을 새 색으로 교체
+    //    - background-color, color, border-color 모두 처리
+    //    - 이미 var(--brand)로 바뀐 요소는 건너뜀
+    const HEX = '#D91A1A';
+    const RGB = 'rgb(217, 26, 26)';
+
+    document.querySelectorAll('[style*="#D91A1A"], [style*="rgb(217, 26, 26)"]').forEach(el => {
+      if (el.closest('[data-brand-exempt]')) return;   // ← 면제
+      const s = el.style;
+      if (s.backgroundColor && (s.backgroundColor === RGB || s.backgroundColor === HEX)) {
+        s.backgroundColor = color;
+      }
+      if (!el.closest('[data-brand-text-exempt]') && s.color && (s.color === RGB || s.color === HEX)) {
+        s.color = color;
+      }
+      if (s.borderColor && (s.borderColor === RGB || s.borderColor === HEX)) {
+        s.borderColor = color;
+      }
+    });
+
+    // 3) 클래스/컴포넌트가 --brand를 쓰도록 스타일 패치(이미 일부는 되어 있음)
+    //    버튼/뱃지 같은 대표 요소를 가볍게 오버라이드
+    injectOnce('brand-dynamic-css', `
+      .file-cta{ background: var(--brand) !important; }
+      button, .btn-brand { border-color: var(--brand); }
+      .btn-brand, .bg-brand { background: var(--brand) !important; color:#fff !important; }
+      .text-brand { color: var(--brand) !important; }
+      .border-brand { border-color: var(--brand) !important; }
+    `);
+
+    // 4) 테마 미리보기 카드의 포인트 영역들도 교체
+    const previewBox = document.querySelectorAll(
+      'div[style*="background-color: #D91A1A"], div[style*="background-color:#D91A1A"]'
+    );
+    previewBox.forEach(el => el.style.backgroundColor = color);
+    const previewBtn = [...document.querySelectorAll('button')]
+      .find(b => (b.textContent||'').trim() === '버튼 예시');
+    if (previewBtn) previewBtn.style.backgroundColor = color;
+
+    // ▼ 추가: 항상 라벨 업데이트
+    updateBrandLabels(color);
+  }
+
+  // 유틸: 중복 삽입 방지 스타일 인젝터
+  function injectOnce(id, cssText){
+    if (document.getElementById(id)) return;
+    const el = document.createElement('style');
+    el.id = id;
+    el.textContent = cssText;
+    document.head.appendChild(el);
+  }
+  /** ============================
+   *  연속 변경시 네모칸 고정 문제 패치
+   *  - 이미 바뀐 요소를 data-brand-xxx로 마킹
+   *  - 이후 setBrand가 호출될 때마다 일괄 적용
+   *  ============================ */
+
+  // 저장된 현재 브랜드 색 (기존 코드의 savedBrand 사용)
+  let CURRENT_BRAND = (typeof savedBrand !== 'undefined' && savedBrand) ? savedBrand : '#D91A1A';
+  const HEX_DEFAULT = '#D91A1A';
+
+  // 헬퍼: HEX → "rgb(r, g, b)"
+  function hexToRgbStr(hex) {
+    const v = hex.replace('#','').trim();
+    const r = parseInt(v.length===3 ? v[0]+v[0] : v.substring(0,2), 16);
+    const g = parseInt(v.length===3 ? v[1]+v[1] : v.substring(2,4), 16);
+    const b = parseInt(v.length===3 ? v[2]+v[2] : v.substring(4,6), 16);
+    return `rgb(${r}, ${g}, ${b})`;
+  }
+
+  // 문서 전체를 훑어 "브랜드색으로 보이는" 요소를 마킹
+  function scanBrandables(targetHexes){
+    const targets = targetHexes.map(hexToRgbStr); // 비교는 computedStyle 기준
+    const all = document.querySelectorAll('*');
+    all.forEach(el=>{
+      if (el.closest('[data-brand-exempt]')) return;   // ← 면제
+      const cs = getComputedStyle(el);
+      // bg
+      if (targets.includes(cs.backgroundColor)) {
+        el.setAttribute('data-brand-bg', '');
+      }
+      // text
+      if (targets.includes(cs.color)) {
+        el.setAttribute('data-brand-text', '');
+      }
+      // border(상하좌우 하나라도 매칭되면 마킹)
+      const borders = [cs.borderTopColor, cs.borderRightColor, cs.borderBottomColor, cs.borderLeftColor];
+      if (borders.some(c => targets.includes(c))) {
+        el.setAttribute('data-brand-border', '');
+      }
+    });
+  }
+
+  // 마킹된 요소들에 새 색 적용
+  function applyBrandToMarked(color){
+    document.querySelectorAll('[data-brand-bg]').forEach(el=> el.style.backgroundColor = color);
+    document.querySelectorAll('[data-brand-text]').forEach(el=> el.style.color = color);
+    document.querySelectorAll('[data-brand-border]').forEach(el=> el.style.borderColor = color);
+  }
+
+  // 기존 setBrand를 감싸서 확장
+  const __originalSetBrand__ = window.setBrand;
+  window.setBrand = function(newColor, opts){
+    const prev = CURRENT_BRAND || HEX_DEFAULT;
+
+    // 1) 이전색/기본색/새색으로 칠해진 요소를 모두 마킹
+    scanBrandables([prev, HEX_DEFAULT, newColor]);
+
+    // 2) 원래 로직 수행 (CSS 변수, 로컬스토리지 등)
+    __originalSetBrand__(newColor, opts);
+
+    // 3) 마킹된 요소에 일괄 반영 (연속 변경에도 항상 적용)
+    applyBrandToMarked(newColor);
+
+    // 4) 상태 업데이트 및 좌측 HEX 텍스트 갱신(있을 때)
+    CURRENT_BRAND = newColor;
+    const hexLabel = [...document.querySelectorAll('div')]
+      .find(d => (d.textContent||'').trim().toUpperCase() === '#D91A1A');
+    if (hexLabel) hexLabel.textContent = newColor.toUpperCase();
+  };
+
+  // 페이지 최초 1회: 현재/기본 색으로 칠해진 요소를 미리 마킹하고 적용 동기화
+  scanBrandables([CURRENT_BRAND, HEX_DEFAULT]);
+  applyBrandToMarked(CURRENT_BRAND);
+  /* --- HEX → HSL --- */
+  function hexToHsl(hex){
+    let r=0,g=0,b=0; hex = hex.replace('#','');
+    if (hex.length===3){ r=parseInt(hex[0]+hex[0],16); g=parseInt(hex[1]+hex[1],16); b=parseInt(hex[2]+hex[2],16); }
+    else { r=parseInt(hex.slice(0,2),16); g=parseInt(hex.slice(2,4),16); b=parseInt(hex.slice(4,6),16); }
+    r/=255; g/=255; b/=255;
+    const max=Math.max(r,g,b), min=Math.min(r,g,b);
+    let h=0,s=0,l=(max+min)/2;
+    if (max!==min){
+      const d=max-min;
+      s= l>0.5 ? d/(2-max-min) : d/(max+min);
+      switch(max){
+        case r: h=(g-b)/d + (g<b?6:0); break;
+        case g: h=(b-r)/d + 2; break;
+        case b: h=(r-g)/d + 4; break;
+      }
+      h*=60;
+    }
+    return { h, s:s*100, l:l*100 };
+  }
+
+  /* --- HSL로 한국어 색 이름 생성 --- */
+  function colorNameKR(hex){
+    const {h, s, l} = hexToHsl(hex);
+    // 기본 톤 수식어
+    let tone='';
+    if (l >= 70 && s >= 25) tone='밝은 ';
+    else if (l <= 35 && s >= 25) tone='진한 ';
+    else if (s < 18) tone='그레이시 ';
+
+    // 색상대(대략적인 범위)
+    let base='';
+    const deg = (h+360)%360;
+    if (deg <  12 || deg >= 348) base='레드';
+    else if (deg < 30)  base='레드오렌지';
+    else if (deg < 45)  base='오렌지';
+    else if (deg < 58)  base='앰버';
+    else if (deg < 70)  base='옐로';
+    else if (deg < 90)  base='라임';
+    else if (deg < 150) base='그린';
+    else if (deg < 175) base='민트';
+    else if (deg < 195) base='시안';
+    else if (deg < 210) base='스카이블루';
+    else if (deg < 235) base='블루';
+    else if (deg < 260) base='인디고';
+    else if (deg < 280) base='바이올렛';
+    else if (deg < 300) base='퍼플';
+    else if (deg < 335) base='마젠타';
+    else               base='핑크';
+
+    return `${tone}${base}`.trim();
+  }
+  function updateBrandLabels(color){
+    const hexEl  = document.getElementById('brandHex');
+    const nameEl = document.getElementById('brandName');
+    if (hexEl)  hexEl.textContent  = color.toUpperCase();
+    if (nameEl) nameEl.textContent = `BNK 시그니처 ${colorNameKR(color)}`;
+  }
+</script>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="bnk-chatbot-container" style="position: fixed; right: 20px; bottom: 20px; z-index: 9999;">
+    <div id="bnk-chatbot-slot"></div>
+  </div>
+  <script>
+  /**
+   * 외부 HTML을 불러와서:
+   *  - <link rel="stylesheet">, <style>는 <head>로 옮기고
+   *  - <script>는 실행되도록 새로 만들어 붙이고 (src/inline, module 모두 지원)
+   *  - 나머지 DOM(예: <flowise-chatbot> / <flowise-embed>)은 mount에 삽입
+   */
+  async function importHtmlWithAssets(url, mountSelector) {
+    const res = await fetch(url, { credentials: 'same-origin' });
+    if (!res.ok) throw new Error(`Failed to load ${url}`);
+    const html = await res.text();
+
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+
+    // 1) <link rel="stylesheet"> 들을 <head>로
+    doc.querySelectorAll('link[rel="stylesheet"]').forEach(link => {
+      // 중복 로드 방지
+      const href = link.getAttribute('href');
+      if (href && ![...document.head.querySelectorAll('link[rel="stylesheet"]')]
+        .some(l => l.getAttribute('href') === href)) {
+        document.head.appendChild(link.cloneNode(true));
+      }
+    });
+
+    // 2) <style> 들을 <head>로
+    doc.querySelectorAll('style').forEach(styleEl => {
+      const clone = document.createElement('style');
+      // CSS 텍스트 보존
+      clone.textContent = styleEl.textContent;
+      // (가능한 속성 복사)
+      [...styleEl.attributes].forEach(a => clone.setAttribute(a.name, a.value));
+      document.head.appendChild(clone);
+    });
+
+    // 3) 본문 콘텐츠를 mount에 붙임 (스크립트 제외)
+    const mount = document.querySelector(mountSelector);
+    // fragment 구성
+    const frag = document.createDocumentFragment();
+    [...doc.body.children].forEach(node => {
+      if (node.tagName.toLowerCase() !== 'script') frag.appendChild(node.cloneNode(true));
+    });
+    mount.appendChild(frag);
+
+    // 4) 스크립트 실행 (src/inline/module 지원, 순서 보장)
+    const scripts = [...doc.querySelectorAll('script')];
+    for (const oldScript of scripts) {
+      const newScript = document.createElement('script');
+      // type/module/defer 등 속성 복사
+      [...oldScript.attributes].forEach(attr => newScript.setAttribute(attr.name, attr.value));
+      if (oldScript.src) {
+        // 네트워크 로드를 기다려 실행 순서 유지
+        await new Promise((resolve, reject) => {
+          newScript.onload = resolve;
+          newScript.onerror = resolve;   // 실패해도 진행(브랜딩 제거 같은 선택 기능 보호)
+          document.body.appendChild(newScript);
+        });
+      } else {
+        // inline 코드 복사
+        newScript.textContent = oldScript.textContent || '';
+        document.body.appendChild(newScript);
+      }
+    }
+  }
+
+  // 실제 호출: 기존 chatbot.html(또는 chatbot_test.html) 경로로 바꿔도 됩니다.
+  importHtmlWithAssets('/components/chatbot_test.html', '#bnk-chatbot-slot')
+    .catch(err => console.error('[Chatbot load failed]', err));
+  </script>
+  <script>
+      (function initLogoUpload(){
+          const input   = document.getElementById('logoFile');
+          const form    = document.getElementById('logoForm');
+          const preview = document.getElementById('logoPreview');
+          if(!input || !form || !preview) return;
+
+          input.addEventListener('change', ()=>{
+              const file = input.files?.[0];
+              if(!file) return;
+
+              // 2MB 제한 & 이미지 타입 체크
+              if(!file.type.startsWith('image/')){ alert('이미지 파일만 업로드 가능합니다.'); input.value=''; return; }
+              if(file.size > 2*1024*1024){ alert('최대 2MB까지 업로드할 수 있습니다.'); input.value=''; return; }
+
+              // 즉시 미리보기
+              const url = URL.createObjectURL(file);
+              preview.src = url; preview.onload = ()=> URL.revokeObjectURL(url);
+
+              // 서버 전송(페이지 리로드 없이)
+              const fd = new FormData(form);
+              fetch(form.action, { method: 'POST', body: fd })
+                  .then(r => r.ok ? r.json() : Promise.reject())
+                  .then(({ok,version,msg})=>{
+                      if(!ok){ alert(msg || '업로드 실패'); return; }
+                      // 저장 파일 캐시 무력화(서버 저장 완료본으로 교체)
+                      const base = '/upload/images/bnk_logo.svg';
+                      preview.src = `${base}?v=${version}`;
+
+                      const to  = /*[[@{/admin/env}]]*/'';
+                      // history에 남기지 않으려면 replace, 남기려면 href/assign
+                      window.location.replace(to);
+                  })
+                  .catch(()=> alert('서버 통신 중 오류가 발생했습니다.'));
+          });
+      })();
+  </script>
+  <footer data-brand-exempt>
+      <div th:replace="~{layouts/footer.html}"></div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,2434 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+<!--    <script th:src="@{/js/kiwoom/lightweight-charts.standalone.production.js}"></script>-->
+    <script src="https://unpkg.com/lightweight-charts@4.2.0/dist/lightweight-charts.standalone.production.js"></script>
+    <title>stock_orderETF</title>
+    <style>
+        main {
+            background-color: #F6F6F8;
+            padding: 10px 20px 80px;
+        }
+        body {
+            background-color: #F6F6F8;
+        }
+    </style>
+    <style>
+        /* 탭 공통 스타일 */
+        .tab-list {
+            list-style: none;
+            display: flex;
+            padding: 0;
+            margin: 0;
+        }
+        .tab-list li {
+            margin-right: 20px;
+        }
+        .tab-link {
+            text-decoration: none;
+            color: #444;
+            padding-bottom: 6px; /* 밑줄과 간격 맞추기 */
+            display: inline-block;
+        }
+        /* 선택된 탭 스타일 (스크린샷처럼 밑줄) */
+        .tab-link.active {
+            color: #000;
+            font-weight: 500;
+        }
+        .tabs-wrapper {
+            position: relative;
+            border-bottom: 1px solid grey;
+        }
+        .tab-underline {
+            position: absolute;
+            bottom: 0;
+            height: 2px;
+            background-color: #000;
+            left: 0;
+            width: 0;
+            transition: left 0.2s ease, width 0.2s ease;
+        }
+
+        .stock-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            padding: 10px 0;
+            border-radius: 12px;
+            transition: background-color 0.2s ease;  /* 서서히 변하도록 */
+        }
+        .stock-row:hover {
+            background-color: #ECEFF3;  /* 원하는 회색으로 조절 */
+        }
+        /* 표 제목 영역 */
+        .stock-header {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            margin-top: 20px;
+        }
+        .circle-badge {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            color: white;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+    </style>
+    <style>
+        .rate-up {
+            color: #d60000;   /* 빨간색 */
+        }
+        .rate-down {
+            color: #0051c7;   /* 파란색 */
+        }
+        .rate-zero {
+            color: #555555;   /* 보합 */
+        }
+    </style>
+    <style>
+        .stock-table a {
+            text-decoration: none;
+            color: black;
+        }
+    </style>
+    <style>
+        .order-tabs {
+            position: relative;
+            background: #f3f3f5;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            border-radius: 8px;
+            padding: 2px;              /* 안쪽 여백 */
+            font-size: 14px;
+        }
+
+        .order-tab {
+            text-align: center;
+            padding: 5px 0;
+            margin-top: 2px;
+            z-index: 1;                /* 흰 박스보다 위에 보이게 */
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .order-tab.active {
+            font-weight: 500;
+        }
+
+        .order-tabs-active {
+            position: absolute;
+            top: 2px;
+            bottom: 2px;
+            left: 2px;
+            border-radius: 6px;
+            background: #ffffff;
+            z-index: 0;
+            transition: left 0.4s ease, width 0.4s ease;
+        }
+    </style>
+    <style>
+        .price-tabs {
+            position: relative;
+            background: #f3f3f5;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            border-radius: 8px;
+            padding: 2px;
+            font-size: 14px;
+            margin-bottom: 14px;
+        }
+
+        .price-tab {
+            text-align: center;
+            padding: 5px 0;
+            margin-top: 2px;
+            z-index: 1;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .price-tab.active {
+            font-weight: 500;
+        }
+
+        .price-tabs-active {
+            position: absolute;
+            top: 2px;
+            bottom: 2px;
+            left: 2px;
+            border-radius: 6px;
+            background: #ffffff;
+            z-index: 0;
+            transition: left 0.4s ease, width 0.4s ease;
+        }
+    </style>
+    <style>
+        .order-section {
+            height: 100%;
+        }
+        .order-section[data-section="wait"] > div {
+
+            display: flex;
+            justify-content: center;  /* 가운데 정렬 */
+            align-items: center;
+            text-align: center;
+        }
+    </style>
+    <style>
+        .price-tabs {
+            position: relative;
+            background: #f3f3f5;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            border-radius: 8px;
+            padding: 2px;
+            font-size: 14px;
+            margin-bottom: 14px;
+        }
+
+        .price-tab {
+            text-align: center;
+            padding: 5px 0;
+            margin-top: 2px;
+            z-index: 1;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .price-tab.active {
+            font-weight: 500;
+        }
+
+        .price-tabs-active {
+            position: absolute;
+            top: 2px;
+            bottom: 2px;
+            left: 2px;
+            border-radius: 6px;
+            background: #ffffff;
+            z-index: 0;
+            transition: left 0.4s ease, width 0.4s ease;
+        }
+    </style>
+    <style>
+        .sell-price-tabs {
+            position: relative;
+            background: #f3f3f5;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            border-radius: 8px;
+            padding: 2px;
+            font-size: 14px;
+            margin-bottom: 14px;
+        }
+
+        .sell-price-tab {
+            text-align: center;
+            padding: 5px 0;
+            margin-top: 2px;
+            z-index: 1;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .sell-price-tab.active {
+            font-weight: 500;
+        }
+
+        .sell-price-tabs-active {
+            position: absolute;
+            top: 2px;
+            bottom: 2px;
+            left: 2px;
+            border-radius: 6px;
+            background: #ffffff;
+            z-index: 0;
+            transition: left 0.4s ease, width 0.4s ease;
+        }
+    </style>
+    <style>
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            display: flex;                 /* 항상 flex, 대신 투명도/포인터로 숨김 */
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+
+            opacity: 0;
+            /*visibility: hidden;*/
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+
+        .order-modal {
+            width: 460px;
+            max-width: calc(100% - 40px);
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 24px 28px 20px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+            font-size: 15px;
+            color: #222;
+        }
+
+        /* 보여줄 때 붙이는 클래스 */
+        .modal-overlay.show {
+            opacity: 1;
+            /*visibility: visible;*/
+            pointer-events: auto;
+        }
+
+        .order-modal-title {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+
+        .order-modal-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+
+        .order-modal-label {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .order-modal-value {
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .order-modal-sub {
+            font-size: 13px;
+            color: #999;
+        }
+
+        .order-modal-divider {
+            border-top: 1px solid #eee;
+            margin: 14px 0 18px;
+        }
+
+        .order-modal-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .order-modal-actions {
+            display: flex;
+            margin-top: 24px;
+            gap: 10px;
+        }
+
+        .order-modal-btn {
+            flex: 1;
+            border-radius: 10px;
+            border: none;
+            padding: 12px 0;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .order-modal-btn-cancel {
+            background: #f4f4f5;
+            color: #333;
+        }
+
+        .order-modal-btn-confirm {
+            background: #e6424f;
+            color: #ffffff;
+        }
+
+        /* 토글 스위치 */
+        .modal-switch {
+            position: relative;
+            width: 46px;
+            height: 26px;
+            border-radius: 13px;
+            background: #e4e4ea;
+            display: inline-flex;
+            align-items: center;
+            padding: 3px;
+            box-sizing: border-box;
+            cursor: pointer;
+        }
+
+        .modal-switch input {
+            display: none;
+        }
+
+        .modal-switch-slider {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #ffffff;
+            transition: transform 0.2s ease;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+        }
+
+        .modal-switch input:checked + .modal-switch-slider {
+            transform: translateX(18px);
+        }
+    </style>
+    <style>
+        .toast {
+            position: fixed;
+            top: 16px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-10px);
+            background: #181e27;
+            color: #ffffff;
+            border-radius: 12px;
+            padding: 8px 18px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            z-index: 10000;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        .toast-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #22c55e;
+            margin-right: 8px;
+        }
+    </style>
+    <style>
+        .hoga-root {
+            padding: 0 16px 12px;
+            font-size: 13px;
+        }
+
+        .hoga-header {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr 1fr;
+            padding: 4px 0;
+            border-bottom: 1px solid #e5e8eb;
+            color: #80838a;
+        }
+
+        .hoga-table {
+            max-height: 500px;
+        }
+
+        .hoga-row {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr 1fr;
+            padding: 3px 0;
+            align-items: center;
+            font-size: 12px;
+        }
+
+        .hoga-row.ask .hoga-price {
+            color: #de0000;  /* 매도(빨강) */
+        }
+
+        .hoga-row.bid .hoga-price {
+            color: #0051c7;  /* 매수(파랑) */
+        }
+
+        .hoga-qty {
+            text-align: right;
+            color: #6b7280;
+        }
+
+        .hoga-price {
+            text-align: right;
+        }
+
+        .hoga-center {
+            text-align: center;
+            padding: 6px 0;
+            margin: 4px 0;
+            border-top: 1px solid #e5e8eb;
+            border-bottom: 1px solid #e5e8eb;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .hoga-center-main {
+            font-size: 16px;
+            margin-right: 4px;
+        }
+
+        .hoga-center-rate.up {
+            color: #d60000;
+        }
+        .hoga-center-rate.down {
+            color: #0051c7;
+        }
+        .hoga-center-rate.zero {
+            color: #555;
+        }
+
+        .hoga-footer {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            padding-top: 6px;
+            border-top: 1px solid #f3f3f5;
+            font-size: 12px;
+            color: #374151;
+        }
+        /* 왼쪽 = 매도잔량(파랑), 오른쪽 = 매수잔량(빨강) */
+        .hoga-ask-qty {
+            padding-right: 15px;
+            text-align: right;
+            color: #0051c7;   /* 파랑 */
+        }
+        .hoga-bid-qty {
+            padding-left: 15px;
+            text-align: left;
+            color: #d60000;   /* 빨강 */
+        }
+        .hoga-price {
+            text-align: center;
+        }
+    </style>
+    <style>
+        .ticker-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 40px;
+            background: #fff;
+            border-bottom: 1px solid #ddd;
+            overflow: hidden;
+            z-index: 9999;
+
+            display: flex;
+            align-items: center;   /* 세로 가운데 정렬 */
+        }
+
+        .ticker-content {
+            display: inline-block;
+            white-space: nowrap;
+            animation: tickerMove 1000s linear infinite;
+        }
+
+        @keyframes tickerMove {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
+        }
+    </style>
+    <style>
+        .ticker-rate-up {
+            color: #d60000; /* 빨강 */
+        }
+
+        .ticker-rate-down {
+            color: #0051c7; /* 파랑 */
+        }
+
+        .ticker-rate-zero {
+            color: #555;    /* 보합 */
+        }
+    </style>
+    <style>
+        .order-card {
+            position: relative;
+        }
+
+        /* 기본: 오버레이는 숨겨두기 */
+        .order-card .order-login-overlay {
+            display: none;
+        }
+
+        /* 비로그인 상태에서 쓸 클래스 */
+        .order-card.not-logged-in .order-card-body {
+            filter: blur(2px);
+            opacity: 0.4;
+            pointer-events: none;
+            user-select: none;
+        }
+
+        .order-card.not-logged-in .order-login-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(255,255,255,0.80);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        .order-login-box {
+            text-align: center;
+            padding: 16px 20px;
+        }
+
+        .order-login-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .order-login-desc {
+            font-size: 13px;
+            color: #6b7280;
+            margin-bottom: 14px;
+            line-height: 1.4;
+        }
+
+        .order-login-btn {
+            padding: 8px 18px;
+            border-radius: 999px;
+            border: none;
+            background: #e6424f;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+    </style>
+    <style>
+        .diff-up {
+            color: #d60000;  /* 상승 = 빨강 */
+        }
+        .diff-down {
+            color: #0051c7;  /* 하락 = 파랑 */
+        }
+        .diff-zero {
+            color: #555555;  /* 보합 */
+        }
+    </style>
+</head>
+<body th:attr="data-stock-code=${code}, data-stock-name=${stockName}, data-logged-in=${session.loginUser != null}, data-toast-result=${toastResult}">
+<header>
+    <div th:replace="~{layouts/header.html}"></div>
+</header>
+
+<main>
+    <div>
+        <div>
+            <div class="stock-name">
+                <div style="">
+                    <div style="font-size: 15px; font-weight: 500;"
+                         th:text="${stockName}">삼성전자</div>
+                    <div style="display: flex; align-items: center;">
+                        <div id="topCurrentPrice" style="font-size: 20px; font-weight: 500; ">-</div>
+                        <div id="lastDiffText" data-base-label="지난 정규장보다"
+                        style="margin-left: 10px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="tabs-wrapper" style="margin-top: 50px; border-bottom: 1px solid grey;">
+            <ul class="tab-list" id="subTabs" style="list-style: none; display: flex;">
+                <li style=" margin-right: 20px;">
+                    <a href="#" class="tab-link active" style="text-decoration: none;color: black;">차트 · 호가</a>
+                </li>
+                <li style="margin-right: 20px;">
+                    <a href="#" class="tab-link" style=" text-decoration: none; color: black;">종목정보</a>
+                </li>
+                <li>
+                    <a href="#" class="tab-link" style=" text-decoration: none; color: black;">뉴스 · 공시</a>
+                </li>
+            </ul>
+            <!-- 검은색 움직이는 밑줄 -->
+            <div class="tab-underline" id="subTabsUnderline"></div>
+        </div>
+        <div style="width: 100%; display: flex;">
+            <div style="width: 50%;">
+                <div style="padding: 15px;box-sizing: border-box; margin-top:25px;border-radius: 16px;background-color: white; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); border: 1px solid #E5E7EB; overflow: hidden; width: 100%; height: 610px;">
+                    <div>
+                        <div style="color: #13263A; font-size: 14px; margin-bottom: 20px; ">
+                            차트
+                        </div>
+
+<!--                        차트 영역-->
+                        <div id="stockChartContainer"
+                             style="width: 100%; height: 540px;"></div>
+                    </div>
+                </div>
+            </div>
+            <div style="box-sizing: border-box;margin-top:25px; margin-left:10px; border-radius: 16px;background-color: white; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); border: 1px solid #E5E7EB; overflow: hidden; width: 30%; height: 610px;">
+                <div>
+                    <div style="color: #13263A; font-size: 14px; font-weight: 500; margin-top: 14px;margin-bottom: 2px;margin-left: 15px;">
+                        호가
+                    </div>
+
+                    <!-- ✅ 호가창 전체 컨테이너 -->
+                    <div id="hogaRoot" class="hoga-root">
+                        <!-- 헤더 -->
+                        <div class="hoga-header">
+                            <span style="text-align: end;padding-right: 14px;">매도잔량</span>
+                            <span style="text-align: center;">호가</span>
+                            <span style="text-align: start;padding-left: 14px;">매수잔량</span>
+                        </div>
+
+                        <!-- 행들이 들어갈 영역 (JS가 행 만들어 넣음) -->
+                        <div id="hogaTable" class="hoga-table"></div>
+
+                        <!-- 하단 합계 -->
+                        <div class="hoga-footer">
+                            <div>판매대기 <span id="hogaTotalAsk">0</span></div>
+                            <div>구매대기 <span id="hogaTotalBid">0</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="orderCard" class="order-card"
+                 style="position:relative; box-sizing: border-box;margin-top:25px; margin-left:10px;
+            border-radius: 16px;background-color: white; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border: 1px solid #E5E7EB; overflow: hidden; width: 20%; height: 610px;">
+            <!-- 비로그인 시에만 보여줄 오버레이 -->
+            <div class="order-login-overlay">
+                <div class="order-login-box">
+                    <div class="order-login-title">로그인을 진행해주세요</div>
+                    <div class="order-login-desc">
+                        주식 주문은 로그인 후 이용하실 수 있습니다.
+                    </div>
+                    <button type="button" class="order-login-btn"
+                            th:onclick="|location.href='@{/member/main}'|">
+                        로그인 하러가기
+                    </button>
+                </div>
+            </div>
+            <!-- 로그인 시 보임 -->
+                <div>
+                    <div style="color: #13263A; margin-bottom: 20px; padding: 15px;">
+                        <div style="font-weight: 500; font-size: 14px; margin-bottom: 14px; display: flex;">
+                            <div style="flex: 1; margin-top: 4px;">주문하기</div>
+                            <div style="font-weight: 500; font-size: 14px; width: 81%;">
+                                <select id="accountSelect" style="outline: none; border:1px solid #e5e8eb; width: 100%; border-radius: 8px; padding-left: 8px; height: 30px;">
+                                    <option th:if="${#lists.isEmpty(accountList)}" disabled selected>계좌가 없어요</option>
+                                    <option th:each="acc : ${accountList}"
+                                    th:value = "${acc.pacc}"
+                                    th:text="${acc.pacc} + ' ' + ${acc.pname}"
+                                            th:data-balance="${acc.pbalance}">
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="order-tabs" id="orderTabs">
+                            <div class="order-tabs-active" id="orderTabsActive"></div>
+
+                            <div class="order-tab active" data-type="buy">구매</div>
+                            <div class="order-tab" data-type="sell">판매</div>
+                            <div class="order-tab" data-type="wait">대기</div>
+                        </div>
+                        <div id="orderContents" style="margin-top: 16px;">
+                                <!-- 여기부터는 기존 구매 섹션 (대부분 그대로 사용) -->
+                                <section class="order-section" data-section="buy">
+                                    <form id="buyForm" th:action="@{/stock/buyEtf}" method="post">
+                                        <!-- 종목 코드/이름 넘기기 -->
+                                        <input type="hidden" name="code" th:value="${code}">
+                                        <input type="hidden" name="name" th:value="${stockName}">
+                                        <!-- 로그인 사용자 아이디 -->
+                                        <input type="hidden" name="pcuid"
+                                               th:value="${session.loginUser != null ? pcuid : ''}">
+
+                                        <!-- 종목명 -->
+                                        <input type="hidden" name="pname" th:value="${stockName}"/>
+
+                                        <!-- 출금 계좌 (pacc) -->
+                                        <input type="hidden" name="pacc" id="buyPaccHidden">
+
+                                        <!-- 서버로 보낼 실제 값 (숫자만) -->
+                                        <input type="hidden" name="pprice" id="buyPriceHidden">
+                                        <input type="hidden" name="pstock" id="buyStockHidden">
+                                        <input type="hidden" name="psum" id="buyPsumHidden">
+                                        <div style="display: flex; margin-top: 14px; align-items: center; justify-content: space-between;padding-left: 10px; padding-right: 10px;">
+                                            <div style="font-weight: 500; font-size: 14px; margin-bottom: 14px;">주문 유형</div>
+                                            <div style="font-weight: 500; font-size: 14px; margin-bottom: 14px; width: 75%;">
+                                                <select style="outline: none; border:1px solid #e5e8eb; width: 100%; border-radius: 8px; padding-left: 10px; height: 30px;">
+                                                    <option value="일반">일반 주문</option>
+                                                    <option value="정규장">정규장 주문 예약</option>
+                                                    <option value="조건">조건 주문</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div style="display: flex; justify-content: space-between;padding-left: 10px; padding-right: 10px;margin-bottom: 6px;">
+                                            <div style="font-weight: 500; font-size: 14px; margin-bottom: 14px;padding-top: 5px;">구매 가격</div>
+                                            <div style="font-weight: 500; font-size: 14px; margin-bottom: 8px; width: 75%;">
+                                                <div class="price-tabs" id="priceTabs">
+                                                    <div class="price-tabs-active" id="priceTabsActive"></div>
+                                                    <div class="price-tab active" data-type="limit">지정가</div>
+                                                    <div class="price-tab" data-type="market">시장가</div>
+                                                </div>
+                                                <div style="position:relative;">
+                                                    <input id="buyPriceInput" type="text" style="width: 91%; outline: none; padding-left:10px; padding-right:10px; border:1px solid #e5e8eb;font-weight: 500; font-size: 14px; border-radius: 8px; height: 30px;">
+                                                    <span style="position: absolute; top:50%; right: 10px; transform: translateY(-50%); font-size: 14px; color:#999;">원</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div style="display: flex; justify-content: space-between;padding-left: 10px; padding-right: 10px;">
+                                            <div style="font-weight: 500; font-size: 14px; margin-bottom: 14px;padding-top: 5px;">수량</div>
+                                            <div style="font-weight: 500; font-size: 14px; margin-bottom: 8px; width: 75%;">
+                                                <div style="position: relative;">
+                                                    <input id="buyQtyInput" type="text" style="width: 91%; outline: none; padding-left:10px; padding-right:10px; border:1px solid #e5e8eb;font-weight: 500; font-size: 14px; border-radius: 8px; height: 30px;">
+                                                    <span style="position: absolute; top:50%; right: 10px; transform: translateY(-50%); font-size: 14px; color:#999;">주</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div style="border-top:1px solid #f3f3f5; margin-top: 20px;"></div>
+                                        <div style="display: flex; margin-top: 20px; align-items: center; justify-content: space-between;padding-left: 10px; padding-right: 10px;">
+                                            <div style="font-weight: 500; font-size: 14px; margin-bottom: -1px;">
+                                                구매가능 금액
+                                            </div>
+                                            <div style="">
+                                                <span id="accountBalance" style="font-size: 14px;"
+                                                      th:text="${#lists.isEmpty(accountList) ? 0 : (accountList[0].pbalance != null ? #numbers.formatInteger(accountList[0].pbalance, 0, 'COMMA') : 0)}">
+                                                    0
+                                                </span><span style="font-size: 14px;">원</span>
+                                            </div>
+                                        </div>
+                                    <div style="display: flex; margin-top: 28px; align-items: center; justify-content: space-between;padding-left: 10px; padding-right: 10px;">
+                                        <div style="font-weight: 500; font-size: 14px; margin-bottom: 14px;">총 주문 금액</div>
+                                        <div style="text-align: end; font-weight: 500; font-size: 14px; margin-bottom: 14px; width: 75%;">
+                                            <span id="buyTotalAmount">0원</span>
+                                        </div>
+                                    </div>
+                                    <div style="margin-top: 10px;">
+                                        <button type="button" id="openOrderModal" style="cursor: pointer; background: #e6424f; border:none; border-radius: 8px; width: 100%; color: white; padding: 10px; font-size: 18px; font-weight: 700;">구매하기</button>
+                                    </div>
+                                </form>
+                            </section>
+                            <section class="order-section" data-section="sell" style="display: none;">
+                                <!-- 🔸 1) 보유 수량이 없을 때: 대기 화면처럼 -->
+                                <th:block th:if="${stock == null or stock.pstock == 0}">
+                                    <div style="width: 100%; height: 440px; display: flex; justify-items: center; justify-content: center; align-items: center;">
+                                        <div style="">
+                                            <div style="text-align: center;">
+                                                <svg width="26" height="28" viewBox="0 0 20 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M5.65785 0.0418114C5.30216 -0.0209313 4.9376 -0.0129925 4.58498 0.0651743C4.23236 0.143341 3.89859 0.290205 3.60273 0.497378C3.30688 0.704551 3.05473 0.967976 2.86069 1.27261C2.66666 1.57724 2.53453 1.91711 2.47185 2.27281L0.0418532 16.0598C-0.0848826 16.778 0.0788577 17.5171 0.497057 18.1146C0.915257 18.7121 1.55366 19.119 2.27185 19.2458L14.0899 21.3298C14.8079 21.4563 15.5468 21.2924 16.144 20.8742C16.7413 20.456 17.148 19.8178 17.2749 19.0998L19.7069 5.31181C19.7696 4.95612 19.7617 4.59156 19.6835 4.23894C19.6053 3.88632 19.4585 3.55255 19.2513 3.25669C19.0441 2.96084 18.7807 2.70869 18.4761 2.51465C18.1714 2.32061 17.8316 2.18848 17.4759 2.12581L5.65785 0.0418114ZM6.93385 4.32881C6.83599 4.30959 6.73527 4.31008 6.6376 4.33026C6.53993 4.35043 6.44727 4.38989 6.36503 4.44631C6.28279 4.50273 6.21263 4.57499 6.15865 4.65885C6.10468 4.74272 6.06797 4.83651 6.05068 4.93473C6.03339 5.03295 6.03586 5.13364 6.05795 5.23089C6.08005 5.32815 6.12131 5.42002 6.17934 5.50113C6.23737 5.58225 6.311 5.65097 6.39591 5.70329C6.48082 5.7556 6.57531 5.79046 6.67385 5.80581L14.5519 7.19581C14.7478 7.23029 14.9495 7.1855 15.1125 7.07129C15.2755 6.95708 15.3864 6.78281 15.4209 6.58681C15.4553 6.39082 15.4105 6.18915 15.2963 6.02618C15.1821 5.86321 15.0078 5.75229 14.8119 5.71781L6.93385 4.32881ZM5.37085 8.87681C5.40548 8.68096 5.51648 8.50687 5.67945 8.39285C5.84241 8.27884 6.04399 8.23422 6.23985 8.26881L14.1179 9.65781C14.2164 9.67317 14.3109 9.70802 14.3958 9.76034C14.4807 9.81265 14.5543 9.88138 14.6124 9.96249C14.6704 10.0436 14.7117 10.1355 14.7338 10.2327C14.7558 10.33 14.7583 10.4307 14.741 10.5289C14.7237 10.6271 14.687 10.7209 14.6331 10.8048C14.5791 10.8886 14.5089 10.9609 14.4267 11.0173C14.3444 11.0737 14.2518 11.1132 14.1541 11.1334C14.0564 11.1535 13.9557 11.154 13.8579 11.1348L5.97885 9.74481C5.7832 9.71018 5.60929 9.59932 5.4953 9.43658C5.38131 9.27384 5.33655 9.07252 5.37085 8.87681ZM5.54485 12.2068C5.44699 12.1876 5.34628 12.1881 5.2486 12.2083C5.15093 12.2284 5.05827 12.2679 4.97603 12.3243C4.89379 12.3807 4.82363 12.453 4.76965 12.5369C4.71567 12.6207 4.67897 12.7145 4.66168 12.8127C4.64439 12.911 4.64686 13.0116 4.66895 13.1089C4.69105 13.2061 4.73231 13.298 4.79034 13.3791C4.84837 13.4602 4.922 13.529 5.00691 13.5813C5.09182 13.6336 5.18631 13.6685 5.28485 13.6838L10.2089 14.5528C10.4048 14.5873 10.6065 14.5425 10.7695 14.4283C10.9325 14.3141 11.0434 14.1398 11.0779 13.9438C11.1123 13.7478 11.0675 13.5462 10.9533 13.3832C10.8391 13.2202 10.6648 13.1093 10.4689 13.0748L5.54485 12.2068Z" fill="#999A9C"/>
+                                                </svg>
+                                            </div>
+                                            <div>판매할 수 있는 주식이 없어요</div>
+                                        </div>
+                                    </div>
+                                </th:block>
+                                <th:block th:unless="${stock == null or stock.pstock == 0}">
+                                    <!-- 🔥 판매 요청을 보낼 form -->
+                                    <input type="hidden" id="holdPsum"
+                                           th:value="${stock != null ? stock.psum : 0}">
+                                    <input type="hidden" id="holdQty"
+                                           th:value="${stock != null ? stock.pstock : 0}">
+                                    <form id="sellForm" th:action="@{/stock/sellEtf}" method="post">
+                                    <!-- 종목 코드/이름 -->
+                                    <input type="hidden" name="code" th:value="${code}">
+                                    <input type="hidden" name="name" th:value="${stockName}">
+
+                                    <!-- 로그인 사용자 아이디 -->
+                                    <input type="hidden" name="pcuid" th:value="${session.loginUser != null ? pcuid : ''}">
+
+                                    <!-- 종목명 -->
+                                    <input type="hidden" name="pname" th:value="${stockName}">
+
+                                    <!-- 계좌 -->
+                                    <input type="hidden" name="pacc" id="sellPaccHidden">
+
+                                    <!-- 총 매도 금액 (가격 × 수량) -->
+                                    <input type="hidden" name="psum" id="sellPsumHidden">
+                                    <div style="display: flex; margin-top: 14px; align-items: center; justify-content: space-between;padding-left: 10px; padding-right: 10px;">
+                                                <div style="font-weight: 500; font-size: 14px; margin-bottom: 14px;">주문 유형</div>
+                                                <div style="font-weight: 500; font-size: 14px; margin-bottom: 14px; width: 75%;">
+                                                    <select style="outline: none; border:1px solid #e5e8eb; width: 100%; border-radius: 8px;padding-left: 10px; height: 30px;">
+                                                        <option value="일반">일반 주문</option>
+                                                        <option value="정규장">정규장 주문 예약</option>
+                                                        <option value="조건">조건 주문</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div style="display: flex; justify-content: space-between;padding-left: 10px; padding-right: 10px;margin-bottom: 6px;">
+                                                <div style="font-weight: 500; font-size: 14px; margin-bottom: 14px;padding-top: 5px;">판매 가격</div>
+                                                <div style="font-weight: 500; font-size: 14px; margin-bottom: 8px; width: 75%;">
+                                                    <div class="sell-price-tabs" id="sellPriceTabs">
+                                                        <div class="sell-price-tabs-active" id="sellPriceTabsActive"></div>
+                                                        <div class="sell-price-tab active" data-type="limit">지정가</div>
+                                                        <div class="sell-price-tab" data-type="market">시장가</div>
+                                                    </div>
+                                                    <div style="position:relative;">
+                                                        <input type="text" th:value="${stock != null ? stock.pprice : ''}" id="sellPriceInput" style="width: 91%; outline: none; padding-left:10px; padding-right:10px; border:1px solid #e5e8eb;font-weight: 500; font-size: 14px; border-radius: 8px; height: 30px;">
+                                                        <span style="position: absolute; top:50%; right: 10px; transform: translateY(-50%); font-size: 14px; color:#999;">원</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div style="display: flex; justify-content: space-between;padding-left: 10px; padding-right: 10px;">
+                                                <div style="font-weight: 500; font-size: 14px; margin-bottom: 14px;padding-top: 5px;">수량</div>
+                                                <div style="font-weight: 500; font-size: 14px; margin-bottom: 8px; width: 75%;">
+                                                    <div style="position: relative;">
+                                                        <input type="text" id="sellQtyInput" th:value="${stock != null ? stock.pstock : 0}" style="width: 91%; outline: none; padding-left:10px; padding-right:10px; border:1px solid #e5e8eb;font-weight: 500; font-size: 14px; border-radius: 8px; height: 30px;">
+                                                        <span style="position: absolute; top:50%; right: 10px; transform: translateY(-50%); font-size: 14px; color:#999;">주</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div style="border-top:1px solid #f3f3f5; margin-top: 20px;"></div>
+                                            <div style="display: flex; margin-top: 24px; align-items: center; justify-content: space-between;padding-left: 10px; padding-right: 10px;">
+                                            <div style="font-weight: 500; font-size: 14px; margin-bottom: 14px;">현재 수익</div>
+                                            <div style="text-align: end; font-weight: 500; font-size: 14px; margin-bottom: 14px; width: 70%; color: #5184fc;"
+                                                 id="currentProfitBox">
+                                                -5,100원(-7.2%)
+                                            </div>
+                                        </div>
+                                    <div style="display: flex; margin-top: 14px; align-items: center; justify-content: space-between;padding-left: 10px; padding-right: 10px;">
+                                        <div style="font-weight: 500; font-size: 14px; margin-bottom: 14px;">총 금액</div>
+                                        <div style="text-align: end; font-weight: 500; font-size: 14px; margin-bottom: 14px; width: 75%;">
+                                            <span id="sellTotalAmount">0원</span>
+                                        </div>
+                                    </div>
+                                    <div style="margin-top: 10px;">
+                                        <button id="openSellModal" type="button" style="cursor: pointer; background: #5184fc; border:none; border-radius: 8px; width: 100%; color: white; padding: 10px; font-size: 18px; font-weight: 700;">판매하기</button>
+                                    </div>
+                                </form>
+                                </th:block>
+                            </section>
+                            <section class="order-section" data-section="wait" style="display: none;">
+                                <div style="width: 100%; height: 440px; display: flex; justify-items: center; align-items: center;">
+                                    <div style="">
+                                        <div>
+                                            <svg width="26" height="28" viewBox="0 0 20 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M5.65785 0.0418114C5.30216 -0.0209313 4.9376 -0.0129925 4.58498 0.0651743C4.23236 0.143341 3.89859 0.290205 3.60273 0.497378C3.30688 0.704551 3.05473 0.967976 2.86069 1.27261C2.66666 1.57724 2.53453 1.91711 2.47185 2.27281L0.0418532 16.0598C-0.0848826 16.778 0.0788577 17.5171 0.497057 18.1146C0.915257 18.7121 1.55366 19.119 2.27185 19.2458L14.0899 21.3298C14.8079 21.4563 15.5468 21.2924 16.144 20.8742C16.7413 20.456 17.148 19.8178 17.2749 19.0998L19.7069 5.31181C19.7696 4.95612 19.7617 4.59156 19.6835 4.23894C19.6053 3.88632 19.4585 3.55255 19.2513 3.25669C19.0441 2.96084 18.7807 2.70869 18.4761 2.51465C18.1714 2.32061 17.8316 2.18848 17.4759 2.12581L5.65785 0.0418114ZM6.93385 4.32881C6.83599 4.30959 6.73527 4.31008 6.6376 4.33026C6.53993 4.35043 6.44727 4.38989 6.36503 4.44631C6.28279 4.50273 6.21263 4.57499 6.15865 4.65885C6.10468 4.74272 6.06797 4.83651 6.05068 4.93473C6.03339 5.03295 6.03586 5.13364 6.05795 5.23089C6.08005 5.32815 6.12131 5.42002 6.17934 5.50113C6.23737 5.58225 6.311 5.65097 6.39591 5.70329C6.48082 5.7556 6.57531 5.79046 6.67385 5.80581L14.5519 7.19581C14.7478 7.23029 14.9495 7.1855 15.1125 7.07129C15.2755 6.95708 15.3864 6.78281 15.4209 6.58681C15.4553 6.39082 15.4105 6.18915 15.2963 6.02618C15.1821 5.86321 15.0078 5.75229 14.8119 5.71781L6.93385 4.32881ZM5.37085 8.87681C5.40548 8.68096 5.51648 8.50687 5.67945 8.39285C5.84241 8.27884 6.04399 8.23422 6.23985 8.26881L14.1179 9.65781C14.2164 9.67317 14.3109 9.70802 14.3958 9.76034C14.4807 9.81265 14.5543 9.88138 14.6124 9.96249C14.6704 10.0436 14.7117 10.1355 14.7338 10.2327C14.7558 10.33 14.7583 10.4307 14.741 10.5289C14.7237 10.6271 14.687 10.7209 14.6331 10.8048C14.5791 10.8886 14.5089 10.9609 14.4267 11.0173C14.3444 11.0737 14.2518 11.1132 14.1541 11.1334C14.0564 11.1535 13.9557 11.154 13.8579 11.1348L5.97885 9.74481C5.7832 9.71018 5.60929 9.59932 5.4953 9.43658C5.38131 9.27384 5.33655 9.07252 5.37085 8.87681ZM5.54485 12.2068C5.44699 12.1876 5.34628 12.1881 5.2486 12.2083C5.15093 12.2284 5.05827 12.2679 4.97603 12.3243C4.89379 12.3807 4.82363 12.453 4.76965 12.5369C4.71567 12.6207 4.67897 12.7145 4.66168 12.8127C4.64439 12.911 4.64686 13.0116 4.66895 13.1089C4.69105 13.2061 4.73231 13.298 4.79034 13.3791C4.84837 13.4602 4.922 13.529 5.00691 13.5813C5.09182 13.6336 5.18631 13.6685 5.28485 13.6838L10.2089 14.5528C10.4048 14.5873 10.6065 14.5425 10.7695 14.4283C10.9325 14.3141 11.0434 14.1398 11.0779 13.9438C11.1123 13.7478 11.0675 13.5462 10.9533 13.3832C10.8391 13.2202 10.6648 13.1093 10.4689 13.0748L5.54485 12.2068Z" fill="#999A9C"/>
+                                            </svg>
+                                        </div>
+                                        <div>대기중인 주문이 없어요</div>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer>
+    <div th:replace="~{layouts/footer.html}"></div>
+</footer>
+
+<!-- 주문 확인 모달 -->
+<div id="orderConfirmModal" class="modal-overlay">
+    <div class="order-modal" onclick="event.stopPropagation();">
+        <div class="order-modal-title" id="modalTitle"
+             th:text="${stockName} + ' 구매 1주'">오라클 구매 1주</div>
+
+        <div class="order-modal-row">
+            <div class="order-modal-label">1주 희망가격</div>
+            <!-- 단가가 들어갈 곳 -->
+            <div class="order-modal-value" id="modalUnitPrice">10,005원</div>
+        </div>
+
+        <div class="order-modal-row">
+            <div class="order-modal-label">
+                예상 수수료<br>
+                <span class="order-modal-sub">구매 수수료 무료</span>
+            </div>
+            <div class="order-modal-value">0원</div>
+        </div>
+
+        <div class="order-modal-row">
+            <div class="order-modal-label">총 주문 금액</div>
+            <!-- 총 주문 금액이 들어갈 곳 -->
+            <div class="order-modal-value" id="modalTotalAmount">10,005원</div>
+        </div>
+
+        <div class="order-modal-divider"></div>
+
+        <div class="order-modal-bottom">
+            <div class="order-modal-label">다음부터 확인창 없이 거래하기</div>
+            <label class="modal-switch">
+                <input type="checkbox" id="skipConfirm">
+                <span class="modal-switch-slider"></span>
+            </label>
+        </div>
+
+        <div class="order-modal-actions">
+            <button id="modalCancelBtn" class="order-modal-btn order-modal-btn-cancel">
+                취소
+            </button>
+            <button id="modalConfirmBtn" class="order-modal-btn order-modal-btn-confirm">
+                구매
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- 판매 확인 모달 -->
+<div id="sellConfirmModal" class="modal-overlay">
+    <div class="order-modal" onclick="event.stopPropagation();">
+        <div class="order-modal-title"
+             id="sellModalTitle"
+             th:text="${stockName} + ' 판매 1주'">오라클 판매 1주</div>
+
+        <div class="order-modal-row">
+            <div class="order-modal-label">1주 판매가격</div>
+            <div class="order-modal-value" id="sellModalUnitPrice">10,005원</div>
+        </div>
+
+        <div class="order-modal-row">
+            <div class="order-modal-label">
+                예상 수수료<br>
+                <span class="order-modal-sub">판매 수수료 무료</span>
+            </div>
+            <div class="order-modal-value">0원</div>
+        </div>
+
+        <div class="order-modal-row">
+            <div class="order-modal-label">총 주문 금액</div>
+            <div class="order-modal-value" id="sellModalTotalAmount">10,005원</div>
+        </div>
+
+        <div class="order-modal-divider"></div>
+
+        <div class="order-modal-bottom">
+            <div class="order-modal-label">다음부터 확인창 없이 거래하기</div>
+            <label class="modal-switch">
+                <input type="checkbox" id="sellSkipConfirm">
+                <span class="modal-switch-slider"></span>
+            </label>
+        </div>
+
+        <div class="order-modal-actions">
+            <button id="sellModalCancelBtn"
+                    class="order-modal-btn order-modal-btn-cancel">
+                취소
+            </button>
+            <button id="sellModalConfirmBtn"
+                    class="order-modal-btn order-modal-btn-confirm"
+                    style="background:#5184fc;">
+                판매
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- 주문 완료 토스트 -->
+<div id="orderToast" class="toast">
+    <span class="toast-icon">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"
+             xmlns="http://www.w3.org/2000/svg">
+            <path d="M11.5 4L6 9.5L3.5 7"
+                  stroke="white" stroke-width="1.6"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </span>
+    <span id="orderToastText"
+          th:text="${stockName} + ' 주문 완료'">오라클 구매 주문 완료</span>
+</div>
+
+<div id="tickerBar" class="ticker-bar">
+    <div id="tickerContent" class="ticker-content">
+        <!-- ✅ 최초 진입 시 ETF 서버 데이터로 채우기 -->
+        <th:block th:each="item : ${etfs}">
+            <span style="margin-right:40px;">
+                <span th:text="${item.name}">KODEX 200</span>
+                <span th:class="${
+                    item.changeRate > 0 ? 'ticker-rate-up' :
+                    (item.changeRate < 0 ? 'ticker-rate-down' : 'ticker-rate-zero')
+                }">
+                    <span th:text="${#numbers.formatInteger(item.price,0,'COMMA')}">24,200</span>원
+                    (
+                    <span th:text="${
+                        (item.changeRate > 0 ? '+' : (item.changeRate < 0 ? '-' : '')) +
+                        #numbers.formatDecimal(T(java.lang.Math).abs(item.changeRate), 1, 2)
+                    } + '%'">+0.00%</span>
+                    )
+                </span>
+            </span>
+        </th:block>
+    </div>
+</div>
+<script>
+    // 페이지 공통으로 쓰는 종목 코드, 이름
+    window.STOCK_CODE = document.body.dataset.stockCode;
+    window.STOCK_NAME = document.body.dataset.stockName;
+</script>
+<script>
+    // 일반 탭 active 처리 (위쪽 탭)
+    function initTabs(ulId) {
+        const tabList = document.getElementById(ulId);
+        if (!tabList) return;
+
+        const links = tabList.querySelectorAll('.tab-link');
+
+        links.forEach(link => {
+            link.addEventListener('click', function (e) {
+                e.preventDefault();
+                links.forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    }
+
+    // 밑줄이 움직이는 탭 처리 (아래쪽 탭)
+    function initMovingUnderline(ulId, underlineId) {
+        const tabList = document.getElementById(ulId);
+        const underline = document.getElementById(underlineId);
+        if (!tabList || !underline) return;
+
+        const links = tabList.querySelectorAll('.tab-link');
+
+        // li의 offset 기준으로 밑줄 이동
+        function moveUnderline(target) {
+            const li = target.parentElement;    // <li>
+            underline.style.width = li.offsetWidth + 'px';
+            underline.style.left  = li.offsetLeft + 'px';
+        }
+
+        // 초기 위치: active 되어있는 탭 기준
+        const activeLink = tabList.querySelector('.tab-link.active') || links[0];
+        if (activeLink) {
+            moveUnderline(activeLink);
+        }
+
+        links.forEach(link => {
+            link.addEventListener('click', function (e) {
+                e.preventDefault();
+
+                // active 처리
+                links.forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+
+                // 밑줄 이동
+                moveUnderline(this);
+            });
+        });
+
+        // 리사이즈 시 위치 다시 계산
+        window.addEventListener('resize', () => {
+            const currentActive = tabList.querySelector('.tab-link.active') || links[0];
+            if (currentActive) moveUnderline(currentActive);
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // initTabs('marketTabs');                          // 위쪽 탭
+        initMovingUnderline('subTabs', 'subTabsUnderline'); // 아래쪽 움직이는 언더라인 탭
+    });
+</script>
+<script>
+    function getRandomColor() {
+        const colors = ["#1E90FF", "#FF6347", "#6A5ACD", "#2E8B57", "#FF8C00", "#DC143C"];
+        return colors[Math.floor(Math.random() * colors.length)];
+    }
+
+    function getColorForName(name) {
+        const key = `badgeColor_${name}`;
+
+        // 이미 저장된 색이 있다면 그대로 사용
+        const stored = localStorage.getItem(key);
+        if (stored) return stored;
+
+        // 없으면 새로 생성
+        const newColor = getRandomColor();
+        localStorage.setItem(key, newColor);
+        return newColor;
+    }
+
+    function createCircleBadge(text, color) {
+        const badge = document.createElement("div");
+        badge.className = "circle-badge";
+        badge.style.backgroundColor = color;
+        badge.textContent = text;
+        return badge;
+    }
+
+    function initCircleBadges() {
+        const names = document.querySelectorAll(".stock-name");
+
+        names.forEach(nameEl => {
+            // 색을 결정할 기준 이름 (data-stock-name이 있으면 그 값, 없으면 텍스트)
+            const fullName = (nameEl.dataset.stockName || nameEl.innerText).trim();
+            const firstChar = fullName.charAt(0);
+
+            // 항상 동일한 색을 가져오거나 생성
+            const color = getColorForName(fullName);
+
+            const badge = createCircleBadge(firstChar, color);
+
+            // stock-name 자체를 flex 컨테이너로 만들어서
+            // 왼쪽에 뱃지, 오른쪽에 기존 내용(2줄)이 오도록
+            nameEl.style.display = "flex";
+            nameEl.style.alignItems = "center";
+
+            // 기존 내용은 그대로 둔 채, 맨 앞에 뱃지만 끼워 넣기
+            nameEl.insertBefore(badge, nameEl.firstChild);
+        });
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        initCircleBadges();
+    });
+</script>
+<script>
+    function initOrderTabs(containerId, activeBoxId) {
+        const container = document.getElementById(containerId);
+        const activeBox = document.getElementById(activeBoxId);
+        if (!container || !activeBox) return;
+
+        const tabs = container.querySelectorAll('.order-tab');
+        // 👉 주문 카드 안에 있는 섹션들만 대상으로
+        const sections = document.querySelectorAll('#orderContents .order-section');
+
+        function moveBox(target) {
+            activeBox.style.left = target.offsetLeft + 'px';
+            activeBox.style.width = target.offsetWidth + 'px';
+        }
+
+        // 섹션 show/hide
+        function showSection(type) {
+            sections.forEach(sec => {
+                const secType = sec.dataset.section;   // buy / sell / wait
+                sec.style.display = (secType === type ? 'block' : 'none');
+            });
+        }
+
+        // 초기 상태: active 탭 기준
+        const activeTab = container.querySelector('.order-tab.active') || tabs[0];
+        if (activeTab) {
+            moveBox(activeTab);
+            showSection(activeTab.dataset.type);
+        }
+
+        // 탭 클릭 시
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function () {
+                tabs.forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                moveBox(this);
+
+                const type = this.dataset.type;  // 'buy' / 'sell' / 'wait'
+                showSection(type);
+            });
+        });
+
+        // 리사이즈 시 underline 위치 재계산
+        window.addEventListener('resize', () => {
+            const current = container.querySelector('.order-tab.active') || tabs[0];
+            if (current) moveBox(current);
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        initOrderTabs('orderTabs', 'orderTabsActive');
+    });
+</script>
+
+<script>
+    function initPriceTabs(containerId, activeBoxId) {
+        const container = document.getElementById(containerId);
+        const activeBox = document.getElementById(activeBoxId);
+        if (!container || !activeBox) return;
+
+        const tabs = container.querySelectorAll('.price-tab');
+
+        function moveBox(target) {
+            activeBox.style.left = target.offsetLeft + 'px';
+            activeBox.style.width = target.offsetWidth + 'px';
+        }
+
+        const activeTab = container.querySelector('.price-tab.active') || tabs[0];
+        if (activeTab) moveBox(activeTab);
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function () {
+                tabs.forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                moveBox(this);
+
+                // this.dataset.type → 'limit' 또는 'market'
+                // 필요시 주문 로직 연결 가능
+            });
+        });
+
+        window.addEventListener('resize', () => {
+            const current = container.querySelector('.price-tab.active') || tabs[0];
+            if (current) moveBox(current);
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        initPriceTabs('priceTabs', 'priceTabsActive');
+    });
+</script>
+<script>
+    function initSellPriceTabs(containerId, activeBoxId) {
+        const container = document.getElementById(containerId);
+        const activeBox = document.getElementById(activeBoxId);
+        if (!container || !activeBox) return;
+
+        const tabs = container.querySelectorAll('.sell-price-tab');
+
+        function moveBox(target) {
+            activeBox.style.left = target.offsetLeft + 'px';
+            activeBox.style.width = target.offsetWidth + 'px';
+        }
+
+        const activeTab = container.querySelector('.sell-price-tab.active') || tabs[0];
+        if (activeTab) moveBox(activeTab);
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function () {
+                tabs.forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                moveBox(this);
+
+                // this.dataset.type → 'limit' 또는 'market'
+                // 필요시 주문 로직 연결 가능
+            });
+        });
+
+        window.addEventListener('resize', () => {
+            const current = container.querySelector('.sell-price-tab.active') || tabs[0];
+            if (current) moveBox(current);
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        initSellPriceTabs('sellPriceTabs', 'sellPriceTabsActive');
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // === 구매 모달 ===
+        const openBtn    = document.getElementById('openOrderModal');   // 구매하기 버튼
+        const modal      = document.getElementById('orderConfirmModal');
+        const cancelBtn  = document.getElementById('modalCancelBtn');
+        const confirmBtn = document.getElementById('modalConfirmBtn');
+
+        const priceInput   = document.getElementById('buyPriceInput');
+        const qtyInput     = document.getElementById('buyQtyInput');
+        const titleEl      = document.getElementById('modalTitle');
+        const unitPriceEl  = document.getElementById('modalUnitPrice');
+        const totalEl      = document.getElementById('modalTotalAmount');
+        const balanceEl    = document.getElementById('accountBalance');
+
+        if (openBtn && modal) {
+            openBtn.addEventListener('click', function () {
+                const price = parseInputNumber(priceInput.value);
+                const qty   = parseInputNumber(qtyInput.value);
+
+                if (!price || !qty) {
+                    alert('구매 가격과 수량을 입력해 주세요.');
+                    return;
+                }
+
+                const balance = balanceEl
+                    ? parseInputNumber(balanceEl.textContent)
+                    : 0;
+
+                const total = price * qty;
+
+                // 🔴 잔액 부족 시: 모달 띄우지 말고 토스트만
+                if (total > balance) {
+                    showErrorToast('구매가능 금액이 부족합니다.');
+                    return;
+                }
+
+                const stockName = window.STOCK_NAME || '';
+
+                // 제목: "PLUS 글로벌휴먼… 구매 4주"
+                if (titleEl) {
+                    titleEl.textContent =
+                        `${stockName} 구매 ${qty.toLocaleString('ko-KR')}주`;
+                }
+
+                // 단가
+                if (unitPriceEl) {
+                    unitPriceEl.textContent = formatWon(price);
+                }
+
+                // 총 주문 금액 = 단가 × 수량
+                if (totalEl) {
+                    totalEl.textContent = formatWon(price * qty);
+                }
+
+                // 필요하면 나중에 주문 요청 보낼 때 쓰려고 저장
+                modal.dataset.price = price;
+                modal.dataset.qty   = qty;
+
+                modal.classList.add('show');   // 모달 띄우기
+            });
+
+            // 오버레이 클릭 시 닫기
+            modal.addEventListener('click', function () {
+                modal.classList.remove('show');
+            });
+        }
+
+        if (cancelBtn && modal) {
+            cancelBtn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                modal.classList.remove('show');
+            });
+        }
+
+        if (confirmBtn && modal) {
+            confirmBtn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                const price = parseInputNumber(priceInput.value);
+                const qty   = parseInputNumber(qtyInput.value);
+                if (!price || !qty) {
+                    alert('구매 가격과 수량을 다시 확인해 주세요.');
+                    return;
+                }
+
+                const accountSelect = document.getElementById('accountSelect');
+                if (!accountSelect || !accountSelect.value) {
+                    alert('출금 계좌를 선택해 주세요.');
+                    return;
+                }
+
+                const total = price * qty;
+
+                // hidden input에 실제 숫자 채우기
+                document.getElementById('buyPriceHidden').value = price;
+                document.getElementById('buyStockHidden').value = qty;
+                document.getElementById('buyPsumHidden').value  = total;
+
+                document.getElementById('buyPaccHidden').value = accountSelect.value;
+
+                modal.classList.remove('show');
+
+                document.getElementById('buyForm').submit();
+
+            });
+        }
+
+        // === 판매 모달 ===
+        const openSellBtn    = document.getElementById('openSellModal');   // 판매하기 버튼
+        const sellModal      = document.getElementById('sellConfirmModal');
+        const sellCancelBtn  = document.getElementById('sellModalCancelBtn');
+        const sellConfirmBtn = document.getElementById('sellModalConfirmBtn');
+
+        if (openSellBtn && sellModal) {
+            openSellBtn.addEventListener('click', function () {
+                const price = parseInputNumber(document.getElementById('sellPriceInput').value);
+                const qty   = parseInputNumber(document.getElementById('sellQtyInput').value);
+
+                if (!price || !qty) {
+                    alert('판매 가격과 수량을 입력해 주세요.');
+                    return;
+                }
+
+                const stockName = window.STOCK_NAME || '';
+                const titleEl   = document.getElementById('sellModalTitle');
+                const unitEl    = document.getElementById('sellModalUnitPrice');
+                const totalEl   = document.getElementById('sellModalTotalAmount');
+
+                // 제목: "XXX 판매 3주"
+                if (titleEl) {
+                    titleEl.textContent =
+                        `${stockName} 판매 ${qty.toLocaleString('ko-KR')}주`;
+                }
+
+                // 1주 판매가격
+                if (unitEl) {
+                    unitEl.textContent = formatWon(price);
+                }
+
+                // 총 주문 금액 = 가격 × 수량
+                const total = price * qty;
+                if (totalEl) {
+                    totalEl.textContent = formatWon(total);
+                }
+
+                // 나중에 필요하면 쓰도록 저장
+                sellModal.dataset.price = price;
+                sellModal.dataset.qty   = qty;
+
+                sellModal.classList.add('show');
+            });
+
+            sellModal.addEventListener('click', function () {
+                sellModal.classList.remove('show');
+            });
+        }
+
+        if (sellCancelBtn && sellModal) {
+            sellCancelBtn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                sellModal.classList.remove('show');
+            });
+        }
+
+        if (sellConfirmBtn && sellModal) {
+            sellConfirmBtn.addEventListener('click', function (e) {
+                e.stopPropagation();
+
+                const price = parseInputNumber(document.getElementById('sellPriceInput').value);
+                const qty   = parseInputNumber(document.getElementById('sellQtyInput').value);
+
+                if (!price || !qty) {
+                    alert('판매 가격과 수량을 확인해 주세요.');
+                    return;
+                }
+
+                const accountSelect = document.getElementById('accountSelect');
+                document.getElementById('sellPaccHidden').value = accountSelect.value;
+
+                const total = price * qty;
+                document.getElementById('sellPsumHidden').value = total;
+
+                sellModal.classList.remove('show');
+
+                // 폼 제출
+                document.getElementById('sellForm').submit();
+            });
+        }
+    });
+</script>
+
+<script>
+    function showOrderToast(actionText) {
+        const toast = document.getElementById('orderToast');
+        const text  = document.getElementById('orderToastText');
+        if (!toast || !text) return;
+
+        const name = window.STOCK_NAME || '';
+        text.textContent = `${name} ${actionText} 주문 완료`;
+
+        toast.classList.add('show');
+
+        clearTimeout(window._orderToastTimer);
+        window._orderToastTimer = setTimeout(function () {
+            toast.classList.remove('show');
+        }, 1300);
+    }
+
+    function showErrorToast(message) {
+        const toast = document.getElementById('orderToast');
+        const text  = document.getElementById('orderToastText');
+        if (!toast || !text) return;
+
+        text.textContent = message;
+
+        toast.classList.add('show');
+        clearTimeout(window._orderToastTimer);
+        window._orderToastTimer = setTimeout(function () {
+            toast.classList.remove('show');
+        }, 1300);
+    }
+
+    // ✅ 여러 번 안 뜨게 플래그
+    window.priceToastShown = false;
+
+    // info 는 선택값(없어도 동작하도록) – initPriceFromRanks 에서도 재사용
+    function showPriceAlertToast(info) {
+        console.log('[showPriceAlertToast] info =', info);
+
+        const toast = document.getElementById('orderToast');
+        const text  = document.getElementById('orderToastText');
+        if (!toast || !text) return;
+
+        // ❗ info 없으면 아무 것도 안 띄움 (숫자 없는 토스트 방지)
+        if (!info
+            || typeof info.dropRate !== 'number'
+            || typeof info.difference !== 'number') {
+            return;
+        }
+
+        const name = window.STOCK_NAME || '';
+
+        const dropRateFixed = info.dropRate.toFixed(2);
+        const diffAbs       = Math.abs(info.difference);
+        const diffText      = diffAbs.toLocaleString('ko-KR');
+        const maxText       = info.histMaxPrice
+            ? info.histMaxPrice.toLocaleString('ko-KR') + '원'
+            : '';
+
+        const extraLine =
+            `<br><span style="font-size:12px;opacity:0.8;">
+            최근 300개 고점${maxText ? ' (' + maxText + ')' : ''} 대비
+            <b>${dropRateFixed}%</b>
+            (${diffText}원) 하락
+         </span>`;
+
+        text.innerHTML = `지금이 ${name} 매수 기회에요${extraLine}`;
+
+        toast.classList.add('show');
+        clearTimeout(window._orderToastTimer);
+        window._orderToastTimer = setTimeout(() => {
+            toast.classList.remove('show');
+        }, 1300);
+    }
+
+</script>
+<script>
+    // 호가 레벨 개수
+    const HOGA_LEVELS = 10;
+
+    // 페이지 로딩 시 호가 테이블 뼈대 만들기
+    document.addEventListener('DOMContentLoaded', function () {
+        buildHogaTable();
+    });
+
+    function buildHogaTable() {
+        const table = document.getElementById('hogaTable');
+        if (!table) return;
+
+        // 🔺 매도 10호 ~ 1호 (위쪽)
+        for (let level = HOGA_LEVELS; level >= 1; level--) {
+            const row = document.createElement('div');
+            row.className = 'hoga-row ask';
+            row.dataset.level = level;
+
+
+            row.innerHTML = `
+            <div class="hoga-qty hoga-ask-qty" id="askQty${level}">-</div>
+            <div class="hoga-price" id="askPrice${level}">-</div>
+            <div class="hoga-qty"></div>
+        `;
+            table.appendChild(row);
+        }
+
+        // 가운데 현재가/등락
+        const center = document.createElement('div');
+        center.className = 'hoga-center';
+        center.innerHTML = `
+        <span class="hoga-center-main" id="hogaCurrentPrice">-</span>
+        <span class="hoga-center-rate zero" id="hogaCurrentRate">0.00%</span>
+    `;
+        table.appendChild(center);
+
+        // 🔵 매수 1호 ~ 10호 (아래쪽)
+        for (let level = 1; level <= HOGA_LEVELS; level++) {
+            const row = document.createElement('div');
+            row.className = 'hoga-row bid';
+            row.dataset.level = level;
+
+
+            row.innerHTML = `
+            <div class="hoga-qty"></div>
+            <div class="hoga-price" id="bidPrice${level}">-</div>
+            <div class="hoga-qty hoga-bid-qty" id="bidQty${level}">-</div>
+        `;
+            table.appendChild(row);
+        }
+    }
+
+    // 천단위 콤마
+    function formatNumber(n) {
+        if (n == null || n === "" || isNaN(n)) return "-";
+
+        // 음수 기호 제거
+        const cleaned = String(n).replace("-", "");
+
+        return Number(cleaned).toLocaleString("ko-KR");
+    }
+
+    // 등락률 색상 클래스
+    function getRateClass(rate) {
+        const r = Number(rate);
+        if (isNaN(r) || r === 0) return 'zero';
+        return r > 0 ? 'up' : 'down';
+    }
+
+    /**
+     * ✅ 키움 0D + 0A 데이터를 바탕으로 호가창 업데이트
+     *  - values0D: 0D의 values (FID 맵)
+     *  - values0A: 0A의 values (현재가/등락률 등, optional)
+     */
+    function updateOrderBook(values0D, values0A) {
+        if (!values0D) return;
+
+        // ---- 1) 0D → 호가/잔량 세팅 (지금 코드 그대로) ----
+        for (let level = 1; level <= HOGA_LEVELS; level++) {
+            const askPriceFid = String(40 + level);  // 41~50 매도호가1~10
+            const askQtyFid   = String(60 + level);  // 61~70 매도호가 수량1~10
+            const bidPriceFid = String(50 + level);  // 51~60 매수호가1~10
+            const bidQtyFid   = String(70 + level);  // 71~80 매수호가 수량1~10
+
+            const bidPrice = values0D[bidPriceFid];
+            const askPrice = values0D[askPriceFid];
+            const bidQty   = values0D[bidQtyFid];
+            const askQty   = values0D[askQtyFid];
+
+            const bidPriceEl = document.getElementById('bidPrice' + level);
+            const bidQtyEl   = document.getElementById('bidQty' + level);
+            const askPriceEl = document.getElementById('askPrice' + level);
+            const askQtyEl   = document.getElementById('askQty' + level);
+
+            if (bidPriceEl) bidPriceEl.textContent = bidPrice ? formatNumber(bidPrice) : '-';
+            if (bidQtyEl)   bidQtyEl.textContent   = bidQty   ? formatNumber(bidQty)   : '-';
+            if (askPriceEl) askPriceEl.textContent = askPrice ? formatNumber(askPrice) : '-';
+            if (askQtyEl)   askQtyEl.textContent   = askQty   ? formatNumber(askQty)   : '-';
+        }
+
+        // 총 잔량
+        const totalAsk = values0D['121']; // 매도호가 총잔량
+        const totalBid = values0D['125']; // 매수호가 총잔량
+        const totalBidEl = document.getElementById('hogaTotalBid');
+        const totalAskEl = document.getElementById('hogaTotalAsk');
+        if (totalBidEl) totalBidEl.textContent = totalBid ? formatNumber(totalBid) : '0';
+        if (totalAskEl) totalAskEl.textContent = totalAsk ? formatNumber(totalAsk) : '0';
+
+        setBuyPriceFromBestBid(values0D);
+
+        // ---- 2) 현재가/등락률: 0A가 있으면 0A 우선, 없으면 0D 값 사용 ----
+        const priceEl = document.getElementById('hogaCurrentPrice');
+        const rateEl  = document.getElementById('hogaCurrentRate');
+
+// 1순위: 6102 / 6112 (실제 현재가 세트)
+// 혹시 없는 경우를 대비해서 23 / 201을 fallback 으로 둠
+        const priceRaw = values0D['6102'] || values0D['23'];
+        const rateRaw  = values0D['6112'] || values0D['201'];
+
+        if (priceEl && priceRaw != null && priceRaw !== "") {
+            priceEl.textContent = formatNumber(priceRaw);
+        }
+
+        if (rateEl && rateRaw != null && rateRaw !== "") {
+            const r = Number(rateRaw);
+            if (!isNaN(r)) {
+                const sign = r > 0 ? '+' : (r < 0 ? '-' : '');
+                rateEl.textContent = `${sign}${Math.abs(r).toFixed(2)}%`;
+
+                rateEl.classList.remove('up','down','zero');
+                if (r > 0) rateEl.classList.add('up');
+                else if (r < 0) rateEl.classList.add('down');
+                else rateEl.classList.add('zero');
+            }
+        }
+    }
+</script>
+<script>
+    const protocol = (location.protocol === 'https:') ? 'wss:' : 'ws:';
+    const ws = new WebSocket(
+        `${protocol}//${location.host}/BNK/ws/hoga?code=${STOCK_CODE}`
+    );
+
+    let last0AValues = null;
+    let last0DValues = null;
+
+    ws.onopen = () => console.log('브라우저 WS 열린 상태');
+
+    ws.onmessage = function (event) {
+        console.log('브라우저가 받은 메시지:', event.data);
+
+        const root = JSON.parse(event.data);
+        if (!root || !root.data || !Array.isArray(root.data)) return;
+
+        const row = root.data[0];
+        const type = row.type;
+        const values = row.values;
+
+        // 디버깅용: 어떤 타입이 오는지 확인
+        console.log('>>> type =', type);
+
+        if (type === '0D') {
+            // 호가잔량
+            last0DValues = values;
+            // 0A가 이미 한 번이라도 왔다면 같이 반영
+            updateOrderBook(last0DValues, last0AValues);
+            updateTopPrice(last0DValues);
+
+            // 실시간 차트
+            updateChartFromTick(values);
+        } else if (type === '0A') {
+            // 시세 (현재가, 등락률)
+            last0AValues = values;
+            // 0D가 이미 있다면 같이 반영
+            updateOrderBook(last0DValues, last0AValues);
+        }
+    };
+
+
+</script>
+<script>
+    function updateTopPrice(values0D) {
+        if (!values0D) return;
+
+        const nowPriceRaw = values0D['6102'];   // 현재가
+        const diffRaw     = values0D['6110'];   // 전일 대비
+        const rateRaw     = values0D['6112'];   // 등락률 %
+
+        const nowPriceEl = document.getElementById('topCurrentPrice');
+        if (!nowPriceEl) return;
+
+        // 현재가 표시
+        const nowPrice = parseKiwoomAbs(nowPriceRaw);
+        if (nowPrice != null) {
+            nowPriceEl.textContent = formatNumber(nowPrice) + '원';
+            updateCurrentProfit(nowPrice);
+        }
+
+        // 전일 대비 / 등락률 표시 → 여기서만 renderLastDiff 사용
+        if (diffRaw != null && rateRaw != null) {
+            const diff = Number(diffRaw);
+            const rate = Number(rateRaw);
+
+            // 화면 그리기
+            renderLastDiff({
+                diffPrice: diff,
+                diffRate : rate
+            });
+
+            // -7% 토스트 체크
+            checkToastByChangeRate(rate);
+        }
+    }
+</script>
+<script>
+    let chart, candleSeries;
+    let currentBar = null;  // 현재 진행 중인 1분봉
+    
+    function initStockChart() {
+        const container = document.getElementById('stockChartContainer');
+        console.log('LightweightCharts =', window.LightweightCharts);
+        if (!container || !window.LightweightCharts) return;
+
+        chart = LightweightCharts.createChart(container, {
+            width: container.clientWidth,
+            height: container.clientHeight,
+            layout: {
+                background: { color: '#FFFFFF' },
+                textColor: '#222222',
+            },
+            grid: {
+                vertLines: { color: '#EEEEEE' },
+                horzLines: { color: '#EEEEEE' },
+            },
+            rightPriceScale: {
+                borderColor: '#D1D5DB',
+            },
+            timeScale: {
+                borderColor: '#D1D5DB',
+                timeVisible: true,
+                secondsVisible: false,
+            },
+            crosshair: {
+                mode: LightweightCharts.CrosshairMode.Normal,
+            },
+        });
+
+        candleSeries = chart.addCandlestickSeries({
+            upColor: '#d60000',
+            downColor: '#0051c7',
+            borderUpColor: '#d60000',
+            borderDownColor: '#0051c7',
+            wickUpColor: '#d60000',
+            wickDownColor: '#0051c7',
+        });
+
+        // ✅ 초기 일봉 데이터 로딩 (time 을 "유닉스 초"로 통일)
+        fetch(`/BNK/api/chart/${STOCK_CODE}?interval=1m`)
+            .then(res => res.json())
+            .then(rows => {
+                console.log('chart api rows =', rows);
+                if (!Array.isArray(rows)) return;
+
+                // ✅ 여기서 히스토리 세팅 + 최고가 계산까지 같이 함
+                setHistoryCandles(rows);
+            })
+            .catch(err => console.error('차트 데이터 로딩 오류', err));
+
+        window.addEventListener('resize', () => {
+            if (!chart || !container) return;
+            chart.applyOptions({
+                width: container.clientWidth,
+                height: container.clientHeight,
+            });
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', initStockChart);
+
+    // 🔹 실시간 틱(0D)이 올 때 1분봉 업데이트
+    function updateChartFromTick(values) {
+        if (!candleSeries || !values) return;
+
+        const price = parseKiwoomAbs(values['6102']);
+        if (price != null) {
+            checkBuyToastWithHistory(price);
+        }
+
+        const barTime = getBarTimeFromValues(values); // 이미 유닉스 초 숫자
+
+        if (!currentBar || currentBar.time !== barTime) {
+            // 새로운 1분봉 시작
+            currentBar = {
+                time: barTime,
+                open: price,
+                high: price,
+                low : price,
+                close: price,
+            };
+        } else {
+            // 진행 중인 봉 갱신
+            currentBar.high = Math.max(currentBar.high, price);
+            currentBar.low  = Math.min(currentBar.low,  price);
+            currentBar.close = price;
+        }
+
+        candleSeries.update(currentBar);
+    }
+</script>
+
+<script>
+    // 🔹 키움 숫자 문자열 → 숫자
+    //  - " -97850", "-97850" → 97850 (가격/수량용)
+    //  - "+3", "-0.70" 등은 그대로 부호를 사용하고 싶을 때는 Number()만 쓰면 됨
+    function parseKiwoomAbs(str) {
+        if (str == null) return null;
+        const n = Number(String(str).replace(/\s/g, ''));
+        if (isNaN(n)) return null;
+        return Math.abs(n);
+    }
+    // 🔹 FID 21: "144213" → 현재 날짜의 14:42:13 → unix(second)
+    function getBarTimeFromValues(values) {
+        const t = (values['21'] || '').trim(); // hhmmss
+        if (t.length < 4) {
+            // 대충 현재시각 기준으로 UTC 초
+            const now = new Date();
+            const utcMs = Date.UTC(
+                now.getFullYear(),
+                now.getMonth(),
+                now.getDate(),
+                now.getHours(),
+                now.getMinutes(),
+                0
+            );
+            return Math.floor(utcMs / 1000);
+        }
+
+        const hh = Number(t.slice(0, 2));
+        const mm = Number(t.slice(2, 4));
+
+        const today = new Date();
+        const utcMs = Date.UTC(
+            today.getFullYear(),
+            today.getMonth(),
+            today.getDate(),
+            hh,
+            mm,
+            0
+        );
+
+        // ✅ LightweightCharts 에는 항상 UTC 초 넘기기
+        return Math.floor(utcMs / 1000);
+    }
+</script>
+<script>
+    const ALERT_PRICE = 574000;
+</script>
+<script>
+    async function initPriceFromRanks() {
+        if (!window.STOCK_CODE) {
+            console.log('[initPriceFromRanks] STOCK_CODE 없음');
+            return;
+        }
+
+        try {
+            const res = await fetch('/BNK/api/ranks', {
+                method: 'GET',
+                cache: 'no-store'
+            });
+            if (!res.ok) {
+                console.error('[initPriceFromRanks] ranks api 실패', res.status);
+                return;
+            }
+
+            const ranks = await res.json();
+            console.log('[initPriceFromRanks] ranks =', ranks);
+
+            if (!Array.isArray(ranks)) {
+                console.error('[initPriceFromRanks] 배열 아님');
+                return;
+            }
+
+            const item = ranks.find(r => r.code === STOCK_CODE);
+            console.log('[initPriceFromRanks] 찾은 item =', item);
+
+            if (!item) {
+                console.log('[initPriceFromRanks] 현재 종목 코드 못 찾음:', STOCK_CODE);
+                return;
+            }
+
+            const nowPrice = Number(item.price);
+            if (isNaN(nowPrice)) {
+                console.log('[initPriceFromRanks] nowPrice NaN', item.price);
+                return;
+            }
+
+            const nowPriceEl = document.getElementById('topCurrentPrice');
+            if (nowPriceEl) {
+                nowPriceEl.textContent = nowPrice.toLocaleString('ko-KR') + '원';
+            }
+
+            updateCurrentProfit(nowPrice);
+
+            const changeEl = document.getElementById('topChangeInfo');
+            if (changeEl && item.changeRate != null) {
+                const rate = Number(item.changeRate);
+                const sign = rate > 0 ? '+' : (rate < 0 ? '-' : '');
+                const absRate = Math.abs(rate).toFixed(2);
+
+                let color = '#555555';
+                if (rate > 0) color = '#d60000';
+                else if (rate < 0) color = '#0051c7';
+                changeEl.style.color = color;
+
+                changeEl.innerHTML = `${sign}${absRate}%`;
+
+                // 🔥 랭킹 API 기준 -7% 체크
+                checkToastByChangeRate(rate);
+            }
+
+            console.log('[initPriceFromRanks] nowPrice =', nowPrice, ', ALERT_PRICE =', ALERT_PRICE, ', priceToastShown =', window.priceToastShown);
+
+            // if (!window.priceToastShown && typeof ALERT_PRICE !== 'undefined') {
+            //     if (nowPrice <= ALERT_PRICE) {
+            //         window.priceToastShown = true;
+            //         console.log('[initPriceFromRanks] 토스트 띄움!');
+            //         showPriceAlertToast();
+            //     } else {
+            //         console.log('[initPriceFromRanks] 조건 미충족, 토스트 안 띄움');
+            //     }
+            // }
+
+        } catch (e) {
+            console.error('initPriceFromRanks 오류:', e);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        initPriceFromRanks();
+    });
+
+</script>
+<script>
+    // 전역
+    let toastAlreadyShown = false;
+    let histMaxPrice = null;
+
+    // 1) 300개 히스토리 세팅할 때
+    function setHistoryCandles(rows) {
+        const candles = rows.map(item => ({
+            time: Number(item.time),
+            open: Number(item.open),
+            high: Number(item.high),
+            low : Number(item.low),
+            close: Number(item.close),
+        })).filter(c => !isNaN(c.open));
+
+        candleSeries.setData(candles);
+
+        // 🔹 최근 300개 중 최고가 저장
+        histMaxPrice = Math.max(...candles.map(c => c.close));
+    }
+
+    // 2) 실시간 틱 들어올 때 (updateChartFromTick 안/밖)
+    function checkBuyToastWithHistory(currentPrice) {
+        if (!histMaxPrice || toastAlreadyShown) return;
+
+        const difference = histMaxPrice - currentPrice;   // 얼마 빠졌는지(원)
+        const dropRate   = (difference / histMaxPrice) * 100; // 몇 % 빠졌는지
+
+        const THRESHOLD = 10; // 10% 이상 빠졌을 때
+
+        // ⚠️ 조건만 만족하면 딱 한 번만 토스트
+        if (dropRate >= THRESHOLD) {
+            toastAlreadyShown = true;
+
+            showPriceAlertToast({
+                dropRate,
+                difference,
+                histMaxPrice,
+                currentPrice
+            });
+        }
+    }
+
+</script>
+<script>
+    // 전일 대비 등락률을 기준으로 토스트 체크 (-7% 이하)
+    function checkToastByChangeRate(rate) {
+        if (toastAlreadyShown) return;           // 이미 한 번 뜬 뒤면 패스
+        if (typeof rate !== 'number' || isNaN(rate)) return;
+
+        // -7% 이하(즉, 7% 이상 하락)면 토스트
+        if (rate <= -7) {
+            toastAlreadyShown = true;
+
+            const toast = document.getElementById('orderToast');
+            const text  = document.getElementById('orderToastText');
+            if (!toast || !text) return;
+
+            const name    = window.STOCK_NAME || '';
+            const absRate = Math.abs(rate).toFixed(2);
+
+            // 기존 스타일 그대로 사용
+            text.innerHTML = `지금이 ${name} 매수 기회에요
+            <br><span style="font-size:12px;opacity:0.8;">
+            지난 정규장보다 <b>${absRate}%</b> 하락
+         </span>`;
+
+            toast.classList.add('show');
+            clearTimeout(window._orderToastTimer);
+            window._orderToastTimer = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 1300);
+        }
+    }
+
+</script>
+    <script>
+        function updateTicker(list) {
+            let currentItem = null;
+        const html = list.map(r => {
+        const rate  = Number(r.changeRate);
+        const price = Number(r.price);
+
+        const rateClass =
+        rate > 0 ? 'ticker-rate-up' :
+        rate < 0 ? 'ticker-rate-down' :
+        'ticker-rate-zero';
+
+        const sign =
+        rate > 0 ? '+' :
+        rate < 0 ? '-' : '';
+
+        const absRate   = Math.abs(rate).toFixed(2);
+        const priceText = price.toLocaleString('ko-KR');
+
+        // 👇 지금 보고 있는 종목인지 체크 (code가 있으면 code로, 없으면 name으로)
+        if (
+            (r.code && r.code === window.STOCK_CODE) ||
+            (!r.code && r.name === window.STOCK_NAME)
+        ) {
+            currentItem = r;
+        }
+
+        return `
+                <span style="margin-right:40px;">
+                    ${r.name}
+                    <span class="${rateClass}">
+                        ${priceText}원 (${sign}${absRate}%)
+                    </span>
+                </span>
+            `;
+    }).join('');
+
+        document.getElementById('tickerContent').innerHTML = html + html;
+
+            // // 👇 현재 화면 종목이 리스트에 있으면 상단 가격/수익률 갱신
+            // if (currentItem) {
+            //     const nowPrice = Number(currentItem.price);
+            //     if (!isNaN(nowPrice)) {
+            //         const nowPriceEl = document.getElementById('topCurrentPrice');
+            //         if (nowPriceEl) {
+            //             nowPriceEl.textContent = nowPrice.toLocaleString('ko-KR') + '원';
+            //         }
+            //         // ✅ 여기서 현재 수익 계산
+            //         updateCurrentProfit(nowPrice);
+            //     }
+            //
+            //     const changeEl = document.getElementById('topChangeInfo');
+            //     if (changeEl && currentItem.changeRate != null) {
+            //         const rate = Number(currentItem.changeRate);
+            //         const sign = rate > 0 ? '+' : (rate < 0 ? '-' : '');
+            //         const absRate = Math.abs(rate).toFixed(2);
+            //
+            //         let color = '#555555';
+            //         if (rate > 0) color = '#d60000';
+            //         else if (rate < 0) color = '#0051c7';
+            //         changeEl.style.color = color;
+            //
+            //         changeEl.innerHTML = `${sign}${absRate}%`;
+            //
+            //         // 필요하면 여기도 -7% 토스트 재사용 가능
+            //         // checkToastByChangeRate(rate);
+            //     }
+            // }
+    }
+</script>
+
+<script>
+    // 🔥 ETF만 보는 루프
+    async function fetchEtfLoop() {
+        try {
+            const res = await fetch('/BNK/api/etf', { cache: 'no-store' });
+            if (!res.ok) return;
+
+            const list = await res.json();
+            if (Array.isArray(list)) {
+                updateTicker(list);   // 위의 함수로 ticker 갱신
+            }
+        } catch (e) {
+            console.error('etf ticker fetch error', e);
+        } finally {
+            setTimeout(fetchEtfLoop, 1500);   // 1.5초마다 반복
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        fetchEtfLoop();   // 페이지 들어오면 ETF ticker 시작
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const buyInput = document.getElementById('buyPriceInput');
+        const qtyInput = document.getElementById('buyQtyInput');
+        if (!buyInput) return;
+
+        // 사용자가 직접 건드린 기록 + 금액 재계산
+        ['focus', 'input', 'change'].forEach(ev => {
+            buyInput.addEventListener(ev, () => {
+                buyInput.dataset.userEdited = '1';   // 사용자가 한 번이라도 수정
+                updateBuyTotal();                   // 총액 갱신
+            });
+        });
+
+        if (qtyInput) {
+            ['input', 'change'].forEach(ev => {
+                qtyInput.addEventListener(ev, updateBuyTotal); // 수량 바뀔 때마다 총액 갱신
+            });
+        }
+    });
+</script>
+<script>
+    function setBuyPriceFromBestBid(values0D) {
+        const input = document.getElementById('buyPriceInput');
+        if (!input || !values0D) return;
+
+        // 사용자가 이미 입력/수정했으면 건드리지 않음
+        if (input.dataset.userEdited === '1') return;
+
+        const bestBidRaw = values0D['41'];    // 매도호가1
+        if (!bestBidRaw) return;
+
+        const formatted = formatNumber(bestBidRaw);
+        if (formatted === '-' || formatted === '') return;
+
+        input.value = formatted;  // 예: "101,300"
+    }
+</script>
+<script>
+    // 문자열(콤마 포함) → 숫자, 빈 문자열이면 0
+    function parseInputNumber(str) {
+        if (!str) return 0;
+        const cleaned = String(str).replace(/[^0-9]/g, '');
+        if (cleaned === '') return 0;
+        return Number(cleaned);
+    }
+    function formatWon(n) {
+        return n.toLocaleString('ko-KR') + '원';
+    }
+
+    // 구매가격 × 수량 → 총 주문 금액 갱신
+    function updateBuyTotal() {
+        const priceInput = document.getElementById('buyPriceInput');
+        const qtyInput   = document.getElementById('buyQtyInput');
+        const totalEl    = document.getElementById('buyTotalAmount');
+
+        if (!priceInput || !qtyInput || !totalEl) return;
+
+        const price = parseInputNumber(priceInput.value);
+        const qty   = parseInputNumber(qtyInput.value);
+
+        const total = price * qty;   // 둘 중 하나라도 0이면 0
+
+        if (!total) {
+            totalEl.textContent = '0원';
+        } else {
+            totalEl.textContent = formatNumber(total) + '원';
+        }
+    }
+    function updateSellTotal() {
+        const priceInput = document.getElementById('sellPriceInput');
+        const qtyInput   = document.getElementById('sellQtyInput');
+        const totalEl    = document.getElementById('sellTotalAmount');
+
+        if (!priceInput || !qtyInput || !totalEl) return;
+
+        const price = parseInputNumber(priceInput.value);
+        const qty   = parseInputNumber(qtyInput.value);
+
+        const total = price * qty;   // 둘 중 하나라도 0이면 0
+
+        if (!total) {
+            totalEl.textContent = '0원';
+        } else {
+            totalEl.textContent = formatNumber(total) + '원';
+        }
+    }
+    document.addEventListener('DOMContentLoaded', function () {
+        const sellPriceInput = document.getElementById('sellPriceInput');
+        const sellQtyInput   = document.getElementById('sellQtyInput');
+
+        if (!sellPriceInput || !sellQtyInput) return;
+
+        ['input', 'change'].forEach(ev => {
+            sellPriceInput.addEventListener(ev, updateSellTotal);
+            sellQtyInput.addEventListener(ev, updateSellTotal);
+        });
+
+        // 초기 값(보유 수량)이 있을 때도 한 번 계산
+        updateSellTotal();
+    });
+</script>
+<script>
+    // 🔥 ETF만 보는 루프
+    async function fetchEtfLoop() {
+        try {
+            const res = await fetch('/BNK/api/etf', { cache: 'no-store' });
+            if (!res.ok) return;
+
+            const list = await res.json();
+            if (Array.isArray(list)) {
+                updateTicker(list);   // 위의 함수로 ticker 갱신
+            }
+        } catch (e) {
+            console.error('etf ticker fetch error', e);
+        } finally {
+            setTimeout(fetchEtfLoop, 1500);   // 1.5초마다 반복
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        fetchEtfLoop();   // 페이지 들어오면 ETF ticker 시작
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const loggedIn = document.body.dataset.loggedIn === 'true';
+        const card = document.getElementById('orderCard');
+        if (!card) return;
+
+        // 🔹 로그인 안된 경우 → 카드 흐리게 + 오버레이 표시
+        if (!loggedIn) {
+            card.classList.add('not-logged-in');
+        }
+        // 🔹 로그인된 경우 → 아무것도 안 함 (그냥 정상 UI)
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const select  = document.getElementById('accountSelect');
+        const balance = document.getElementById('accountBalance');
+
+        if (!select || !balance) return;
+
+        function updateBalanceFromSelect() {
+            const opt = select.options[select.selectedIndex];
+            if (!opt) return;
+
+            const raw = opt.dataset.balance;   // 문자열
+            const num = Number(raw || 0);
+
+            if (isNaN(num)) {
+                balance.textContent = '0';
+            } else {
+                balance.textContent = num.toLocaleString('ko-KR');
+            }
+        }
+
+        // 초기 1번 세팅 (첫 번째 계좌 기준)
+        if (select.options.length > 0 && !select.disabled) {
+            updateBalanceFromSelect();
+        }
+
+        // 계좌 변경 시마다 잔액 갱신
+        select.addEventListener('change', updateBalanceFromSelect);
+    });
+</script>
+<script>
+    function updateCurrentProfit(nowPrice) {
+        const psumInput  = document.getElementById('holdPsum');
+        const qtyInput   = document.getElementById('holdQty');
+        const box        = document.getElementById('currentProfitBox');
+
+        if (!psumInput || !qtyInput || !box) return;
+
+        const psum = Number(psumInput.value || 0);   // 총 매수 금액
+        const qty  = Number(qtyInput.value || 0);    // 보유 수량
+
+        if (!psum || !qty || !nowPrice) {
+            box.textContent = '0원(0.0%)';
+            return;
+        }
+
+        // 현재 평가금액 = 현재가 × 수량
+        const currentAmount = nowPrice * qty;
+
+        // 평가손익 = 현재 평가금액 - 매수금액
+        const profit = currentAmount - psum;
+
+        // 수익률 = 평가손익 / 매수금액 × 100
+        const profitRate = (profit / psum) * 100;
+
+        const sign = profit > 0 ? '+' : (profit < 0 ? '-' : '');
+        const absProfit = Math.abs(profit);
+        const absRate   = Math.abs(profitRate).toFixed(1);
+
+        // formatNumber는 이미 위에 정의돼 있으니까 그대로 사용
+        box.textContent = `${sign}${formatNumber(absProfit)}원(${sign}${absRate}%)`;
+
+        // 원금 대비 손실이면 파란색, 이익이면 빨간색 같은 식으로 추가도 가능
+        if (profit > 0) {
+            box.style.color = '#d60000';
+        } else if (profit < 0) {
+            box.style.color = '#0051c7';
+        } else {
+            box.style.color = '#555555';
+        }
+    }
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const result = document.body.dataset.toastResult;
+
+        if (result === 'buy') {
+            // 👉 '구매' / '판매'는 토스트 문구에 들어갈 텍스트
+            showOrderToast('구매');
+        } else if (result === 'sell') {
+            showOrderToast('판매');
+        }
+    });
+</script>
+<script>
+    function renderLastDiff({ diffPrice, diffRate }) {
+        const el = document.getElementById('lastDiffText');
+        if (!el) return;
+
+        const label = el.dataset.baseLabel || '지난 정규장보다';
+
+        const signPrice = diffPrice > 0 ? '+' : diffPrice < 0 ? '-' : '';
+        const signRate  = diffRate > 0 ? '+' : diffRate < 0 ? '-' : '';
+
+        const absPrice = Math.abs(diffPrice).toLocaleString('ko-KR');
+        const absRate  = Math.abs(diffRate).toFixed(2);
+
+        // 등락 방향에 따라 클래스 선택
+        let cls = 'diff-zero';
+        if (diffRate > 0) cls = 'diff-up';
+        else if (diffRate < 0) cls = 'diff-down';
+
+        // ⚠ textContent 대신 innerHTML 사용해서 숫자만 색칠
+        el.innerHTML =
+            `${label} ` +
+            `<span class="${cls}">${signPrice}${absPrice}원</span> ` +
+            `<span class="${cls}">(${signRate}${absRate}%)</span>`;
+    }
+</script>
+</body>
+</html>

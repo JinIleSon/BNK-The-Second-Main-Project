@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>상품공시실>은행상품공시이용매뉴얼</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        /*----------------------------------*/
+        /*--전체 페이지--*/
+        /*----------------------------------*/
+        body {
+            font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+            background: #F6F6F8;
+            margin: 0;
+            color: #222;
+            padding-top: 100px;
+        }
+
+
+        .productsRoom-page{
+            display:flex;
+            gap:40px;
+            width: 1200px;
+            margin: 60px auto;
+            padding: 40px 20px;
+            background: #F6F6F8;
+            border-radius: 8px;
+            margin-bottom: 100px;
+        }
+
+
+
+        /*----------------------------------*/
+        /*--왼쪽 사이드바--*/
+        /*----------------------------------*/
+        .all-sidebar{
+            width: 250px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            flex-shrink: 0;
+        }
+
+        .all-sidebar h2{
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .sidebar-menu {
+            list-style:none;
+            padding: 20px;
+            margin: 0 0 40px 0;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            background: #fff;
+            box-shadow: 0 4px 4px rgba(0,0,0,0.08);
+        }
+
+        .sidebar-menu h2{
+            font-size: 17px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 16px;
+        }
+
+        .sidebar-menu li{
+            padding: 12px 16px;
+            border-radius:  6px;
+            color: #555;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .sidebar-menu li:hover {
+            background: #f2f2f2;
+        }
+
+        .sidebar-menu li.active{
+            background: #ffe6e6;
+            border-left: 4px solid #d91a1a;
+            color: #d91a1a;;
+            font-weight:  600;
+            padding-left: 12px;
+        }
+
+        .sidebar-menu li:last-child{
+            border-bottom: none;
+        }
+
+        /*----------------------------------*/
+        /*--추가 도움--*/
+        /*----------------------------------*/
+        .all-help{
+            background: linear-gradient(135deg,#e62b2b, #7e2020);
+            color: #fff;
+            border-radius: 12px;
+            padding: 24px 20px;
+            margin-top: 0;
+            text-align: center;
+            box-shadow: 0 4px 4px rgba(0,0,0,0.08);
+        }
+
+        .help-box h3{
+            font-size: 17px;
+            margin-bottom: 6px;
+        }
+
+        .help-box p{
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        .help-buttons{
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-call, .btn-chat{
+            padding: 8px 14px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-call{
+            background: #fff;
+            color: #d91a1a;
+        }
+
+        .btn-chat{
+            background:  transparent;
+            border: 1px solid #fff;
+            color: #fff;
+        }
+
+        /*----------------------------------*/
+        /*--메인 컨텐츠--*/
+        /*----------------------------------*/
+
+        /* 헤더 영역 */
+        .manual-header {
+            text-align: left;
+            margin-bottom: 40px;
+        }
+        .manual-header h1 {
+            font-size: 24px;
+            border-bottom: 2px solid #c41e20;
+            display: inline-block;
+            padding-bottom: 8px;
+            margin-bottom: 10px;
+        }
+        .manual-header p {
+            color: #555;
+            line-height: 1.6;
+        }
+
+        /* 섹션 */
+        .manual-section h2 {
+            font-size: 20px;
+            margin-bottom: 25px;
+            color: #333;
+            border-left: 5px solid #c41e20;
+            padding-left: 10px;
+        }
+
+        /* 카드 레이아웃 */
+        .manual-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+        }
+
+        .manual-card {
+            background: #fafafa;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 25px;
+            transition: all 0.2s;
+        }
+        .manual-card:hover {
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            transform: translateY(-3px);
+        }
+
+        .manual-card h3 {
+            font-size: 17px;
+            color: #c41e20;
+            margin-bottom: 10px;
+        }
+        .manual-card p {
+            font-size: 14px;
+            color: #444;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        /* 버튼 */
+        .manual-btn {
+            display: inline-block;
+            text-decoration: none;
+            border: 1px solid #c41e20;
+            color: #c41e20;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+        .manual-btn:hover {
+            background: #c41e20;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+<!--헤더-->
+<div th:replace="~{layouts/header}"></div>
+    
+    <div class="productsRoom-page">
+        <!--왼쪽 사이드바-->
+        <aside class="all-sidebar">
+            <ul class="sidebar-menu">
+                <h2>상품공시실</h2>
+                <li class="active"><a href="./bankManual">은행상품공시이용매뉴얼</a></li>
+                <li><a href="./depositProduct">예금상품</a></li>
+                <li><a href="./AnyProduct">기타상품</a></li>
+                <li><a href="./serviceFee">서비스이용수수료</a></li>
+            </ul>
+
+            <!--추가 도움 영역-->
+            <section class="all-help">
+                <div class="help-box">
+                    <h3>추가 도움이 필요하신가요?</h3>
+                    <p>전문 상담원이 친절하게 도와드리겠습니다.</p>
+                    <div class="help-buttons">
+                        <button class="btn-call">전화상담</button>
+                        <button class="btn-chat">Talk상담</button>
+                    </div>
+                </div>
+            </section>
+        </aside>
+
+        <!-- 메인 콘텐츠 -->
+        <main class="productsRoom-content">
+            <div class="manual-header">
+                <h1>은행상품공시 이용 매뉴얼</h1>
+                <p>
+                은행상품의 종류와 성격을 이해하고 자신에게 적합한 상품을 선택하세요.<br>
+                다른 은행의 상품과 비교해보고, 금융계산기를 이용하여 만기예상금액을 설계해보세요.
+                </p>
+            </div>
+
+            <!-- 이용가이드 섹션 -->
+            <section class="manual-section">
+                <h2>은행상품공시 주요 이용안내</h2>
+                <div class="manual-grid">
+
+                <!-- 카드 1 -->
+                <div class="manual-card">
+                    <h3>금융감독원 금융소비자정보포털</h3>
+                    <p>금융소비자 보호 및 다양한 금융정보를 제공합니다.</p>
+                    <a href="http://fine.fss.or.kr/main/index.jsp" target="_blank" class="manual-btn">바로가기</a>
+                </div>
+
+                <!-- 카드 2 -->
+                <div class="manual-card">
+                    <h3>금융감독원 금융상품 한눈에</h3>
+                    <p>금융상품의 비교공시 정보를 한눈에 확인할 수 있습니다.</p>
+                    <a href="https://finlife.fss.or.kr/finlife/main/main.do?menuNo=700000" target="_blank" class="manual-btn">바로가기</a>
+                </div>
+
+                <!-- 카드 3 -->
+                <div class="manual-card">
+                    <h3>전국은행연합회 통합 비교공시</h3>
+                    <p>전국 은행의 주요 상품을 비교하여 볼 수 있습니다.</p>
+                    <a href="http://www.kfb.or.kr/fp/index.php" target="_blank" class="manual-btn">바로가기</a>
+                </div>
+
+                <!-- 카드 4 -->
+                <div class="manual-card">
+                    <h3>금리·수수료 비교</h3>
+                    <p>은행별 금리와 수수료를 확인하고 합리적인 거래를 하세요.</p>
+                    <a href="http://www.kfb.or.kr/info/interest_product.html?S=FA" target="_blank" class="manual-btn">바로가기</a>
+                </div>
+
+                <!-- 카드 5 -->
+                <div class="manual-card">
+                    <h3>금융거래계산기</h3>
+                    <p>예금액, 기간, 금리 등을 입력하여 만기예상금액을 계산해보세요.</p>
+                    <a href="https://fine.fss.or.kr/fine/fnctip/dpstCalc/view.do?menuNo=900018" target="_blank" class="manual-btn">바로가기</a>
+                </div>
+
+                <!-- 카드 6 -->
+                <div class="manual-card">
+                    <h3>대출모집인 조회</h3>
+                    <p>등록된 금융상품 모집인 여부를 확인하세요.</p>
+                    <a href="https://www.loanconsultant.or.kr/loan_main.do" target="_blank" class="manual-btn">바로가기</a>
+                </div>
+
+                <!-- 카드 7 -->
+                <div class="manual-card">
+                    <h3>예금보험공사 보호대상 금융상품</h3>
+                    <p>예금자보호 여부를 확인할 수 있습니다.</p>
+                    <a href="http://www.kdic.or.kr/protect/protect_product_list.do" target="_blank" class="manual-btn">바로가기</a>
+                </div>
+
+                <!-- 카드 8 -->
+                <div class="manual-card">
+                    <h3>예금보험공사 금융상품 검색</h3>
+                    <p>보호대상 금융상품을 상세히 조회해보세요.</p>
+                    <a href="http://www.kdic.or.kr/protect/protect_product_list2.do" target="_blank" class="manual-btn">바로가기</a>
+                </div>
+
+                <!-- 카드 9 -->
+                <div class="manual-card">
+                    <h3>은행·금융 민원상담</h3>
+                    <p>은행, 전국은행연합회, 금융감독원에 상담 및 분쟁조정을 신청할 수 있습니다.</p>
+                    <a href="https://portal.kfb.or.kr/minwon/apply.php" target="_blank" class="manual-btn">바로가기</a>
+                </div>
+
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!--푸터-->
+    <div th:replace="~{layouts/footer}"></div>
+</body>
+</html>
+<script>
+    // header 불러오기
+    fetch(`${contextPath}/layouts/header.html`)
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('header').innerHTML = data;
+        })
+        .catch(err => console.error('[Header load failed]', err));
+
+    // chatbot import 기능
+    async function importHtmlWithAssets(url, mountSelector) {
+        try {
+            const res = await fetch(url, { credentials: 'same-origin' });
+            if (!res.ok) throw new Error(`Failed to load ${url}`);
+            const html = await res.text();
+
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+
+            doc.querySelectorAll('link[rel="stylesheet"]').forEach(link => {
+                const href = link.getAttribute('href');
+                const exists = [...document.head.querySelectorAll('link[rel="stylesheet"]')]
+                    .some(l => l.getAttribute('href') === href);
+                if (!exists && href) document.head.appendChild(link.cloneNode(true));
+            });
+
+            doc.querySelectorAll('style').forEach(styleEl => {
+                const clone = document.createElement('style');
+                clone.textContent = styleEl.textContent;
+                [...styleEl.attributes].forEach(a => clone.setAttribute(a.name, a.value));
+                document.head.appendChild(clone);
+            });
+
+            const mount = document.querySelector(mountSelector);
+            const frag = document.createDocumentFragment();
+            [...doc.body.children].forEach(node => {
+                if (node.tagName.toLowerCase() !== 'script') frag.appendChild(node.cloneNode(true));
+            });
+            mount.appendChild(frag);
+
+            const scripts = [...doc.querySelectorAll('script')];
+            for (const oldScript of scripts) {
+                const newScript = document.createElement('script');
+                [...oldScript.attributes].forEach(attr => newScript.setAttribute(attr.name, attr.value));
+                if (oldScript.src) {
+                    await new Promise(resolve => {
+                        newScript.onload = resolve;
+                        newScript.onerror = resolve;
+                        document.body.appendChild(newScript);
+                    });
+                } else {
+                    newScript.textContent = oldScript.textContent || '';
+                    document.body.appendChild(newScript);
+                }
+            }
+        } catch (err) {
+            console.error('[Chatbot load failed]', err);
+        }
+    }
+
+    // chatbot 불러오기
+    importHtmlWithAssets('/components/chatbot_test.html', '#bnk-chatbot-slot');
+
+    // footer 불러오기
+    fetch(`${contextPath}/layouts/footer.html`)
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('footer').innerHTML = data;
+        })
+        .catch(err => console.error('[Footer load failed]', err));
+
+</script>

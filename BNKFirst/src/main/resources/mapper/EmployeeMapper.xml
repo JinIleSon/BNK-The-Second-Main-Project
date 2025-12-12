@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.bnkfirst.mapper.EmployeeMapper">
+
+    <!-- ========================================================= -->
+    <!-- 직원 전체 목록 -->
+    <!-- ========================================================= -->
+    <select id="findAllEmployees"
+            resultType="kr.co.bnkfirst.dto.corporate.employee.EmployeeListDto">
+        SELECT
+            EMPID       AS empId,
+            NAME        AS name,
+            DEPARTMENT  AS department,
+            POSITION    AS position,
+            PLANTYPE    AS planType,
+            ACCOUNTNO   AS accountNo,
+            STATUS      AS status
+        FROM EMPLOYEE
+        ORDER BY EMPID
+    </select>
+
+
+    <!-- ========================================================= -->
+    <!-- 직원 상세 -->
+    <!-- ========================================================= -->
+    <select id="findEmployeeById"
+            parameterType="long"
+            resultType="kr.co.bnkfirst.dto.corporate.employee.EmployeeDetailDto">
+        SELECT
+            EMPID       AS empId,
+            NAME        AS name,
+            PLANTYPE    AS planType,
+            ACCOUNTNO   AS accountNo,
+            STATUS      AS status
+        FROM EMPLOYEE
+        WHERE EMPID = #{empId}
+    </select>
+
+
+    <!-- ========================================================= -->
+    <!-- 직원 월별 납입 내역 (정렬 안정성 보완 완료) -->
+    <!-- ========================================================= -->
+    <select id="findContributionsByEmpId"
+            parameterType="long"
+            resultType="kr.co.bnkfirst.dto.corporate.employee.EmployeeContributionDto">
+
+        SELECT
+        EMPID       AS empId,
+        YEARMONTH   AS yearMonth,
+        AMOUNT      AS amount
+        FROM CONTRIBUTION
+        WHERE EMPID = #{empId}
+        ORDER BY YEARMONTH   <!-- YYYYMM은 문자열정렬이 연도순 정렬과 동일 -->
+    </select>
+
+
+    <!-- ========================================================= -->
+    <!-- 전체 직원 수 -->
+    <!-- ========================================================= -->
+    <select id="getTotalEmployees" resultType="int">
+        SELECT COUNT(*) FROM EMPLOYEE
+    </select>
+
+
+    <!-- ========================================================= -->
+    <!-- 검색 (이름 / 사번 / 계좌번호 / 제도) : 기능 통합 보완 완료 -->
+    <!-- ========================================================= -->
+    <select id="search"
+            resultType="kr.co.bnkfirst.dto.corporate.employee.EmployeeListDto">
+
+        SELECT
+        EMPID       AS empId,
+        NAME        AS name,
+        PLANTYPE    AS planType,
+        ACCOUNTNO   AS accountNo,
+        STATUS      AS status
+        FROM EMPLOYEE
+
+        <where>
+
+            <!-- 검색어: 이름/계좌/사번 전체 검색 지원 -->
+            <if test="keyword != null and keyword != ''">
+                AND (
+                LOWER(NAME) LIKE LOWER('%' || #{keyword} || '%')
+                OR ACCOUNTNO LIKE '%' || #{keyword} || '%'
+                OR TO_CHAR(EMPID) LIKE '%' || #{keyword} || '%'
+                )
+            </if>
+
+            <!-- 제도 필터(DB/DC) -->
+            <if test="planType != null and planType != '' and planType != 'ALL'">
+                AND PLANTYPE = #{planType}
+            </if>
+
+        </where>
+
+        ORDER BY EMPID
+    </select>
+
+
+    <!-- ========================================================= -->
+    <!-- 직원 수정 -->
+    <!-- ========================================================= -->
+    <update id="updateEmployee"
+            parameterType="kr.co.bnkfirst.dto.corporate.employee.EmployeeUpdateDto">
+        UPDATE EMPLOYEE
+        SET
+            NAME        = #{name},
+            PLANTYPE    = #{planType},
+            ACCOUNTNO   = #{accountNo},
+            STATUS      = #{status}
+        WHERE EMPID = #{empId}
+    </update>
+
+
+    <!-- ========================================================= -->
+    <!-- 직원 삭제 -->
+    <!-- ========================================================= -->
+    <delete id="deleteEmployee" parameterType="long">
+        DELETE FROM EMPLOYEE
+        WHERE EMPID = #{empId}
+    </delete>
+
+
+    <!-- ========================================================= -->
+    <!-- 직원 현재 적립금 -->
+    <!-- ========================================================= -->
+    <select id="getCurrentBalance"
+            parameterType="long"
+            resultType="long">
+        SELECT NVL(SUM(AMOUNT), 0)
+        FROM CONTRIBUTION
+        WHERE EMPID = #{empId}
+    </select>
+
+
+    <!-- ========================================================= -->
+    <!-- 자동완성 (초성 함수 제거 / 성능 최적화) -->
+    <!-- ========================================================= -->
+    <select id="autocomplete"
+            parameterType="string"
+            resultType="kr.co.bnkfirst.dto.corporate.employee.EmployeeAutoDto">
+
+        SELECT
+        EMPID       AS empId,
+        NAME        AS name,
+        ACCOUNTNO   AS accountNo
+        FROM EMPLOYEE
+
+        WHERE
+        (
+        LOWER(NAME) LIKE LOWER('%' || #{keyword} || '%')
+        OR ACCOUNTNO LIKE '%' || #{keyword} || '%'
+        OR TO_CHAR(EMPID) LIKE '%' || #{keyword} || '%'
+        )
+
+        ORDER BY EMPID
+        FETCH FIRST 10 ROWS ONLY  <!-- 성능 최적화: 자동완성은 상위 10개만 -->
+    </select>
+
+
+    <!-- ⭐⭐⭐ 여기에 아래 두 개 추가 ⭐⭐⭐ -->
+
+    <!-- 직원 상태 변경 -->
+    <update id="updateStatus">
+        UPDATE EMPLOYEE
+        SET STATUS = #{status}
+        WHERE EMPID = #{empId}
+    </update>
+
+    <!-- 직원 퇴사 처리 -->
+    <update id="updateRetire">
+        UPDATE EMPLOYEE
+        SET
+            STATUS = #{status},
+            RETIREDATE = #{retireDate}
+        WHERE EMPID = #{empId}
+    </update>
+
+
+    <!-- ===================================================== -->
+    <!-- ⭐⭐ 페이지네이션 SQL 추가 (핵심) ⭐⭐ -->
+    <!-- ===================================================== -->
+
+    <!-- 직원 목록 (검색 + 페이징) -->
+    <select id="selectEmployeePage"
+            resultType="kr.co.bnkfirst.dto.corporate.employee.EmployeeListDto">
+        SELECT
+        EMPID       AS empId,
+        NAME        AS name,
+        DEPARTMENT  AS department,
+        POSITION    AS position,
+        PLANTYPE    AS planType,
+        ACCOUNTNO   AS accountNo,
+        STATUS      AS status
+        FROM EMPLOYEE
+        <where>
+            <if test="keyword != null and keyword != ''">
+                AND (
+                LOWER(NAME) LIKE LOWER('%' || #{keyword} || '%')
+                OR ACCOUNTNO LIKE '%' || #{keyword} || '%'
+                OR TO_CHAR(EMPID) LIKE '%' || #{keyword} || '%'
+                )
+            </if>
+
+            <if test="planType != null and planType != '' and planType != 'ALL'">
+                AND PLANTYPE = #{planType}
+            </if>
+        </where>
+        ORDER BY EMPID
+        OFFSET #{offset} ROWS
+        FETCH NEXT #{size} ROWS ONLY
+    </select>
+
+    <!-- 총 직원 수 -->
+    <select id="countEmployeeList" resultType="int">
+        SELECT COUNT(*)
+        FROM EMPLOYEE
+        <where>
+            <if test="keyword != null and keyword != ''">
+                AND (
+                LOWER(NAME) LIKE LOWER('%' || #{keyword} || '%')
+                OR ACCOUNTNO LIKE '%' || #{keyword} || '%'
+                OR TO_CHAR(EMPID) LIKE '%' || #{keyword} || '%'
+                )
+            </if>
+
+            <if test="planType != null and planType != '' and planType != 'ALL'">
+                AND PLANTYPE = #{planType}
+            </if>
+        </where>
+    </select>
+
+    <!-- ========================================================= -->
+    <!-- ⭐ 직원 등록 (INSERT) ⭐ -->
+    <!-- ========================================================= -->
+    <insert id="insertEmployee"
+            parameterType="kr.co.bnkfirst.dto.corporate.employee.EmployeeCreateDto">
+
+        INSERT INTO EMPLOYEE (
+            NAME,
+            PLANTYPE,
+            ACCOUNTNO,
+            STATUS,
+            DEPARTMENT,
+            POSITION,
+            HIREDATE
+        ) VALUES (
+                     #{name},
+                     #{planType},
+                     #{accountNo},
+                     #{status},
+                     #{department},
+                     #{position},
+                     TO_DATE(#{hireDate}, 'YYYY-MM-DD')
+                 )
+    </insert>
+
+
+
+</mapper>

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>IRP 계좌개설 - 약관 동의</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+            background: #F6F6F8;
+            color: #222;
+        }
+
+        .page-wrap {
+            max-width: 680px;
+            margin: 40px auto 80px;
+            padding: 0 20px;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 26px;
+            text-align: center;
+        }
+
+        /* 전체동의 */
+        .agree-all {
+            background: #fff;
+            border-radius: 14px;
+            padding: 18px 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 26px;
+            cursor: pointer;
+        }
+
+        .agree-all input {
+            width: 22px;
+            height: 22px;
+        }
+
+        /* 카드 박스 */
+        .card {
+            background: #fff;
+            border-radius: 14px;
+            padding: 18px 20px 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin-bottom: 26px;
+        }
+
+        /* 섹션 제목 */
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .card-toggle {
+            font-size: 18px;
+            color: #666;
+        }
+
+        /* 섹션 전체확인 */
+        .section-check {
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .section-check input {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* 약관 리스트 */
+        .terms-list {
+            margin-left: 6px;
+        }
+        .terms-list li {
+            font-size: 14px;
+            margin-bottom: 6px;
+            cursor: pointer;
+            color: #3B66F7;
+        }
+
+        /* 다음 버튼 */
+        .btn-next {
+            width: 100%;
+            padding: 16px 0;
+            background: #3B78FF;
+            color: #fff;
+            font-size: 18px;
+            font-weight: 700;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            margin-top: 40px;
+        }
+        .btn-next:disabled {
+            background: #BFCBF5;
+            cursor: default;
+        }
+    </style>
+</head>
+
+<body>
+<header>
+    <div th:replace="~{layouts/header.html}"></div>
+</header>
+
+<main>
+    <div class="page-wrap">
+
+        <div class="page-title">약관동의</div>
+
+        <!-- 전체동의 -->
+        <label class="agree-all">
+            <input type="checkbox" id="agreeAll">
+            <span style="font-size: 17px; font-weight: 600;">전체동의</span>
+        </label>
+
+        <!-- -------- 상품설명서 -------- -->
+        <div class="card">
+            <div class="card-header" onclick="toggleSection('section1')">
+                <div class="card-title">상품설명서</div>
+                <span class="card-toggle" id="arrow-section1">▼</span>
+            </div>
+
+            <label class="section-check">
+                <input type="checkbox" class="sectionAll" data-section="section1">
+                전체확인
+            </label>
+
+            <ul class="terms-list" id="section1">
+                <li>개인형IRP 간편설명서</li>
+                <li>개인형IRP 핵심설명서</li>
+                <li>개인형IRP 운용관리 계약서(고객용)</li>
+                <li>개인형IRP 자산관리 계약서(고객용)</li>
+            </ul>
+        </div>
+
+        <!-- -------- 차명거래 금지 및 예금자보호 -------- -->
+        <div class="card">
+            <div class="card-header" onclick="toggleSection('section2')">
+                <div class="card-title">차명거래 금지 및 예금자보호</div>
+                <span class="card-toggle" id="arrow-section2">▼</span>
+            </div>
+
+            <label class="section-check">
+                <input type="checkbox" class="sectionAll" data-section="section2">
+                전체확인
+            </label>
+
+            <ul class="terms-list" id="section2">
+                <li>차명거래 금지 설명 확인서</li>
+                <li>예금자보호 설명확인서</li>
+            </ul>
+        </div>
+
+        <button class="btn-next" id="nextBtn" disabled>다음</button>
+
+    </div>
+</main>
+
+<footer>
+    <div th:replace="~{layouts/footer.html}"></div>
+</footer>
+
+</body>
+
+<script>
+    // 섹션 펼치기/접기 기능
+    function toggleSection(id) {
+        const panel = document.getElementById(id);
+        const arrow = document.getElementById('arrow-' + id);
+
+        if (panel.style.display === "none") {
+            panel.style.display = "block";
+            arrow.textContent = "▼";
+        } else {
+            panel.style.display = "none";
+            arrow.textContent = "▲";
+        }
+    }
+
+    // 체크박스 제어 로직
+    const agreeAll = document.getElementById('agreeAll');
+    const sectionAll = document.querySelectorAll('.sectionAll');
+    const nextBtn = document.getElementById('nextBtn');
+
+    // 전체동의 → 모두 체크
+    agreeAll.addEventListener('change', () => {
+        const checked = agreeAll.checked;
+        sectionAll.forEach(sec => sec.checked = checked);
+        validate();
+    });
+
+    // 섹션 전체확인 체크 시
+    sectionAll.forEach(sec => {
+        sec.addEventListener('change', () => {
+            validate();
+        });
+    });
+
+    // 버튼 활성화 조건
+    function validate() {
+        const allChecked = [...sectionAll].every(sec => sec.checked);
+        agreeAll.checked = allChecked;
+        nextBtn.disabled = !allChecked;
+    }
+
+    nextBtn.addEventListener('click', () => {
+        window.location.href = "/BNK/irp/account/page7";
+    });
+
+</script>
+
+</html>

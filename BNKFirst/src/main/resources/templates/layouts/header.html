@@ -1,0 +1,614 @@
+<link rel="stylesheet" th:href="@{/components/button.css}" xmlns:th="http://www.w3.org/1999/html">
+<!-- ===== 헤더 전체 ===== -->
+<div class="nav-root">
+
+    <!-- ===== 중앙 정렬 컨테이너 ===== -->
+    <div class="nav-wrap">
+
+        <!-- 로고 -->
+        <a th:href="@{/main/main}" class="logo-wrap">
+            <img th:src="@{/images/bnk_logo.png}" alt="BNK" class="logo-img">
+        </a>
+
+        <!-- ===== GNB 메뉴 ===== -->
+        <ul class="gnb">
+
+            <!-- 증권 -->
+            <li>
+                <a th:href="@{/stock/main}">증권</a>
+            </li>
+
+            <!-- 상품 -->
+            <li class="has-mega">
+                <a th:href="@{/product/main}">상품</a>
+
+                <div class="mega" aria-label="상품 메뉴">
+                    <div class="mega-inner">
+
+                        <div>
+                            <h4>카테고리별 상품</h4>
+                            <ul>
+                                <li><a th:href="@{/product/list}">예금상품</a></li>
+                                <li><a th:href="@{/product/list}">적금상품</a></li>
+                                <li><a th:href="@{/product/fund/list}">펀드상품</a></li>
+                                <li><a th:href="@{/stock/mainEtf}">ETF</a></li>
+                            </ul>
+                        </div>
+
+                    </div>
+                </div>
+            </li>
+
+            <!-- 서식/공지사항 -->
+            <li class="has-mega">
+                <a href="#">공지사항</a>
+
+                <div class="mega" aria-label="서식 메뉴">
+                    <div class="mega-inner">
+
+                        <div>
+                            <h4>퇴직연금 자료실</h4>
+                            <ul>
+                                <li><a th:href="@{/cs/data_room/deposit}">카테고리별 서식</a></li>
+                                <li><a th:href="@{/cs/data_room/fund}">자료실</a></li>
+                                <li><a th:href="@{/cs/data_room/loan}">소규모펀드 등 공시</a></li>
+                                <li><a th:href="@{/cs/data_room/trust}">공지사항</a></li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h4>퇴직연금사업자공시</h4>
+                            <ul>
+                                <li><a th:href="@{/cs/productsRoom/bankManual}">운용금액 및 운용수익률</a></li>
+                                <li><a th:href="@{/cs/productsRoom/depositProduct}">퇴직연금 계약서</a></li>
+                                <li><a th:href="@{/cs/productsRoom/AnyProduct}">원리금 보장 상품 현황</a></li>
+                                <li><a th:href="@{/cs/productsRoom/serviceFee}">수수료</a></li>
+                            </ul>
+                        </div>
+
+                    </div>
+                </div>
+            </li>
+
+            <!-- 퇴직연금 알아보기 -->
+            <li class="has-mega">
+                <a href="#">퇴직연금 알아보기</a>
+
+                <div class="mega" aria-label="퇴직연금 메뉴">
+                    <div class="mega-inner">
+
+                        <div>
+                            <h4>퇴직연금 소개</h4>
+                            <ul>
+                                <li><a th:href="@{/retirement-renew/intro/why-pension}">왜 퇴직연금인가?</a></li>
+                                <li><a th:href="@{/retirement-renew/intro/why-pension}">퇴직연금이란?</a></li>
+                                <li><a th:href="@{/retirement-renew/intro/why-pension}">도입 혜택</a></li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h4>퇴직연금 제도의 이해</h4>
+                            <ul>
+                                <li><a th:href="@{/retirement-renew/system/db}">확정급여형(DB)</a></li>
+                                <li><a th:href="@{/retirement-renew/system/db}">확정기여형(DC)</a></li>
+                                <li><a th:href="@{/retirement-renew/system/db}">개인형퇴직연금(IRP)</a></li>
+                                <li><a th:href="@{/retirement-renew/system/db}">제도 일반사항</a></li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h4>도입/운영 안내</h4>
+                            <ul>
+                                <li><a th:href="@{/retirement-renew/operation/intro-process}">도입과정 한눈에 보기</a></li>
+                                <li><a th:href="@{/retirement-renew/operation/intro-process}">운영과정 체크포인트</a></li>
+                                <li><a th:href="@{/retirement-renew/operation/intro-process}">적립금 운용전략</a></li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h4>NPS 노후설계서비스</h4>
+                            <ul>
+                                <li><a th:href="@{/retirement-renew/nps-plan/nps-plan}">NPS 노후설계서비스</a></li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h4>통합연금포털 오류 신고</h4>
+                            <ul>
+                                <li><a th:href="@{/retirement-renew/portal-error/portal-error}">오류신고 접수</a></li>
+                                <li><a th:href="@{/retirement-renew/portal-error/portal-error}">오류신고 결과조회</a></li>
+                            </ul>
+                        </div>
+
+                    </div>
+                </div>
+            </li>
+
+            <!-- 고객센터 -->
+            <li class="has-mega">
+                <a href="#">고객센터</a>
+
+                <div class="mega" aria-label="고객센터 메뉴">
+                    <div class="mega-inner">
+
+                        <div>
+                            <h4>고객상담</h4>
+                            <ul>
+                                <li><a th:href="@{/cs/consultation/FAQ}">FAQ</a></li>
+                                <li><a th:href="@{/cs/consultation/document}">필요서류 안내</a></li>
+                                <li><a th:href="@{/cs/consultation/Q&A}">Q&A</a></li>
+                                <li><a th:href="@{/cs/consultation/findStore}">영업점 찾기</a></li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h4>금융소비자보호</h4>
+                            <ul>
+                                <li><a th:href="@{/cs/infoProtect/financialProtection}">금융소비자보호헌장</a></li>
+                                <li><a th:href="@{/cs/infoProtect/complaintProcessing}">민원접수 및 처리프로세스</a></li>
+                                <li><a th:href="@{/cs/infoProtect/protectionInformation}">필수 안내사항</a></li>
+                                <li><a th:href="@{/cs/infoProtect/agencyGuide}">금융소비자 권리행사 안내</a></li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h4>이용안내</h4>
+                            <ul>
+                                <li><a th:href="@{/cs/howUse/regProcess}">가입절차</a></li>
+                                <li><a th:href="@{/cs/howUse/pwInfo}">비밀번호 안내</a></li>
+                                <li><a th:href="@{/cs/howUse/serviceTime}">서비스 이용시간</a></li>
+                                <li><a th:href="@{/cs/howUse/feeInfo}">수수료 안내</a></li>
+                            </ul>
+                        </div>
+
+                    </div>
+                </div>
+            </li>
+
+            <!-- 은행소개 -->
+            <li class="has-mega">
+                <a href="#">은행소개</a>
+
+                <div class="mega" aria-label="은행안내 메뉴">
+                    <div class="mega-inner">
+
+                        <div>
+                            <h4>은행안내</h4>
+                            <ul>
+                                <li><a th:href="@{/info/guide}">은행안내</a></li>
+                                <li><a th:href="@{/info/story}">BNK 부산은행 스토리</a></li>
+                                <li><a th:href="@{/info/invest}">투자자 정보</a></li>
+                            </ul>
+                        </div>
+
+                    </div>
+                </div>
+            </li>
+
+        </ul>
+
+        <!-- ===== 우측 버튼 영역 ===== -->
+        <div class="nav-right">
+
+            <!-- 세션 타이머 (로그인 시만 표시) -->
+            <div id="session-box" th:if="${session.loginUser != null}">
+                <span id="logout-btn" style="cursor: pointer;">로그아웃</span>
+                <span id="session-timer">--:--</span>
+                <button id="session-extend-btn">연장</button>
+            </div>
+
+            <!-- 기업뱅킹 -->
+            <button class="auth-btn"
+                    th:onclick="|location.href='@{/corporate/main}'|">기업뱅킹</button>
+
+            <!-- 마이페이지 아이콘 -->
+            <a th:href="@{${session.loginUser != null} ? '/mypage/main' : '/member/main'}"
+               class="mypage-icon">
+                <img th:src="@{/images/human.png}">
+            </a>
+
+            <!-- 어드민 아이콘 -->
+            <a th:if="${session.loginUser != null && session.loginUser.role == 'ADMIN'}"
+               th:href="@{/admin/main}" class="admin-icon">
+                <img th:src="@{/images/admin.png}" width="20">
+            </a>
+        </div>
+
+    </div>
+</div>
+
+
+<style>
+    :root {
+        --nav-h: 75px;
+        --accent: #DE0000;
+        --text-base: #374151;
+    }
+
+    /* 고정 헤더 */
+    .nav-root {
+        position: fixed;
+        top: 0; left: 0; right: 0;
+        background: #fff;
+        border-bottom: 1px solid var(--accent);
+        z-index: 1000;
+        height: var(--nav-h);
+    }
+
+    /* 중앙 정렬된 내부 컨테이너 */
+    .nav-wrap {
+        max-width: 80%;
+        margin: 0 auto;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 24px;
+    }
+
+    /* 로고 */
+    .logo-img {
+        height: 48px;
+    }
+
+    /* GNB */
+    .gnb {
+        display: flex;
+        align-items: center;
+        gap: 40px;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* 1차 메뉴 기본 */
+    .gnb > li > a {
+        font-size: 20px;
+        font-weight: 650;
+        color: var(--text-base);
+        text-decoration: none;
+        position: relative;
+        padding-bottom: 4px;
+    }
+
+    /* hover 밑줄 애니메이션 */
+    .gnb > li > a::after {
+        content: "";
+        position: absolute;
+        left: 0; bottom: 0;
+        width: 0;
+        height: 2px;
+        background-color: var(--accent);
+        transition: 0.25s;
+    }
+    .gnb > li:hover > a::after {
+        width: 100%;
+    }
+    .gnb > li:hover > a {
+        color: var(--accent);
+    }
+
+    /* 기본은 숨김 */
+    .mega {
+        /* 항상 자리 잡고 있고, 보이기/숨기기는 opacity로 */
+        position: fixed;
+        left: 0;
+        right: 0;
+        top: var(--nav-h);
+        background: #fff;
+        box-shadow: 0 16px 32px rgba(0,0,0,.08);
+        padding: 40px 48px;
+
+        /* 숨겨진 상태 */
+        opacity: 0;
+        transform: translateY(12px);   /* 살짝 아래에서 떠오르는 느낌 */
+        pointer-events: none;          /* 안 보일 때는 클릭 안 되게 */
+        transform-origin: top;
+        transition:
+                opacity 0.28s cubic-bezier(0.22, 0.61, 0.36, 1),
+                transform 0.28s cubic-bezier(0.22, 0.61, 0.36, 1);
+    }
+
+
+    /* JS가 show를 붙인 메뉴만 열기 */
+    .gnb > li.has-mega.show .mega {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+    }
+
+
+    /* 클릭으로 고정된 메뉴 스타일(밑줄/색 유지용, 선택사항) */
+    .gnb > li.has-mega.is-open > a {
+        color: var(--accent);
+    }
+    .gnb > li.has-mega.is-open > a::after {
+        width: 100%;
+    }
+
+
+    .mega-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 40px;
+    }
+
+    .mega-inner ul {
+        list-style: none;   /* 점 없애기 */
+        margin: 0;
+        padding: 0;
+    }
+    .mega-inner li {
+        margin: 4px 0;      /* 줄 간격만 살짝 줘서 답답하지 않게 */
+    }
+    .mega h4 {
+        font-size: 16px;
+        font-weight: 700;
+        margin-bottom: 12px;
+    }
+
+    .mega a {
+        text-decoration: none;
+        color: var(--text-base);
+        font-size: 14px;
+        padding-bottom: 2px;
+        position: relative;
+    }
+    .mega a:hover {
+        color: var(--accent);
+    }
+    .mega a::after {
+        content: "";
+        position: absolute;
+        left: 0; bottom: 0;
+        height: 2px;
+        width: 0;
+        background: var(--accent);
+        transition: .25s;
+    }
+    .mega a:hover::after {
+        width: 100%;
+    }
+
+    /* 우측 아이콘 영역 */
+    .nav-right {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+
+    /* 기업뱅킹 버튼 */
+    .auth-btn {
+        height: 36px;
+        padding: 0 12px;
+        border-radius: 6px;
+        border: 1px solid #ddd;
+        background: white;
+        cursor: pointer;
+        transition: .25s;
+    }
+    .auth-btn:hover {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: white;
+    }
+
+    /* 세션 박스 */
+    #session-box {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        white-space: nowrap;
+    }
+    #session-box span {
+        font-weight: 600;
+    }
+    #session-extend-btn {
+        height: 30px;
+        padding: 0 8px;
+        border-radius: 5px;
+        border: 1px solid #ddd;
+        cursor: pointer;
+    }
+
+    /* 마이페이지 아이콘 */
+    .mypage-icon img {
+        width: 28px;
+    }
+
+    /* 어드민 */
+    .admin-icon img {
+        width: 24px;
+    }
+
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const navRoot = document.querySelector('.nav-root');
+        const items   = document.querySelectorAll('.gnb > li.has-mega');
+
+        let pinned = null; // 클릭으로 고정된 메뉴(li)
+
+        // 현재 상태에 맞게 어떤 메뉴를 보여줄지 결정
+        function updateOpen(hoverItem = null) {
+            // 전부 show 제거
+            items.forEach(li => li.classList.remove('show'));
+
+            // hover 중인 메뉴가 있으면 hover 우선
+            if (hoverItem) {
+                hoverItem.classList.add('show');
+                return;
+            }
+
+            // hover 없으면 pinned 메뉴 보여주기
+            if (pinned) {
+                pinned.classList.add('show');
+            }
+        }
+
+        items.forEach(li => {
+            const link = li.querySelector(':scope > a');
+            if (!link) return;
+
+            // === 클릭 → 고정 토글 ===
+            link.addEventListener('click', function (e) {
+                e.preventDefault(); // 필요하면 나중에 조정
+
+                if (pinned === li) {
+                    // 이미 고정된 걸 다시 클릭 → 해제
+                    pinned.classList.remove('is-open');
+                    pinned = null;
+                } else {
+                    // 다른 걸 새로 고정
+                    if (pinned) pinned.classList.remove('is-open');
+                    pinned = li;
+                    pinned.classList.add('is-open');
+                }
+
+                updateOpen(); // hover 없이 pinned 기준으로만 표시
+            });
+
+            // === 마우스를 올리면 그 메뉴를 임시로 보여줌 ===
+            li.addEventListener('mouseenter', function () {
+                updateOpen(li);
+            });
+
+            // === 마우스를 치우면 다시 pinned 메뉴 복귀 ===
+            li.addEventListener('mouseleave', function () {
+                updateOpen();
+            });
+        });
+
+        // === nav 바깥 클릭 → 전체 닫기 ===
+        document.addEventListener('click', function (e) {
+            if (!navRoot.contains(e.target)) {
+                if (pinned) pinned.classList.remove('is-open');
+                pinned = null;
+                updateOpen();
+            }
+        });
+    });
+</script>
+
+
+
+<script th:inline="javascript">
+    (function () {
+        const root = document.querySelector('.nav-root');
+
+        function syncNavHeight() {
+            const h = root.getBoundingClientRect().height || 68;
+            document.documentElement.style.setProperty('--nav-h', h + 'px');
+            document.body.style.paddingTop = h + 'px';   // 본문이 헤더 밑으로 시작
+        }
+
+        // 초기/리사이즈/폰트로드 등 상황에 맞춰 갱신
+        window.addEventListener('load', syncNavHeight);
+        window.addEventListener('resize', syncNavHeight);
+        // 폰트나 이미지로 높이가 변할 수 있으니 약간 지연 갱신
+        setTimeout(syncNavHeight, 100);
+    })();
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const timerSpan = document.getElementById('session-timer');
+        const extendBtn = document.getElementById('session-extend-btn');
+        const sessionBox = document.getElementById('session-box');
+
+        // 요소 없으면(해당 페이지에서 헤더 안 쓴 경우) 그냥 종료
+        if (!timerSpan || !extendBtn || !sessionBox) return;
+
+        let remainSeconds = 0;
+        let timerId = null;
+
+        function renderTimer() {
+            const min = String(Math.floor(remainSeconds / 60)).padStart(2, '0');
+            const sec = String(remainSeconds % 60).padStart(2, '0');
+            timerSpan.textContent = `${min}:${sec}`;
+        }
+
+        function startTimer() {
+            if (timerId) clearInterval(timerId);
+            renderTimer();
+
+            timerId = setInterval(function () {
+                remainSeconds--;
+                renderTimer();
+
+                if (remainSeconds <= 0) {
+                    clearInterval(timerId);
+                    alert('세션이 만료되어 로그아웃됩니다.');
+
+                    // 1) 세션 invalidate 요청
+                    fetch('/BNK/member/logout')
+                        .finally(function () {
+                            // 2) 로그인 페이지로 이동
+                            window.location.href = '/BNK/member/main';
+                        });
+                }
+            }, 1000);
+        }
+
+        // 페이지 로딩 시 남은 시간 조회
+        fetch('/BNK/member/session/remaining')
+            .then(function (res) {
+                return res.json();
+            })
+            .then(function (data) {
+                remainSeconds = data.remainSeconds || 0;
+
+                if (remainSeconds <= 0) {
+                    // 로그인 안 되어있으면 타이머 숨김
+                    sessionBox.style.display = 'none';
+                    return;
+                }
+
+                startTimer();
+            })
+            .catch(function () {
+                sessionBox.style.display = 'none';
+            });
+
+        // 연장 버튼 클릭 → 20분 재설정
+        extendBtn.addEventListener('click', function () {
+            fetch('/BNK/member/session/extend', {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                    // * Spring Security CSRF 사용 중이면 여기에 TOKEN 추가해야 함
+                }
+            })
+                .then(function (res) {
+                    return res.json();
+                })
+                .then(function (data) {
+                    remainSeconds = data.remainSeconds || 0;
+
+                    if (remainSeconds <= 0) {
+                        alert('세션이 만료되었습니다. 다시 로그인 해주세요.');
+                        return;
+                    }
+                    renderTimer();
+                    startTimer();
+                })
+                .catch(function () {
+                    alert('세션 연장 중 오류가 발생했습니다.');
+                });
+        });
+    });
+
+    // 로그아웃
+    document.addEventListener('DOMContentLoaded', function () {
+        const logoutBtn = document.getElementById('logout-btn');
+
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', function () {
+                document.getElementById('session-box').style.display = 'none';
+                window.location.href = '/BNK/member/logout';
+            });
+        }
+    });
+</script>

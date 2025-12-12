@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            background-color: #F6F6F8;
+        }
+
+        main {
+            width: 1200px;
+            background-color: #F6F6F8;
+            padding: 80px 20px;
+            margin: 0 auto;
+        }
+
+        .policy-section {
+            margin: 25px;
+            margin-bottom: 0;
+        }
+
+        .policy-nav {
+            margin-bottom: 30px;
+        }
+
+        .nav-frame {
+            /* border: 1px solid;*/
+            width: 100%;
+            height: 100px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: white;
+        }
+
+        .button-wrap {
+            display: inherit;
+            gap: 10px;
+            width: 95%;
+        }
+
+        .policy-nav button {
+            width: 25%;
+            height: 65px;
+        }
+
+        .btn-white {
+            --bg1: #ffffff;
+            --bg2: #f9f9f9;
+            --shadow: rgba(0, 0, 0, .08);
+            position: relative;
+            box-sizing: border-box;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            color: #111827;
+            cursor: pointer;
+            background: var(--bg1);
+            outline: none;
+            box-shadow: 0 4px 10px -8px var(--shadow);
+            transition:
+                background .18s ease,
+                box-shadow .18s ease,
+                transform .12s ease;
+            will-change: background, box-shadow, transform;
+        }
+
+        .btn-white svg path {
+            fill: #111827;
+        }
+
+        /* Hover: 살짝 강조된 밝은 회색 */
+        .btn-white:hover {
+            background: linear-gradient(180deg, var(--bg1), var(--bg2));
+            box-shadow: 0 6px 14px -10px var(--shadow);
+            transform: none;
+        }
+
+        /* Active: 프레스 효과 */
+        .btn-white:active {
+            transform: scale(.98);
+            box-shadow: 0 3px 8px -8px var(--shadow);
+        }
+
+        /* 포커스 */
+        .btn-white:focus-visible {
+            outline: 3px solid rgba(0, 0, 0, .15);
+            outline-offset: 2px;
+        }
+
+        /* 모션 최소화 */
+        @media (prefers-reduced-motion: reduce) {
+            .btn-white {
+                transition: none !important;
+            }
+        }
+
+        /* 다크모드 대응 */
+        @media (prefers-color-scheme: dark) {
+            .btn-white {
+                --bg1: #f3f4f6;
+                --bg2: #e5e7eb;
+                --shadow: rgba(0, 0, 0, .25);
+                color: #111;
+                border-color: #d1d5db;
+            }
+        }
+
+        .btn-red {
+            --bg1: #D91A1A;
+            --bg2: #F03A3A;
+            --shadow: rgba(217, 26, 26, .45);
+            position: relative;
+            box-sizing: border-box;
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            cursor: pointer;
+            background: linear-gradient(180deg, var(--bg2), var(--bg1));
+            outline: none;
+            box-shadow: 0 6px 14px -10px var(--shadow);
+            transition:
+                background .18s ease,
+                box-shadow .18s ease,
+                transform .12s ease;
+            /* 프레스만 사용할 예정 */
+            will-change: background, box-shadow, transform;
+        }
+
+        .btn-red svg path {
+            fill: white;
+        }
+
+        /* Hover: 컬러와 섀도우만 아주 미세하게 (리프트 없음) */
+        .btn-red:hover {
+            background: linear-gradient(180deg, #f24a4a, #d61a1a);
+            box-shadow: 0 8px 18px -12px var(--shadow);
+            transform: none;
+            /* 확실하게 떠오르지 않도록 고정 */
+        }
+
+        /* Active: 살짝 눌리는 프레스 효과만 */
+        .btn-red:active {
+            transform: scale(.98);
+            box-shadow: 0 4px 10px -10px var(--shadow);
+        }
+
+        /* 키보드 포커스 접근성 */
+        .btn-red:focus-visible {
+            outline: 3px solid rgba(240, 58, 58, .55);
+            outline-offset: 2px;
+        }
+
+        /* 모션 최소화 존중 */
+        @media (prefers-reduced-motion: reduce) {
+            .btn-red {
+                transition: none !important;
+            }
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .btn-red {
+                --shadow: rgba(240, 58, 58, .35);
+            }
+        }
+
+        .policy-main .content-frame {
+            background-color: white;
+            border-radius: 15px;
+            padding: 30px;
+        }
+
+        .policy-main .content-title {
+            display: flex;
+            align-items: center;
+        }
+
+        .policy-main .content-title h2 {
+            margin-right: auto;
+        }
+
+        .policy-main article {
+            padding-left: 30px;
+            border-left: 5px solid #E5E7EB;
+            margin-top: 30px;
+        }
+
+        .contact-us {
+            background-color: white;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            margin: 25px;
+            margin-top: 30px;
+        }
+
+        .contact-us h2 {
+            margin-bottom: 0px;
+        }
+
+        .contact-us div {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .contact-us div button {
+            width: 150px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .contact-us div svg {
+            margin-right: 10px;
+        }
+
+        .contact-us div span {
+            font-size: 16px;
+        }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const policyNav = document.querySelector('.policy-nav .button-wrap');
+            if (!policyNav) return;
+
+            // 초기 선택된 버튼 (빨간 버튼)
+            let currentActive = policyNav.querySelector('.btn-red');
+
+            policyNav.addEventListener('click', function (e) {
+                const target = e.target.closest('button');
+                if (!target) return; // 버튼 이외 클릭 무시
+                if (target === currentActive) return; // 이미 선택된 버튼이면 무시
+
+                // 기존 선택 해제
+                if (currentActive) {
+                    currentActive.classList.remove('btn-red');
+                    currentActive.classList.add('btn-white');
+                }
+
+                // 새 버튼 선택
+                target.classList.remove('btn-white');
+                target.classList.add('btn-red');
+
+                currentActive = target; // 현재 선택 갱신
+
+                // 선택된 버튼 텍스트 출력 (확인용)
+                // const label = target.querySelector('span')?.textContent.trim();
+                // console.log(`현재 선택된 항목: ${label}`);
+            });
+        });
+    </script>
+    <title>약관 및 정책</title>
+</head>
+
+<body>
+    <header>
+        <div id="header"></div>
+    </header>
+    <main>
+        <section class="policy-section">
+            <div class="route">
+                <span>홈 > 고객센터 > 약관 및 정책</span>
+            </div>
+            <div class="page-title">
+                <h1>약관 및 정책</h1>
+                <p>BNK부산은행의 서비스 이용약관과 개인정보처리방침 등 약관 및 정책을 확인할 수 있습니다.</p>
+            </div>
+            <section class="policy-nav">
+                <div class="nav-frame">
+                    <div class="button-wrap">
+                        <button class="btn-red">
+                            <svg width="12" height="16" viewBox="0 0 12 16" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M1.88102 0C0.84352 0 0 0.84352 0 1.88102V13.1671C0 14.2046 0.84352 15.0482 1.88102 15.0482H9.40511C10.4426 15.0482 11.2861 14.2046 11.2861 13.1671V4.70255H7.52408C7.00386 4.70255 6.58357 4.28226 6.58357 3.76204V0H1.88102ZM7.52408 0V3.76204H11.2861L7.52408 0ZM2.35128 1.88102H4.2323C4.49094 1.88102 4.70255 2.09264 4.70255 2.35128C4.70255 2.60992 4.49094 2.82153 4.2323 2.82153H2.35128C2.09264 2.82153 1.88102 2.60992 1.88102 2.35128C1.88102 2.09264 2.09264 1.88102 2.35128 1.88102ZM2.35128 3.76204H4.2323C4.49094 3.76204 4.70255 3.97366 4.70255 4.2323C4.70255 4.49094 4.49094 4.70255 4.2323 4.70255H2.35128C2.09264 4.70255 1.88102 4.49094 1.88102 4.2323C1.88102 3.97366 2.09264 3.76204 2.35128 3.76204ZM3.94427 11.2215C3.76498 11.8181 3.21537 12.2266 2.59228 12.2266H2.35128C2.09264 12.2266 1.88102 12.015 1.88102 11.7564C1.88102 11.4977 2.09264 11.2861 2.35128 11.2861H2.59228C2.80096 11.2861 2.98318 11.1509 3.04196 10.9511L3.47989 9.49622C3.57982 9.1641 3.88548 8.93485 4.2323 8.93485C4.57911 8.93485 4.88478 9.16116 4.98471 9.49622L5.32564 10.6307C5.54313 10.4485 5.81941 10.3456 6.11332 10.3456C6.58063 10.3456 7.0068 10.6101 7.21548 11.0275L7.3448 11.2861H8.93485C9.19349 11.2861 9.40511 11.4977 9.40511 11.7564C9.40511 12.015 9.19349 12.2266 8.93485 12.2266H7.05383C6.87454 12.2266 6.71289 12.1267 6.63354 11.968L6.3749 11.4478C6.32493 11.3478 6.225 11.2861 6.11626 11.2861C6.00751 11.2861 5.90464 11.3478 5.85762 11.4478L5.59898 11.968C5.51374 12.1414 5.32858 12.2443 5.13754 12.2266C4.9465 12.209 4.78191 12.0767 4.729 11.8945L4.2323 10.2574L3.94427 11.2215Z"
+                                    fill="#2B2F36" />
+                            </svg><br>
+                            <span>서비스 이용약관</span>
+                        </button>
+                        <button class="btn-white">
+                            <svg width="15" height="15" viewBox="0 0 15 15" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M7.05384 0C7.18904 0 7.32424 0.029391 7.44768 0.0852338L12.982 2.43357C13.6286 2.70691 14.1106 3.34469 14.1077 4.11473C14.093 7.03032 12.8938 12.3648 7.82976 14.7895C7.33894 15.0247 6.76875 15.0247 6.27792 14.7895C1.21386 12.3648 0.0147088 7.03032 1.33685e-05 4.11473C-0.00292573 3.34469 0.479086 2.70691 1.12569 2.43357L6.66294 0.0852338C6.78345 0.029391 6.91864 0 7.05384 0ZM7.05384 1.96332V13.0731C11.1098 11.1098 12.2002 6.76286 12.2267 4.15588L7.05384 1.96332Z"
+                                    fill="#2B2F36" />
+                            </svg><br>
+                            <span>개인정보처리방침</span>
+                        </button>
+                        <button class="btn-white">
+                            <svg width="19" height="12" viewBox="0 0 19 12" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M1.88102 0C0.84352 0 0 0.84352 0 1.88102V9.40511C0 10.4426 0.84352 11.2861 1.88102 11.2861H16.9292C17.9667 11.2861 18.8102 10.4426 18.8102 9.40511V1.88102C18.8102 0.84352 17.9667 0 16.9292 0H1.88102ZM2.82153 1.88102H9.40511C9.92533 1.88102 10.3456 2.30131 10.3456 2.82153V4.70255C10.3456 5.22277 9.92533 5.64306 9.40511 5.64306H2.82153C2.30131 5.64306 1.88102 5.22277 1.88102 4.70255V2.82153C1.88102 2.30131 2.30131 1.88102 2.82153 1.88102ZM1.88102 8.93485C1.88102 8.67621 2.09264 8.4646 2.35128 8.4646H9.87536C10.134 8.4646 10.3456 8.67621 10.3456 8.93485C10.3456 9.19349 10.134 9.40511 9.87536 9.40511H2.35128C2.09264 9.40511 1.88102 9.19349 1.88102 8.93485ZM11.2861 8.93485C11.2861 8.67621 11.4977 8.4646 11.7564 8.4646H16.4589C16.7176 8.4646 16.9292 8.67621 16.9292 8.93485C16.9292 9.19349 16.7176 9.40511 16.4589 9.40511H11.7564C11.4977 9.40511 11.2861 9.19349 11.2861 8.93485ZM2.35128 6.58357C2.476 6.58357 2.59561 6.63312 2.6838 6.72131C2.77199 6.8095 2.82153 6.92911 2.82153 7.05383C2.82153 7.17855 2.77199 7.29816 2.6838 7.38635C2.59561 7.47454 2.476 7.52408 2.35128 7.52408C2.22656 7.52408 2.10695 7.47454 2.01876 7.38635C1.93057 7.29816 1.88102 7.17855 1.88102 7.05383C1.88102 6.92911 1.93057 6.8095 2.01876 6.72131C2.10695 6.63312 2.22656 6.58357 2.35128 6.58357ZM3.76204 7.05383C3.76204 6.92911 3.81159 6.8095 3.89978 6.72131C3.98797 6.63312 4.10758 6.58357 4.2323 6.58357C4.35702 6.58357 4.47663 6.63312 4.56482 6.72131C4.65301 6.8095 4.70255 6.92911 4.70255 7.05383C4.70255 7.17855 4.65301 7.29816 4.56482 7.38635C4.47663 7.47454 4.35702 7.52408 4.2323 7.52408C4.10758 7.52408 3.98797 7.47454 3.89978 7.38635C3.81159 7.29816 3.76204 7.17855 3.76204 7.05383ZM6.11332 6.58357C6.23804 6.58357 6.35765 6.63312 6.44584 6.72131C6.53403 6.8095 6.58357 6.92911 6.58357 7.05383C6.58357 7.17855 6.53403 7.29816 6.44584 7.38635C6.35765 7.47454 6.23804 7.52408 6.11332 7.52408C5.9886 7.52408 5.86899 7.47454 5.7808 7.38635C5.69261 7.29816 5.64306 7.17855 5.64306 7.05383C5.64306 6.92911 5.69261 6.8095 5.7808 6.72131C5.86899 6.63312 5.9886 6.58357 6.11332 6.58357ZM7.52408 7.05383C7.52408 6.92911 7.57363 6.8095 7.66182 6.72131C7.75001 6.63312 7.86962 6.58357 7.99434 6.58357C8.11906 6.58357 8.23867 6.63312 8.32686 6.72131C8.41505 6.8095 8.4646 6.92911 8.4646 7.05383C8.4646 7.17855 8.41505 7.29816 8.32686 7.38635C8.23867 7.47454 8.11906 7.52408 7.99434 7.52408C7.86962 7.52408 7.75001 7.47454 7.66182 7.38635C7.57363 7.29816 7.52408 7.17855 7.52408 7.05383ZM9.87536 6.58357C10.0001 6.58357 10.1197 6.63312 10.2079 6.72131C10.2961 6.8095 10.3456 6.92911 10.3456 7.05383C10.3456 7.17855 10.2961 7.29816 10.2079 7.38635C10.1197 7.47454 10.0001 7.52408 9.87536 7.52408C9.75064 7.52408 9.63103 7.47454 9.54284 7.38635C9.45465 7.29816 9.40511 7.17855 9.40511 7.05383C9.40511 6.92911 9.45465 6.8095 9.54284 6.72131C9.63103 6.63312 9.75064 6.58357 9.87536 6.58357Z"
+                                    fill="#2B2F36" />
+                            </svg><br>
+                            <span>전자금융거래약관</span>
+                        </button>
+                        <button class="btn-white">
+                            <svg width="12" height="14" viewBox="0 0 12 14" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M5.33333 13.9833C3.54444 12.4611 2.20844 11.0473 1.32533 9.742C0.442222 8.43667 0.000444444 7.22822 0 6.11667C0 4.45 0.536222 3.12222 1.60867 2.13333C2.68111 1.14444 3.92267 0.65 5.33333 0.65C5.63333 0.65 5.93067 0.675111 6.22533 0.725333C6.52 0.775556 6.806 0.844889 7.08333 0.933333L3.33333 4.7V7.98333H6.61667L10.3667 4.23333C10.4667 4.52222 10.5418 4.82222 10.592 5.13333C10.6422 5.44444 10.6671 5.77222 10.6667 6.11667C10.6667 7.22778 10.2251 8.43622 9.342 9.742C8.45889 11.0478 7.12267 12.4616 5.33333 13.9833ZM4.66667 6.65V5.25L8.8 1.11667L10.2 2.51667L6.06667 6.65H4.66667ZM10.6667 2.05L9.26667 0.65L9.73333 0.183333C9.85556 0.0611111 10.0111 0 10.2 0C10.3889 0 10.5444 0.0611111 10.6667 0.183333L11.1333 0.65C11.2556 0.772222 11.3167 0.927778 11.3167 1.11667C11.3167 1.30556 11.2556 1.46111 11.1333 1.58333L10.6667 2.05Z"
+                                    fill="black" />
+                            </svg><br>
+                            <span>위치기반서비스 이용약관</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+            <article class="policy-main">
+                <div class="content-frame">
+                    <div class="content-wrapper">
+                        <div class="content-title">
+                            <h2>서비스 이용약관</h2>
+                            <p>시행일 : 2024년 1월 1일</p>
+                        </div>
+                        <article>
+                            <h3>제1조 (목적)</h3>
+                            <p>
+                                이 약관은 BNK부산은행(이하 "은행")이 제공하는 인터넷뱅킹, 모바일뱅킹 등 전자금융서비스의 이용에 관하여 은행과 이용자 간의 권리, 의무 및 책임사
+                                항을 규정함을 목적으로 합니다.
+                            </p>
+                        </article>
+                        <article>
+                            <h3>제2조 (정의)</h3>
+                            <div>
+                                이 약관에서 사용하는 용어의 정의는 다음과 같습니다:
+                                <p>
+                                    "전자금융거래"라 함은 은행이 전자적 장치를 제공하는 금융상품 및 서비스를 이용자가 전자적 장치를 통하여 이용하는 거래를 말합니다.
+                                    "이용자"라 함은 은행과 전자금융거래에 관한 계약을 체결하거나 은행이 제공하는 전자금융거래 서비스를 이용하는 자를 말합니다.
+                                    "접근매체"라 함은 전자금융거래에 있어서 거래지시를 하거나 이용자 및 거래내용의 진실성과 정확성를 확보하기 위하여 사용되는 수단 도는 정보를 말합니다.
+                                </p>
+                            </div>
+                        </article>
+                        <article>
+                            <h3>제3조 (약관의 명시 및 변경)</h3>
+                            <p>
+                                1. 은행은 이용자가 전자금융거래 서비스를 이용하기 전에 이 약관을 게시하고 이용자가 이 약과느이 중요한 내용을 확인할 수 있도록 합니다.
+                                2. 은행은 이용자의 요구가 있을 때에는 이 약관의 사본을 교부합니다.
+                                3. 은행은 관련 법령에 위배되지 않는 범위에서 이 약관을 변경할 수 있으며, 약관을 변경할 때에는 그 시행일 1월 전에 변경되는 약관을 은행
+                                홈페이지에 게
+                                시합니다.
+                            </p>
+                        </article>
+                        <article>
+                            <h3>제4조 (서비스의 종류)</h3>
+                            <p>
+                                은행이 제공하는 전자금융거래 서비스의 종류는 다음과 같습니다.
+                            </p>
+                            <div>
+                                <h4>조회서비스</h4>
+                                <ul>
+                                    <li>계좌잔액 조회</li>
+                                    <li>거래내역 조회</li>
+                                    <li>대출잔액 조회</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4>이체서비스</h4>
+                                <ul>
+                                    <li>계좌이체</li>
+                                    <li>자동이체</li>
+                                    <li>예약이체</li>
+                                </ul>
+                            </div>
+                        </article>
+                        <article>
+                            <h3>제5조 (이용시간)</h3>
+                            <div>
+                                전자금융거래 서비스의 이용시간은 연중무휴 1일 24시간을 원칙으로 합니다. 다만, 정기점검이나 시스템 장애 등으로 인하여 서비스가 일시
+                                중단될
+                                수 있으며, 이 경우 사전에 공지합니다.
+                            </div>
+                        </article>
+                    </div>
+                </div>
+        </section>
+        <section class="contact-us">
+            <h2>문의사항이 있으시나요?</h2>
+            <p>약관 관련 문의사항은 고객센터를 통해 상담받으실 수 있습니다.</p>
+            <div>
+                <button class="call btn-red">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <g clip-path="url(#clip0_195_3756)">
+                            <path
+                                d="M5.15312 0.768966C4.9125 0.187716 4.27812 -0.121659 3.67188 0.0439663L0.921875 0.793966C0.378125 0.943966 0 1.43772 0 2.00022C0 9.73147 6.26875 16.0002 14 16.0002C14.5625 16.0002 15.0563 15.6221 15.2063 15.0783L15.9563 12.3283C16.1219 11.7221 15.8125 11.0877 15.2312 10.8471L12.2312 9.59709C11.7219 9.38459 11.1313 9.53147 10.7844 9.95959L9.52188 11.5002C7.32188 10.4596 5.54063 8.67834 4.5 6.47834L6.04063 5.21897C6.46875 4.86897 6.61562 4.28147 6.40312 3.77209L5.15312 0.772091V0.768966Z"
+                                fill="white" />
+                        </g>
+                        <defs>
+                            <clipPath id="clip0_195_3756">
+                                <path d="M0 0H16V16H0V0Z" fill="white" />
+                            </clipPath>
+                        </defs>
+                    </svg>
+                    <span>1588-6200</span>
+                </button>
+                <button class="online-consultation btn-white">
+                    <svg width="20" height="16" viewBox="0 0 20 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <g clip-path="url(#clip0_195_3762)">
+                            <path
+                                d="M6.49985 11C10.0905 11 12.9999 8.5375 12.9999 5.5C12.9999 2.4625 10.0905 0 6.49985 0C2.90923 0 -0.000146267 2.4625 -0.000146267 5.5C-0.000146267 6.70625 0.459229 7.82187 1.23735 8.73125C1.12798 9.025 0.965479 9.28438 0.793604 9.50313C0.643604 9.69688 0.490479 9.84688 0.377979 9.95C0.321729 10 0.274854 10.0406 0.243604 10.0656C0.227979 10.0781 0.215479 10.0875 0.209229 10.0906L0.202979 10.0969C0.0311037 10.225 -0.0438963 10.45 0.0248537 10.6531C0.0936037 10.8562 0.284229 11 0.499854 11C1.1811 11 1.8686 10.825 2.44048 10.6094C2.72798 10.5 2.99673 10.3781 3.2311 10.2531C4.19048 10.7281 5.3061 11 6.49985 11ZM13.9999 5.5C13.9999 9.00937 10.903 11.6531 7.23423 11.9688C7.9936 14.2937 10.5124 16 13.4999 16C14.6936 16 15.8092 15.7281 16.7717 15.2531C17.0061 15.3781 17.2717 15.5 17.5592 15.6094C18.1311 15.825 18.8186 16 19.4999 16C19.7155 16 19.9092 15.8594 19.9749 15.6531C20.0405 15.4469 19.9686 15.2219 19.7936 15.0938L19.7874 15.0875C19.7811 15.0812 19.7686 15.075 19.753 15.0625C19.7217 15.0375 19.6749 15 19.6186 14.9469C19.5061 14.8438 19.353 14.6938 19.203 14.5C19.0311 14.2812 18.8686 14.0187 18.7592 13.7281C19.5374 12.8219 19.9967 11.7063 19.9967 10.4969C19.9967 7.59687 17.3436 5.21875 13.978 5.0125C13.9905 5.17188 13.9967 5.33437 13.9967 5.49687L13.9999 5.5Z"
+                                fill="#2B2F36" />
+                        </g>
+                        <defs>
+                            <clipPath id="clip0_195_3762">
+                                <path d="M0 0H20V16H0V0Z" fill="white" />
+                            </clipPath>
+                        </defs>
+                    </svg>
+                    <span>온라인 상담</span>
+                </button>
+            </div>
+        </section>
+        </section>
+    </main>
+    <footer>
+        <div id="footer"></div>
+    </footer>
+
+    <div id="bnk-chatbot-container" style="position: fixed; right: 20px; bottom: 20px; z-index: 9999;">
+        <div id="bnk-chatbot-slot"></div>
+    </div>
+
+</body>
+
+
+<script>
+    // header 불러오기
+    fetch('/layouts/header.html')
+        .then(response => response.text())
+        .then(data => {
+            // console.log(data);
+
+            document.getElementById('header').innerHTML = data;
+        });
+</script>
+<script>
+    /**
+    * 외부 HTML을 불러와서:
+    *  - <link rel="stylesheet">, <style>는 <head>로 옮기고
+    *  - <script>는 실행되도록 새로 만들어 붙이고 (src/inline, module 모두 지원)
+    *  - 나머지 DOM(예: <flowise-chatbot> / <flowise-embed>)은 mount에 삽입
+    */
+    async function importHtmlWithAssets(url, mountSelector) {
+        const res = await fetch(url, { credentials: 'same-origin' });
+        if (!res.ok) throw new Error(`Failed to load ${url}`);
+        const html = await res.text();
+
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+
+        // 1) <link rel="stylesheet"> 들을 <head>로
+        doc.querySelectorAll('link[rel="stylesheet"]').forEach(link => {
+            // 중복 로드 방지
+            const href = link.getAttribute('href');
+            if (href && ![...document.head.querySelectorAll('link[rel="stylesheet"]')]
+                .some(l => l.getAttribute('href') === href)) {
+                document.head.appendChild(link.cloneNode(true));
+            }
+        });
+
+        // 2) <style> 들을 <head>로
+        doc.querySelectorAll('style').forEach(styleEl => {
+            const clone = document.createElement('style');
+            // CSS 텍스트 보존
+            clone.textContent = styleEl.textContent;
+            // (가능한 속성 복사)
+            [...styleEl.attributes].forEach(a => clone.setAttribute(a.name, a.value));
+            document.head.appendChild(clone);
+        });
+
+        // 3) 본문 콘텐츠를 mount에 붙임 (스크립트 제외)
+        const mount = document.querySelector(mountSelector);
+        // fragment 구성
+        const frag = document.createDocumentFragment();
+        [...doc.body.children].forEach(node => {
+            if (node.tagName.toLowerCase() !== 'script') frag.appendChild(node.cloneNode(true));
+        });
+        mount.appendChild(frag);
+
+        // 4) 스크립트 실행 (src/inline/module 지원, 순서 보장)
+        const scripts = [...doc.querySelectorAll('script')];
+        for (const oldScript of scripts) {
+            const newScript = document.createElement('script');
+            // type/module/defer 등 속성 복사
+            [...oldScript.attributes].forEach(attr => newScript.setAttribute(attr.name, attr.value));
+            if (oldScript.src) {
+                // 네트워크 로드를 기다려 실행 순서 유지
+                await new Promise((resolve, reject) => {
+                    newScript.onload = resolve;
+                    newScript.onerror = resolve;   // 실패해도 진행(브랜딩 제거 같은 선택 기능 보호)
+                    document.body.appendChild(newScript);
+                });
+            } else {
+                // inline 코드 복사
+                newScript.textContent = oldScript.textContent || '';
+                document.body.appendChild(newScript);
+            }
+        }
+    }
+
+    // 실제 호출: 기존 chatbot.html(또는 chatbot_test.html) 경로로 바꿔도 됩니다.
+    importHtmlWithAssets('/components/chatbot_test.html', '#bnk-chatbot-slot')
+        .catch(err => console.error('[Chatbot load failed]', err));
+</script>
+<script>
+    // footer 불러오기
+    fetch('/layouts/footer.html')
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('footer').innerHTML = data;
+        });
+</script>
+
+</html>

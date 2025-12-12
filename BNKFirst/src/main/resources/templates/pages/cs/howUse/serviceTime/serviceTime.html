@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>이용안내>서비스 이용시간</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        /*----------------------------------*/
+        /*--전체 페이지--*/
+        /*----------------------------------*/
+        body {
+            font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+            background: #F6F6F8;
+            margin: 0;
+            color: #222;
+            padding-top: 100px;
+        }
+
+
+        .howUse-page{
+            display:flex;
+            gap:40px;
+            width: 1200px;
+            margin: 60px auto;
+            padding: 40px 20px;
+            background: #F6F6F8;
+            border-radius: 8px;
+            margin-bottom: 100px;
+        }
+
+
+
+        /*----------------------------------*/
+        /*--왼쪽 사이드바--*/
+        /*----------------------------------*/
+        .all-sidebar{
+            width: 250px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        .all-sidebar h2{
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .sidebar-menu {
+            list-style:none;
+            padding: 20px;
+            margin: 0 0 40px 0;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            background: #fff;
+            box-shadow: 0 4px 4px rgba(0,0,0,0.08);
+        }
+
+        .sidebar-menu h2{
+            font-size: 17px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 16px;
+        }
+
+        .sidebar-menu li{
+            padding: 12px 16px;
+            border-radius:  6px;
+            color: #555;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .sidebar-menu li:hover {
+            background: #f2f2f2;
+        }
+
+        .sidebar-menu li.active{
+            background: #ffe6e6;
+            border-left: 4px solid #d91a1a;
+            color: #d91a1a;;
+            font-weight:  600;
+            padding-left: 12px;
+        }
+
+        .sidebar-menu li:last-child{
+            border-bottom: none;
+        }
+
+        /*----------------------------------*/
+        /*--추가 도움--*/
+        /*----------------------------------*/
+        .all-help{
+            background: linear-gradient(135deg,#e62b2b, #7e2020);
+            color: #fff;
+            border-radius: 12px;
+            padding: 24px 20px;
+            margin-top: 0;
+            text-align: center;
+            box-shadow: 0 4px 4px rgba(0,0,0,0.08);
+        }
+
+        .help-box h3{
+            font-size: 17px;
+            margin-bottom: 6px;
+        }
+
+        .help-box p{
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        .help-buttons{
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-call, .btn-chat{
+            padding: 8px 14px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-call{
+            background: #fff;
+            color: #d91a1a;
+        }
+
+        .btn-chat{
+            background:  transparent;
+            border: 1px solid #fff;
+            color: #fff;
+        }
+
+        /*----------------------------------*/
+        /*--메인 컨텐츠--*/
+        /*----------------------------------*/
+
+        .howUse-content{
+            flex: 1;
+        }
+
+        .howUse-header h1{
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .howUse-header p{
+            color: #666;
+            margin-bottom:  20px;
+        }
+
+        .howUse-search {
+            display: flex;
+            align-items: center;
+            border: 1px solid #ddd;
+            border-radius: 30px;
+            padding: 6px 12px;
+            background: #fafafa;
+        }
+
+        /*----------------------------------*/
+        /*-- 비밀번호 안내 페이지 --*/
+        /*----------------------------------*/
+        .password-section {
+            margin-bottom: 50px;
+        }
+
+        .password-section h2 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #d91a1a;
+            padding-bottom: 6px;
+        }
+
+        .password-section p {
+            color: #555;
+            font-size: 15px;
+            line-height: 1.7;
+            margin-bottom: 6px;
+        }
+
+        /* Case Box */
+        .case-box {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #f9f9f9;
+            margin-top: 20px;
+            margin-bottom: 16px;
+            padding: 16px;
+        }
+
+        .case-box h3 {
+            background: #eef2ff;
+            border-left: 4px solid #f73c3c;
+            padding: 8px 12px;
+            font-size: 16px;
+            font-weight: 600;
+            margin: -16px -16px 12px -16px;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+        }
+
+        .case-box h3 span {
+            margin-left: 10px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .case-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fff;
+            border-radius: 6px;
+            border: 1px solid #eee;
+            padding: 12px 16px;
+            font-size: 15px;
+            color: #333;
+        }
+
+        .btn-small {
+            background: #d91a1a;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 14px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-small:hover {
+            background: #b50f0f;
+        }
+
+        /*----------------------------------*/
+        /*-- 가입절차 탭 버튼 --*/
+        /*----------------------------------*/
+        .join-type-btns {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0 30px 0;
+        }
+
+        .join-btn {
+            border: 1px solid #ccc;
+            background: #fff;
+            color: #333;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .join-btn.active {
+            background: #d91a1a;
+            color: #fff;
+            border-color: #d91a1a;
+        }
+
+        /*----------------------------------*/
+        /*-- 가입절차 콘텐츠 --*/
+        /*----------------------------------*/
+        .join-section {
+            display: none;
+        }
+
+        .join-section.active {
+            display: block;
+        }
+
+        .info-box {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin-bottom: 20px;
+            line-height: 1.6;
+            font-size: 15px;
+        }
+
+        /* Step Box */
+        .step-box {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #fafafa;
+            margin-bottom: 18px;
+            overflow: hidden;
+        }
+
+        .step-box h3 {
+            background: #f4f4f4;
+            border-bottom: 1px solid #ddd;
+            padding: 10px 16px;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .step-content {
+            padding: 16px 20px;
+            background: #fff;
+        }
+
+        .step-content h4 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #333;
+        }
+
+        .step-content p {
+            font-size: 14.5px;
+            color: #555;
+            line-height: 1.7;
+            margin-bottom: 10px;
+        }
+
+        /* 버튼 그룹 */
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-small {
+            background: #d91a1a;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 14px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-small:hover {
+            background: #b50f0f;
+        }
+
+
+        /*----------------------------------*/
+        /*-- 상위 탭 (예금/신탁 / 이체 / 조회) --*/
+        /*----------------------------------*/
+        .main-tab-btns {
+            display: flex;
+            border-bottom: 2px solid #d91a1a;
+            margin-bottom: 20px;
+        }
+
+        .main-btn {
+            flex: 1;
+            background: #fff;
+            border: none;
+            border-bottom: 3px solid transparent;
+            font-size: 16px;
+            padding: 12px 0;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .main-btn.active {
+            color: #d91a1a;
+            border-bottom: 3px solid #d91a1a;
+            font-weight: 600;
+        }
+
+        /*----------------------------------*/
+        /*-- 하위 탭 (개인 / 기업) --*/
+        /*----------------------------------*/
+        .sub-tab-btns {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .sub-btn {
+            padding: 10px 20px;
+            border: none;
+            background: #f6f6f6;
+            color: #333;
+            border-radius: 6px 6px 0 0;
+            cursor: pointer;
+            margin-right: 6px;
+        }
+
+        .sub-btn.active {
+            background: #d91a1a;
+            color: #fff;
+        }
+
+        /*----------------------------------*/
+        /*-- 표 --*/
+        /*----------------------------------*/
+        .service-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            border: 1px solid #ddd;
+            text-align: center;
+            font-size: 15px;
+        }
+
+        .service-table th {
+            background: #fafafa;
+            border-bottom: 2px solid #d91a1a;
+            padding: 12px;
+            font-weight: 600;
+        }
+
+        .service-table td {
+            border: 1px solid #eee;
+            padding: 10px;
+            color: #333;
+        }
+
+        .service-table tr:nth-child(even) {
+            background: #fcfcfc;
+        }
+
+        /*----------------------------------*/
+        /*-- 공통 섹션 토글 --*/
+        /*----------------------------------*/
+        .main-section,
+        .sub-section {
+            display: none;
+        }
+
+        .main-section.active,
+        .sub-section.active {
+            display: block;
+        }
+
+        /*----------------------------------*/
+        /*-- 빈 영역 안내 박스 --*/
+        /*----------------------------------*/
+        .empty-box {
+            background: #fff;
+            border: 1px solid #ddd;
+            padding: 40px;
+            text-align: center;
+            color: #777;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+<!--헤더-->
+<div th:replace="~{layouts/header}"></div>
+    
+    <div class="howUse-page">
+        <!--왼쪽 사이드바-->
+        <aside class="all-sidebar">
+            <ul class="sidebar-menu">
+                <h2>이용안내</h2>
+                <li><a href="./regProcess">가입절차</a></li>
+                <li><a href="./pwInfo">비밀번호 안내</a></li>
+                <li class="active"><a href="./serviceTime">서비스 이용시간</a></li>
+                <li><a href="./feeInfo">수수료 안내</a></li>
+            </ul>
+
+            <!--추가 도움 영역-->
+            <section class="all-help">
+                <div class="help-box">
+                    <h3>추가 도움이 필요하신가요?</h3>
+                    <p>전문 상담원이 친절하게 도와드리겠습니다.</p>
+                    <div class="help-buttons">
+                        <button class="btn-call">전화상담</button>
+                        <button class="btn-chat">Talk상담</button>
+                    </div>
+                </div>
+            </section>
+        </aside>
+
+        <!-- 메인 콘텐츠 -->
+        <main class="howUse-content">
+            <div class="howUse-header">
+                <h1>서비스 이용시간</h1>
+                <p>서비스 이용시간 안내입니다.<br>
+                    이용시에 불편함이 없도록 각 서비스 별 이용시간을 확인해주세요.
+                </p>
+            </div>
+
+            <!-- 1단계 상위 탭 -->
+            <div class="main-tab-btns">
+                <button class="main-btn active" onclick="showMainTab('deposit')">예금/신탁</button>
+                <button class="main-btn" onclick="showMainTab('transfer')">이체</button>
+                <button class="main-btn" onclick="showMainTab('inquiry')">조회</button>
+            </div>
+
+            <!-- 예금/신탁 -->
+            <section id="deposit" class="main-section active">
+                <div class="sub-tab-btns">
+                <button class="sub-btn active" onclick="showSubTab('deposit-personal', this)">개인</button>
+                <button class="sub-btn" onclick="showSubTab('deposit-corporate', this)">기업</button>
+                </div>
+
+                <!-- 개인 -->
+                <div id="deposit-personal" class="sub-section active">
+                <table class="service-table">
+                    <thead>
+                    <tr>
+                        <th>서비스종류</th>
+                        <th>서비스명</th>
+                        <th colspan="2">이용시간</th>
+                    </tr>
+                    <tr class="sub-header">
+                        <th></th>
+                        <th></th>
+                        <th>평일</th>
+                        <th>토요일/공휴일</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td rowspan="4">예금</td>
+                        <td>예금계좌조회</td>
+                        <td rowspan="4">24시간</td>
+                        <td rowspan="4">24시간</td>
+                    </tr>
+                    <tr><td>거래내역조회</td></tr>
+                    <tr><td>예금기업도래명세조회</td></tr>
+                    <tr><td>주택청약순위조회</td></tr>
+
+                    <tr>
+                        <td rowspan="7">신탁</td>
+                        <td>신탁계좌조회</td>
+                        <td rowspan="7">24시간</td>
+                        <td rowspan="7">24시간</td>
+                    </tr>
+                    <tr><td>연금신탁수익률보고서</td></tr>
+                    <tr><td>기준가격조회</td></tr>
+                    <tr><td>배당금조회</td></tr>
+                    <tr><td>평가액조회</td></tr>
+                    <tr><td>연금지급액조회</td></tr>
+                    <tr><td>계좌관련분실신고</td></tr>
+                    </tbody>
+                </table>
+                </div>
+
+                <!-- 기업 -->
+                <div id="deposit-corporate" class="sub-section">
+                <div class="empty-box">
+                    <p>기업 고객 관련 예금/신탁 서비스 이용시간 정보는 준비 중입니다.</p>
+                </div>
+                </div>
+            </section>
+
+            <!-- 이체 -->
+            <!-- 이체 -->
+            <section id="transfer" class="main-section">
+            <div class="sub-tab-btns">
+                <button class="sub-btn active" onclick="showSubTab('transfer-personal', this)">개인</button>
+                <button class="sub-btn" onclick="showSubTab('transfer-corporate', this)">기업</button>
+            </div>
+
+            <!-- 개인 -->
+            <div id="transfer-personal" class="sub-section active">
+                <table class="service-table">
+                <thead>
+                    <tr>
+                    <th>서비스종류</th>
+                    <th>서비스명</th>
+                    <th colspan="2">이용시간</th>
+                    </tr>
+                    <tr class="sub-header">
+                    <th></th>
+                    <th></th>
+                    <th>평일</th>
+                    <th>토요일/공휴일</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>빠른이체</td><td>—</td><td>24시간</td><td>24시간</td></tr>
+                    <tr><td>즉시이체</td><td>—</td><td>24시간</td><td>24시간</td></tr>
+
+                    <tr>
+                    <td rowspan="2">예약이체</td>
+                    <td>예약이체등록</td>
+                    <td>24시간</td>
+                    <td>이용불가</td>
+                    </tr>
+                    <tr><td>예약내역조회/취소</td><td>24시간</td><td>24시간</td></tr>
+
+                    <tr><td>다계좌이체</td><td>—</td><td>24시간</td><td>24시간</td></tr>
+
+                    <tr>
+                    <td rowspan="3">그룹/급여이체</td>
+                    <td>이체파일작성</td>
+                    <td>24시간</td>
+                    <td>24시간</td>
+                    </tr>
+                    <tr>
+                    <td>이체파일조회/실행</td>
+                    <td>24시간<br><span style="color:#666;">(실업요청: 08:00~19:50)</span></td>
+                    <td>24시간<br><span style="color:#666;">(실업요청: 이용불가)</span></td>
+                    </tr>
+                    <tr><td>예약내역조회/취소</td><td>24시간</td><td>24시간</td></tr>
+
+                    <tr>
+                    <td rowspan="2">그룹관리</td>
+                    <td>그룹정보관리</td>
+                    <td>—</td>
+                    <td>—</td>
+                    </tr>
+                    <tr><td>자동이체등록</td><td>—</td><td>—</td></tr>
+
+                    <tr>
+                    <td rowspan="3">자동이체</td>
+                    <td>매월소액이체등록</td>
+                    <td rowspan="3">24시간</td>
+                    <td rowspan="3">24시간</td>
+                    </tr>
+                    <tr><td>자동이체현황조회/변경/해지</td></tr>
+                    <tr><td>자동이체결과조회</td></tr>
+
+                    <tr>
+                    <td rowspan="2">기타이체</td>
+                    <td>특급금전신탁(만든금식계약이체)</td>
+                    <td>09:00~17:30</td>
+                    <td>이용불가</td>
+                    </tr>
+                    <tr><td>퇴직연금사업자납부</td><td>—</td><td>—</td></tr>
+
+                    <tr>
+                    <td rowspan="2">기타이체</td>
+                    <td>아파트등조합(관리비납부)</td>
+                    <td>—</td>
+                    <td>—</td>
+                    </tr>
+                    <tr><td>정기예금이자지급이체</td><td>24시간</td><td>이용불가</td></tr>
+
+                    <tr><td>한국고객정보조회이체</td><td>24시간</td><td>24시간</td></tr>
+                    <tr><td>이체내역조회</td><td>24시간</td><td>24시간</td></tr>
+                </tbody>
+                </table>
+                <p style="font-size:14px; color:#666; margin-top:10px;">
+                ※ 타행이체는 23:55까지 가능하나 상대은행의 서비스 시간에 따라 이용가능 시간이 다를 수 있음
+                </p>
+            </div>
+
+            <!-- 기업 -->
+            <div id="transfer-corporate" class="sub-section">
+                <table class="service-table">
+                <thead>
+                    <tr>
+                    <th>서비스종류</th>
+                    <th>서비스명</th>
+                    <th colspan="2">이용시간</th>
+                    </tr>
+                    <tr class="sub-header">
+                    <th></th>
+                    <th></th>
+                    <th>평일</th>
+                    <th>토요일/공휴일</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>빠른이체</td><td>—</td><td>24시간</td><td>24시간</td></tr>
+                    <tr><td>즉시이체</td><td>—</td><td>24시간</td><td>24시간</td></tr>
+
+                    <tr>
+                    <td rowspan="2">예약이체</td>
+                    <td>예약이체등록</td>
+                    <td>24시간</td>
+                    <td>이용불가</td>
+                    </tr>
+                    <tr><td>예약내역조회/취소</td><td>24시간</td><td>24시간</td></tr>
+
+                    <tr><td>다계좌이체</td><td>—</td><td>24시간</td><td>24시간</td></tr>
+
+                    <tr>
+                    <td rowspan="3">그룹/급여이체</td>
+                    <td>이체파일작성</td>
+                    <td>—</td>
+                    <td>—</td>
+                    </tr>
+                    <tr>
+                    <td>이체파일조회/실행</td>
+                    <td>08:00~19:50</td>
+                    <td>08:00~19:50<br><span style="color:#666;">(단, 예약이체 이용불가)</span></td>
+                    </tr>
+                    <tr><td>예약내역조회/취소</td><td>24시간</td><td>24시간</td></tr>
+
+                    <tr>
+                    <td rowspan="3">자동이체</td>
+                    <td>자동이체등록</td>
+                    <td rowspan="3">24시간</td>
+                    <td rowspan="3">24시간</td>
+                    </tr>
+                    <tr><td>자동이체현황조회/변경/해지</td></tr>
+                    <tr><td>자동이체결과조회</td></tr>
+
+                    <tr>
+                    <td rowspan="2">기타이체</td>
+                    <td>특급금전신탁(만든금식계약이체)</td>
+                    <td>09:00~17:30</td>
+                    <td>이용불가</td>
+                    </tr>
+                    <tr><td>퇴직연금사업자납부</td><td>—</td><td>—</td></tr>
+
+                    <tr>
+                    <td rowspan="2">기타이체</td>
+                    <td>아파트등조합(관리비납부)</td>
+                    <td>—</td>
+                    <td>—</td>
+                    </tr>
+                    <tr><td>정기예금이자지급이체</td><td>24시간</td><td>이용불가</td></tr>
+
+                    <tr><td>한국고객정보조회이체</td><td>24시간</td><td>24시간</td></tr>
+                    <tr><td>이체내역조회</td><td>24시간</td><td>24시간</td></tr>
+                </tbody>
+                </table>
+                <p style="font-size:14px; color:#666; margin-top:10px;">
+                ※ 타행이체는 23:55까지 가능하나 상대은행의 서비스 시간에 따라 이용가능 시간이 다를 수 있음
+                </p>
+            </div>
+            </section>
+
+
+            <!-- 조회 -->
+            <section id="inquiry" class="main-section">
+            <div class="sub-tab-btns">
+                <button class="sub-btn active" onclick="showSubTab('inquiry-personal', this)">개인</button>
+                <button class="sub-btn" onclick="showSubTab('inquiry-corporate', this)">기업</button>
+            </div>
+
+            <!-- 개인 -->
+            <div id="inquiry-personal" class="sub-section active">
+                <table class="service-table">
+                <thead>
+                    <tr>
+                    <th>서비스종류</th>
+                    <th>서비스명</th>
+                    <th colspan="2">이용시간</th>
+                    </tr>
+                    <tr class="sub-header">
+                    <th></th>
+                    <th></th>
+                    <th>평일</th>
+                    <th>토요일/공휴일</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                    <td rowspan="7">전체계좌조회</td>
+                    <td>주요계좌</td>
+                    <td rowspan="7">24시간</td>
+                    <td rowspan="7">24시간</td>
+                    </tr>
+                    <tr><td>예금/신탁</td></tr>
+                    <tr><td>펀드</td></tr>
+                    <tr><td>대출</td></tr>
+                    <tr><td>외화</td></tr>
+                    <tr><td>보험</td></tr>
+                    <tr><td>전체계좌</td></tr>
+
+                    <tr>
+                    <td>거래내역조회</td>
+                    <td>–</td>
+                    <td>24시간</td>
+                    <td>24시간</td>
+                    </tr>
+
+                    <tr>
+                    <td rowspan="3">수표/어음</td>
+                    <td>당좌/어음</td>
+                    <td rowspan="3">24시간</td>
+                    <td rowspan="3">24시간</td>
+                    </tr>
+                    <tr><td>보관어음조회/관리</td></tr>
+                    <tr><td>자기앞수표</td></tr>
+
+                    <tr><td>세금우대/비과세한도</td><td>–</td><td>24시간</td><td>24시간</td></tr>
+                    <tr><td>공제발행내역조회</td><td>–</td><td>24시간</td><td>24시간</td></tr>
+                    <tr><td>해지계좌조회</td><td>–</td><td>24시간</td><td>24시간</td></tr>
+                    <tr><td>기업도래명세조회</td><td>–</td><td>24시간</td><td>24시간</td></tr>
+                </tbody>
+                </table>
+            </div>
+
+            <!-- 기업 -->
+            <div id="inquiry-corporate" class="sub-section">
+                <table class="service-table">
+                <thead>
+                    <tr>
+                    <th>서비스종류</th>
+                    <th>서비스명</th>
+                    <th colspan="2">이용시간</th>
+                    </tr>
+                    <tr class="sub-header">
+                    <th></th>
+                    <th></th>
+                    <th>평일</th>
+                    <th>토요일/공휴일</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>전체계좌조회</td><td>–</td><td>24시간</td><td>24시간</td></tr>
+                    <tr><td>거래내역조회</td><td>–</td><td>24시간</td><td>24시간</td></tr>
+
+                    <tr>
+                    <td rowspan="2">수표/어음</td>
+                    <td>당좌/어음</td>
+                    <td rowspan="2">24시간</td>
+                    <td rowspan="2">24시간</td>
+                    </tr>
+                    <tr><td>자기앞수표</td></tr>
+
+                    <tr>
+                    <td rowspan="8">보증</td>
+                    <td>보관계약조회</td>
+                    <td rowspan="8">09:00~17:30</td>
+                    <td rowspan="8">이용불가</td>
+                    </tr>
+                    <tr><td>계약내역조회</td></tr>
+                    <tr><td>입금내역조회</td></tr>
+                    <tr><td>중도인출가능금액조회</td></tr>
+                    <tr><td>해약환급금조회</td></tr>
+                    <tr><td>약관변경금융정보조회</td></tr>
+                    <tr><td>일임미집금액표</td></tr>
+                    <tr><td>일임계획명세서</td></tr>
+
+                    <tr>
+                    <td rowspan="7">보고서</td>
+                    <td>일별수수료조회</td>
+                    <td rowspan="7">24시간</td>
+                    <td rowspan="7">24시간</td>
+                    </tr>
+                    <tr><td>월별수수료조회</td></tr>
+                    <tr><td>계좌별월말명세서</td></tr>
+                    <tr><td>계좌별일지거래조회</td></tr>
+                    <tr><td>원천징수수수료명세서</td></tr>
+                    <tr><td>계좌개설확인증</td></tr>
+                    <tr><td>공제발행내역조회</td></tr>
+
+                    <tr><td>해지계좌조회</td><td>–</td><td>24시간</td><td>24시간</td></tr>
+                    <tr><td>기업도래명세조회</td><td>–</td><td>24시간</td><td>24시간</td></tr>
+                </tbody>
+                </table>
+            </div>
+            </section>
+        </main>
+    </div>
+
+    <!--푸터-->
+    <div th:replace="~{layouts/footer}"></div>
+</body>
+</html>
+<script>
+    // header 불러오기
+    fetch(`${contextPath}/layouts/header.html`)
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('header').innerHTML = data;
+        })
+        .catch(err => console.error('[Header load failed]', err));
+
+    // chatbot import 기능
+    async function importHtmlWithAssets(url, mountSelector) {
+        try {
+            const res = await fetch(url, { credentials: 'same-origin' });
+            if (!res.ok) throw new Error(`Failed to load ${url}`);
+            const html = await res.text();
+
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+
+            doc.querySelectorAll('link[rel="stylesheet"]').forEach(link => {
+                const href = link.getAttribute('href');
+                const exists = [...document.head.querySelectorAll('link[rel="stylesheet"]')]
+                    .some(l => l.getAttribute('href') === href);
+                if (!exists && href) document.head.appendChild(link.cloneNode(true));
+            });
+
+            doc.querySelectorAll('style').forEach(styleEl => {
+                const clone = document.createElement('style');
+                clone.textContent = styleEl.textContent;
+                [...styleEl.attributes].forEach(a => clone.setAttribute(a.name, a.value));
+                document.head.appendChild(clone);
+            });
+
+            const mount = document.querySelector(mountSelector);
+            const frag = document.createDocumentFragment();
+            [...doc.body.children].forEach(node => {
+                if (node.tagName.toLowerCase() !== 'script') frag.appendChild(node.cloneNode(true));
+            });
+            mount.appendChild(frag);
+
+            const scripts = [...doc.querySelectorAll('script')];
+            for (const oldScript of scripts) {
+                const newScript = document.createElement('script');
+                [...oldScript.attributes].forEach(attr => newScript.setAttribute(attr.name, attr.value));
+                if (oldScript.src) {
+                    await new Promise(resolve => {
+                        newScript.onload = resolve;
+                        newScript.onerror = resolve;
+                        document.body.appendChild(newScript);
+                    });
+                } else {
+                    newScript.textContent = oldScript.textContent || '';
+                    document.body.appendChild(newScript);
+                }
+            }
+        } catch (err) {
+            console.error('[Chatbot load failed]', err);
+        }
+    }
+
+    // chatbot 불러오기
+    importHtmlWithAssets('/components/chatbot_test.html', '#bnk-chatbot-slot');
+
+    // footer 불러오기
+    fetch(`${contextPath}/layouts/footer.html`)
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('footer').innerHTML = data;
+        })
+        .catch(err => console.error('[Footer load failed]', err));
+
+</script>

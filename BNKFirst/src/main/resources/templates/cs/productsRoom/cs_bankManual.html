@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>상품공시실>원리금보장상품현황</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        /*----------------------------------*/
+        /*--전체 페이지--*/
+        /*----------------------------------*/
+        body {
+            font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+            background: #F6F6F8;
+            margin: 0;
+            color: #222;
+            padding-top: 100px;
+        }
+
+        .productsRoom-page{
+            display:flex;
+            gap:40px;
+            width: 1200px;
+            margin: 60px auto 100px;
+            padding: 40px 20px;
+            background: #F6F6F8;
+            border-radius: 8px;
+        }
+
+        /*----------------------------------*/
+        /*--왼쪽 사이드바--*/
+        /*----------------------------------*/
+        .all-sidebar{
+            width: 250px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            flex-shrink: 0;
+        }
+
+        .sidebar-menu {
+            list-style:none;
+            padding: 20px;
+            margin: 0 0 40px 0;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            background: #fff;
+            box-shadow: 0 4px 4px rgba(0,0,0,0.08);
+        }
+
+        .sidebar-menu h2{
+            font-size: 17px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 16px;
+        }
+
+        .sidebar-menu li{
+            padding: 12px 16px;
+            border-radius:  6px;
+            color: #555;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .sidebar-menu li:hover {
+            background: #f2f2f2;
+        }
+
+        .sidebar-menu li.active{
+            background: #ffe6e6;
+            border-left: 4px solid #d91a1a;
+            color: #d91a1a;
+            font-weight: 600;
+            padding-left: 12px;
+        }
+
+        .sidebar-menu li:last-child{
+            border-bottom: none;
+        }
+
+        .sidebar-menu a {
+            display: block;
+            text-decoration: none;
+            color: #222;
+        }
+
+        .sidebar-menu a:visited {
+            color: #222;
+        }
+
+        .sidebar-menu a:hover {
+            color: #D91A1A;
+        }
+
+        /*----------------------------------*/
+        /*--추가 도움--*/
+        /*----------------------------------*/
+        .all-help{
+            background: linear-gradient(135deg,#e62b2b, #7e2020);
+            color: #fff;
+            border-radius: 12px;
+            padding: 24px 20px;
+            text-align: center;
+            box-shadow: 0 4px 4px rgba(0,0,0,0.08);
+        }
+
+        .help-box h3{
+            font-size: 17px;
+            margin-bottom: 6px;
+        }
+
+        .help-box p{
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        .help-buttons{
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-call, .btn-chat{
+            padding: 8px 14px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-call{
+            background: #fff;
+            color: #d91a1a;
+        }
+
+        .btn-chat{
+            background:  transparent;
+            border: 1px solid #fff;
+            color: #fff;
+        }
+
+        /*----------------------------------*/
+        /*--메인 컨텐츠--*/
+        /*----------------------------------*/
+        .productsRoom-content{
+            flex: 1;
+        }
+
+        .rate-header h1{
+            font-size: 26px;
+            margin-bottom: 10px;
+        }
+
+        .rate-header p{
+            font-size: 14px;
+            color: #555;
+            line-height: 1.7;
+            margin: 0;
+        }
+
+        .rate-period-wrap{
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: 24px;
+            margin-bottom: 8px;
+        }
+
+        .rate-period-main{
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .rate-period-main span{
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .rate-unit{
+            font-size: 13px;
+            color: #666;
+        }
+
+        .rate-table-wrap{
+            margin-top: 12px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            padding: 0 0 16px;
+        }
+
+        .rate-table{
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .rate-table thead th{
+            background: #fafafa;
+            border-top: 3px solid #c41e20;
+            border-bottom: 1px solid #ddd;
+            padding: 10px 6px;
+            font-weight: 600;
+        }
+
+        .rate-table thead tr:first-child th{
+            border-top: 3px solid #c41e20;
+        }
+
+        .rate-table tbody td{
+            border-bottom: 1px solid #eee;
+            padding: 10px 6px;
+        }
+
+        .rate-table tbody td:nth-child(2){
+            text-align: left;
+            padding-left: 18px;
+        }
+
+        .rate-table tbody tr:nth-child(even){
+            background: #fbfbfb;
+        }
+
+        .file-btn{
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 26px;
+            height: 26px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            background: #fff;
+            cursor: pointer;
+        }
+
+        .file-btn i{
+            font-size: 14px;
+        }
+
+        .file-btn:hover{
+            border-color: #c41e20;
+            color: #c41e20;
+        }
+
+        .rate-notice{
+            margin-top: 14px;
+            font-size: 12px;
+            color: #555;
+            line-height: 1.7;
+        }
+    </style>
+</head>
+<body>
+<!--헤더-->
+<div th:replace="~{layouts/header}"></div>
+
+<div class="productsRoom-page">
+    <!--왼쪽 사이드바-->
+    <aside class="all-sidebar">
+        <ul class="sidebar-menu">
+            <h2>퇴직연금사업자공시</h2>
+            <li><a href="./AnyProduct">운용금액 및 운용수익률</a></li>
+            <li><a href="./depositProduct">퇴직연금 계약서</a></li>
+            <li class="active"><a href="./bankManual">원리금 보장 상품 현황</a></li>
+            <li><a href="./serviceFee">수수료</a></li>
+        </ul>
+
+        <!--추가 도움 영역-->
+        <section class="all-help">
+            <div class="help-box">
+                <h3>추가 도움이 필요하신가요?</h3>
+                <p>전문 상담원이 친절하게 도와드리겠습니다.</p>
+                <div class="help-buttons">
+                    <button class="btn-call">전화상담</button>
+                    <button class="btn-chat">Talk상담</button>
+                </div>
+            </div>
+        </section>
+    </aside>
+
+    <!-- 메인 콘텐츠 -->
+    <main class="productsRoom-content">
+        <section class="rate-header">
+            <h1>원리금보장상품현황</h1>
+            <p>
+                당행이 사용자 및 가입자에게 제공 가능한 원리금보장 상품의 상품명, 만기, 적용금리 등을 확인하실 수 있습니다.<br>
+                (자사상품은 적용 게시일 3영업일 전, 타사상품은 적용 게시일 1영업일 전까지 공시)
+            </p>
+        </section>
+
+        <div class="rate-period-wrap">
+            <div class="rate-period-main">
+                자사제공상품 / 금리 적용기간 : <span>2025.11.01 ~ 2025.11.30 (공시시각16:50)</span>
+            </div>
+            <div class="rate-unit">(단위:%)</div>
+        </div>
+
+        <div class="rate-table-wrap">
+            <table class="rate-table">
+                <thead>
+                <tr>
+                    <th rowspan="2">구분</th>
+                    <th rowspan="2">상품명</th>
+                    <th rowspan="2">만기</th>
+                    <th rowspan="2">약관</th>
+                    <th rowspan="2">상품<br>설명서</th>
+                    <th colspan="3">예정 적용금리</th>
+                    <th rowspan="2">직전3개월간<br>적용금리 추이</th>
+                </tr>
+                <tr>
+                    <th>DB</th>
+                    <th>DC</th>
+                    <th>IRP</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- 6개월 -->
+                <tr>
+                    <td rowspan="7">부산은행</td>
+                    <td>정기예금</td>
+                    <td>6개월</td>
+                    <td></td>
+                    <td></td>
+                    <td>2.20</td>
+                    <td>2.20</td>
+                    <td>2.20</td>
+                    <td><button class="file-btn"><i class="fa-solid fa-download"></i></button></td>
+                </tr>
+                <!-- 12개월 -->
+                <tr>
+                    <td>정기예금</td>
+                    <td>12개월</td>
+                    <td></td>
+                    <td></td>
+                    <td>2.65</td>
+                    <td>2.65</td>
+                    <td>2.65</td>
+                    <td><button class="file-btn"><i class="fa-solid fa-download"></i></button></td>
+                </tr>
+                <!-- 18개월 -->
+                <tr>
+                    <td>정기예금</td>
+                    <td>18개월</td>
+                    <td><button class="file-btn"><i class="fa-solid fa-download"></i></button></td>
+                    <td><button class="file-btn"><i class="fa-solid fa-download"></i></button></td>
+                    <td>2.10</td>
+                    <td>2.10</td>
+                    <td>2.10</td>
+                    <td><button class="file-btn"><i class="fa-solid fa-download"></i></button></td>
+                </tr>
+                <!-- 24개월 -->
+                <tr>
+                    <td>정기예금</td>
+                    <td>24개월</td>
+                    <td></td>
+                    <td></td>
+                    <td>2.10</td>
+                    <td>2.10</td>
+                    <td>2.10</td>
+                    <td><button class="file-btn"><i class="fa-solid fa-download"></i></button></td>
+                </tr>
+                <!-- 30개월 -->
+                <tr>
+                    <td>정기예금</td>
+                    <td>30개월</td>
+                    <td></td>
+                    <td></td>
+                    <td>2.10</td>
+                    <td>2.10</td>
+                    <td>2.10</td>
+                    <td><button class="file-btn"><i class="fa-solid fa-download"></i></button></td>
+                </tr>
+                <!-- 36개월 -->
+                <tr>
+                    <td>정기예금</td>
+                    <td>36개월</td>
+                    <td></td>
+                    <td></td>
+                    <td>2.10</td>
+                    <td>2.10</td>
+                    <td>2.10</td>
+                    <td><button class="file-btn"><i class="fa-solid fa-download"></i></button></td>
+                </tr>
+                <!-- 디폴트옵션 36개월 -->
+                <tr>
+                    <td>디폴트옵션</td>
+                    <td>36개월</td>
+                    <td><button class="file-btn"><i class="fa-solid fa-download"></i></button></td>
+                    <td><button class="file-btn"><i class="fa-solid fa-download"></i></button></td>
+                    <td>0.00</td>
+                    <td>2.10</td>
+                    <td>2.10</td>
+                    <td><button class="file-btn"><i class="fa-solid fa-download"></i></button></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="rate-notice">
+            ※ 상기 금리는 세전 기준이며, 시장 상황 및 은행 사정에 따라 변경될 수 있습니다.
+        </div>
+    </main>
+</div>
+
+<!--푸터-->
+<div th:replace="~{layouts/footer}"></div>
+</body>
+</html>
+
+<script>
+    // header 불러오기
+    fetch(`${contextPath}/layouts/header.html`)
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('header').innerHTML = data;
+        })
+        .catch(err => console.error('[Header load failed]', err));
+
+    // chatbot import 기능
+    async function importHtmlWithAssets(url, mountSelector) {
+        try {
+            const res = await fetch(url, { credentials: 'same-origin' });
+            if (!res.ok) throw new Error(`Failed to load ${url}`);
+            const html = await res.text();
+
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+
+            doc.querySelectorAll('link[rel="stylesheet"]').forEach(link => {
+                const href = link.getAttribute('href');
+                const exists = [...document.head.querySelectorAll('link[rel="stylesheet"]')]
+                    .some(l => l.getAttribute('href') === href);
+                if (!exists && href) document.head.appendChild(link.cloneNode(true));
+            });
+
+            doc.querySelectorAll('style').forEach(styleEl => {
+                const clone = document.createElement('style');
+                clone.textContent = styleEl.textContent;
+                [...styleEl.attributes].forEach(a => clone.setAttribute(a.name, a.value));
+                document.head.appendChild(clone);
+            });
+
+            const mount = document.querySelector(mountSelector);
+            const frag = document.createDocumentFragment();
+            [...doc.body.children].forEach(node => {
+                if (node.tagName.toLowerCase() !== 'script') frag.appendChild(node.cloneNode(true));
+            });
+            mount.appendChild(frag);
+
+            const scripts = [...doc.querySelectorAll('script')];
+            for (const oldScript of scripts) {
+                const newScript = document.createElement('script');
+                [...oldScript.attributes].forEach(attr => newScript.setAttribute(attr.name, attr.value));
+                if (oldScript.src) {
+                    await new Promise(resolve => {
+                        newScript.onload = resolve;
+                        newScript.onerror = resolve;
+                        document.body.appendChild(newScript);
+                    });
+                } else {
+                    newScript.textContent = oldScript.textContent || '';
+                    document.body.appendChild(newScript);
+                }
+            }
+        } catch (err) {
+            console.error('[Chatbot load failed]', err);
+        }
+    }
+
+    // chatbot 불러오기
+    importHtmlWithAssets('/components/chatbot_test.html', '#bnk-chatbot-slot');
+
+    // footer 불러오기
+    fetch(`${contextPath}/layouts/footer.html`)
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('footer').innerHTML = data;
+        })
+        .catch(err => console.error('[Footer load failed]', err));
+</script>

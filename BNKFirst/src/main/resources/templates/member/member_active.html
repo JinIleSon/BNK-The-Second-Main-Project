@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>가입완료</title>
+
+</head>
+<body>
+<div th:replace="~{layouts/header.html}"></div>
+
+<div id="bnk-chatbot-container" style="position: fixed; right: 20px; bottom: 20px; z-index: 9999;">
+    <div id="bnk-chatbot-slot"></div>
+</div>
+<main>
+    <div class="container">
+        <h1 style="text-align: center;">신규가입</h1>
+        <div class="stepper" style="margin-bottom: 20px;">
+            <div class="step"><span class="dot">1</span>약관동의</div>
+            <div class="sep"></div>
+            <div class="step"><span class="dot">2</span>본인인증</div>
+            <div class="sep"></div>
+            <div class="step"><span class="dot">3</span>정보입력</div>
+            <div class="sep"></div>
+            <div class="step active"><span class="dot">4</span>가입완료</div>
+        </div>
+
+        <!-- 감싸기 -->
+        <div class="form-card" style="height: 350px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; line-height: 1.6;">
+
+            <!-- 체크 아이콘 -->
+            <div style="width: 70px; height: 70px; background-color: #E6FAE6; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 25px;">
+                <span style="font-size: 36px; color: #28a745;">✔</span>
+            </div>
+
+            <table style="text-align: center;">
+                <tr>
+                    <td>
+                        <span style="font-size: 30px; font-weight: 500;">신규가입이 완료되었습니다!</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding-top: 10px;">
+                        <span style="font-size: 22px;">부산은행과 함께 더 스마트하고 가치 있는 금융 생활을 시작하세요.</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding-top: 10px;">
+                        <span style="font-size: 20px;">이제 다양한 금융 서비스를 편리하게 이용하실 수 있습니다.</span>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- 가입 정보 -->
+        <div class="form-card" style="margin-top: 20px;">
+            <table class="member-table">
+                <tr class="title-row">
+                    <td colspan="4">가입정보</td>
+                </tr>
+                <tr>
+                    <td class="label-td">이름</td>
+                    <td class="value-td wide" th:text="${member.mname}"></td>
+
+                    <td class="label-td">휴대폰</td>
+                    <td class="value-td" th:text="${member.mphone}"></td>
+                </tr>
+                <tr>
+                    <td class="label-td">아이디</td>
+                    <td class="value-td wide" th:text="${member.mid}"></td>
+
+                    <td class="label-td">가입일시</td>
+                    <td class="value-td" th:text="${#temporals.format(member.mdate, 'yyyy.MM.dd HH:mm:ss')}"></td>
+                </tr>
+                <tr>
+                    <td class="label-td">이메일</td>
+                    <td class="value-td wide" th:text="${member.memail}"></td>
+                    <td class="label-td">회원등급</td>
+                    <td class="value-td" th:text="'Family'"></td>
+                </tr>
+                <tr>
+                    <td class="label-td">계좌번호</td>
+                    <td class="value-td wide" th:text="${accountNo}"></td>
+                    <td class="label-td">임시 비밀번호</td>
+                    <td class="value-td" th:text="${initAccountPw}"></td>
+                </tr>
+                <tr>
+                    <td colspan="4" style="color: #16a34a">
+                        ✔ 신분증을 지참하시어 가까운 영업점에서 비밀번호 변경 후 사용이 가능합니다.
+                    </td>
+                </tr>
+            </table>
+
+            <!-- 버튼 -->
+            <div class="btns" >
+                <a th:href="@{/member/main}" class="btn-register"
+                   style="display:inline-block; box-sizing:border-box; width:90%; height:42px; line-height:42px; border-radius:8px; background-color:#007BFF; color:white; text-align:center; text-decoration:none;">
+                    홈으로
+                </a>
+            </div>
+        </div>
+    </div>
+</main>
+<footer><div th:replace="~{layouts/footer.html}"></div></footer>
+</body>
+
+<style>
+    main {
+        width: 1200px;
+        background-color: #F6F6F8;
+        padding: 80px 20px;
+        margin: 0 auto;
+    }
+    body {
+        font-family: 'Noto Sans KR', '맑은 고딕', sans-serif;
+        background: #F6F6F8;
+        color: #111827;
+        line-height: 1.5;
+    }
+    .container { max-width: 1000px; margin: 0 auto; padding: 28px 16px 40px; }
+    .stepper {
+        width:800px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #f7f7f9;
+        border: 1px solid #e5e7eb;
+        border-radius: 999px;
+        padding: 10px 20px;
+    }
+    .step { display: flex; align-items: center; gap: 8px; color: #6b7280; font-weight: 600; }
+    .step .dot {
+        width: 28px; height: 28px; border-radius: 999px; display: grid; place-items: center;
+        border: 1px solid #d1d5db; background: #fff; color: #6b7280; font-weight: 700;
+    }
+    .step.active { color: #111; }
+    .step.active .dot { background: #d6001c; border-color: #d6001c; color: #fff; }
+    .sep { width: 28px; height: 2px; background: #e5e7eb; border-radius: 2px; }
+
+    /* 버튼 */
+    .btns { display: flex; justify-content: center; gap: 10px; margin: 25px 0 20px; }
+
+    a { text-decoration: none; color: inherit; }
+
+    /* 감싸는 */
+    .form-card {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 20px;
+        box-shadow: 0 10px 20px rgba(2,6,23,.06);
+        padding: 28px 30px;
+        margin: 0 auto;
+        max-width: 850px;
+    }
+
+    /* tr & td */
+    .member-table {
+        max-width: 1100px;
+        border-collapse: collapse;
+        table-layout: fixed;
+        color: #333;
+        text-align: center;
+    }
+
+    /* 제목행 제외하고만 줄 적용 */
+    .member-table tr:not(.title-row) {
+        border-bottom: 1px solid #eee;
+    }
+
+    .member-table td {
+        width: 200px;
+        font-size: 18px;
+        padding: 15px 15px;
+    }
+
+    .member-table .title-row td {
+        font-size: 24px;
+        font-weight: bold;
+        text-align: left;
+        padding: 0 10px 15px;
+    }
+
+    /* 왼쪽 라벨 */
+    .member-table .label-td {
+        font-weight: bold;
+        text-align: left;
+    }
+
+    /* 오른쪽 값 */
+    .member-table .value-td {
+        text-align: right;
+    }
+
+    /* 오른쪽 공백 넓히기 */
+    .member-table .wide {
+        padding-right: 40px;
+    }
+</style>
+</html>

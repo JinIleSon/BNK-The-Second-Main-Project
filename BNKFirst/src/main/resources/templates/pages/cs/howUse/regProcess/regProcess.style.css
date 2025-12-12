@@ -1,0 +1,335 @@
+/*----------------------------------*/
+/*--전체 페이지--*/
+/*----------------------------------*/
+body {
+  font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+  background: #F6F6F8;
+  margin: 0;
+  color: #222;
+  padding-top: 100px;
+}
+
+
+.howUse-page{
+    display:flex;
+    gap:40px;
+    width: 1200px;
+    margin: 60px auto;
+    padding: 40px 20px;
+    background: #F6F6F8;
+    border-radius: 8px;
+    margin-bottom: 100px;
+}
+
+
+
+/*----------------------------------*/
+/*--왼쪽 사이드바--*/
+/*----------------------------------*/
+.all-sidebar{
+    width: 250px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.all-sidebar h2{
+    font-size: 20px;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.sidebar-menu {
+    list-style:none;
+    padding: 20px;
+    margin: 0 0 40px 0;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 4px 4px rgba(0,0,0,0.08);
+}
+
+.sidebar-menu h2{
+    font-size: 17px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 16px;
+}
+
+.sidebar-menu li{
+    padding: 12px 16px;
+    border-radius:  6px;
+    color: #555;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+.sidebar-menu li:hover {
+    background: #f2f2f2;
+}
+
+.sidebar-menu li.active{
+    background: #ffe6e6;
+    border-left: 4px solid #d91a1a;
+    color: #d91a1a;;
+    font-weight:  600;
+    padding-left: 12px;
+}
+
+.sidebar-menu li:last-child{
+    border-bottom: none;
+}
+
+/*----------------------------------*/
+/*--추가 도움--*/
+/*----------------------------------*/
+.all-help{
+    background: linear-gradient(135deg,#e62b2b, #7e2020);
+    color: #fff;
+    border-radius: 12px;
+    padding: 24px 20px;
+    margin-top: 0;
+    text-align: center;
+    box-shadow: 0 4px 4px rgba(0,0,0,0.08);
+}
+
+.help-box h3{
+    font-size: 17px;
+    margin-bottom: 6px;
+}
+
+.help-box p{
+    font-size: 14px;
+    margin-bottom: 16px;
+}
+
+.help-buttons{
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.btn-call, .btn-chat{
+    padding: 8px 14px;
+    border: none;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.btn-call{
+    background: #fff;
+    color: #d91a1a;
+}
+
+.btn-chat{
+    background:  transparent;
+    border: 1px solid #fff;
+    color: #fff;
+}
+
+/*----------------------------------*/
+/*--메인 컨텐츠--*/
+/*----------------------------------*/
+
+.howUse-content{
+    flex: 1;
+}
+
+.howUse-header h1{
+    font-size: 24px;
+    margin-bottom: 8px;
+}
+
+.howUse-header p{
+    color: #666;
+    margin-bottom:  20px;
+}
+
+.howUse-search {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ddd;
+    border-radius: 30px;
+    padding: 6px 12px;
+    background: #fafafa;
+}
+
+/*----------------------------------*/
+/*-- 비밀번호 안내 페이지 --*/
+/*----------------------------------*/
+.password-section {
+  margin-bottom: 50px;
+}
+
+.password-section h2 {
+  font-size: 20px;
+  margin-bottom: 10px;
+  border-bottom: 2px solid #d91a1a;
+  padding-bottom: 6px;
+}
+
+.password-section p {
+  color: #555;
+  font-size: 15px;
+  line-height: 1.7;
+  margin-bottom: 6px;
+}
+
+/* Case Box */
+.case-box {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #f9f9f9;
+  margin-top: 20px;
+  margin-bottom: 16px;
+  padding: 16px;
+}
+
+.case-box h3 {
+  background: #eef2ff;
+  border-left: 4px solid #f73c3c;
+  padding: 8px 12px;
+  font-size: 16px;
+  font-weight: 600;
+  margin: -16px -16px 12px -16px;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.case-box h3 span {
+  margin-left: 10px;
+  font-weight: 500;
+  color: #333;
+}
+
+.case-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff;
+  border-radius: 6px;
+  border: 1px solid #eee;
+  padding: 12px 16px;
+  font-size: 15px;
+  color: #333;
+}
+
+.btn-small {
+  background: #d91a1a;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 14px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.btn-small:hover {
+  background: #b50f0f;
+}
+
+/*----------------------------------*/
+/*-- 가입절차 탭 버튼 --*/
+/*----------------------------------*/
+.join-type-btns {
+  display: flex;
+  gap: 10px;
+  margin: 20px 0 30px 0;
+}
+
+.join-btn {
+  border: 1px solid #ccc;
+  background: #fff;
+  color: #333;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.join-btn.active {
+  background: #d91a1a;
+  color: #fff;
+  border-color: #d91a1a;
+}
+
+/*----------------------------------*/
+/*-- 가입절차 콘텐츠 --*/
+/*----------------------------------*/
+.join-section {
+  display: none;
+}
+
+.join-section.active {
+  display: block;
+}
+
+.info-box {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  line-height: 1.6;
+  font-size: 15px;
+}
+
+/* Step Box */
+.step-box {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fafafa;
+  margin-bottom: 18px;
+  overflow: hidden;
+}
+
+.step-box h3 {
+  background: #f4f4f4;
+  border-bottom: 1px solid #ddd;
+  padding: 10px 16px;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.step-content {
+  padding: 16px 20px;
+  background: #fff;
+}
+
+.step-content h4 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #333;
+}
+
+.step-content p {
+  font-size: 14.5px;
+  color: #555;
+  line-height: 1.7;
+  margin-bottom: 10px;
+}
+
+/* 버튼 그룹 */
+.btn-group {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-small {
+  background: #d91a1a;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 14px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.btn-small:hover {
+  background: #b50f0f;
+}

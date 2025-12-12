@@ -1,0 +1,353 @@
+<div style="margin-top:10px;"></div>
+<div id="header"></div>
+
+<script>
+    // header.html 파일을 불러와서 #header에 삽입
+    fetch('/layouts/header.html')
+      .then(res => res.text())
+      .then(data => {
+        document.getElementById('header').innerHTML = data;
+      });
+      fetch('/layouts/footer.html')
+      .then(res => res.text())
+      .then(data => {
+        document.getElementById('footer').innerHTML = data;
+      });
+  </script>
+
+<main id="main">
+    <section class="hero">
+      <div class="container hero-grid">
+        <div>
+          <span class="badge" aria-label="BNK부산은행의 약속">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2l3 7h7l-5.6 4.1L18.9 21 12 16.9 5.1 21l2.5-7.9L2 9h7l3-7z" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
+            신뢰는 부산은행의 약속
+          </span>
+          <h1>쉽게 쓰는 금융,<br/>부산이 만든 새로운 기준</h1>
+          <p class="lead">송금부터 대출, 투자까지. 토스처럼 간결한 흐름으로, 부산은행의 신뢰감은 더했습니다.</p>
+          <div class="cta-group">
+            <button class="btn primary">앱 다운로드</button>
+            <button class="btn ghost">웹뱅킹 체험</button>
+          </div>
+        </div>
+        <div class="phone" aria-label="앱 미리보기">
+          <div class="phone-screen">
+            <div class="phone-ui">
+              <div class="ui-balance">
+                <span>나의 자산</span>
+                <strong>₩ 12,540,000</strong>
+              </div>
+              <div class="ui-grid">
+                <div class="ui-tile"><b>⇄</b>송금</div>
+                <div class="ui-tile"><b>₩</b>이체</div>
+                <div class="ui-tile"><b>🧾</b>내역</div>
+                <div class="ui-tile"><b>💳</b>카드</div>
+                <div class="ui-tile"><b>📈</b>투자</div>
+                <div class="ui-tile"><b>🏦</b>대출</div>
+                <div class="ui-tile"><b>🛡️</b>보안</div>
+                <div class="ui-tile"><b>…</b>더보기</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="features container">
+      <div class="feature-row reveal">
+        <div class="feature">
+          <h3>송금은 더 빠르게, 수수료는 가볍게</h3>
+          <p>자주 쓰는 계좌는 자동으로 위로 모아줘요. 지문/페이스 아이디로 1초 인증, 이체 한 번에 끝.</p>
+          <div class="mini">
+            <div class="kpi"><b>1초</b>바로 인증</div>
+            <div class="kpi"><b>0원</b>취급 수수료(조건부)</div>
+            <div class="kpi"><b>24/7</b>언제든 이체</div>
+          </div>
+        </div>
+        <div class="illus" aria-hidden="true">송금/이체 일러스트 자리</div>
+      </div>
+
+      <div class="feature-row reveal">
+        <div class="illus" aria-hidden="true">신용/자산 관리 일러스트 자리</div>
+        <div class="feature">
+          <h3>내 자산을 한 눈에, 자동으로 정리</h3>
+          <p>다른 은행·카드까지 연동하면 지출이 자동 분류돼요. 월간 리포트로 현명한 소비 습관 만들기.</p>
+          <div class="mini">
+            <div class="kpi"><b>모아보기</b>타은행 연동</div>
+            <div class="kpi"><b>알림</b>소비 패턴</div>
+            <div class="kpi"><b>리포트</b>월별 리마인드</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="feature-row reveal">
+        <div class="feature">
+          <h3>대출 비교부터 신청까지, 복잡함 없이</h3>
+          <p>조건을 입력하면 한 번에 비교해 최적의 금리를 추천해요. 사전한도 조회는 신용점수에 영향 없어요.</p>
+          <div class="mini">
+            <div class="kpi"><b>간편</b>사전한도 조회</div>
+            <div class="kpi"><b>비교</b>여러 상품</div>
+            <div class="kpi"><b>안심</b>신용점수 영향 無</div>
+          </div>
+        </div>
+        <div class="illus" aria-hidden="true">대출 비교 일러스트 자리</div>
+      </div>
+    </section>
+
+    <section class="container trust reveal" aria-label="보안 및 신뢰 안내" style="justify-content: center;">
+      <div>
+        <h4>보안은 기본, 신뢰는 약속</h4>
+        <p>FIDO 생체 인증, 이상거래 탐지(AML), 실시간 알림까지. 부산은행의 보안 체계를 앱 전반에 적용했습니다.</p>
+      </div>
+      <div>
+        <ul>
+          <li>지문/얼굴 인식 로그인</li>
+          <li>1일/1회 한도 관리 및 잠금</li>
+          <li>분실 시 원격 접속 차단</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="container products">
+      <h2 style="margin:0 0 12px; letter-spacing:-0.4px;">BNK 대표 상품</h2>
+      <p style="margin:0 0 18px; color:var(--ink-2);">자주 찾는 예금, 적금, 카드, 주담대/신용대출을 간단히.</p>
+      <div class="grid-3">
+        <article class="card reveal">
+          <span class="pill">개인</span>
+          <h5>BNK 입출금 통장</h5>
+          <p>수수료 면제 혜택과 간편 자동이체.</p>
+          <a class="cta" href="#"><span aria-hidden="true">→</span>자세히 보기</a>
+        </article>
+        <article class="card reveal">
+          <span class="pill">저축</span>
+          <h5>BNK 정기적금</h5>
+          <p>목표 기반 챌린지와 자동 저축으로 습관 만들기.</p>
+          <a class="cta" href="#"><span aria-hidden="true">→</span>금리 보기</a>
+        </article>
+        <article class="card reveal">
+          <span class="pill">대출</span>
+          <h5>BNK 신용대출</h5>
+          <p>무서류 간편 신청, 사전한도 조회 가능.</p>
+          <a class="cta" href="#"><span aria-hidden="true">→</span>사전한도 조회</a>
+        </article>
+      </div>
+    </section>
+
+    <section class="container region reveal" aria-label="지역 정체성">
+      <div>
+        <h3 style="margin:0 0 8px;">부산의 금융, 부산의 사람들</h3>
+        <p>BNK부산은행은 지역과 함께 성장해 왔습니다. 부산의 바다, 항만, 그리고 사람들의 일상을 더 편리하게 만드는 금융을 만듭니다.</p>
+      </div>
+      <div class="wave" aria-hidden="true">
+        <svg viewBox="0 0 1200 200" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+          <path d="M0,120 C150,160 350,60 600,120 C850,180 1050,100 1200,140 L1200,200 L0,200 Z" fill="rgba(0,45,91,0.20)"/>
+          <path d="M0,140 C150,180 350,80 600,140 C850,200 1050,120 1200,160 L1200,200 L0,200 Z" fill="rgba(230,0,18,0.10)"/>
+        </svg>
+      </div>
+    </section>
+
+    <section class="container cta-band reveal" aria-label="앱 다운로드">
+      <div>
+        <h3>BNK 앱으로 더 간편하게</h3>
+        <p style="color:var(--ink-2); margin: 0 0 12px;">토스의 직관적인 흐름을 닮은, 부산은행의 신뢰감 있는 경험을 지금 시작하세요.</p>
+        <div class="store-badges">
+          <a href="#" aria-label="App Store에서 다운로드"> App&nbsp;Store</a>
+          <a href="#" class="light" aria-label="Google Play에서 다운로드">▶ Google&nbsp;Play</a>
+        </div>
+      </div>
+      <div class="illus" aria-hidden="true">앱 스토어 미리보기 자리</div>
+    </section>
+  </main>
+
+  <div id="footer"></div>
+  <meta name="theme-color" content="#E60012" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23E60012'/%3E%3Ctext x='50' y='58' font-size='56' text-anchor='middle' fill='white' font-family='Arial, Helvetica, sans-serif'%3EB%3C/text%3E%3C/svg%3E" />
+  <style>
+    :root {
+      --bnk-red: #E60012;
+      --bnk-red-600: #cc0010;
+      --bnk-navy: #002D5B;
+      --ink: #0f172a;
+      --ink-2: #334155;
+      --bg: #ffffff;
+      --bg-2: #f6f7f9;
+      --border: #e5e7eb;
+      --focus: #2563eb;
+      --radius: 14px;
+      --shadow-1: 0 2px 10px rgba(2, 6, 23, 0.06);
+      --shadow-2: 0 10px 30px rgba(2, 6, 23, 0.10);
+      --maxw: 1120px;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Noto Sans KR, Apple SD Gothic Neo, "맑은 고딕", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+    .skip-link {
+      position: absolute; left: -9999px; top: auto; width: 1px; height: 1px; overflow: hidden;
+    }
+    .skip-link:focus {
+      left: 16px; top: 16px; width: auto; height: auto; padding: 8px 12px;
+      background: var(--bnk-red); color: #fff; border-radius: 8px; z-index: 10000;
+    }
+    header {
+      position: sticky; top: 0; z-index: 50;
+      backdrop-filter: saturate(180%) blur(10px);
+      background: color-mix(in srgb, var(--bg) 85%, transparent);
+      border-bottom: 1px solid var(--border);
+    }
+    .container { max-width: var(--maxw); margin: 0 auto; padding: 0 20px; }
+    .nav { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+    .brand { display: inline-flex; align-items: center; gap: 12px; text-decoration: none; color: inherit; }
+    .brand-logo {
+      width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center;
+      background: linear-gradient(140deg, var(--bnk-red), var(--bnk-red-600));
+      color: #fff; font-weight: 800; letter-spacing: 0.5px; box-shadow: var(--shadow-1);
+    }
+    .brand-name { font-weight: 800; letter-spacing: -0.2px; }
+    nav ul { list-style: none; display: flex; gap: 22px; padding: 0; margin: 0; }
+    nav a { text-decoration: none; color: var(--ink-2); font-weight: 600; font-size: 0.95rem; }
+    nav a:hover, nav a:focus { color: var(--ink); outline: none; }
+    .cta-group { display: flex; align-items: center; gap: 10px; }
+    .btn {
+      appearance: none; border: 1px solid var(--border); background: var(--bg); color: var(--ink);
+      padding: 10px 14px; border-radius: 12px; font-weight: 700; cursor: pointer; box-shadow: var(--shadow-1);
+    }
+    .btn.primary { background: var(--bnk-red); border-color: var(--bnk-red); color: #fff; }
+    .btn.primary:hover { background: var(--bnk-red-600); }
+    .btn.ghost:hover { border-color: var(--ink-2); }
+
+    .hero {
+      padding: 72px 0 28px;
+      background:
+        radial-gradient(60% 60% at 80% -10%, color-mix(in srgb, var(--bnk-red) 16%, transparent), transparent 60%),
+        linear-gradient(to bottom, color-mix(in srgb, var(--bg-2) 60%, transparent), transparent);
+    }
+    .hero-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 36px; align-items: center; }
+    .hero h1 { font-size: clamp(32px, 6vw, 56px); line-height: 1.1; letter-spacing: -0.8px; margin: 0 0 16px; }
+    .hero p.lead { font-size: clamp(16px, 2.3vw, 20px); color: var(--ink-2); margin: 0 0 24px; }
+    .hero .badge {
+      display: inline-flex; gap: 8px; align-items: center; padding: 6px 10px; border-radius: 999px;
+      border: 1px solid var(--border); background: var(--bg-2); color: var(--ink-2); font-weight: 700; font-size: 0.85rem;
+    }
+    .phone {
+      aspect-ratio: 9/19.5; border-radius: 26px; border: 1px solid var(--border); background: var(--bg);
+      box-shadow: var(--shadow-2); padding: 10px; overflow: hidden;
+    }
+    .phone-screen {
+      height: 100%; border-radius: 20px; background: linear-gradient(180deg, var(--bg-2), var(--bg));
+      display: grid; place-items: center; position: relative;
+    }
+    .phone-ui {
+      width: 88%; max-width: 320px; border-radius: 16px; border: 1px solid var(--border);
+      background: var(--bg); box-shadow: var(--shadow-1); padding: 16px; display: grid; gap: 10px;
+    }
+    .ui-balance { display: flex; align-items: baseline; justify-content: space-between; }
+    .ui-balance strong { font-size: 1.6rem; letter-spacing: -0.3px; }
+    .ui-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    .ui-tile {
+      border: 1px solid var(--border); border-radius: 12px; padding: 10px; text-align: center; font-size: 12px;
+      background: var(--bg);
+    }
+    .ui-tile b { display: block; font-size: 20px; margin-bottom: 4px; }
+
+    .features { padding: 36px 0 12px; }
+    .feature-row {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: center;
+      padding: 28px 0; border-top: 1px solid var(--border);
+    }
+    .feature-row:first-child { border-top: none; }
+    .feature h3 { font-size: 28px; margin: 0 0 8px; letter-spacing: -0.4px; }
+    .feature p { color: var(--ink-2); margin: 0 0 16px; }
+    .feature .mini { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .kpi { border: 1px solid var(--border); border-radius: 12px; padding: 14px; text-align: center; background: var(--bg-2); }
+    .kpi b { display: block; font-size: 22px; }
+    .illus {
+      border: 1px dashed var(--border); border-radius: 16px; min-height: 220px; display: grid; place-items: center;
+      background: conic-gradient(from 180deg at 50% 50%, #ffffff00, color-mix(in srgb, var(--bnk-red) 7%, transparent), #ffffff00);
+    }
+
+    .trust {
+      margin: 48px 0; padding: 28px; border: 1px solid var(--border); border-radius: 16px; background: var(--bg-2);
+      display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: center;
+    }
+    .trust h4 { margin: 0 0 8px; font-size: 22px; }
+    .trust p { margin: 0; color: var(--ink-2); }
+
+    .products { padding: 16px 0 48px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .card {
+      border: 1px solid var(--border); border-radius: 16px; padding: 18px; background: var(--bg);
+      box-shadow: var(--shadow-1); display: grid; gap: 10px;
+    }
+    .card h5 { margin: 0; font-size: 18px; }
+    .pill {
+      display: inline-block; font-size: 12px; padding: 4px 8px; border-radius: 999px;
+      background: color-mix(in srgb, var(--bnk-red) 12%, var(--bg-2)); color: var(--bnk-navy); font-weight: 700;
+      border: 1px solid var(--border);
+    }
+    .card .cta { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; text-decoration: none; color: var(--bnk-red); }
+    .card .cta:hover { text-decoration: underline; }
+
+    .cta-band {
+      margin: 28px 0 56px; border-radius: 20px; padding: 28px;
+      background:
+        radial-gradient(120% 140% at 110% -10%, color-mix(in srgb, var(--bnk-red) 18%, transparent), transparent 40%),
+        linear-gradient(180deg, var(--bg-2), var(--bg));
+      border: 1px solid var(--border);
+      display: grid; grid-template-columns: 1.3fr 1fr; gap: 18px; align-items: center;
+    }
+    .cta-band h3 { margin: 0 0 6px; letter-spacing: -0.4px; }
+    .store-badges { display: flex; gap: 10px; flex-wrap: wrap; }
+    .store-badges a {
+      display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 12px;
+      background: #111; color: #fff; text-decoration: none; font-weight: 700; font-size: 14px;
+    }
+    .store-badges a.light { background: #fff; color: #111; border: 1px solid var(--border); }
+
+    .region {
+      margin: 56px 0 12px; padding: 22px; border: 1px solid var(--border); border-radius: 16px;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: center; background: var(--bg);
+    }
+    .region .wave {
+      width: 100%; height: 220px; border-radius: 14px; overflow: hidden; border: 1px solid var(--border);
+      background: linear-gradient(180deg, color-mix(in srgb, var(--bnk-navy) 6%, transparent), transparent);
+      position: relative;
+    }
+    .region .wave svg { position: absolute; bottom: -2px; left: 0; width: 100%; height: auto; }
+    .region p { margin: 0; color: var(--ink-2); }
+
+    footer { border-top: 1px solid var(--border); background: var(--bg); padding: 28px 0 56px; color: var(--ink-2); }
+    .f-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 24px; }
+    .f-grid a { color: inherit; text-decoration: none; }
+    .f-grid a:hover { text-decoration: underline; }
+    .legal { margin-top: 22px; font-size: 12px; color: var(--ink-2); }
+
+    @media (max-width: 980px) {
+      .hero-grid, .trust, .cta-band, .region { grid-template-columns: 1fr; }
+      nav ul { display: none; }
+    }
+    @media (max-width: 680px) { .grid-3 { grid-template-columns: 1fr; } }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .reveal { opacity: 0; transform: translateY(16px); transition: all .6s ease; }
+      .reveal.visible { opacity: 1; transform: none; }
+    }
+    .container.trust {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;     /* 세로 가운데 */
+  justify-items: start;    /* 가로는 왼쪽(기본값) */
+}
+/* 필요하면 첫 번째/두 번째 컬럼만 별도 조정도 가능 */
+/* .container.trust > :first-child { justify-self:end; text-align:right; } */
+/* .container.trust > :last-child  { justify-self:start; text-align:left; } */
+/* 다크모드에서도 라이트 변수값을 그대로 사용 */
+
+  </style>

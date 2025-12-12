@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>IRP계좌개설 - QR 본인인증</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Pretendard','Noto Sans KR',sans-serif;
+            background: #F6F6F8;
+            color: #222;
+        }
+
+        main {
+            min-height: calc(100vh - 200px);
+        }
+
+        .qr-wrap {
+            max-width: 520px;
+            margin: 50px auto 80px;
+            padding: 0 20px 40px;
+        }
+
+        .qr-title {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .qr-title-main {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .qr-title-sub {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .qr-card {
+            background: #fff;
+            border-radius: 24px;
+            padding: 28px 24px 24px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+
+        .qr-box {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 16px;
+            background: #F5F6FB;
+            padding: 18px;
+            margin-bottom: 16px;
+        }
+
+        #qrcode {
+            width: 210px;
+            height: 210px;
+        }
+
+        .qr-guide-main {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .qr-guide-sub {
+            font-size: 12px;
+            color: #777;
+            line-height: 1.6;
+            margin-bottom: 14px;
+        }
+
+        .qr-step-list {
+            text-align: left;
+            display: inline-block;
+            font-size: 12px;
+            color: #555;
+            line-height: 1.7;
+            margin-top: 4px;
+        }
+
+        .qr-status {
+            margin-top: 14px;
+            font-size: 12px;
+            color: #888;
+        }
+
+        .qr-status span.dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #36C;
+            margin-right: 4px;
+            vertical-align: middle;
+            animation: blink 1.2s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div th:replace="~{layouts/header.html}"></div>
+</header>
+
+<main>
+    <section class="qr-wrap">
+        <div class="qr-title">
+            <div class="qr-title-main">휴대폰으로 인증을 진행해주세요</div>
+            <div class="qr-title-sub">
+                혜안은행 앱 또는 모바일 브라우저에서<br>
+                아래 QR 코드를 스캔해 신분증 인증을 완료해주세요.
+            </div>
+        </div>
+
+        <div class="qr-card">
+            <div class="qr-box">
+                <div id="qrcode"></div>
+            </div>
+
+            <div class="qr-guide-main">
+                휴대폰 카메라로 QR 코드를 스캔하세요
+            </div>
+            <div class="qr-guide-sub">
+                스캔 후 열리는 화면에서 본인 정보를 입력하고<br>
+                신분증 인증을 완료하시면 다음 단계로 진행됩니다.
+            </div>
+
+            <div class="qr-step-list">
+                1. 휴대폰 카메라 또는 QR 스캐너 앱을 실행합니다.<br>
+                2. 화면의 QR 코드를 인식합니다.<br>
+                3. 열린 페이지에서 이름·생년월일·휴대폰 번호를 입력합니다.<br>
+                4. 신분증 인증을 완료하면 본 화면이 자동으로 전환됩니다.
+            </div>
+
+            <div class="qr-status" id="qrStatus">
+                <span class="dot"></span>
+                모바일에서 인증을 진행 중입니다...
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer>
+    <div th:replace="~{layouts/footer.html}"></div>
+</footer>
+</body>
+</html>
+
+<!-- QR 코드 라이브러리 -->
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+
+<script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', function () {
+        const qrContainer = document.getElementById('qrcode');
+        const statusEl = document.getElementById('qrStatus');
+        if (!qrContainer) return;
+
+        const token = /*[[${qrToken}]]*/ '';
+
+        // 컨텍스트 경로 (/BNK/)
+        const contextPath = '/BNK/';   // 예: "/BNK/"
+
+        // PC에서 사용하는 상대 경로
+        const statusUrl = contextPath + 'auth/qr/status?token=' + encodeURIComponent(token);
+
+        // ✅ QR 안에 넣을 "절대 URL" (휴대폰에서 사용)
+        const serverIp = "3.39.247.70"; // PC IP
+        const mobileUrlPath = "/BNK/auth/qr/mobile?token=" + encodeURIComponent(token);
+
+        // 최종 URL
+        const mobileUrl = "http://" + serverIp + ":8080" + mobileUrlPath;
+
+        console.log("mobileUrl =", mobileUrl);
+        console.log('statusUrl =', statusUrl);
+
+        // QR 코드 생성
+        new QRCode(qrContainer, {
+            text: mobileUrl,
+            width: 210,
+            height: 210,
+            correctLevel: QRCode.CorrectLevel.M
+        });
+
+        // PC에서만 폴링하면 되니까 statusUrl 은 상대경로로 OK
+        const intervalId = setInterval(function () {
+            fetch(statusUrl)
+                .then(res => res.json())
+                .then(data => {
+                    if (!data || !data.status) return;
+                    if (data.status === 'VERIFIED') {
+                        clearInterval(intervalId);
+                        statusEl.textContent = '모바일에서 인증이 완료되었습니다. 잠시 후 다음 단계로 이동합니다.';
+                        setTimeout(function () {
+                            window.location.href = contextPath + 'irp/account/page5';
+                        }, 1200);
+                    } else if (data.status === 'EXPIRED') {
+                        clearInterval(intervalId);
+                        statusEl.textContent = 'QR 코드가 만료되었습니다. 다시 시도해 주세요.';
+                    }
+                })
+                .catch(console.error);
+        }, 2000);
+    });
+</script>
+

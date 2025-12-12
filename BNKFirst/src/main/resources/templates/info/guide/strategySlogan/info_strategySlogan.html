@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BNK부산은행 | 그룹 전략 슬로건 </title>
+
+</head>
+
+<body>
+<header>
+    <div th:replace="~{layouts/info/_header.html}"></div>
+</header>
+
+    <main>
+
+        <!-- ===== 사이드바 ===== -->
+        <aside th:replace="~{layouts/info/_sidebar.html}"></aside>
+
+
+
+        <!-- ===== 본문 ===== -->
+        <section class="content">
+            <div class="page-title">
+                <h1>그룹 전략 슬로건</h1>
+            </div>
+
+            <div class="strategy-block">
+                <div class="strategy-card" style="text-align:center;">
+                    <p style="font-size:32px; font-weight:700; line-height:1.5;">
+                        TOUCH <span style="color:#DE0000; font-weight:700;">Your Heart,</span> BNK
+                    </p>
+                </div>
+            </div>
+
+            <div class="strategy-block" style="text-align:left; max-width:800px; margin:40px auto;">
+                <h2 style="color:#a97c50; font-size:20px; font-weight:700;">Personal Touch</h2>
+                <p style="font-size:16px; line-height:1.8; color:#333;">
+                    모든 고객 한분 한분께 정성을 담아 고객에게 맞는 최상의 금융을 통해 고객에게 감동을 전하겠습니다.
+                </p>
+            </div>
+
+            <div class="strategy-block" style="text-align:left; max-width:800px; margin:40px auto;">
+                <h2 style="color:#a97c50; font-size:20px; font-weight:700;">Digital Touch</h2>
+                <p style="font-size:16px; line-height:1.8; color:#333;">
+                    극강의 편의성을 갖춘 디지털 금융을 고객에게 제공함으로써 놀라움을 선사하겠습니다.
+                </p>
+            </div>
+
+            <div class="strategy-block" style="text-align:left; max-width:800px; margin:40px auto;">
+                <h2 style="color:#a97c50; font-size:20px; font-weight:700;">Human Touch</h2>
+                <p style="font-size:16px; line-height:1.8; color:#333;">
+                    핀테크와는 차별화되는 인간미를 느낄 수 있는 감성을 담은 BNK만의 따뜻한 금융을 완성해 나가겠습니다.
+                </p>
+            </div>
+        </section>
+    </main>
+
+
+<script>
+
+    // Sidebar toggle
+    const titles = document.querySelectorAll(".menu-title");
+    titles.forEach(title => {
+        title.addEventListener("click", () => {
+            const isActive = title.classList.contains("active");
+            titles.forEach(t => {
+                t.classList.remove("active");
+                const next = t.nextElementSibling;
+                if (next && next.classList.contains("submenu")) {
+                    next.style.maxHeight = null;
+                }
+            });
+            if (!isActive) {
+                title.classList.add("active");
+                const submenu = title.nextElementSibling;
+                if (submenu && submenu.classList.contains("submenu")) {
+                    submenu.style.maxHeight = submenu.scrollHeight + "px";
+                }
+            }
+        });
+    });
+</script>
+
+
+<style>
+    :root {
+        --bnk-red: #DE0000;
+        --bnk-gray: #444;
+        --bnk-border: #ddd;
+        --bnk-gradient: linear-gradient(90deg, #5B6BF2, #D34F9B);
+    }
+
+    body {
+        font-family: "Noto Sans KR", sans-serif;
+        margin-top: 60px;
+        background-color: #fafafa;
+        color: #222;
+    }
+
+
+
+    main {
+        display: flex;
+        justify-content: center;
+        gap: 40px;
+        width: 80%;
+        margin: 100px auto;
+
+    }
+
+    /* ========== 사이드 메뉴 ========== */
+    .sidebar {
+        width: 260px;
+        background: #fff;
+        border: 1px solid var(--bnk-border);
+        border-radius: 4px;
+    }
+
+    .sidebar h3 {
+        font-size: 18px;
+        font-weight: 600;
+        padding: 16px;
+        border-bottom: 1px solid var(--bnk-border);
+    }
+
+    .menu-item {
+        border-bottom: 0px solid var(--bnk-border);
+    }
+
+    .menu-title {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 14px 16px;
+        cursor: pointer;
+        color: var(--bnk-gray);
+        font-weight: 500;
+        transition: all 0.2s;
+        text-decoration: none;
+        /* 밑줄 제거 */
+    }
+
+    .menu-title:hover {
+        background-color: #fff5f5;
+        color: var(--bnk-red);
+    }
+
+    .menu-title.active {
+        background-color: #fff5f5;
+        color: var(--bnk-red);
+        font-weight: 600;
+    }
+
+    .menu-title::after {
+        content: ">";
+        color: var(--bnk-gray);
+        transition: transform 0.2s;
+    }
+
+    .menu-title.active::after {
+        transform: rotate(90deg);
+        color: var(--bnk-red);
+    }
+
+    .submenu {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+        background-color: #fafafa;
+    }
+
+    .submenu a {
+        display: block;
+        padding: 10px 24px;
+        text-decoration: none;
+        color: var(--bnk-gray);
+        font-size: 14px;
+        border-left: 2px solid transparent;
+        transition: all 0.2s;
+    }
+
+    .submenu a:hover {
+        color: var(--bnk-red);
+        border-left: 2px solid var(--bnk-red);
+        background-color: #fff;
+    }
+
+    .submenu a.active {
+        font-weight: 600;
+        color: var(--bnk-red);
+        border-left: 2px solid var(--bnk-red);
+    }
+
+    /* ========== 본문 ========== */
+    .content {
+        flex: 1;
+    }
+
+    .page-title {
+        text-align: left;
+        margin-bottom: 40px;
+        border-bottom: 2px solid var(--bnk-red);
+        padding-bottom: 10px;
+    }
+
+    .page-title h1 {
+        font-size: 26px;
+        margin: 0;
+    }
+
+    .strategy-block {
+        margin-bottom: 40px;
+        text-align: center;
+    }
+
+    .strategy-block h2 {
+        font-size: 20px;
+        margin-bottom: 16px;
+        color: var(--bnk-gray);
+    }
+
+    .strategy-card {
+        background: #fff;
+        border: 1px solid var(--bnk-border);
+        border-radius: 16px;
+        padding: 40px 20px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        display: inline-block;
+        width: 80%;
+        transition: transform 0.2s;
+    }
+
+    .strategy-card:hover {
+        transform: translateY(-4px);
+    }
+
+    .strategy-card p {
+        font-size: 22px;
+        line-height: 1.6;
+    }
+
+    .strategy-card strong {
+        color: var(--bnk-red);
+        font-weight: 700;
+    }
+
+    .gradient-text {
+        background: var(--bnk-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-weight: 700;
+    }
+
+
+    @media (max-width: 1024px) {
+        main {
+            flex-direction: column;
+            width: 90%;
+        }
+
+        .sidebar {
+            width: 100%;
+        }
+
+        .strategy-card {
+            width: 100%;
+        }
+    }
+</style>
+</body>
+<footer>
+    <div th:replace="~{layouts/footer.html}"></div>
+</footer>
+</html>

@@ -1,0 +1,583 @@
+:root {
+    --main: #8B0305; /* 메인 컬러 */
+    --point: #d61a1a; /* 포인트 컬러 */
+    --shadow: rgba(217,26,26,.45);
+    --bg: #F6F6F8;
+    --card: #FFFFFF;
+    --line: #E5E7EB;
+    --text-main: #111827;
+    --text-sub: #6B7280;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--text-main);
+}
+
+main {
+    max-width: 1200px;
+    margin: 40px auto 80px;
+    padding: 0 24px;
+}
+
+/* 페이지 헤더 */
+.page-header h1 {
+    margin: 0 0 6px;
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--text-main);
+}
+
+.page-header p {
+    margin: 0 0 18px;
+    font-size: 14px;
+    color: var(--text-sub);
+}
+
+/* 탭 버튼 */
+.page-tabs {
+    display: inline-flex;
+    background: #E5E7EB;
+    padding: 3px;
+    border-radius: 999px;
+    margin-bottom: 20px;
+}
+
+.tab-btn {
+    border: none;
+    background: transparent;
+    padding: 8px 18px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #4B5563;
+    cursor: pointer;
+    transition: background .15s ease, color .15s ease, box-shadow .15s ease;
+}
+
+.tab-btn.is-active {
+    background: linear-gradient(180deg, #f24a4a, #d61a1a);
+    box-shadow: 0 8px 18px -12px var(--shadow);
+    transform: none;
+    color: white;
+    font-weight: 500;
+}
+
+/* 패널 공통 */
+.panel {
+    background: var(--card);
+    border-radius: 18px;
+    border: 1px solid var(--line);
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
+    padding: 22px 24px 24px;
+}
+
+.panel-title {
+    margin: 0 0 14px;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.tab-panel {
+    display: none;
+}
+
+.tab-panel.is-active {
+    display: block;
+}
+
+/* 요약 영역 */
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.summary-item {
+    border-radius: 14px;
+    border: 1px solid #E5E7EB;
+    background: #F9FAFB;
+    padding: 12px 14px;
+}
+
+.summary-item.highlight {
+    background: #FDEEEE;
+    border-color: var(--point);
+}
+
+.summary-label {
+    font-size: 12px;
+    color: var(--text-sub);
+    margin-bottom: 4px;
+}
+
+.summary-value {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--main);
+}
+
+.summary-extra {
+    font-size: 12px;
+    color: var(--text-sub);
+    margin-top: 2px;
+}
+
+.section-divider {
+    border-top: 1px solid #E5E7EB;
+    margin: 18px 0;
+}
+
+/* 리스트 헤더 */
+.list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.list-header h2 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.list-header span {
+    font-size: 13px;
+    color: var(--text-sub);
+}
+
+/* 상품 카드 그리드 */
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(260px, 1fr));
+    gap: 14px;
+}
+
+@media (max-width: 1024px) {
+    .product-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .summary-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .product-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.product-card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 16px 16px 14px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 카드 상단 */
+.card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+    min-height: 72px; /* 헤더 최소 높이 고정 → 아래 영역 정렬용, 필요하면 수치 조정 */
+}
+
+.prod-left {
+    display: flex;
+    gap: 10px;
+}
+
+.prod-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: #FDEEEE;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: var(--main);
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.prod-title {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.prod-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.prod-sub {
+    font-size: 12px;
+    color: var(--text-sub);
+}
+
+.radio-wrap {
+    margin-left: auto;
+}
+
+.radio-wrap input[type="radio"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--main);
+}
+
+/* 상세 수치 */
+.prod-meta {
+    margin: 0;
+    padding: 8px 0 0;
+    border-top: 1px dashed #E5E7EB;
+}
+
+.meta-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    font-size: 13px;
+    margin-bottom: 4px;
+}
+
+.meta-row dt {
+    margin: 0;
+    color: var(--text-sub);
+}
+
+.meta-row dd {
+    margin: 0;
+    font-weight: 600;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+}
+
+.rate {
+    font-weight: 700;
+}
+
+.rate.plus {
+    color: #DC2626;
+}
+
+/* + 수익 */
+.rate.minus {
+    color: #2563EB;
+}
+
+/* - 수익 */
+
+/* 버튼 */
+.card-actions {
+    margin-top: 8px;
+    display: flex;
+    gap: 8px;
+}
+
+.btn {
+    flex: 1;
+    height: 36px;
+    border-radius: 999px !important;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.06s ease, box-shadow 0.12s ease, background 0.12s ease;
+}
+
+.btn-main {
+    background: linear-gradient(180deg, #F6555C, var(--point));
+    color: white;
+    box-shadow: 0 8px 18px -12px var(--shadow);
+}
+
+.btn-main:hover {
+    background: linear-gradient(180deg, #f24a4a, #d61a1a);
+    box-shadow: 0 8px 18px -12px var(--shadow);
+    transform: none; /* 확실하게 떠오르지 않도록 고정 */
+}
+
+.btn-outline {
+    background: #FFFFFF;
+    color: var(--main);
+    border: 1px solid var(--main);
+}
+
+.btn:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.12);
+}
+
+/* 매수 입력 필드 */
+.amount-input {
+    width: 140px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1px solid #D1D5DB;
+    padding: 0 8px;
+    font-size: 13px;
+    text-align: right;
+}
+
+.amount-input:focus {
+    outline: 2px solid rgba(143, 121, 42, .25);
+    border-color: var(--main);
+}
+
+.hint {
+    font-size: 11px;
+    color: var(--text-sub);
+    margin-left: 6px;
+}
+
+.buy-card .card-actions {
+    margin-top: 10px;
+}
+
+/* 숨겨진 매수 입력 영역 */
+.buy-input-area {
+    display: none;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed #E5E7EB;
+}
+
+/* 카드에 is-buy-open 클래스가 붙으면 입력 영역 보이기 */
+.buy-card.is-buy-open .buy-input-area {
+    display: block;
+}
+
+/* 입력창이 열렸을 때 위쪽의 '매수하기' 버튼은 숨김 */
+.buy-card.is-buy-open .card-actions .btn-toggle-buy {
+    display: none;
+}
+
+/* 일부매도 입력 영역(처음엔 숨김) */
+.sell-input-area {
+    display: none;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed #E5E7EB;
+}
+
+/* 카드에 is-part-open 붙으면 입력창 보이게 */
+.sell-card.is-part-open .sell-input-area {
+    display: block;
+}
+
+/* 입력창이 열렸을 때 '일부매도' 버튼은 숨김 */
+.sell-card.is-part-open .card-actions .btn-partial-toggle {
+    display: none;
+}
+
+.percent-input {
+    width: 70px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1px solid #D1D5DB;
+    padding: 0 8px;
+    font-size: 13px;
+    text-align: right;
+}
+
+.percent-input:focus {
+    outline: 2px solid rgba(143, 121, 42, .25);
+    border-color: var(--main);
+}
+
+.unit {
+    font-size: 13px;
+    color: var(--text-sub);
+}
+
+/* ===== 선택한 매도상품 합계 ===== */
+
+.sell-summary {
+    margin-top: 24px;
+}
+
+.sell-summary-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: #111827;
+}
+
+.sell-summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    border-top: 1px solid #E5E7EB;
+    border-bottom: 1px solid #E5E7EB;
+    font-size: 13px;
+    color: #374151;
+}
+
+.sell-summary-table th,
+.sell-summary-table td {
+    padding: 10px 12px;
+    text-align: right;
+    border-bottom: 1px solid #F3F4F6;
+}
+
+.sell-summary-table th:first-child,
+.sell-summary-table td:first-child {
+    text-align: left;
+}
+
+.sell-summary-table thead th {
+    background-color: #F9FAFB;
+    font-weight: 600;
+    color: #6B7280;
+}
+
+.sell-summary-table tbody tr:last-child th,
+.sell-summary-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.sell-summary-table .row-total th,
+.sell-summary-table .row-total td {
+    font-weight: 700;
+}
+
+.sell-summary-notes {
+    margin-top: 8px;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.sell-summary-notes .note-danger {
+    color: #DC2626;
+}
+
+.sell-summary-notes .note-normal {
+    color: #6B7280;
+}
+
+/* ===== 매도합계 영역 버튼 ===== */
+.sell-summary-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 16px;
+    gap: 25px;
+}
+
+.sell-summary-actions .btn {
+    min-width: 120px;
+    height: 44px;
+}
+
+/* ===== 매도 확인 모달 ===== */
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.modal-backdrop.is-open {
+    display: flex;
+}
+
+.modal-dialog {
+    width: 420px;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    padding: 20px 22px;
+}
+
+.modal-header h3 {
+    margin: 0 0 8px;
+    font-size: 18px;
+    font-weight: 700;
+    color: #111827;
+}
+
+.modal-text {
+    font-size: 14px;
+    color: #4b5563;
+    margin-bottom: 16px;
+}
+
+.modal-summary {
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    padding: 12px 14px;
+    margin-bottom: 16px;
+    background: #f9fafb;
+}
+
+.modal-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.modal-row .label {
+    color: #6b7280;
+}
+
+.modal-row .value {
+    font-weight: 700;
+    color: #111827;
+}
+
+.modal-field label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 6px;
+}
+
+.pin-input-wrap input {
+    width: 100%;
+    border-radius: 10px;
+    border: 1px solid #d1d5db;
+    padding: 10px 12px;
+    font-size: 18px;
+    letter-spacing: 0.3em;
+    text-align: center;
+}
+
+.pin-input-wrap input:focus {
+    outline: 2px solid #B1141B;
+    outline-offset: 1px;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 18px;
+}

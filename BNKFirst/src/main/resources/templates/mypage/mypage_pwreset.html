@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>마이페이지 비밀번호변경</title>
+    <!--
+        날짜 : 2025/11/25
+        이름 : 이준우
+        내용 : 비밀번호 변경 page 생성
+     -->
+</head>
+<body>
+<div th:replace="~{layouts/header.html}"></div>
+
+<main>
+    <div class="form-card">
+        <form>
+            <!-- 테이블 감싸기 -->
+            <div>
+                <table class="table-wrap" >
+                    <tr>
+                        <td><h2 style="margin-bottom: 15px; text-align: center">비밀번호 변경</h2></td>
+                    </tr>
+                    <tr class="pw-tip">
+                        <td>
+                            <div class="pw-tip-inner">
+                                <span class="tip-check">✔</span>
+                                안전한 서비스 이용을 위해 비밀번호를 강화해 주세요
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="pw-tip">
+                        <td>
+                            <div class="pw-tip-inner">
+                                <span class="tip-check">✔</span>
+                                다른 계정과 중복되지 않는 비밀번호를 사용해 주세요
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="field-row">
+                        <td class="field-label">현재 비밀번호</td>
+                        <td>
+                            <div class="pw-wrapper">
+                                <input type="password" class="input" id="currentPw" name="currentPw" style="width: 280px">
+                                <button type="button" class="pw-toggle" data-target="currentPw"
+                                        aria-label="현재 비밀번호 보기 전환">👁
+                                </button>
+                            </div>
+                            <div id="currentPwHint" class="hint">&nbsp;</div>
+                        </td>
+                    </tr>
+                    <tr class="field-row">
+                        <td class="field-label">새 비밀번호</td>
+                        <td>
+                            <div class="pw-wrapper">
+                                <input type="password" class="input" id="newPw" name="newPw" style="width: 280px">
+                                <button type="button" class="pw-toggle" data-target="newPw"
+                                        aria-label="새 비밀번호 보기 전환">👁
+                                </button>
+                            </div>
+                            <div id="pwHint" class="hint"></div>
+                        </td>
+                    </tr>
+                    <tr class="field-row">
+                        <td class="field-label">새 비밀번호 확인</td>
+                        <td>
+                            <div class="pw-wrapper">
+                                <input type="password" class="input" id="newPwConfirm" name="newPwConfirm" style="width: 280px">
+                                <button type="button" class="pw-toggle" data-target="newPwConfirm"
+                                        aria-label="새 비밀번호 확인 보기 전환">👁
+                                </button>
+                            </div>
+                            <div id="pw2Hint" class="hint"></div>
+                        </td>
+                    </tr>
+
+                </table>
+            </div>
+        </form>
+        <div class="btns">
+            <button id="nextBtn" class="btn-register"
+                    onclick="openCertModal()"
+                    style="display:inline-block; box-sizing:border-box; width:100%; height:42px; line-height:42px; border-radius:8px; background-color:#007BFF; color:white; text-align:center; border:none; cursor:pointer;">
+                다음
+            </button>
+        </div>
+        <div class="btns">
+            <a th:href="@{/mypage/setup}" class="btn-pressable"
+               style="display:inline-block; box-sizing:border-box; width:100%; height:42px; line-height:42px; border-radius:8px; border:1px solid #D1D5DB; background-color:white; text-align:center; color:#111; text-decoration:none;">
+                취소
+            </a>
+        </div>
+    </div>
+</main>
+
+<!-- 모달창 -->
+<div id="certModal" aria-hidden="true">
+    <div class="modal-backdrop" data-close-modal></div>
+    <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="certModalTitle">
+        <div class="modal-header">
+            <h3 id="certModalTitle" style="margin:0;">본인확인</h3>
+            <button type="button" class="modal-close" data-close-modal>&times;</button>
+        </div>
+        <div class="modal-body">
+            <!-- 인증 방식 선택 탭 -->
+            <div class="verify-methods" style="display:flex; gap:10px; margin-bottom:12px;">
+                <button type="button" id="method-phone" class="method-card active" style="flex:1;">휴대폰</button>
+                <button type="button" id="method-email" class="method-card" style="flex:1;">이메일</button>
+            </div>
+            <!-- 휴대폰 인증 영역 -->
+            <div id="panel-phone">
+                <div class="field" style="margin-bottom:10px;">
+                    <label class="field-label">휴대폰번호</label>
+                    <div class="field-row" style="display:flex; gap:8px;">
+                        <input type="text" class="input" id="pwresetPhone" placeholder="010-1234-5678">
+                        <button type="button" class="btn-register" id="btnPhoneReq" style="width:90px;">인증요청</button>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="field-label">인증번호</label>
+                    <div class="field-row" style="display:flex; gap:8px;">
+                        <input type="text" class="input" id="pwresetPhoneCode" placeholder="인증번호 입력" style="flex:1;">
+                        <button type="button" class="btn-register" id="btnPhoneVerify" style="width:90px;">확인</button>
+                    </div>
+                </div>
+            </div>
+            <!-- 이메일 인증 영역 (처음엔 숨김) -->
+            <div id="panel-email" style="display:none;">
+                <div class="field" style="margin-bottom:10px;">
+                    <label class="field-label">이메일</label>
+                    <div class="field-row" style="display:flex; gap:8px;">
+                        <input type="text" class="input" id="pwresetEmail" placeholder="example@bank.com">
+                        <button type="button" class="btn-register" id="btnEmailReq" style="width:90px;">인증요청</button>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="field-label">인증번호</label>
+                    <div class="field-row" style="display:flex; gap:8px;">
+                        <input type="text" class="input" id="pwresetEmailCode" placeholder="인증번호 입력" style="flex:1;">
+                        <button type="button" class="btn-register" id="btnEmailVerify" style="width:90px;">확인</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn-pressable" data-close-modal
+                    style="display:inline-block; box-sizing:border-box; width:48%; height:42px; line-height:42px; border-radius:8px; border:1px solid #D1D5DB; background-color:white; text-align:center; color:#111;">
+                취소
+            </button>
+            <button type="button" class="btn-register" id="btnCertSubmit" style="width:48%;">확인</button>
+        </div>
+    </div>
+</div>
+
+<footer><div th:replace="~{layouts/footer.html}"></div></footer>
+</body>
+
+<script>
+    (function () {
+        const modal = document.getElementById("certModal");
+        const closeBtns = document.querySelectorAll("[data-close-modal]");
+
+        const methodPhone  = document.getElementById("method-phone");
+        const methodEmail  = document.getElementById("method-email");
+        const panelPhone   = document.getElementById("panel-phone");
+        const panelEmail   = document.getElementById("panel-email");
+
+        const btnPhoneReq    = document.getElementById("btnPhoneReq");
+        const btnPhoneVerify = document.getElementById("btnPhoneVerify");
+        const btnEmailReq    = document.getElementById("btnEmailReq");
+        const btnEmailVerify = document.getElementById("btnEmailVerify");
+        const btnCertSubmit  = document.getElementById("btnCertSubmit");
+
+        const currentPwInput = document.getElementById("currentPw");
+        const newPwInput     = document.getElementById("newPw");
+        const newPw2Input    = document.getElementById("newPwConfirm");
+        const pwHint         = document.getElementById("pwHint");
+        const pw2Hint        = document.getElementById("pw2Hint");
+        const currentPwHint  = document.getElementById("currentPwHint");
+
+        let phoneVerified = false;
+        let emailVerified = false;
+        let currentPwValid = false;
+
+        function validatePasswordStrength(value) {
+            const regex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{5,15}$/;
+            return regex.test(value);
+        }
+
+        function checkPasswords() {
+            const cur  = currentPwInput.value.trim();
+            const pw   = newPwInput.value.trim();
+            const pw2  = newPw2Input.value.trim();
+
+            if (!pw) {
+                pwHint.textContent = "비밀번호를 입력해주세요.";
+                pwHint.style.color = "#6b7280";
+            } else if (cur && pw === cur) {
+                pwHint.textContent = "현재 비밀번호와 다른 새 비밀번호를 사용해주세요.";
+                pwHint.style.color = "#d6001c";
+            } else if (!validatePasswordStrength(pw)) {
+                pwHint.textContent = "특수문자, 영문, 숫자 포함 5~15자로 입력해주세요.";
+                pwHint.style.color = "#d6001c";
+            } else if (pw && pw2 && pw === pw2) {
+                pwHint.textContent = "비밀번호가 일치합니다.";
+                pwHint.style.color = "#059669";
+            } else {
+                pwHint.textContent = "사용 가능한 비밀번호입니다.";
+                pwHint.style.color = "#059669";
+            }
+
+            if (!pw2) {
+                pw2Hint.textContent = "";
+            } else if (cur && pw2 === cur) {
+                pw2Hint.textContent = "현재 비밀번호와 동일한 비밀번호는 사용할 수 없습니다.";
+                pw2Hint.style.color = "#d6001c";
+            } else if (pw !== pw2) {
+                pw2Hint.textContent = "비밀번호가 일치하지 않습니다.";
+                pw2Hint.style.color = "#d6001c";
+            } else {
+                pw2Hint.textContent = "비밀번호가 일치합니다.";
+                pw2Hint.style.color = "#059669";
+            }
+        }
+
+        newPwInput.addEventListener("input", checkPasswords);
+        newPw2Input.addEventListener("input", checkPasswords);
+        currentPwInput.addEventListener("input", checkPasswords);
+
+        // 현재 비밀번호 서버 검증
+        async function verifyCurrentPw() {
+            const cur = currentPwInput.value.trim();
+
+            if (!cur) {
+                currentPwHint.textContent = "현재 비밀번호를 입력해주세요.";
+                currentPwHint.style.color = "#d6001c";
+                currentPwValid = false;
+                return false;
+            }
+
+            try {
+                const res = await fetch("/BNK/pw/check-current", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ currentPw: cur })
+                });
+
+                if (!res.ok) {
+                    currentPwHint.textContent = "현재 비밀번호 확인 중 오류가 발생했습니다.";
+                    currentPwHint.style.color = "#d6001c";
+                    currentPwValid = false;
+                    return false;
+                }
+
+                const data = await res.json();
+                if (data.ok) {
+                    currentPwHint.textContent = "현재 비밀번호가 일치합니다.";
+                    currentPwHint.style.color = "#059669";
+                    currentPwValid = true;
+                    return true;
+                } else {
+                    currentPwHint.textContent = "현재 비밀번호가 일치하지 않습니다.";
+                    currentPwHint.style.color = "#d6001c";
+                    currentPwValid = false;
+                    return false;
+                }
+            } catch (e) {
+                console.error(e);
+                currentPwHint.textContent = "현재 비밀번호 확인 중 오류가 발생했습니다.";
+                currentPwHint.style.color = "#d6001c";
+                currentPwValid = false;
+                return false;
+            }
+        }
+
+        // input 끝내고 빠져나갈 때 서버 검증
+        currentPwInput.addEventListener("blur", function () {
+            verifyCurrentPw();
+        });
+
+        // 다음 버튼: 최종 폼 검증 + 현재 비밀번호 서버 검증 통과 시에만 모달 오픈
+        window.openCertModal = async function () {
+            const cur  = currentPwInput.value.trim();
+            const npw  = newPwInput.value.trim();
+            const npw2 = newPw2Input.value.trim();
+
+            if (!cur || !npw || !npw2) {
+                alert("현재 비밀번호와 새 비밀번호를 모두 입력해주세요.");
+                return;
+            }
+            if (cur === npw) {
+                alert("현재 비밀번호와 다른 새 비밀번호를 입력해주세요.");
+                newPwInput.focus();
+                return;
+            }
+            if (!validatePasswordStrength(npw)) {
+                alert("비밀번호 형식이 올바르지 않습니다.");
+                newPwInput.focus();
+                return;
+            }
+            if (npw !== npw2) {
+                alert("새 비밀번호가 서로 다릅니다.");
+                newPw2Input.focus();
+                return;
+            }
+
+            const okCur = await verifyCurrentPw();
+            if (!okCur) {
+                alert("현재 비밀번호가 올바르지 않습니다.");
+                currentPwInput.focus();
+                return;
+            }
+
+            modal.setAttribute("aria-hidden", "false");
+        };
+
+        closeBtns.forEach(btn =>
+            btn.addEventListener("click", () =>
+                modal.setAttribute("aria-hidden", "true")
+            )
+        );
+
+        function setMethod(method) {
+            if (method === "phone") {
+                methodPhone.classList.add("active");
+                methodEmail.classList.remove("active");
+                panelPhone.style.display = "block";
+                panelEmail.style.display = "none";
+            } else {
+                methodEmail.classList.add("active");
+                methodPhone.classList.remove("active");
+                panelEmail.style.display = "block";
+                panelPhone.style.display = "none";
+            }
+        }
+
+        methodPhone.addEventListener("click", () => setMethod("phone"));
+        methodEmail.addEventListener("click", () => setMethod("email"));
+
+        // 휴대폰 인증 요청
+        btnPhoneReq.addEventListener("click", async () => {
+            const phone = document.getElementById("pwresetPhone").value.trim();
+            if (!phone) {
+                alert("휴대폰 번호를 입력하세요.");
+                return;
+            }
+
+            const res = await fetch("/BNK/api/verification/sms/send", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ phoneNumber: phone })
+            });
+
+            const json = await res.json();
+            if (json.ok) {
+                alert("휴대폰 인증번호가 발송되었습니다.");
+            } else {
+                alert(json.message || "인증번호 발송에 실패했습니다.");
+            }
+        });
+
+        // 휴대폰 인증번호 검증
+        btnPhoneVerify.addEventListener("click", async () => {
+            const phone = document.getElementById("pwresetPhone").value.trim();
+            const code = document.getElementById("pwresetPhoneCode").value.trim();
+
+            if (!code) {
+                alert("인증번호를 입력하세요.");
+                return;
+            }
+
+            const res = await fetch("/BNK/api/verification/sms/verify", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ phoneNumber: phone, code })
+            });
+
+            const json = await res.json();
+            if (json.ok) {
+                phoneVerified = true;
+                emailVerified = false;
+                alert("휴대폰 인증이 완료되었습니다.");
+            } else {
+                alert(json.message || "인증에 실패했습니다.");
+            }
+        });
+
+        // 이메일 인증 요청
+        btnEmailReq.addEventListener("click", async () => {
+            const email = document.getElementById("pwresetEmail").value.trim();
+            if (!email) {
+                alert("이메일을 입력하세요.");
+                return;
+            }
+
+            const res = await fetch("/BNK/api/verification/email/send", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email })
+            });
+
+            const json = await res.json();
+            if (json.send) {
+                alert("이메일 인증번호가 발송되었습니다.");
+            } else {
+                alert("발송 실패: " + (json.error || ""));
+            }
+        });
+
+        // 이메일 코드 검증
+        btnEmailVerify.addEventListener("click", async () => {
+            const code = document.getElementById("pwresetEmailCode").value.trim();
+            if (!code) {
+                alert("인증번호를 입력하세요.");
+                return;
+            }
+
+            const res = await fetch("/BNK/api/verification/email/verify", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ code })
+            });
+
+            const json = await res.json();
+            if (json.matched) {
+                emailVerified = true;
+                phoneVerified = false;
+                alert("이메일 인증이 완료되었습니다.");
+            } else {
+                alert("인증번호가 일치하지 않습니다.");
+            }
+        });
+
+        // 모달에서 "확인" → 실제 비밀번호 변경 호출
+        btnCertSubmit.addEventListener("click", async () => {
+            if (!phoneVerified && !emailVerified) {
+                alert("휴대폰 또는 이메일 인증을 먼저 완료해주세요.");
+                return;
+            }
+
+            const curPw = currentPwInput.value.trim();
+            const npw   = newPwInput.value.trim();
+
+            if (!curPw || !npw) {
+                alert("현재 비밀번호와 새 비밀번호를 모두 입력해주세요.");
+                return;
+            }
+
+            try {
+                const res = await fetch("/BNK/pw/change", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        currentPw: curPw,
+                        newPw: npw
+                    })
+                });
+
+                if (!res.ok) {
+                    const text = await res.text();
+                    alert(text || "비밀번호 변경에 실패했습니다.");
+                    return;
+                }
+
+                alert("비밀번호가 변경되었습니다.");
+                modal.setAttribute("aria-hidden", "true");
+                window.location.href = "/BNK/mypage/main";
+
+            } catch (err) {
+                console.error(err);
+                alert("비밀번호 변경 중 오류가 발생했습니다.");
+            }
+        });
+
+        document.querySelectorAll(".pw-toggle").forEach(btn => {
+            btn.addEventListener("click", () => {
+                const targetId = btn.dataset.target;
+                const input = document.getElementById(targetId);
+                if (!input) return;
+
+                const isHidden = input.type === "password";
+                input.type = isHidden ? "text" : "password";
+
+                btn.textContent = isHidden ? "🙈" : "👁";
+            });
+        });
+
+        setMethod("phone");
+    })();
+</script>
+
+<style>
+    main {
+        width: 1200px;
+        background-color: #F6F6F8;
+        padding: 80px 20px;
+        margin: 0 auto;
+    }
+    body {
+        font-family: 'Noto Sans KR', '맑은 고딕', sans-serif;
+        background: #F6F6F8;
+        color: #111827;
+        line-height: 1.5;
+    }
+    .form-card {
+        max-width: 420px;
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 20px;
+        box-shadow: 0 10px 20px rgba(2,6,23,.06);
+        padding: 28px 35px;
+        margin: 0 auto;
+    }
+    .field-row {
+        padding-left: 5px;
+        display: flex;
+        margin: 5px;
+    }
+    .field-row td {
+        padding: 10px 0;
+    }
+    .field-row td:first-child {
+        height: 40px;
+        line-height: 40px;
+        font-weight: 600;
+    }
+    .field-row input {
+        width: 250px;
+        height: 40px;
+        border: 1px solid #bbb;
+        border-radius: 10px;
+        padding: 0 12px;
+        box-sizing: border-box;
+        outline: none;
+    }
+    .input:focus {
+        border-color: #d1d5db;
+        box-shadow: 0 0 0 3px rgba(214, 0, 28, .12);
+    }
+    .field-row td + td {
+        padding-left: 5px;
+    }
+    .field-label {
+        width: 120px;
+        font-weight: 600;
+        vertical-align: middle;
+    }
+    .table-wrap {
+        width: 100%;
+    }
+    .table-wrap table {
+        width: 100%;
+    }
+    .btns { display: flex; justify-content: center; gap: 10px; margin-top: 22px; }
+
+    /* 힌트 텍스트 */
+    .hint {
+        font-size: 12px;
+        color: #6b7280;
+        margin-top: 4px;
+        min-height: 18px;
+    }
+
+    /*  모달 style  */
+    #certModal[aria-hidden="true"] { display:none; }
+    #certModal[aria-hidden="false"] { display:block; }
+    #certModal .modal-backdrop {
+        position:fixed;
+        inset:0;
+        background:rgba(0,0,0,.45);
+        backdrop-filter: blur(2px);
+    }
+    #certModal .modal-dialog {
+        position:fixed;
+        left:50%;
+        top:50%;
+        transform:translate(-50%, -50%);
+        width: 350px;
+        max-width: 92vw;
+        background:#fff;
+        border:1px solid #e5e7eb;
+        border-radius:16px;
+        box-shadow:0 20px 60px rgba(2,6,23,.2);
+        padding:18px;
+    }
+    #certModal .modal-header {
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        margin-bottom:8px;
+    }
+    #certModal .modal-close {
+        width:32px;
+        height:32px;
+        border-radius:8px;
+        border:1px solid #e5e7eb;
+        background:#fff;
+        cursor:pointer;
+    }
+    #certModal .modal-body {
+        padding: 6px 2px;
+    }
+    #certModal .modal-footer {
+        display:flex;
+        gap:10px;
+        margin-top:14px;
+    }
+    .method-card {
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        background: #fff;
+        padding: 8px 0;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 600;
+    }
+    .method-card.active {
+        border-color: #d6001c;
+        color: #d6001c;
+    }
+    .pw-wrapper {
+        position: relative;
+        width: 100%;
+    }
+    .pw-wrapper .input {
+        width: 100%;
+        padding-right: 36px;
+    }
+    .pw-toggle {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        font-size: 16px;
+        line-height: 1;
+        padding: 0;
+    }
+    .pw-tip td {
+        display: flex;
+        justify-content: center;
+        padding: 4px 0;
+    }
+    .pw-tip-inner {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        text-align: left;
+        color: #16a34a;
+        font-size: 14px;
+    }
+    .tip-check {
+        font-size: 15px;
+        color: #16a34a;
+        flex-shrink: 0;
+    }
+</style>
+</html>

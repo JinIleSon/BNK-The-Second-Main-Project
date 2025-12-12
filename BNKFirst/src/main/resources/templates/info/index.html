@@ -1,0 +1,269 @@
+<div style="margin-top:10px;"></div>
+<header>
+    <div th:replace="~{layouts/info/_header.html}"></div>
+</header>
+
+<main>
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-text">
+      <h1>가장 신뢰받는 은행<br>BNK부산은행!</h1>
+      <p>고객을 향한 단 하나의 진심<br>진심으로 섬기는 마음가짐</p>
+    </div>
+  </section>
+
+  <!-- Card Menu -->
+    <section class="info-section">
+        <a href="https://www.happybnk.co.kr/Home/Main" class="info-card social">
+            <h3>사회공헌</h3>
+        </a>
+
+        <a href="https://www.busanbank.co.kr/ib20/mnu/BHPBKI412000001" class="info-card invest">
+            <h3>투자자정보</h3>
+        </a>
+
+        <a href="https://www.busanbank.co.kr/ib20/mnu/BHPBKI438001001" class="info-card hr">
+            <h3>인재채용</h3>
+        </a>
+
+        <a href="https://www.happybnk.co.kr/Home/Main" class="info-card family">
+            <h3>부은가족</h3>
+        </a>
+    </section>
+
+  <!-- Notice + News 통합 영역 -->
+  <section class="board" style="padding-bottom: 130px; padding-top: 80px;">
+      <div class="board-column">
+          <h3 class="board-section">공지사항</h3>
+          <ul>
+              <li><a href="https://www.busanbank.co.kr/ib20/mnu/BHPBKI392002003">(오픈소스 소프트웨어 관리시스템 구축) ... </a><span class="new-icon">N</span></li>
+              <li><a href="https://www.busanbank.co.kr/ib20/mnu/BHPBKI392002003">(기업뱅킹 법인 비대면실명확인 프로세스 개선) ... </a><span class="new-icon">N</span></li>
+              <li><a href="https://www.busanbank.co.kr/ib20/mnu/BHPBKI392002003">(침입방지시스템(IPS) 노후화 교체) ... </a><span class="new-icon">N</span></li>
+          </ul>
+      </div>
+
+    <div class="board-column">
+      <h3 class="board-section">보도자료</h3>
+        <ul>
+            <li><a href="https://www.busanbank.co.kr/ib20/mnu/BHPBKI391002001">BNK부산은행, 서민금융 대표상품 ‘새희망홀씨’ 지원 확대... </a><span class="new-icon">N</span></li>
+            <li><a href="https://www.busanbank.co.kr/ib20/mnu/BHPBKI391002001">BNK부산은행, 부산은행 육상실업 최기만 선수 금메달... </a><span class="new-icon">N</span></li>
+            <li><a href="https://www.busanbank.co.kr/ib20/mnu/BHPBKI391002001">BNK부산은행, 임직원 재능으로 지역과 함께... </a><span class="new-icon">N</span></li>
+        </ul>
+    </div>
+  </section>
+
+</main>
+</div>
+
+
+<div id="footer"></div>
+<meta name="theme-color" content="#E60012" />
+<link rel="icon"
+  href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23E60012'/%3E%3Ctext x='50' y='58' font-size='56' text-anchor='middle' fill='white' font-family='Arial, Helvetica, sans-serif'%3EB%3C/text%3E%3C/svg%3E" />
+<style>
+    body {
+        font-family: 'Noto Sans KR', sans-serif;
+        background-color: #F6F6F8;
+        margin: 0;
+        padding: 0;
+        color: #222;
+        line-height: 1.7;
+    }
+
+  .hero {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 80px 10%;
+    background: #f9fafb;
+  }
+
+  .hero-text {
+    max-width: 45%;
+  }
+
+  .hero-text h3 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    line-height: 1.4;
+  }
+
+
+  .hero-text p {
+    margin-top: 10px;
+    color: #555;
+    line-height: 1.6;
+  }
+
+  .hero {
+    height: 350px;
+    /* 높이 지정 (필수) */
+    background-image: url([[@{/images/assets/img/bnk_building.png}]]);
+    background-size: cover;
+    background-position: left center;
+    background-repeat: no-repeat;
+  }
+
+
+
+  .board li a:hover {
+    color: #d91a1a;
+  }
+
+  .info-card {
+    flex: 1;
+    text-align: center;
+  }
+
+  .info-card h3 {
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+  }
+
+  .info-section {
+    display: flex;
+    /* 가로 정렬 */
+    justify-content: center;
+    /* 가운데 정렬 (양쪽 여백 균등하게) */
+    gap: 20px;
+    /* 카드 간 간격 */
+    flex-wrap: wrap;
+    /* 화면이 좁을 땐 줄바꿈 허용 */
+    margin: 40px auto;
+  }
+
+
+  .info-card {
+    background-color: white;
+    background-repeat: no-repeat;
+    background-position: center 40%;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e5e7eb;
+    margin: 6px;
+    width: 200px;
+    height: 200px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    padding-bottom: 30px; 
+  }
+
+  .info-card.social {
+    background-image: url([[@{/images/assets/img/icon_social.png}]]);
+  }
+
+  .info-card.invest {
+    background-image: url([[@{/images/assets/img/icon_invest.png}]]);
+  }
+
+  .info-card.hr {
+    background-image: url([[@{/images/assets/img/icon_hr.png}]]);
+  }
+
+  .info-card.family {
+    background-image: url([[@{/images/assets/img/icon_family.png}]]);
+  }
+
+  .info-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  }
+
+  .info-card h3 a {
+    text-decoration: none;
+    color: #111827;
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+
+  .board {
+    display: flex;
+    justify-content: space-between;
+    gap: 80px;
+    /* 두 칼럼 간 간격 */
+    padding: 40px 10%;
+    background-color: #fafafa;
+    border-top: 1px solid #eee;
+  }
+
+  .board-column {
+    flex: 1;
+  }
+
+  .board-section {
+    font-size: 1.2rem;
+    margin-bottom: 12px;
+    border-bottom: 2px solid #d91a1a;
+    display: inline-block;
+  }
+
+  .board ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .board li {
+    text-align: left;
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+    color: #444;
+  }
+
+  .board li a {
+    text-decoration: none;
+    color: inherit;
+    display: inline-block;
+    width: calc(100%-3px);
+  }
+
+  .board li a:hover {
+    color: #d91a1a;
+  }
+
+
+  .new-icon {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    background-color: #d91a1a;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    text-align: center;
+    line-height: 18px;
+    border-radius: 50%;
+    margin-left: 6px;
+  }
+
+    /* 기본 링크 스타일 */
+    .info-card {
+        text-decoration: none;
+        color: #111; /* 기본 검정 */
+    }
+
+    /* hover 시 색상 변경 */
+    .info-card:hover {
+        color: #DE0000; /* BNK 레드 */
+    }
+
+    /* h3에도 링크 색 반영되도록 */
+    .info-card h3 {
+        margin: 0;
+        font-size: 22px;
+        font-weight: 700;
+        color: inherit; /* 부모의 색을 그대로 따라감 */
+    }
+
+    /* hover 시 h3도 변경됨 */
+    .info-card:hover h3 {
+        color: #DE0000;
+    }
+
+</style>
+<footer>
+    <div th:replace="~{layouts/footer.html}"></div>
+</footer>

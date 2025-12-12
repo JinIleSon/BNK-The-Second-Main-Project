@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>IRP 계좌개설 - 비밀번호 생성</title>
+
+    <style>
+        body {
+            margin: 0;
+            background: #F6F6F8;
+            font-family: 'Pretendard','Noto Sans KR',sans-serif;
+        }
+
+        /* 전체 팝업 박스 */
+        .popup-wrap {
+            max-width: 380px;
+            margin: 80px auto;
+            background: #fff;
+            border-radius: 26px;
+            box-shadow: 0 6px 30px rgba(0,0,0,0.18);
+            padding: 24px 20px 35px;
+        }
+
+        .popup-title {
+            font-size: 18px;
+            text-align: center;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        /* 점 ● 표시 */
+        .pwd-display {
+            display: flex;
+            justify-content: center;
+            gap: 14px;
+            margin-bottom: 22px;
+        }
+
+        .dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #D9D9D9;
+        }
+
+        .dot.filled {
+            background: #3C6BFF;
+        }
+
+        /* 키패드 */
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin-top: 20px;
+        }
+
+        .key {
+            background: #ffffff;
+            padding: 16px 0;
+            border-radius: 16px;
+            text-align: center;
+            font-size: 22px;
+            font-weight: 600;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.08);
+            cursor: pointer;
+            user-select: none;
+            transition: 0.15s;
+        }
+
+        .key:active,
+        .key.flash {
+            background: #E7ECFF;
+            box-shadow: inset 0 0 12px rgba(0,0,0,0.12);
+        }
+
+        /* 삭제키 */
+        .delete {
+            font-size: 18px;
+        }
+
+        /* 확인 버튼 */
+        .btn-next {
+            width: 100%;
+            margin-top: 26px;
+            padding: 14px 0;
+            border-radius: 10px;
+            border: none;
+            background: #B4C6FF;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: not-allowed;
+        }
+
+        .btn-next.active {
+            background: #3D6CFF;
+            cursor: pointer;
+        }
+
+    </style>
+</head>
+
+<body>
+<header>
+    <div th:replace="~{layouts/header.html}"></div>
+</header>
+<main>
+    <div class="popup-wrap">
+        <div class="popup-title">인증비밀번호 6자리를 입력하세요.</div>
+
+        <!-- ● ● ● ● ● ● -->
+        <div class="pwd-display">
+            <div class="dot" id="d1"></div>
+            <div class="dot" id="d2"></div>
+            <div class="dot" id="d3"></div>
+            <div class="dot" id="d4"></div>
+            <div class="dot" id="d5"></div>
+            <div class="dot" id="d6"></div>
+        </div>
+
+        <!-- 숫자 키패드 -->
+        <div class="keypad">
+            <div class="key" onclick="press(1)">1</div>
+            <div class="key" onclick="press(2)">2</div>
+            <div class="key" onclick="press(3)">3</div>
+
+            <div class="key" onclick="press(4)">4</div>
+            <div class="key" onclick="press(5)">5</div>
+            <div class="key" onclick="press(6)">6</div>
+
+            <div class="key" onclick="press(7)">7</div>
+            <div class="key" onclick="press(8)">8</div>
+            <div class="key" onclick="press(9)">9</div>
+
+            <div class="key"></div>
+            <div class="key" onclick="press(0)">0</div>
+            <div class="key delete" onclick="del()">←</div>
+        </div>
+
+        <button id="nextBtn" class="btn-next" disabled>확인</button>
+    </div>
+</main>
+
+<footer>
+    <div th:replace="~{layouts/footer.html}"></div>
+</footer>
+
+</body>
+<script>
+
+    let pwd = "";
+    const maxLength = 6;
+
+    // 입력
+    function press(num) {
+        if (pwd.length >= maxLength) return;
+
+        pwd += num;
+        updateDots();
+        flashRandomOtherKey(num);
+        checkActivation();
+    }
+
+    // 삭제
+    function del() {
+        pwd = pwd.slice(0, -1);
+        updateDots();
+        checkActivation();
+    }
+
+    // ● 상태 업데이트
+    function updateDots() {
+        for (let i = 1; i <= maxLength; i++) {
+            const dot = document.getElementById(`d${i}`);
+            dot.classList.toggle("filled", i <= pwd.length);
+        }
+    }
+
+    // "확인" 버튼 활성화
+    function checkActivation() {
+        const btn = document.getElementById("nextBtn");
+        if (pwd.length === maxLength) {
+            btn.disabled = false;
+            btn.classList.add("active");
+
+            btn.onclick = () => {
+                window.location.href = "/BNK/irp/account/page9";
+            };
+        } else {
+            btn.disabled = true;
+            btn.classList.remove("active");
+        }
+    }
+
+
+    // 🔥 보안 키패드 효과 — 다른 키도 0.15초 깜빡이게 만들기
+    function flashRandomOtherKey(currentNum) {
+        const keys = document.querySelectorAll(".key");
+        const otherKeys = [...keys].filter(k => k.innerText !== currentNum.toString());
+
+        if (otherKeys.length === 0) return;
+
+        const randomKey = otherKeys[Math.floor(Math.random() * otherKeys.length)];
+
+        randomKey.classList.add("flash");
+        setTimeout(() => randomKey.classList.remove("flash"), 150);
+    }
+</script>
+</html>

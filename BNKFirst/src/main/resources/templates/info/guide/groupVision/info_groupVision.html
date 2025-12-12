@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BNK부산은행 | 그룹 핵심가치</title>
+
+</head>
+
+<body>
+<header>
+    <div th:replace="~{layouts/info/_header.html}"></div>
+</header>
+
+    <main>
+        <!-- ===== 사이드바 ===== -->
+        <aside th:replace="~{layouts/info/_sidebar.html}"></aside>
+
+
+
+        <!-- 본문 -->
+        <section class="content">
+            <div class="page-title">
+                <h1>그룹 비전</h1>
+            </div>
+
+            <div class="strategy-block">
+                <div class="strategy-card" style="text-align:center;">
+                    <p style="font-size:28px; font-weight:700; line-height:1.5;">
+                        세상을 <span style="color:#6A47A6;">가슴뛰게</span> 하는 금융
+                    </p>
+                </div>
+            </div>
+
+            <div class="strategy-block" style="text-align:left; max-width:800px; margin:40px auto;">
+                <h2 style="color:#6A47A6; font-size:20px; font-weight:700;">고객의 가슴을 뛰게 하는</h2>
+                <p style="font-size:16px; line-height:1.8; color:#333;">
+                    고객에 대한 깊은 이해를 바탕으로 한 혁신을 통해 최고의 금융서비스를 제공하겠습니다.<br>
+                    BNK를 통해 고객의 꿈에 한발짝 다가설 수 있게 지원하겠습니다.
+                </p>
+            </div>
+
+            <div class="strategy-block" style="text-align:left; max-width:800px; margin:40px auto;">
+                <h2 style="color:#6A47A6; font-size:20px; font-weight:700;">임직원의 가슴을 뛰게 하는</h2>
+                <p style="font-size:16px; line-height:1.8; color:#333;">
+                    전문성을 기반으로 최고의 금융그룹 일원으로서 자부심과 열정을 갖게 하고,<br>
+                    회사의 발전과 함께 자아를 실현하는 성장의 발판이 되는 일터를 만들겠습니다.
+                </p>
+            </div>
+
+            <div class="strategy-block" style="text-align:left; max-width:800px; margin:40px auto;">
+                <h2 style="color:#6A47A6; font-size:20px; font-weight:700;">사회구성원의 가슴을 뛰게 하는</h2>
+                <p style="font-size:16px; line-height:1.8; color:#333;">
+                    따뜻한 금융서비스 제공을 통해 금융소외자가 없는 세상을 구현하고,<br>
+                    사회구성원들이 더 많은 가능성을 꿈꾸는 세상을 열어가는 데 앞장서겠습니다.
+                </p>
+            </div>
+        </section>
+
+    </main>
+
+
+
+
+
+<script>
+
+    // Sidebar toggle
+    const titles = document.querySelectorAll(".menu-title");
+    titles.forEach(title => {
+        title.addEventListener("click", () => {
+            const isActive = title.classList.contains("active");
+            titles.forEach(t => {
+                t.classList.remove("active");
+                const next = t.nextElementSibling;
+                if (next && next.classList.contains("submenu")) {
+                    next.style.maxHeight = null;
+                }
+            });
+            if (!isActive) {
+                title.classList.add("active");
+                const submenu = title.nextElementSibling;
+                if (submenu && submenu.classList.contains("submenu")) {
+                    submenu.style.maxHeight = submenu.scrollHeight + "px";
+                }
+            }
+        });
+    });
+</script>
+
+
+<style>
+    :root {
+        --bnk-red: #DE0000;
+        --bnk-gray: #444;
+        --bnk-border: #ddd;
+        --bnk-gradient: linear-gradient(90deg, #5B6BF2, #D34F9B);
+    }
+
+    body {
+        font-family: "Noto Sans KR", sans-serif;
+        margin-top: 60px;
+        background-color: #fafafa;
+        color: #222;
+    }
+
+
+    main {
+        display: flex;
+        justify-content: center;
+        gap: 40px;
+        width: 80%;
+        margin: 100px auto;
+
+    }
+
+    /* ========== 사이드 메뉴 ========== */
+    .sidebar {
+        width: 260px;
+        background: #fff;
+        border: 1px solid var(--bnk-border);
+        border-radius: 4px;
+    }
+
+    .sidebar h3 {
+        font-size: 18px;
+        font-weight: 600;
+        padding: 16px;
+        border-bottom: 1px solid var(--bnk-border);
+    }
+
+    .menu-item {
+        border-bottom: 0px solid var(--bnk-border);
+    }
+
+    .menu-title {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 14px 16px;
+        cursor: pointer;
+        color: var(--bnk-gray);
+        font-weight: 500;
+        transition: all 0.2s;
+        text-decoration: none;
+        /* 밑줄 제거 */
+    }
+
+    .menu-title:hover {
+        background-color: #fff5f5;
+        color: var(--bnk-red);
+    }
+
+    .menu-title.active {
+        background-color: #fff5f5;
+        color: var(--bnk-red);
+        font-weight: 600;
+    }
+
+    .menu-title::after {
+        content: ">";
+        color: var(--bnk-gray);
+        transition: transform 0.2s;
+    }
+
+    .menu-title.active::after {
+        transform: rotate(90deg);
+        color: var(--bnk-red);
+    }
+
+    .submenu {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+        background-color: #fafafa;
+    }
+
+    .submenu a {
+        display: block;
+        padding: 10px 24px;
+        text-decoration: none;
+        color: var(--bnk-gray);
+        font-size: 14px;
+        border-left: 2px solid transparent;
+        transition: all 0.2s;
+    }
+
+    .submenu a:hover {
+        color: var(--bnk-red);
+        border-left: 2px solid var(--bnk-red);
+        background-color: #fff;
+    }
+
+    .submenu a.active {
+        font-weight: 600;
+        color: var(--bnk-red);
+        border-left: 2px solid var(--bnk-red);
+    }
+
+    /* ========== 본문 ========== */
+    .content {
+        flex: 1;
+    }
+
+    .page-title {
+        text-align: left;
+        margin-bottom: 40px;
+        border-bottom: 2px solid var(--bnk-red);
+        padding-bottom: 10px;
+    }
+
+    .page-title h1 {
+        font-size: 26px;
+        margin: 0;
+    }
+
+    .strategy-block {
+        margin-bottom: 40px;
+        text-align: center;
+    }
+
+    .strategy-block h2 {
+        font-size: 20px;
+        margin-bottom: 16px;
+        color: var(--bnk-gray);
+    }
+
+    .strategy-card {
+        background: #fff;
+        border: 1px solid var(--bnk-border);
+        border-radius: 16px;
+        padding: 40px 20px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        display: inline-block;
+        width: 80%;
+        transition: transform 0.2s;
+    }
+
+    .strategy-card:hover {
+        transform: translateY(-4px);
+    }
+
+    .strategy-card p {
+        font-size: 22px;
+        line-height: 1.6;
+    }
+
+    .strategy-card strong {
+        color: var(--bnk-red);
+        font-weight: 700;
+    }
+
+    .gradient-text {
+        background: var(--bnk-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-weight: 700;
+    }
+
+
+    @media (max-width: 1024px) {
+        main {
+            flex-direction: column;
+            width: 90%;
+        }
+
+        .sidebar {
+            width: 100%;
+        }
+
+        .strategy-card {
+            width: 100%;
+        }
+    }
+</style>
+
+
+    <script>
+        const titles = document.querySelectorAll(".menu-title");
+
+        titles.forEach(title => {
+            title.addEventListener("click", () => {
+                const isActive = title.classList.contains("active");
+
+                // 모든 메뉴 닫기
+                titles.forEach(t => {
+                    t.classList.remove("active");
+                    const next = t.nextElementSibling;
+                    if (next && next.classList.contains("submenu")) {
+                        next.style.maxHeight = null;
+                    }
+                });
+
+                // 현재 클릭한 메뉴만 열기
+                if (!isActive) {
+                    title.classList.add("active");
+                    const submenu = title.nextElementSibling;
+                    if (submenu && submenu.classList.contains("submenu")) {
+                        submenu.style.maxHeight = submenu.scrollHeight + "px";
+                    }
+                }
+            });
+        });
+    </script>
+
+</body>
+<footer>
+    <div th:replace="~{layouts/footer.html}"></div>
+</footer>
+</html>

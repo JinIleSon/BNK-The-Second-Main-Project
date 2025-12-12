@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>상품공시실>서비스이용수수료</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        /*----------------------------------*/
+        /*--전체 페이지--*/
+        /*----------------------------------*/
+        body {
+            font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+            background: #F6F6F8;
+            margin: 0;
+            color: #222;
+            padding-top: 100px;
+        }
+
+        .productsRoom-page{
+            display:flex;
+            gap:40px;
+            width: 1200px;
+            margin: 60px auto 100px;
+            padding: 40px 20px;
+            background: #F6F6F8;
+            border-radius: 8px;
+        }
+
+        /*----------------------------------*/
+        /*--왼쪽 사이드바--*/
+        /*----------------------------------*/
+        .all-sidebar{
+            width: 250px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            flex-shrink: 0;
+        }
+
+        .sidebar-menu {
+            list-style:none;
+            padding: 20px;
+            margin: 0 0 40px 0;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            background: #fff;
+            box-shadow: 0 4px 4px rgba(0,0,0,0.08);
+        }
+
+        .sidebar-menu h2{
+            font-size: 17px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 16px;
+        }
+
+        .sidebar-menu li{
+            padding: 12px 16px;
+            border-radius:  6px;
+            color: #555;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .sidebar-menu li:hover {
+            background: #f2f2f2;
+        }
+
+        .sidebar-menu li.active{
+            background: #ffe6e6;
+            border-left: 4px solid #d91a1a;
+            color: #d91a1a;
+            font-weight: 600;
+            padding-left: 12px;
+        }
+
+        .sidebar-menu li:last-child{
+            border-bottom: none;
+        }
+
+        .sidebar-menu a {
+            display: block;
+            text-decoration: none;
+            color: #222;
+        }
+
+        .sidebar-menu a:visited {
+            color: #222;
+        }
+
+        .sidebar-menu a:hover {
+            color: #D91A1A;
+        }
+
+        /*----------------------------------*/
+        /*--추가 도움--*/
+        /*----------------------------------*/
+        .all-help{
+            background: linear-gradient(135deg,#e62b2b, #7e2020);
+            color: #fff;
+            border-radius: 12px;
+            padding: 24px 20px;
+            text-align: center;
+            box-shadow: 0 4px 4px rgba(0,0,0,0.08);
+        }
+
+        .help-box h3{
+            font-size: 17px;
+            margin-bottom: 6px;
+        }
+
+        .help-box p{
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        .help-buttons{
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-call, .btn-chat{
+            padding: 8px 14px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-call{
+            background: #fff;
+            color: #d91a1a;
+        }
+
+        .btn-chat{
+            background:  transparent;
+            border: 1px solid #fff;
+            color: #fff;
+        }
+
+        /*----------------------------------*/
+        /*-- 메인 컨텐츠--*/
+        /*----------------------------------*/
+        .howUse-content{
+            flex: 1;
+        }
+
+        .howUse-header h1{
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .howUse-header p{
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        /* 상위 탭 버튼 */
+        .main-tab-btns {
+            display: flex;
+            border-bottom: 2px solid #d91a1a;
+            margin-bottom: 20px;
+        }
+
+        .main-btn {
+            flex: 1;
+            background: #fff;
+            border: none;
+            border-bottom: 3px solid transparent;
+            font-size: 16px;
+            padding: 12px 0;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .main-btn.active {
+            color: #d91a1a;
+            border-bottom: 3px solid #d91a1a;
+            font-weight: 600;
+        }
+
+        /* 섹션 공통 */
+        .main-section{
+            display:none;
+        }
+        .main-section.active{
+            display:block;
+        }
+
+        .fee-section{
+            margin-top: 24px;
+        }
+
+        .fee-section h2{
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: #333;
+            border-left: 5px solid #d91a1a;
+            padding-left: 10px;
+        }
+
+        .fee-section .sub-text{
+            font-size: 13px;
+            color: #777;
+            margin-bottom: 10px;
+        }
+
+        .service-table{
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            border: 1px solid #ddd;
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        .service-table th,
+        .service-table td{
+            border: 1px solid #ddd;
+            padding: 8px 10px;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        .service-table th{
+            background: #fafafa;
+            font-weight: 600;
+        }
+
+        .service-table tbody tr:nth-child(even){
+            background: #fcfcfc;
+        }
+
+        .service-table td.text-left{
+            text-align: left;
+        }
+
+        .fee-notice{
+            margin-top: 6px;
+            font-size: 12px;
+            color: #555;
+            line-height: 1.7;
+        }
+
+        .fee-notice ul{
+            margin: 4px 0 0;
+            padding-left: 18px;
+        }
+
+        .fee-notice li{
+            margin-bottom: 3px;
+        }
+    </style>
+</head>
+<body>
+<!--헤더-->
+<div th:replace="~{layouts/header}"></div>
+
+<div class="productsRoom-page">
+    <!--왼쪽 사이드바-->
+    <aside class="all-sidebar">
+        <ul class="sidebar-menu">
+            <h2>퇴직연금사업자공시</h2>
+            <li><a href="./AnyProduct">운용금액 및 운용수익률</a></li>
+            <li><a href="./depositProduct">퇴직연금 계약서</a></li>
+            <li><a href="./bankManual">원리금 보장 상품 현황</a></li>
+            <li class="active"><a href="./serviceFee">수수료</a></li>
+        </ul>
+
+        <!--추가 도움 영역-->
+        <section class="all-help">
+            <div class="help-box">
+                <h3>추가 도움이 필요하신가요?</h3>
+                <p>전문 상담원이 친절하게 도와드리겠습니다.</p>
+                <div class="help-buttons">
+                    <button class="btn-call">전화상담</button>
+                    <button class="btn-chat">Talk상담</button>
+                </div>
+            </div>
+        </section>
+    </aside>
+
+    <!-- 메인 콘텐츠 -->
+    <main class="howUse-content">
+        <div class="howUse-header">
+            <h1>서비스이용수수료</h1>
+            <p>
+                퇴직연금 제도별 운용관리수수료 및 자산관리수수료를 확인하실 수 있습니다.
+            </p>
+        </div>
+
+        <!-- 상위 탭 버튼 -->
+        <div class="main-tab-btns">
+            <button class="main-btn active" onclick="showMainTab('deposit')">확정급여형(DB) 수수료</button>
+            <button class="main-btn" onclick="showMainTab('transfer')">확정기여형(DC) 수수료</button>
+            <button class="main-btn" onclick="showMainTab('inquiry')">기업형IRP 수수료</button>
+            <button class="main-btn" onclick="showMainTab('cusIrp')">개인형IRP 수수료</button>
+        </div>
+
+        <!-- 확정급여형(DB) -->
+        <section id="deposit" class="main-section active">
+            <section class="fee-section">
+                <h2>확정급여형(DB) 수수료</h2>
+                <p class="sub-text">※ 수수료율은 연 기준이며, 적립금 자산평가액 평잔에 따라 차등 적용됩니다.</p>
+
+                <table class="service-table">
+                    <thead>
+                    <tr>
+                        <th>수수료구분</th>
+                        <th>수수료율(연)/금액</th>
+                        <th>부과기준</th>
+                        <th>납입주체</th>
+                        <th>취득자산</th>
+                        <th>장기할인</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>운용관리수수료</td>
+                        <td class="text-left">
+                            적립금 10억 미만 : 0.40%<br>
+                            30억 미만 : 0.35%<br>
+                            50억 미만 : 0.30%<br>
+                            100억 미만 : 0.25%<br>
+                            600억 미만 : 0.20%<br>
+                            600억 이상 : 0.10%
+                        </td>
+                        <td class="text-left">
+                            매 계약응당일 기준<br>
+                            (계산기간 적립금자산평가액 평잔 × 해당 수수료율)<br>
+                            * 계산기간 : 계약일 또는 직전 계산일 ~ 해당 계산기준일 전일
+                        </td>
+                        <td>사용자</td>
+                        <td>신탁재산(적립금)</td>
+                        <td>
+                            2년차 10%<br>
+                            3년차 12%<br>
+                            4년차 15%<br>
+                            5년차 이후 20%
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>자산관리수수료</td>
+                        <td class="text-left">
+                            적립금 600억 미만 : 0.30%<br>
+                            600억 이상 : 0.15%
+                        </td>
+                        <td class="text-left">
+                            매 계약응당일 기준<br>
+                            (계산기간 신탁재산평가액 평잔 × 수수료율)
+                        </td>
+                        <td>사용자</td>
+                        <td>신탁재산</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>가입자교육수수료</td>
+                        <td>0원</td>
+                        <td class="text-left">교육위탁계약서에서 정하되, 별도 징수하지 않음</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>중도해지수수료</td>
+                        <td>없음</td>
+                        <td>해당 없음</td>
+                        <td>해당 없음</td>
+                        <td>해당 없음</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>계약이전수수료</td>
+                        <td>없음</td>
+                        <td>해당 없음</td>
+                        <td>해당 없음</td>
+                        <td>해당 없음</td>
+                        <td>-</td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <div class="fee-notice">
+                    <ul>
+                        <li>퇴직신탁·퇴직보험에서 전환된 계약은 첫 해 운용관리수수료를 면제하되, 초년도 중 중도해지·계약이전 시에는 해당 수수료를 부과합니다.</li>
+                        <li>사회적기업, 사회복지법인, 유치원·어린이집 등의 경우 운용관리·자산관리수수료 50% 할인 대상입니다.</li>
+                        <li>중소기업확인서를 제출한 경우, 제출 익일부터 운용관리·자산관리수수료 5% 추가 할인합니다.</li>
+                        <li>적립금 중 집합투자증권(ETF 제외) 자산평가액에 대해서는 운용관리수수료 10%를 할인합니다.</li>
+                    </ul>
+                </div>
+            </section>
+        </section>
+
+        <!-- 확정기여형(DC) -->
+        <section id="transfer" class="main-section">
+            <section class="fee-section">
+                <h2>확정기여형(DC) 수수료</h2>
+                <p class="sub-text">※ 사용자부담금·가입자부담금 모두 동일한 수수료 체계를 적용합니다.</p>
+
+                <table class="service-table">
+                    <thead>
+                    <tr>
+                        <th>수수료구분</th>
+                        <th>수수료율(연)/금액</th>
+                        <th>부과기준</th>
+                        <th>납입주체</th>
+                        <th>취득자산</th>
+                        <th>장기할인</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>운용관리수수료</td>
+                        <td class="text-left">
+                            적립금 10억 미만 : 0.40%<br>
+                            30억 미만 : 0.35%<br>
+                            50억 미만 : 0.30%<br>
+                            100억 미만 : 0.25%<br>
+                            100억 이상 : 0.20%
+                        </td>
+                        <td class="text-left">
+                            매 계약응당일 기준<br>
+                            (계산기간 적립금자산평가액 평잔 × 해당 수수료율)
+                        </td>
+                        <td>
+                            사용자(사용자부담금)<br>
+                            가입자(가입자부담금)
+                        </td>
+                        <td>
+                            현금(사용자부담금)<br>
+                            신탁재산(적립금)
+                        </td>
+                        <td>
+                            2년차 10%<br>
+                            3년차 12%<br>
+                            4년차 15%<br>
+                            5년차 이후 20%
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>자산관리수수료</td>
+                        <td>0.30%</td>
+                        <td class="text-left">
+                            매 계약응당일 기준<br>
+                            (계산기간 신탁재산평가액 평잔 × 수수료율)
+                        </td>
+                        <td>
+                            사용자(사용자부담금)<br>
+                            가입자(가입자부담금)
+                        </td>
+                        <td>
+                            현금 / 신탁재산
+                        </td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>가입자교육수수료</td>
+                        <td>0원</td>
+                        <td class="text-left">교육위탁계약서에서 정하되, 별도 징수하지 않음</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>중도해지수수료</td>
+                        <td>없음</td>
+                        <td>해당 없음</td>
+                        <td>해당 없음</td>
+                        <td>해당 없음</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>계약이전수수료</td>
+                        <td>없음</td>
+                        <td>해당 없음</td>
+                        <td>해당 없음</td>
+                        <td>해당 없음</td>
+                        <td>-</td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <div class="fee-notice">
+                    <ul>
+                        <li>장기계약 할인 및 사회적기업·사회복지법인·중소기업 할인 규정은 확정급여형(DB)과 동일하게 적용됩니다.</li>
+                        <li>집합투자증권(ETF 제외) 자산평가액에는 운용관리수수료 10%를 추가 할인합니다.</li>
+                    </ul>
+                </div>
+            </section>
+        </section>
+
+        <!-- 기업형 IRP -->
+        <section id="inquiry" class="main-section">
+            <section class="fee-section">
+                <h2>기업형 IRP 수수료</h2>
+                <p class="sub-text">※ 기업이 운영하는 IRP 계정의 수수료 체계입니다.</p>
+
+                <table class="service-table">
+                    <thead>
+                    <tr>
+                        <th>수수료구분</th>
+                        <th>수수료율(연)/금액</th>
+                        <th>부과기준</th>
+                        <th>납입주체</th>
+                        <th>취득자산</th>
+                        <th>장기할인</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>운용관리수수료</td>
+                        <td class="text-left">
+                            적립금 1억 미만 : 0.40%<br>
+                            1억 이상 : 0.38%
+                        </td>
+                        <td class="text-left">
+                            매 계약응당일 기준<br>
+                            (계산기간 적립금자산평가액 평잔 × 해당 수수료율)
+                        </td>
+                        <td>
+                            사용자(사용자부담분)<br>
+                            가입자(가입자부담분)
+                        </td>
+                        <td>
+                            현금 / 신탁재산(적립금)
+                        </td>
+                        <td>
+                            2년차 10%<br>
+                            3년차 12%<br>
+                            4년차 15%<br>
+                            5년차 이후 20%
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>자산관리수수료</td>
+                        <td class="text-left">
+                            적립금 1억 미만 : 0.20%<br>
+                            1억 이상 : 0.18%
+                        </td>
+                        <td class="text-left">
+                            매 계약응당일 기준<br>
+                            (계산기간 신탁재산평가액 평잔 × 수수료율)
+                        </td>
+                        <td>
+                            사용자(사용자부담분)<br>
+                            가입자(가입자부담분)
+                        </td>
+                        <td>
+                            현금 / 신탁재산
+                        </td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>가입자교육수수료</td>
+                        <td>0원</td>
+                        <td class="text-left">교육위탁계약서에서 정하되, 별도 징수하지 않음</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>중도해지수수료</td>
+                        <td>없음</td>
+                        <td>해당 없음</td>
+                        <td>해당 없음</td>
+                        <td>해당 없음</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>계약이전수수료</td>
+                        <td>없음</td>
+                        <td>해당 없음</td>
+                        <td>해당 없음</td>
+                        <td>해당 없음</td>
+                        <td>-</td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <div class="fee-notice">
+                    <ul>
+                        <li>장기계약 할인, 사회적기업·사회복지법인·중소기업 등에 대한 할인 규정은 확정기여형(DC)와 동일하게 적용합니다.</li>
+                        <li>집합투자증권(ETF 제외) 자산평가액에 대하여 운용관리수수료 10%를 할인합니다.</li>
+                    </ul>
+                </div>
+            </section>
+        </section>
+
+        <!-- 개인형 IRP -->
+        <section id="cusIrp" class="main-section">
+            <section class="fee-section">
+                <h2>개인형 IRP 수수료</h2>
+                <p class="sub-text">※ 인터넷·모바일뱅킹 가입 시 수수료 면제 등 별도 우대가 적용됩니다.</p>
+
+                <table class="service-table">
+                    <thead>
+                    <tr>
+                        <th>수수료구분</th>
+                        <th>수수료율(연)/금액</th>
+                        <th>부과기준</th>
+                        <th>납입주체</th>
+                        <th>취득자산</th>
+                        <th>장기할인</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>운용관리수수료</td>
+                        <td class="text-left">
+                            일시부담금(인터넷·모바일뱅킹)<br>
+                            · 1억 미만 : 0.30% (면제)<br>
+                            · 1억 이상 : 0.28% (면제)<br><br>
+                            개인부담금(인터넷·모바일뱅킹)<br>
+                            · 1억 미만 : 0.08% (면제)<br>
+                            · 1억 이상 : 0.07% (면제)
+                        </td>
+                        <td class="text-left">
+                            매 계약응당일 기준<br>
+                            (계산기간 적립금자산평가액 평잔 × 해당 수수료율)
+                        </td>
+                        <td>가입자</td>
+                        <td>신탁재산(적립금)</td>
+                        <td>
+                            2년차 10%<br>
+                            3년차 12%<br>
+                            4년차 15%<br>
+                            5년차 이후 20%
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>자산관리수수료</td>
+                        <td class="text-left">
+                            일시·개인부담금(인터넷·모바일뱅킹)<br>
+                            · 1억 미만 : 0.20% (면제)<br>
+                            · 1억 이상 : 0.17% (면제)
+                        </td>
+                        <td class="text-left">
+                            매 계약응당일 기준<br>
+                            (계산기간 신탁재산평가액 평잔 × 해당 수수료율)
+                        </td>
+                        <td>가입자</td>
+                        <td>신탁재산</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>가입자교육수수료</td>
+                        <td>0원</td>
+                        <td class="text-left">교육위탁계약서에서 정하되, 별도 징수하지 않음</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>중도해지수수료</td>
+                        <td>없음</td>
+                        <td>해당 없음</td>
+                        <td>해당 없음</td>
+                        <td>해당 없음</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>계약이전수수료</td>
+                        <td>없음</td>
+                        <td>해당 없음</td>
+                        <td>해당 없음</td>
+                        <td>해당 없음</td>
+                        <td>-</td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <div class="fee-notice">
+                    <ul>
+                        <li>퇴직급여 일시부담금 납입 후 15일 이내 해지 신청 시 해당 기간의 운용관리·자산관리수수료는 면제됩니다.</li>
+                        <li>연금수령 개시 신청 시점부터 운용관리수수료의 80% 할인율을 적용합니다.</li>
+                        <li>인터넷·모바일뱅킹으로 IRP 계좌 개설 시 운용·자산관리수수료가 면제됩니다.</li>
+                        <li>집합투자증권(ETF 제외) 및 디폴트옵션 포트폴리오 적립금에 대해서는 별도 규정에 따른 할인 및 운용손익수수료가 적용됩니다.</li>
+                    </ul>
+                </div>
+            </section>
+        </section>
+    </main>
+</div>
+
+<!--푸터-->
+<div th:replace="~{layouts/footer}"></div>
+</body>
+</html>
+
+<script>
+    // header 불러오기
+    fetch(`${contextPath}/layouts/header.html`)
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('header').innerHTML = data;
+        })
+        .catch(err => console.error('[Header load failed]', err));
+
+    // chatbot import 기능
+    async function importHtmlWithAssets(url, mountSelector) {
+        try {
+            const res = await fetch(url, { credentials: 'same-origin' });
+            if (!res.ok) throw new Error(`Failed to load ${url}`);
+            const html = await res.text();
+
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+
+            doc.querySelectorAll('link[rel="stylesheet"]').forEach(link => {
+                const href = link.getAttribute('href');
+                const exists = [...document.head.querySelectorAll('link[rel="stylesheet"]')]
+                    .some(l => l.getAttribute('href') === href);
+                if (!exists && href) document.head.appendChild(link.cloneNode(true));
+            });
+
+            doc.querySelectorAll('style').forEach(styleEl => {
+                const clone = document.createElement('style');
+                clone.textContent = styleEl.textContent;
+                [...styleEl.attributes].forEach(a => clone.setAttribute(a.name, a.value));
+                document.head.appendChild(clone);
+            });
+
+            const mount = document.querySelector(mountSelector);
+            const frag = document.createDocumentFragment();
+            [...doc.body.children].forEach(node => {
+                if (node.tagName.toLowerCase() !== 'script') frag.appendChild(node.cloneNode(true));
+            });
+            mount.appendChild(frag);
+
+            const scripts = [...doc.querySelectorAll('script')];
+            for (const oldScript of scripts) {
+                const newScript = document.createElement('script');
+                [...oldScript.attributes].forEach(attr => newScript.setAttribute(attr.name, attr.value));
+                if (oldScript.src) {
+                    await new Promise(resolve => {
+                        newScript.onload = resolve;
+                        newScript.onerror = resolve;
+                        document.body.appendChild(newScript);
+                    });
+                } else {
+                    newScript.textContent = oldScript.textContent || '';
+                    document.body.appendChild(newScript);
+                }
+            }
+        } catch (err) {
+            console.error('[Chatbot load failed]', err);
+        }
+    }
+
+    // chatbot 불러오기
+    importHtmlWithAssets('/components/chatbot_test.html', '#bnk-chatbot-slot');
+
+    // footer 불러오기
+    fetch(`${contextPath}/layouts/footer.html`)
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('footer').innerHTML = data;
+        })
+        .catch(err => console.error('[Footer load failed]', err));
+
+    // 상위 탭 전환
+    function showMainTab(id) {
+        document.querySelectorAll('.main-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.main-section').forEach(sec => sec.classList.remove('active'));
+        event.target.classList.add('active');
+        document.getElementById(id).classList.add('active');
+    }
+</script>

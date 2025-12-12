@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>퇴직연금 기업뱅킹 - 직원 수정</title>
+
+    <style>
+        /* ======================== 공통 레이아웃 ======================== */
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: "Noto Sans KR", system-ui, -apple-system, sans-serif;
+            background-color: #f4f5f9;
+            color: #222;
+            font-size: 15px;
+        }
+
+        .page-container {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 24px;
+        }
+
+        h1 {
+            margin: 0 0 16px;
+            font-size: 24px;
+        }
+
+        .subtitle {
+            font-size: 15px;
+            color: #777;
+            margin-bottom: 24px;
+        }
+
+        /* ======================== 카드 ======================== */
+        .card {
+            background: white;
+            padding: 24px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        /* ======================== 수정 폼 ======================== */
+        .form-row {
+            margin-bottom: 16px;
+        }
+
+        .form-row label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #444;
+        }
+
+        .form-row input,
+        .form-row select {
+            width: 100%;
+            padding: 10px 12px;
+            font-size: 15px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            background: #fff;
+        }
+
+        .form-actions {
+            margin-top: 24px;
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-primary {
+            background: #d91a1a;
+            color: #fff;
+            padding: 10px 18px;
+            border-radius: 6px;
+            font-size: 15px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            background: #b81414;
+        }
+
+        .btn-secondary {
+            background: #ddd;
+            color: #222;
+            padding: 10px 18px;
+            border-radius: 6px;
+            font-size: 15px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-secondary:hover {
+            background: #ccc;
+        }
+
+        /* ======================== 햄버거 ======================== */
+        .hamburger {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            cursor: pointer;
+            padding: 6px;
+            background: none;
+            border: none;
+            z-index: 2000;
+        }
+
+        .hamburger span {
+            width: 100%;
+            height: 4px;
+            background: #222;
+            border-radius: 4px;
+            transition: 0.3s;
+        }
+
+        .hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+        .hamburger.open span:nth-child(2) { opacity: 0; }
+        .hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+
+        /* ======================== 사이드바 ======================== */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -260px;
+            width: 250px;
+            height: 100%;
+            background: white;
+            padding: 20px;
+            box-shadow: 2px 0 8px rgba(0,0,0,0.1);
+            transition: 0.3s;
+            z-index: 1500;
+        }
+
+        .sidebar.active { left: 0; }
+        .sidebar a { color:#222; text-decoration:none; font-size:15px; display:block; padding:8px 0; }
+        .sidebar a:hover { color:#d91a1a; }
+
+    </style>
+</head>
+
+<body>
+
+<!-- 햄버거 -->
+<button class="hamburger" id="hamburgerBtn">
+    <span></span><span></span><span></span>
+</button>
+
+<!-- 사이드바 -->
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-title">
+        <a th:href="@{/corporate/main}">
+            <img th:src="@{/images/BNK_english.png}" alt="부산은행 로고" width="120px">
+        </a>
+    </div>
+    <ul style="list-style:none; padding:0;">
+        <li><a href="/BNK/corporate/main">🏠 기업 메인</a></li>
+        <li><a href="/BNK/corporate/employee/list">👥 직원 관리</a></li>
+        <li><a href="/BNK/corporate/employee/detail/1">📑 직원 상세</a></li>
+        <li><a href="/BNK/corporate/cs">❓ 고객센터</a></li>
+    </ul>
+</aside>
+
+<!-- 본문 -->
+<div class="page-container">
+
+    <h1>직원 정보 수정</h1>
+    <div class="subtitle">직원 기본 정보와 재직 상태를 수정할 수 있습니다.</div>
+
+    <div class="card">
+        <div class="card-title">직원 정보 수정</div>
+
+        <form th:action="@{|/BNK/corporate/employee/edit/${employee.empId}|}" method="post">
+
+            <div class="form-row">
+                <label>직원 ID</label>
+                <input type="text" th:value="${employee.empId}" disabled>
+            </div>
+
+            <div class="form-row">
+                <label>이름</label>
+                <input type="text" name="name" th:value="${employee.name}" required>
+            </div>
+
+            <div class="form-row">
+                <label>제도(DB / DC)</label>
+                <select name="planType">
+                    <option value="DB" th:selected="${employee.planType == 'DB'}">DB</option>
+                    <option value="DC" th:selected="${employee.planType == 'DC'}">DC</option>
+                </select>
+            </div>
+
+            <div class="form-row">
+                <label>계좌번호</label>
+                <input type="text" name="accountNo" th:value="${employee.accountNo}" required>
+            </div>
+
+            <div class="form-row">
+                <label>재직 상태</label>
+                <select name="status">
+                    <option value="ACTIVE" th:selected="${employee.status == 'ACTIVE'}">재직</option>
+                    <option value="LEAVE" th:selected="${employee.status == 'LEAVE'}">휴직</option>
+                    <option value="RETIRED" th:selected="${employee.status == 'RETIRED'}">퇴사</option>
+                </select>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-primary">저장</button>
+                <button type="button" class="btn-secondary"
+                        th:onclick="|location.href='/BNK/corporate/employee/detail/${employee.empId}'|">
+                    취소
+                </button>
+            </div>
+
+        </form>
+    </div>
+
+</div>
+
+<script>
+    const hamburgerBtn = document.getElementById("hamburgerBtn");
+    const sidebar = document.getElementById("sidebar");
+    hamburgerBtn.onclick = () => {
+        sidebar.classList.toggle("active");
+        hamburgerBtn.classList.toggle("open");
+    };
+</script>
+
+</body>
+</html>

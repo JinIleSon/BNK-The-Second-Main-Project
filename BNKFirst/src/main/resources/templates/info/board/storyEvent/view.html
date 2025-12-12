@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BNK부산은행 | 이벤트 상세보기</title>
+  <link rel="stylesheet" href="../css/board.css" />
+</head>
+
+<body>
+  <div id="header"></div>
+
+  <main>
+    <div class="page-title">
+      <h1>이벤트</h1>
+      <p class="subtitle">부산은행의 최신 소식을 전해드립니다.</p>
+    </div>
+
+    <article class="board-view">
+      <!-- 제목 -->
+      <h2 class="view-title">BNK부산은행, WKL 여자프로농구 2025~2026 타이틀 스폰서 조인식</h2>
+
+      <!-- 메타정보 -->
+      <div class="view-meta">
+        <span class="date">2025-11-10</span>
+        <span class="author">홍보부</span>
+        <span class="views">조회수 1,234</span>
+      </div>
+
+      <!-- 본문 -->
+      <div class="view-content">
+        <p>BNK부산은행은 2025~2026 여자프로농구 시즌 타이틀 스폰서 계약을 체결했다고 10일 밝혔다.</p>
+        <p>이번 계약으로 부산은행은 지역 스포츠 발전과 여성 스포츠 후원을 강화할 예정이다.</p>
+        <img src="../../assets/press-hero.jpg" alt="조인식 현장 사진">
+      </div>
+
+      <!-- 첨부파일 -->
+      <div class="view-files">
+        <h3>첨부파일</h3>
+        <ul>
+          <li><a href="#">보도자료_2025.pdf</a></li>
+          <li><a href="#">현장사진.zip</a></li>
+        </ul>
+      </div>
+
+      <!-- 이전글 / 다음글 -->
+      <div class="view-nav">
+        <div><strong>이전글</strong> <a href="#">BNK부산은행, 사회공헌활동 2기 발대식 개최</a></div>
+        <div><strong>다음글</strong> <a href="#">BNK부산은행, 청년 창업 금융패키지 출시</a></div>
+      </div>
+
+      <!-- 버튼 -->
+      <div class="actions">
+        <a href="./list.html" class="btn">목록</a>
+        <a href="./write.html" class="btn red">글쓰기</a>
+      </div>
+    </article>
+  </main>
+
+  <div id="footer"></div>
+
+  <script>
+    // 공통 header/footer 로드
+    fetch('../../_header.html')
+      .then(res => res.text())
+      .then(html => document.getElementById('header').innerHTML = html);
+
+    fetch('../../_footer.html')
+      .then(res => res.text())
+      .then(html => document.getElementById('footer').innerHTML = html);
+  </script>
+</body>
+</html>
