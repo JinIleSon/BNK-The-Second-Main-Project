@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../account/account_detail_page.dart';
 
+import '../menu/menu_page.dart';
+
 class HomeTab extends StatelessWidget {
   final Color cardColor;
   final TextTheme textTheme;
@@ -88,7 +90,12 @@ class _TopAppBar extends StatelessWidget {
             icon: const Icon(Icons.search),
           ),
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const MenuPage()),
+              );
+            },
             icon: const Icon(Icons.menu),
           ),
         ],
