@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../stock_detail/stock_detail_page.dart';
+import '../menu/menu_page.dart';
 
 class DiscoveryPage extends StatelessWidget {
   const DiscoveryPage({super.key});
@@ -55,7 +56,12 @@ class DiscoveryPage extends StatelessWidget {
                 icon: const Icon(Icons.search),
               ),
               IconButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const MenuPage()),
+                  );
+                },
                 icon: const Icon(Icons.menu),
               ),
             ],

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../menu/menu_page.dart';
 
 class FavoritePage extends StatelessWidget {
   const FavoritePage({super.key});
@@ -37,7 +38,12 @@ class FavoritePage extends StatelessWidget {
                 ),
                 IconButton(
                   icon: const Icon(Icons.menu),
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const MenuPage()),
+                    );
+                  },
                 ),
               ],
             ),
