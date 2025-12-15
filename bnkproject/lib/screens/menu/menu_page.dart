@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../settings/settings_page.dart';
 
 class MenuPage extends StatefulWidget {
   const MenuPage({super.key});
@@ -32,7 +33,15 @@ class _MenuPageState extends State<MenuPage> {
         ),
         actions: [
           IconButton(icon: const Icon(Icons.search), onPressed: () {}),
-          IconButton(icon: const Icon(Icons.settings), onPressed: () {}),
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const TossSettingsPage()),
+              );
+            },
+          ),
           const SizedBox(width: 4),
         ],
       ),
