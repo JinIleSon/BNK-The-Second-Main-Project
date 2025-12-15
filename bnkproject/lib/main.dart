@@ -4,6 +4,7 @@ import 'screens/home/home_tab.dart';
 import 'screens/favorite/favorite_page.dart';
 import 'screens/discovery/discovery_page.dart';
 import 'screens/boarder/board_main.dart';
+import 'api/login.dart';
 
 void main() {
   runApp(const MyApp());
@@ -40,6 +41,8 @@ class TossLikeHomePage extends StatefulWidget {
 class _TossLikeHomePageState extends State<TossLikeHomePage> {
   int _selectedIndex = 0; // 0: 홈, 1: 관심, 2: 발견, 3: 마이, 4: 피드(임시)
 
+  bool _isLoggedIn = false; // 피드 이동시 로그인 테스트(이준우)
+
   @override
   Widget build(BuildContext context) {
     final cardColor = Theme.of(context).cardColor;
@@ -57,8 +60,46 @@ class _TossLikeHomePageState extends State<TossLikeHomePage> {
         body = const DiscoveryPage();
         break;
       case 3:
-        body = const Center(
-          child: Text('마이 화면은 아직 준비 중!'),
+        body = Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(_isLoggedIn ? "로그인 상태 ✅" : "로그아웃 상태 ❌"),
+
+              const SizedBox(height: 12),
+
+              ElevatedButton(
+                onPressed: () async {
+                  final ok = await Navigator.push<bool>(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => LoginPage(
+                        onLoginSuccess: () {
+                          setState(() => _isLoggedIn = true);
+                        },
+                      ),
+                    ),
+                  );
+
+                  // ✅ LoginPage가 true를 리턴한 경우에만 로그인 처리
+                  if (ok == true) {
+                    setState(() => _isLoggedIn = true);
+                  }
+                },
+                child: const Text("로그인"),
+              ),
+
+              const SizedBox(height: 8),
+
+              ElevatedButton(
+                onPressed: () {
+                  setState(() => _isLoggedIn = false);
+                  // (토큰 저장했으면 여기서 같이 삭제)
+                },
+                child: const Text("로그아웃(임시)"),
+              ),
+            ],
+          ),
         );
         break;
       case 4:
@@ -74,9 +115,7 @@ class _TossLikeHomePageState extends State<TossLikeHomePage> {
       bottomNavigationBar: _BottomNavBar(
         selectedIndex: _selectedIndex,
         onTap: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
+          setState(() => _selectedIndex = index);
         },
       ),
     );
