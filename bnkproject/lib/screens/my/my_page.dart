@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../api/login.dart';
+import '../../api/member_api.dart';
 
 class MyPage extends StatelessWidget {
   final bool isLoggedIn;
@@ -29,40 +29,94 @@ class MyPage extends StatelessWidget {
 }
 
 /// -------------------- 로그아웃 화면(기존 코드 유지) --------------------
-class _LoggedOutView extends StatelessWidget {
+class _LoggedOutView extends StatefulWidget {
   final VoidCallback onLoginSuccess;
 
   const _LoggedOutView({
+    super.key,
     required this.onLoginSuccess,
   });
 
   @override
+  State<_LoggedOutView> createState() => _LoggedOutViewState();
+}
+
+class _LoggedOutViewState extends State<_LoggedOutView> {
+  final TextEditingController midCtrl = TextEditingController();
+  final TextEditingController pwCtrl = TextEditingController();
+
+  bool loading = false;
+  String? errorMsg;
+
+  Future<void> _handleLogin() async {
+    setState(() {
+      loading = true;
+      errorMsg = null;
+    });
+
+
+    final result = await memberApi.login(
+      mid: midCtrl.text.trim(),
+      mpw: pwCtrl.text.trim(),
+    );
+
+    setState(() {
+      loading = false;
+    });
+
+    if (result.ok) {
+      widget.onLoginSuccess();
+    } else {
+      setState(() {
+        errorMsg = result.message ?? '로그인에 실패했습니다.';
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Text("로그아웃 상태 ❌"),
-          const SizedBox(height: 12),
-          ElevatedButton(
-            onPressed: () async {
-              final ok = await Navigator.push<bool>(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => LoginPage(
-                    onLoginSuccess: onLoginSuccess,
-                  ),
+      child: SizedBox(
+        width: 320, // ← 여기 숫자 줄이면 더 좁아짐 (예: 280, 300 등)
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: midCtrl,
+                decoration: const InputDecoration(
+                  labelText: '아이디',
                 ),
-              );
-
-              // ✅ LoginPage가 true를 리턴한 경우에만 로그인 처리
-              if (ok == true) {
-                onLoginSuccess();
-              }
-            },
-            child: const Text("로그인"),
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: pwCtrl,
+                decoration: const InputDecoration(
+                  labelText: '비밀번호',
+                ),
+                obscureText: true,
+              ),
+              const SizedBox(height: 12),
+              if (errorMsg != null)
+                Text(
+                  errorMsg!,
+                  style: const TextStyle(color: Colors.red),
+                ),
+              const SizedBox(height: 12),
+              ElevatedButton(
+                onPressed: loading ? null : _handleLogin,
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size(double.infinity, 48),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                ),
+                child: loading
+                    ? const CircularProgressIndicator()
+                    : const Text("로그인", style: TextStyle(fontSize: 16)),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
