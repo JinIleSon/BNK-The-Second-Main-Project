@@ -4,6 +4,8 @@ import 'screens/home/home_tab.dart';
 import 'screens/favorite/favorite_page.dart';
 import 'screens/discovery/discovery_page.dart';
 import 'screens/boarder/board_main.dart';
+import 'screens/my/my_page.dart';
+
 
 void main() {
   runApp(const MyApp());
@@ -40,6 +42,8 @@ class TossLikeHomePage extends StatefulWidget {
 class _TossLikeHomePageState extends State<TossLikeHomePage> {
   int _selectedIndex = 0; // 0: 홈, 1: 관심, 2: 발견, 3: 마이, 4: 피드(임시)
 
+  bool _isLoggedIn = false; // 피드 이동시 로그인 테스트(이준우)
+
   @override
   Widget build(BuildContext context) {
     final cardColor = Theme.of(context).cardColor;
@@ -57,8 +61,10 @@ class _TossLikeHomePageState extends State<TossLikeHomePage> {
         body = const DiscoveryPage();
         break;
       case 3:
-        body = const Center(
-          child: Text('마이 화면은 아직 준비 중!'),
+        body = MyPage(
+          isLoggedIn: _isLoggedIn,
+          onLoginSuccess: () => setState(() => _isLoggedIn = true),
+          onLogout: () => setState(() => _isLoggedIn = false),
         );
         break;
       case 4:
@@ -74,9 +80,7 @@ class _TossLikeHomePageState extends State<TossLikeHomePage> {
       bottomNavigationBar: _BottomNavBar(
         selectedIndex: _selectedIndex,
         onTap: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
+          setState(() => _selectedIndex = index);
         },
       ),
     );
