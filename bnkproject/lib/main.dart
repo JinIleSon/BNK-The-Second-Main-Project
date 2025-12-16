@@ -4,7 +4,8 @@ import 'screens/home/home_tab.dart';
 import 'screens/favorite/favorite_page.dart';
 import 'screens/discovery/discovery_page.dart';
 import 'screens/boarder/board_main.dart';
-import 'api/login.dart';
+import 'screens/my/my_page.dart';
+
 
 void main() {
   runApp(const MyApp());
@@ -60,46 +61,10 @@ class _TossLikeHomePageState extends State<TossLikeHomePage> {
         body = const DiscoveryPage();
         break;
       case 3:
-        body = Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(_isLoggedIn ? "로그인 상태 ✅" : "로그아웃 상태 ❌"),
-
-              const SizedBox(height: 12),
-
-              ElevatedButton(
-                onPressed: () async {
-                  final ok = await Navigator.push<bool>(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => LoginPage(
-                        onLoginSuccess: () {
-                          setState(() => _isLoggedIn = true);
-                        },
-                      ),
-                    ),
-                  );
-
-                  // ✅ LoginPage가 true를 리턴한 경우에만 로그인 처리
-                  if (ok == true) {
-                    setState(() => _isLoggedIn = true);
-                  }
-                },
-                child: const Text("로그인"),
-              ),
-
-              const SizedBox(height: 8),
-
-              ElevatedButton(
-                onPressed: () {
-                  setState(() => _isLoggedIn = false);
-                  // (토큰 저장했으면 여기서 같이 삭제)
-                },
-                child: const Text("로그아웃(임시)"),
-              ),
-            ],
-          ),
+        body = MyPage(
+          isLoggedIn: _isLoggedIn,
+          onLoginSuccess: () => setState(() => _isLoggedIn = true),
+          onLogout: () => setState(() => _isLoggedIn = false),
         );
         break;
       case 4:
