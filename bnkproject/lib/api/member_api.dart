@@ -15,7 +15,10 @@ import '../models/UserProfile.dart';
 import '../models/SessionInfo.dart';
 import '../models/FindIdPw.dart';
 
+const String baseUrl = "http://10.0.2.2:8080/BNK";
+
 class MemberApiClient {
+
   final String baseUrl;
   final http.Client _client;
 
@@ -234,3 +237,5 @@ class MemberApiClient {
     return FindPwResult.fromJson(json);
   }
 }
+
+final MemberApiClient memberApi = MemberApiClient(baseUrl: baseUrl);
