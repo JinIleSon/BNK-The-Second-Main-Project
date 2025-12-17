@@ -1,5 +1,7 @@
+import 'package:bnkproject/models/StockRank.dart';
 import 'package:flutter/material.dart';
 
+import '../../api/stock_rank_api.dart';
 import '../stock_detail/stock_detail_page.dart';
 import '../menu/menu_page.dart';
 
@@ -139,7 +141,7 @@ class DiscoveryPage extends StatelessWidget {
                 Expanded(
                   child: TabBarView(
                     children: [
-                      _DiscoveryStockList(stocks: stocks),
+                      _DiscoveryStockList(),
                       const Center(child: Text('거래량 탭은 준비 중입니다.')),
                       const Center(child: Text('급상승 탭은 준비 중입니다.')),
                       const Center(child: Text('급하락 탭은 준비 중입니다.')),
@@ -196,10 +198,32 @@ class _DiscoverCategoryChip extends StatelessWidget {
   }
 }
 
-class _DiscoveryStockList extends StatelessWidget {
-  final List<(String, String, String, String)> stocks;
+/*
+  날짜 : 2025.12.17.
+  이름 : 강민철
+  내용 : 주식 리스트를 API와 연결
+ */
+class _DiscoveryStockList extends StatefulWidget {
+  const _DiscoveryStockList({super.key});
 
-  const _DiscoveryStockList({required this.stocks});
+  @override
+  State<StatefulWidget> createState() => _DiscoveryStockListState();
+}
+class _DiscoveryStockListState extends State<_DiscoveryStockList> {
+  late Future<List<StockRank>> _stocks;
+  final api = StockRankApiClient(baseUrl: 'http://10.0.2.2:8080/BNK');
+
+  @override
+  void initState() {
+    super.initState();
+    _stocks = api.fetchDomesticMain().then((data) => data.ranks);
+  }
+
+  @override
+  void dispose() {
+    api.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -207,118 +231,137 @@ class _DiscoveryStockList extends StatelessWidget {
         ?.copyWith(color: Colors.grey[400]);
     final cardColor = Theme.of(context).cardColor;
 
-    return ListView(
-      padding:
-      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      children: [
-        for (final s in stocks)
-          Column(
-            children: [
-              ListTile(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => StockDetailPage(
-                        name: s.$2,
-                        price: s.$3,
-                        change: s.$4,
+    return FutureBuilder(
+        future: _stocks, 
+        builder: (context, snapshot) {
+          if(snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator(),);
+          } else if (snapshot.hasError) { // 통신 중 에러 발생
+            return Center(child: Text('거래대금 로드 실패: ${snapshot.error}'),);
+          } else if (snapshot.hasData) { // 통신 성공, 데이터 존재
+            final stocks = snapshot.data!;
+
+            if (stocks.isEmpty) { // 빈 배열일 경우
+              return const Center(child: Text('거래대금 목록이 없습니다.'),);
+            }
+
+            return ListView(
+              padding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              children: [
+                for (final s in stocks)
+                  Column(
+                    children: [
+                      ListTile(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => StockDetailPage(
+                                name: s.name,
+                                price: s.price.toString(),
+                                change: s.changeRate.toString(),
+                              ),
+                            ),
+                          );
+                        },
+                        contentPadding: EdgeInsets.zero,
+                        leading: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              s.rank.toString(),
+                              style: bodySmall,
+                            ),
+                            const SizedBox(width: 10),
+                            CircleAvatar(
+                              radius: 16,
+                              backgroundColor: Colors.white10,
+                              child: Text(
+                                s.name.characters.first,
+                                style: const TextStyle(fontSize: 12),
+                              ),
+                            ),
+                          ],
+                        ),
+                        title: Text(
+                          s.name,
+                          style: const TextStyle(fontWeight: FontWeight.w600),
+                        ),
+                        subtitle: Text(
+                          s.price.toString(),
+                          style: bodySmall,
+                        ),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              s.changeRate.toString(),
+                              style: bodySmall?.copyWith(
+                                color: s.changeRate.toString().startsWith('-')
+                                    ? Colors.blue[200]
+                                    : Colors.redAccent,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            const Icon(
+                              Icons.favorite_border,
+                              size: 18,
+                              color: Colors.white60,
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  );
-                },
-                contentPadding: EdgeInsets.zero,
-                leading: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      s.$1,
-                      style: bodySmall,
-                    ),
-                    const SizedBox(width: 10),
-                    CircleAvatar(
-                      radius: 16,
-                      backgroundColor: Colors.white10,
-                      child: Text(
-                        s.$2.characters.first,
-                        style: const TextStyle(fontSize: 12),
-                      ),
-                    ),
-                  ],
-                ),
-                title: Text(
-                  s.$2,
-                  style: const TextStyle(fontWeight: FontWeight.w600),
-                ),
-                subtitle: Text(
-                  s.$3,
-                  style: bodySmall,
-                ),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      s.$4,
-                      style: bodySmall?.copyWith(
-                        color: s.$4.startsWith('-')
-                            ? Colors.blue[200]
-                            : Colors.redAccent,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    const Icon(
-                      Icons.favorite_border,
-                      size: 18,
-                      color: Colors.white60,
-                    ),
-                  ],
-                ),
-              ),
-              const Divider(height: 1, color: Colors.white10),
-            ],
-          ),
-        const SizedBox(height: 16),
-        Container(
-          decoration: BoxDecoration(
-            color: cardColor,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          padding: const EdgeInsets.all(14),
-          child: Row(
-            children: [
-              const Icon(Icons.local_fire_department,
-                  size: 20, color: Colors.redAccent),
-              const SizedBox(width: 10),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '사람들이 많이 얘기하고 있어요',
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyMedium
-                        ?.copyWith(fontWeight: FontWeight.w600),
+                      const Divider(height: 1, color: Colors.white10),
+                    ],
                   ),
-                  const SizedBox(height: 2),
-                  Text(
-                    '커뮤니티 새 글 급상승',
-                    style: bodySmall,
+                const SizedBox(height: 16),
+                Container(
+                  decoration: BoxDecoration(
+                    color: cardColor,
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                ],
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 12),
-        Center(
-          child: TextButton(
-            onPressed: () {},
-            child: const Text('더 보기'),
-          ),
-        ),
-        const SizedBox(height: 8),
-      ],
+                  padding: const EdgeInsets.all(14),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.local_fire_department,
+                          size: 20, color: Colors.redAccent),
+                      const SizedBox(width: 10),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '사람들이 많이 얘기하고 있어요',
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(fontWeight: FontWeight.w600),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            '커뮤니티 새 글 급상승',
+                            style: bodySmall,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Center(
+                  child: TextButton(
+                    onPressed: () {},
+                    child: const Text('더 보기'),
+                  ),
+                ),
+                const SizedBox(height: 8),
+              ],
+            );
+          }
+          return const Center(child: Text('거래대금 목록 준비중'),);
+          
+        }
     );
   }
 }
