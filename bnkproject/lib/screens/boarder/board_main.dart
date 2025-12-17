@@ -6,6 +6,12 @@ import 'boarder_news.dart';
 import 'boarder_content.dart';
 import 'boarder_profile.dart';
 
+/*
+    날짜 : 2025.12.17(수)
+    이름 : 이준우
+    내용 : (게시판)피드 main
+ */
+
 class BoardMain extends StatefulWidget {
   const BoardMain({Key? key}) : super(key: key);
 
@@ -92,11 +98,11 @@ class _BoardMainState extends State<BoardMain>
         top: false,
         child: TabBarView(
           controller: _tabController,
-          children: const [
-            BoarderRecommend(), // boarder_recommend.dart
-            BoarderFollowing(), // boarder_following.dart
-            BoarderNews(),      // boarder_news.dart
-            BoarderContent(),   // boarder_content.dart
+          children: [
+            BoarderRecommend(),
+            BoarderFollowing(),
+            BoarderNews(),
+            BoarderContent(),
           ],
         ),
       ),
