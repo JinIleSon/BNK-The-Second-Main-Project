@@ -5,7 +5,7 @@ import 'screens/favorite/favorite_page.dart';
 import 'screens/discovery/discovery_page.dart';
 import 'screens/boarder/board_main.dart';
 import 'screens/my/my_page.dart';
-
+// import
 
 void main() {
   runApp(const MyApp());
