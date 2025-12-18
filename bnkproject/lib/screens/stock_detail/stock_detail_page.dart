@@ -1,8 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+
+/*
+  날짜 : 2025.12.18.
+  이름 : 강민철
+  내용 : 원화 formatter
+ */
+extension WonFormatter on num {
+  String get won {
+    final formatter = NumberFormat('#,###', 'ko_KR');
+    return '${formatter.format(this)}원';
+  }
+}
 
 class StockDetailPage extends StatelessWidget {
   final String name;
-  final String price;
+  final int price;
   final String change;
 
   const StockDetailPage({
@@ -56,13 +69,13 @@ class StockDetailPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      price,
+                      price.won,
                       style: const TextStyle(
                           fontSize: 28, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '어제보다 $change',
+                      '어제보다 ${change.startsWith('-') ? change : '+$change'}%',
                       style: TextStyle(color: changeColor),
                     ),
                   ],
