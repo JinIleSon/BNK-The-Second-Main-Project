@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'widgets/category_tab.dart';
-import 'widgets/feed_item.dart';
-import 'widgets/new_item.dart';
-import 'boarder_detail.dart';
+import '../widgets/category_tab.dart';
+import '../widgets/feed_item.dart';
+import '../widgets/new_item.dart';
+import '../pages/boarder_detail.dart';
 
 /*
     날짜 : 2025.12.17(수)

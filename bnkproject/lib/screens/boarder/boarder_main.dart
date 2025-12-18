@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 
-import 'boarder_recommend.dart';
-import 'boarder_following.dart';
-import 'boarder_news.dart';
-import 'boarder_content.dart';
-import 'boarder_profile.dart';
+import 'tabs/boarder_content.dart';
+import 'tabs/boarder_list.dart';
+import 'tabs/boarder_recommend.dart';
+import 'tabs/boarder_following.dart';
+import 'tabs/boarder_news.dart';
+import 'pages/boarder_profile.dart';
 
 /*
     날짜 : 2025.12.17(수)
@@ -102,7 +103,7 @@ class _BoardMainState extends State<BoardMain>
           children: [
             BoarderRecommend(),
             BoarderFollowing(),
-            const SizedBox(), // 게시판 (아직 미구현)
+            BoarderList(),
             BoarderNews(),
             BoarderContent(),
           ],
