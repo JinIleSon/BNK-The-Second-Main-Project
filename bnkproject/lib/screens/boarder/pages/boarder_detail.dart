@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'boarder_comment.dart';
-import 'widgets/feed_item.dart';
+import '../widgets/boarder_comment.dart';
+import '../widgets/feed_item.dart';
 
 /*
     날짜 : 2025.12.17(수)
