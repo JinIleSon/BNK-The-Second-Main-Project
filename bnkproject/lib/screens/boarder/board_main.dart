@@ -26,8 +26,8 @@ class _BoardMainState extends State<BoardMain>
   @override
   void initState() {
     super.initState();
-    // 추천 / 팔로잉 / 뉴스 / 콘텐츠 → 4개 탭
-    _tabController = TabController(length: 4, vsync: this);
+    // 추천 / 팔로잉 / 뉴스 / 콘텐츠 → 5개 탭
+    _tabController = TabController(length: 5, vsync: this);
   }
 
   @override
@@ -89,6 +89,7 @@ class _BoardMainState extends State<BoardMain>
           tabs: const [
             Tab(text: '추천'),
             Tab(text: '팔로잉'),
+            Tab(text: '게시판'),
             Tab(text: '뉴스'),
             Tab(text: '콘텐츠'),
           ],
@@ -101,6 +102,7 @@ class _BoardMainState extends State<BoardMain>
           children: [
             BoarderRecommend(),
             BoarderFollowing(),
+            const SizedBox(), // 게시판 (아직 미구현)
             BoarderNews(),
             BoarderContent(),
           ],
