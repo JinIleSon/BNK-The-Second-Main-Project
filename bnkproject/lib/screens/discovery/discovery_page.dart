@@ -1,5 +1,7 @@
 import 'package:bnkproject/models/StockRank.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'dart:async';
 
 import '../../api/stock_rank_api.dart';
 import '../stock_detail/stock_detail_page.dart';
@@ -210,17 +212,72 @@ class _DiscoveryStockList extends StatefulWidget {
   State<StatefulWidget> createState() => _DiscoveryStockListState();
 }
 class _DiscoveryStockListState extends State<_DiscoveryStockList> {
-  late Future<List<StockRank>> _stocks;
   final api = StockRankApiClient(baseUrl: 'http://10.0.2.2:8080/BNK');
+
+  List<StockRank> _stocks = [];
+  bool _loading = true;
+
+  Timer? _refreshTimer;
+
+  // 주기 갱신 중복 호출 방지
+  bool _isRefreshing = false;
+
+  // 최초 로드
+  Future<void> _initialLoad() async {
+    try {
+      final main = await api.fetchDomesticMain();
+      if (!mounted) return;
+
+      setState(() {
+        _stocks = main.ranks;
+        _loading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _loading = false);
+    }
+  }
+
+  // 주기 갱신
+  Future<void> _refreshRanks() async {
+    // 이미 로딩 중이거나 화면이 없으면 중복 호출 방지
+    if (!mounted) return;
+
+    // 이미 갱신 중이면 이번 틱은 스킵
+    if (_isRefreshing) return;
+
+    _isRefreshing = true;
+    try {
+      final ranks = await api.fetchStockRanks();
+      if (!mounted) return;
+
+      setState(() {
+        _stocks = ranks; // 깜빡임 없이 데이터만 교체
+      });
+    } catch (_) {
+      // 주기 갱신 실패는 조용히 무시 (필요하면 로그 작성)
+    } finally {
+      _isRefreshing = false;
+    }
+  }
 
   @override
   void initState() {
     super.initState();
-    _stocks = api.fetchDomesticMain().then((data) => data.ranks);
+
+    // 최초 1회 로드
+    _initialLoad();
+
+    // 1.5초마다 갱신
+    _refreshTimer = Timer.periodic(
+        const Duration(milliseconds: 1500),
+        (_) => _refreshRanks()
+    );
   }
 
   @override
   void dispose() {
+    _refreshTimer?.cancel(); // 타이머 해제
     api.dispose();
     super.dispose();
   }
@@ -231,137 +288,138 @@ class _DiscoveryStockListState extends State<_DiscoveryStockList> {
         ?.copyWith(color: Colors.grey[400]);
     final cardColor = Theme.of(context).cardColor;
 
-    return FutureBuilder(
-        future: _stocks, 
-        builder: (context, snapshot) {
-          if(snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator(),);
-          } else if (snapshot.hasError) { // 통신 중 에러 발생
-            return Center(child: Text('거래대금 로드 실패: ${snapshot.error}'),);
-          } else if (snapshot.hasData) { // 통신 성공, 데이터 존재
-            final stocks = snapshot.data!;
+    if (_loading && _stocks.isEmpty) {
+      return const Center(child: CircularProgressIndicator());
+    }
 
-            if (stocks.isEmpty) { // 빈 배열일 경우
-              return const Center(child: Text('거래대금 목록이 없습니다.'),);
-            }
+    if (_stocks.isEmpty) {
+      return const Center(child: Text('거래대금 목록이 없습니다.'));
+    }
 
-            return ListView(
-              padding:
-              const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      return ListView(
+        padding:
+        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        children: [
+          for (final s in _stocks)
+            Column(
               children: [
-                for (final s in stocks)
-                  Column(
-                    children: [
-                      ListTile(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => StockDetailPage(
-                                name: s.name,
-                                price: s.price.toString(),
-                                change: s.changeRate.toString(),
-                              ),
-                            ),
-                          );
-                        },
-                        contentPadding: EdgeInsets.zero,
-                        leading: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              s.rank.toString(),
-                              style: bodySmall,
-                            ),
-                            const SizedBox(width: 10),
-                            CircleAvatar(
-                              radius: 16,
-                              backgroundColor: Colors.white10,
-                              child: Text(
-                                s.name.characters.first,
-                                style: const TextStyle(fontSize: 12),
-                              ),
-                            ),
-                          ],
-                        ),
-                        title: Text(
-                          s.name,
-                          style: const TextStyle(fontWeight: FontWeight.w600),
-                        ),
-                        subtitle: Text(
-                          s.price.toString(),
-                          style: bodySmall,
-                        ),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              s.changeRate.toString(),
-                              style: bodySmall?.copyWith(
-                                color: s.changeRate.toString().startsWith('-')
-                                    ? Colors.blue[200]
-                                    : Colors.redAccent,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            const Icon(
-                              Icons.favorite_border,
-                              size: 18,
-                              color: Colors.white60,
-                            ),
-                          ],
+                ListTile(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => StockDetailPage(
+                          name: s.name,
+                          price: s.price,
+                          change: s.changeRate.toString(),
                         ),
                       ),
-                      const Divider(height: 1, color: Colors.white10),
-                    ],
-                  ),
-                const SizedBox(height: 16),
-                Container(
-                  decoration: BoxDecoration(
-                    color: cardColor,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  padding: const EdgeInsets.all(14),
-                  child: Row(
+                    );
+                  },
+                  contentPadding: EdgeInsets.zero,
+                  leading: Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.local_fire_department,
-                          size: 20, color: Colors.redAccent),
+                      Text(
+                        s.rank.toString(),
+                        style: bodySmall,
+                      ),
                       const SizedBox(width: 10),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            '사람들이 많이 얘기하고 있어요',
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
-                                ?.copyWith(fontWeight: FontWeight.w600),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            '커뮤니티 새 글 급상승',
-                            style: bodySmall,
-                          ),
-                        ],
+                      CircleAvatar(
+                        radius: 16,
+                        backgroundColor: Colors.white10,
+                        child: Text(
+                          s.name.characters.first,
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                      ),
+                    ],
+                  ),
+                  title: Text(
+                    s.name,
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  subtitle: Text(
+                    WonFormatter(s.price).won,
+                    style: bodySmall,
+                  ),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        s.changeRate.toString().startsWith('-') ? '${s.changeRate}%' : '+${s.changeRate}%',
+                        style: bodySmall?.copyWith(
+                          color: s.changeRate.toString().startsWith('-')
+                              ? Colors.blue[200]
+                              : Colors.redAccent,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      const Icon(
+                        Icons.favorite_border,
+                        size: 18,
+                        color: Colors.white60,
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 12),
-                Center(
-                  child: TextButton(
-                    onPressed: () {},
-                    child: const Text('더 보기'),
-                  ),
-                ),
-                const SizedBox(height: 8),
+                const Divider(height: 1, color: Colors.white10),
               ],
-            );
-          }
-          return const Center(child: Text('거래대금 목록 준비중'),);
-          
-        }
-    );
+            ),
+          const SizedBox(height: 16),
+          Container(
+            decoration: BoxDecoration(
+              color: cardColor,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            padding: const EdgeInsets.all(14),
+            child: Row(
+              children: [
+                const Icon(Icons.local_fire_department,
+                    size: 20, color: Colors.redAccent),
+                const SizedBox(width: 10),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '사람들이 많이 얘기하고 있어요',
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyMedium
+                          ?.copyWith(fontWeight: FontWeight.w600),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '커뮤니티 새 글 급상승',
+                      style: bodySmall,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          Center(
+            child: TextButton(
+              onPressed: () {},
+              child: const Text('더 보기'),
+            ),
+          ),
+          const SizedBox(height: 8),
+        ],
+      );
+  }
+}
+
+/*
+  날짜 : 2025.12.18.
+  이름 : 강민철
+  내용 : 원화 formatter
+ */
+extension WonFormatter on num {
+  String get won {
+    final formatter = NumberFormat('#,###', 'ko_KR');
+    return '${formatter.format(this)}원';
   }
 }
