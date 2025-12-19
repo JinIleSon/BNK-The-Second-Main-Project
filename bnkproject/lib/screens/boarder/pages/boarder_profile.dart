@@ -35,7 +35,7 @@ class _BoarderProfileState extends State<BoarderProfile> {
     Icons.face_rounded,
   ];
 
-  final List<String> filters = const ["전체", "게시글", "남긴 글", "좋아요 누른 글"];
+  final List<String> filters = const ["전체", "게시글", "댓글", "좋아요 누른 글"];
 
   void openEditSheet() {
     final nickCtrl = TextEditingController(text: nickname);

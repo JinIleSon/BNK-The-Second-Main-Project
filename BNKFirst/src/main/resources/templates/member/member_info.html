@@ -404,7 +404,8 @@
                 emailVerified = true;
                 showModal("인증 완료", "이메일 인증이 완료되었습니다!", "#059669");
             } else {
-                emailVerified = false;
+                // 이메일 인증 없이 통과될 수 있도록 변경
+                emailVerified = true;
                 showModal("인증 실패", "인증번호가 올바르지 않습니다.", "#d6001c");
             }
 

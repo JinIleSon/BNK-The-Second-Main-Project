@@ -3,14 +3,14 @@ spring:
   application:
     name: BUSANBANK
   profiles:
-    active: prod
+    active: local
   devtools:
     restart:
       enabled: false
 
 jwt:
-  issuer: eternalsoul0635@gmail.com
-  secret: VocTZgnEgUFRxItL6Dv1q36dfDAX8t4H2
+  issuer: ${JWT_ISSUER}
+  secret: ${JWT_ISSUER}
 
 mybatis:
   mapper-locations: classpath:/mapper/**/*.xml
