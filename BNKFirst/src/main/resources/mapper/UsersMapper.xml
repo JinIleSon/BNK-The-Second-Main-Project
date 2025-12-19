@@ -35,7 +35,7 @@
                    #{memail, jdbcType=VARCHAR}, #{maddress, jdbcType=VARCHAR},
                    SYSDATE, 'Family', '활동중',
                    '1234-' || SUBSTR(LPAD(SEQ_MNUM.NEXTVAL, 8, '0'), 1, 4)
-                           || '-' || SUBSTR(LPAD(SEQ_MNUM.CURRVAL, 8, '0'), 5, 4),
+                       || '-' || SUBSTR(LPAD(SEQ_MNUM.CURRVAL, 8, '0'), 5, 4),
                    SYSDATE,
                    1000000,
                    'USER'
@@ -134,10 +134,10 @@
         </selectKey>
 
         INSERT INTO PCONTRACT (
-            PCUID, PCPID, PACC, PCNAPW, PBALANCE, PNEW, PEND, "TYPE"
+        PCUID, PCPID, PACC, PCNAPW, PBALANCE, PNEW, PEND, "TYPE"
         ) VALUES (
-            #{pcuid}, #{pcpid}, #{pacc}, #{pcnapw}, #{pbalance},
-            SYSDATE,  ADD_MONTHS(SYSDATE, 24), 'COMMON'
+        #{pcuid}, #{pcpid}, #{pacc}, #{pcnapw}, #{pbalance},
+        SYSDATE,  ADD_MONTHS(SYSDATE, 24), 'COMMON'
         )
     </insert>
 </mapper>
