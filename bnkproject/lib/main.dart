@@ -5,6 +5,8 @@ import 'screens/favorite/favorite_page.dart';
 import 'screens/discovery/discovery_page.dart';
 import 'screens/boarder/boarder_main.dart';
 import 'screens/my/my_page.dart';
+import 'screens/face/face_auth_test_screen.dart';
+
 
 
 void main() {
