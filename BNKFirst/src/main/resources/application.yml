@@ -3,7 +3,7 @@ spring:
   application:
     name: BUSANBANK
   profiles:
-    active: prod
+    active: local
   devtools:
     restart:
       enabled: false
