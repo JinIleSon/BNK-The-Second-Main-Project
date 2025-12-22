@@ -1,37 +1,16 @@
 import 'package:flutter/material.dart';
-import '../../api/member_api.dart';
 
 class MyPage extends StatelessWidget {
-  final bool isLoggedIn;
-  final VoidCallback onLoginSuccess;
   final VoidCallback onLogout;
 
   const MyPage({
     super.key,
-    required this.isLoggedIn,
-    required this.onLoginSuccess,
     required this.onLogout,
   });
 
-  // ✅ Mypage 개발용: true면 무조건 로그인 화면(2025.12.22 이준우)
-  static const bool devForceLoginView = true;
-
   @override
   Widget build(BuildContext context) {
-    // ✅ 개발 편의: 로그인 여부 무시하고 바로 로그인 화면 보여주기
-    if (devForceLoginView) {
-      return _LoggedInView(onLogout: onLogout);
-    }
-    // ✅ 로그인 여부에 따라 화면 분기
-    if (!isLoggedIn) {
-      return _LoggedOutView(
-        onLoginSuccess: onLoginSuccess,
-      );
-    }
-
-    return _LoggedInView(
-      onLogout: onLogout,
-    );
+    return _LoggedInView(onLogout: onLogout);
   }
 }
 
@@ -61,23 +40,9 @@ class _LoggedOutViewState extends State<_LoggedOutView> {
       errorMsg = null;
     });
 
-
-    final result = await memberApi.login(
-      mid: midCtrl.text.trim(),
-      mpw: pwCtrl.text.trim(),
-    );
-
     setState(() {
       loading = false;
     });
-
-    if (result.ok) {
-      widget.onLoginSuccess();
-    } else {
-      setState(() {
-        errorMsg = result.message ?? '로그인에 실패했습니다.';
-      });
-    }
   }
 
   @override

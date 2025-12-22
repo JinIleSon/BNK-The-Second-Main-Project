@@ -5,9 +5,7 @@ import 'screens/favorite/favorite_page.dart';
 import 'screens/discovery/discovery_page.dart';
 import 'screens/boarder/boarder_main.dart';
 import 'screens/my/my_page.dart';
-import 'screens/face/face_auth_test_screen.dart';
-
-
+import 'screens/auth/login_sheet.dart';
 
 void main() {
   runApp(const MyApp());
@@ -42,9 +40,25 @@ class TossLikeHomePage extends StatefulWidget {
 }
 
 class _TossLikeHomePageState extends State<TossLikeHomePage> {
-  int _selectedIndex = 0; // 0: 홈, 1: 관심, 2: 발견, 3: 마이, 4: 피드(임시)
+  int _selectedIndex = 0; // 0: 홈, 1: 관심, 2: 발견, 3: 마이, 4: 피드
+  bool _isLoggedIn = false; // 나중에 인증, 인가 설정
 
-  bool _isLoggedIn = false; // 피드 이동시 로그인 테스트(이준우)
+  Future<void> _openLogin() async {
+    // ✅ 로그인 성공 여부를 bool로 받음
+    final ok = await showModalBottomSheet<bool>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: const Color(0xFF0B0C10),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
+      ),
+      builder: (_) => const LoginSheet(),
+    );
+
+    if (ok == true) {
+      setState(() => _isLoggedIn = true); // ✅ 로그인되면 아이콘 사라짐
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +68,12 @@ class _TossLikeHomePageState extends State<TossLikeHomePage> {
     Widget body;
     switch (_selectedIndex) {
       case 0:
-        body = HomeTab(cardColor: cardColor, textTheme: textTheme);
+        body = HomeTab(
+            cardColor: cardColor,
+            textTheme: textTheme,
+            onOpenLogin: _openLogin,
+            isLoggedIn: _isLoggedIn,
+        );
         break;
       case 1:
         body = const FavoritePage();
@@ -64,9 +83,9 @@ class _TossLikeHomePageState extends State<TossLikeHomePage> {
         break;
       case 3:
         body = MyPage(
-          isLoggedIn: _isLoggedIn,
-          onLoginSuccess: () => setState(() => _isLoggedIn = true),
-          onLogout: () => setState(() => _isLoggedIn = false),
+          onLogout: () {
+            setState(() => _isLoggedIn = false);
+          },
         );
         break;
       case 4:
@@ -74,7 +93,12 @@ class _TossLikeHomePageState extends State<TossLikeHomePage> {
         break;
 
       default:
-        body = HomeTab(cardColor: cardColor, textTheme: textTheme);
+        body = HomeTab(
+            cardColor: cardColor,
+            textTheme: textTheme,
+            onOpenLogin: _openLogin,
+            isLoggedIn: _isLoggedIn,
+        );
     }
 
     return Scaffold(
@@ -84,6 +108,8 @@ class _TossLikeHomePageState extends State<TossLikeHomePage> {
         onTap: (index) {
           setState(() => _selectedIndex = index);
         },
+        onOpenLogin: _openLogin,
+        isLoggedIn: _isLoggedIn,
       ),
     );
   }
@@ -94,9 +120,14 @@ class _BottomNavBar extends StatelessWidget {
   final int selectedIndex;
   final ValueChanged<int> onTap;
 
+  final Future<void> Function() onOpenLogin;
+  final bool isLoggedIn;
+
   const _BottomNavBar({
     required this.selectedIndex,
     required this.onTap,
+    required this.onOpenLogin,
+    required this.isLoggedIn,
   });
 
   @override
