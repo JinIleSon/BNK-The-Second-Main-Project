@@ -13,8 +13,15 @@ class MyPage extends StatelessWidget {
     required this.onLogout,
   });
 
+  // ✅ Mypage 개발용: true면 무조건 로그인 화면(2025.12.22 이준우)
+  static const bool devForceLoginView = true;
+
   @override
   Widget build(BuildContext context) {
+    // ✅ 개발 편의: 로그인 여부 무시하고 바로 로그인 화면 보여주기
+    if (devForceLoginView) {
+      return _LoggedInView(onLogout: onLogout);
+    }
     // ✅ 로그인 여부에 따라 화면 분기
     if (!isLoggedIn) {
       return _LoggedOutView(
