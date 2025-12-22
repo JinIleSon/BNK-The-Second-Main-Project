@@ -5,7 +5,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class FinanceCertResult {
+public class
+
+FinanceCertResult {
     /*
         날짜 : 2025/11/20
         이름 : 이준우
