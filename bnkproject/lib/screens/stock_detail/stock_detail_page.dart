@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'stock_buy_page.dart';
 import 'stock_sell_page.dart';
+import '../../api/hoga_ws_api.dart';
+import '../../models/order_book.dart';
 
 /*
   날짜 : 2025.12.18.
@@ -15,23 +17,57 @@ extension WonFormatter on num {
   }
 }
 
-class StockDetailPage extends StatelessWidget {
+class StockDetailPage extends StatefulWidget {
   final String name;
   final int price;
   final String change;
+
+  // ✅ 추가: WS 구독용 종목코드
+  final String stockCode;
 
   const StockDetailPage({
     super.key,
     required this.name,
     required this.price,
     required this.change,
+    required this.stockCode,
   });
+
+  @override
+  State<StockDetailPage> createState() => _StockDetailPageState();
+}
+
+class _StockDetailPageState extends State<StockDetailPage> {
+  late final HogaWsApi _hogaApi;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // ✅ 웹/에뮬레이터/실기기 모두 고려: baseUrl 대신 현재 호스트 기준
+    final protocol = Uri.base.scheme == 'https' ? 'wss' : 'ws';
+    final host = '10.0.2.2';
+    final port = ':8080';
+
+    _hogaApi = HogaWsApi(
+      wsUri: Uri.parse('$protocol://$host$port/BNK/ws/hoga?code=${widget.stockCode}'),
+    );
+
+    _hogaApi.connect();
+  }
+
+  @override
+  void dispose() {
+    _hogaApi.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final cardColor = Theme.of(context).cardColor;
-    final isUp = !change.startsWith('-');
-    final changeColor = isUp ? Colors.redAccent : Colors.blue[200];
+
+    final isUpFallback = !widget.change.startsWith('-');
+    final changeColorFallback = isUpFallback ? Colors.redAccent : Colors.blue[200];
 
     return DefaultTabController(
       length: 5,
@@ -42,8 +78,7 @@ class StockDetailPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding:
-                const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 child: Row(
                   children: [
                     IconButton(
@@ -59,30 +94,44 @@ class StockDetailPage extends StatelessWidget {
                   ],
                 ),
               ),
+
+              // ✅ 헤더: WS snapshot 있으면 현재가/등락률 실시간 표시
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      name,
-                      style: const TextStyle(
-                          fontSize: 22, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      price.won,
-                      style: const TextStyle(
-                          fontSize: 28, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      '어제보다 ${change.startsWith('-') ? change : '+$change'}%',
-                      style: TextStyle(color: changeColor),
-                    ),
-                  ],
+                child: StreamBuilder<OrderBookSnapshot>(
+                  stream: _hogaApi.snapshots,
+                  builder: (context, snap) {
+                    final s = snap.data;
+
+                    final currentPrice = s?.currentPrice ?? widget.price;
+                    final rate = s?.changeRate; // % 값
+                    final isUp = (rate ?? (isUpFallback ? 1 : -1)) >= 0;
+                    final changeColor = isUp ? Colors.redAccent : Colors.blue[200];
+
+                    final changeText = (rate == null)
+                        ? '어제보다 ${widget.change.startsWith('-') ? widget.change : '+${widget.change}'}%'
+                        : '어제보다 ${rate >= 0 ? '+' : '-'}${rate.abs().toStringAsFixed(2)}%';
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.name,
+                          style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          currentPrice.won,
+                          style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(changeText, style: TextStyle(color: changeColor ?? changeColorFallback)),
+                      ],
+                    );
+                  },
                 ),
               ),
+
               const SizedBox(height: 10),
               const TabBar(
                 indicatorColor: Colors.white,
@@ -100,7 +149,10 @@ class StockDetailPage extends StatelessWidget {
                 child: TabBarView(
                   children: [
                     _ChartTab(cardColor: cardColor),
-                    _HogaTab(cardColor: cardColor),
+
+                    // ✅ 여기로 stream 전달
+                    _HogaTab(cardColor: cardColor, snapshots: _hogaApi.snapshots),
+
                     _MyStockTab(cardColor: cardColor),
                     _StockInfoTab(cardColor: cardColor),
                     _CommunityTab(cardColor: cardColor),
@@ -110,70 +162,76 @@ class StockDetailPage extends StatelessWidget {
             ],
           ),
         ),
+
+        // ✅ 하단 구매/판매 버튼 유지 + 가격은 WS 현재가로 넘기기(없으면 기존 price)
         bottomNavigationBar: SafeArea(
           child: Container(
             padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                // 판매하기(파란색)
-                Expanded(
-                  child: SizedBox(
-                    height: 52,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF3B82F6), // 파란색
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => StockSellPage(
-                              name: name,
-                              currentPrice: price,
-                              changePercentText: change,
-                            ),
-                          ),
-                        );
-                      },
-                      child: const Text('판매하기', style: TextStyle(fontSize: 18)),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
+            child: StreamBuilder<OrderBookSnapshot>(
+              stream: _hogaApi.snapshots,
+              builder: (context, snap) {
+                final livePrice = snap.data?.currentPrice ?? widget.price;
 
-                // 구매하기(빨간색)
-                Expanded(
-                  child: SizedBox(
-                    height: 52,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.redAccent,
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => StockBuyPage(
-                              name: name,
-                              currentPrice: price,
-                              changePercentText: change,
+                return Row(
+                  children: [
+                    Expanded(
+                      child: SizedBox(
+                        height: 52,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF3B82F6),
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
                             ),
                           ),
-                        );
-                      },
-                      child: const Text('구매하기', style: TextStyle(fontSize: 18)),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => StockSellPage(
+                                  name: widget.name,
+                                  currentPrice: livePrice,
+                                  changePercentText: widget.change,
+                                ),
+                              ),
+                            );
+                          },
+                          child: const Text('판매하기', style: TextStyle(fontSize: 18)),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-              ],
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: SizedBox(
+                        height: 52,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.redAccent,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => StockBuyPage(
+                                  name: widget.name,
+                                  currentPrice: livePrice,
+                                  changePercentText: widget.change,
+                                ),
+                              ),
+                            );
+                          },
+                          child: const Text('구매하기', style: TextStyle(fontSize: 18)),
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
           ),
         ),
@@ -266,159 +324,182 @@ class _ChartFilterButton extends StatelessWidget {
   }
 }
 
+extension NumComma on num {
+  String get comma => NumberFormat('#,###', 'ko_KR').format(this);
+}
+
 class _HogaTab extends StatelessWidget {
   final Color cardColor;
+  final Stream<OrderBookSnapshot> snapshots;
 
-  const _HogaTab({required this.cardColor});
+  const _HogaTab({
+    required this.cardColor,
+    required this.snapshots,
+  });
 
   @override
   Widget build(BuildContext context) {
     final grey = Colors.grey[400];
 
-    final rows = <_OrderBookRowData>[
-      _OrderBookRowData(askQty: '9,408', price: '588,000', change: '+3.88%'),
-      _OrderBookRowData(askQty: '5,693', price: '587,000', change: '+3.71%'),
-      _OrderBookRowData(askQty: '6,004', price: '586,000', change: '+3.53%'),
-      _OrderBookRowData(
-        bidQty: '10,256',
-        price: '585,000',
-        change: '+3.35%',
-        isCurrent: true,
-      ),
-      _OrderBookRowData(bidQty: '14,417', price: '584,000', change: '+3.18%'),
-      _OrderBookRowData(bidQty: '17,171', price: '583,000', change: '+3.01%'),
-      _OrderBookRowData(bidQty: '29,358', price: '582,000', change: '+2.84%'),
-      _OrderBookRowData(bidQty: '19,381', price: '581,000', change: '+2.67%'),
-      _OrderBookRowData(bidQty: '13,101', price: '580,000', change: '+2.49%'),
-      _OrderBookRowData(bidQty: '12,965', price: '579,000', change: '+2.32%'),
-      _OrderBookRowData(bidQty: '11,936', price: '578,000', change: '+2.14%'),
-      _OrderBookRowData(bidQty: '9,023', price: '577,000', change: '+1.96%'),
-      _OrderBookRowData(bidQty: '4,423', price: '576,000', change: '+1.76%'),
-    ];
+    return StreamBuilder<OrderBookSnapshot>(
+      stream: snapshots,
+      builder: (context, snap) {
+        final data = snap.data;
 
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        Container(
-          padding: const EdgeInsets.symmetric(
-              horizontal: 12, vertical: 10),
-          decoration: BoxDecoration(
-            color: cardColor,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Row(
+        if (data == null) {
+          return ListView(
+            padding: const EdgeInsets.all(16),
             children: [
-              Text(
-                '체결강도 144.8%',
-                style: TextStyle(color: grey, fontSize: 12),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                decoration: BoxDecoration(
+                  color: cardColor,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  children: [
+                    Text('호가 수신 대기중...', style: TextStyle(color: grey, fontSize: 12)),
+                    const Spacer(),
+                    const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)),
+                  ],
+                ),
               ),
-              const Spacer(),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
+            ],
+          );
+        }
+
+        // 10레벨을 위/아래로 나누기
+        final asks = data.levels
+            .map((e) => (price: e.askPrice, qty: e.askQty))
+            .where((e) => e.price != null && e.qty != null)
+            .toList()
+          ..sort((a, b) => (b.price ?? 0).compareTo(a.price ?? 0)); // 매도 높은 가격이 위
+
+        final bids = data.levels
+            .map((e) => (price: e.bidPrice, qty: e.bidQty))
+            .where((e) => e.price != null && e.qty != null)
+            .toList()
+          ..sort((a, b) => (b.price ?? 0).compareTo(a.price ?? 0)); // 매수 높은 가격이 위(보통 UI랑 맞춤)
+
+        final rows = <_OrderBookRowData>[];
+
+        // 매도(상단 10)
+        for (final a in asks) {
+          rows.add(_OrderBookRowData(
+            askQty: (a.qty ?? 0).comma,
+            price: (a.price ?? 0).comma,
+            change: _rateText(data.changeRate),
+          ));
+        }
+
+        // 현재가(가운데)
+        if (data.currentPrice != null) {
+          rows.add(_OrderBookRowData(
+            price: data.currentPrice!.comma,
+            change: _rateText(data.changeRate),
+            isCurrent: true,
+          ));
+        }
+
+        // 매수(하단 10)
+        for (final b in bids) {
+          rows.add(_OrderBookRowData(
+            bidQty: (b.qty ?? 0).comma,
+            price: (b.price ?? 0).comma,
+            change: _rateText(data.changeRate),
+          ));
+        }
+
+        return ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              decoration: BoxDecoration(
+                color: cardColor,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
                 children: [
                   Text(
-                    '전일 종가 568,000원',
-                    style: TextStyle(color: grey, fontSize: 11),
+                    '총매수 ${ (data.totalBidQty ?? 0).comma } · 총매도 ${ (data.totalAskQty ?? 0).comma }',
+                    style: TextStyle(color: grey, fontSize: 12),
                   ),
-                  const SizedBox(height: 2),
+                  const Spacer(),
                   Text(
-                    '고가 590,000원 · 저가 570,000원',
+                    data.sourceType,
                     style: TextStyle(color: grey, fontSize: 11),
                   ),
                 ],
               ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 8),
-        Container(
-          decoration: BoxDecoration(
-            color: cardColor,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 12, vertical: 4),
-                child: Row(
-                  children: [
-                    Expanded(
-                      flex: 3,
-                      child: Text(
-                        '매수잔량',
-                        style: TextStyle(color: grey, fontSize: 11),
-                      ),
-                    ),
-                    Expanded(
-                      flex: 3,
-                      child: Center(
-                        child: Text(
-                          '호가',
-                          style:
-                          TextStyle(color: grey, fontSize: 11),
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      flex: 3,
-                      child: Align(
-                        alignment: Alignment.centerRight,
-                        child: Text(
-                          '매도잔량',
-                          style:
-                          TextStyle(color: grey, fontSize: 11),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+            ),
+            const SizedBox(height: 8),
+            Container(
+              decoration: BoxDecoration(
+                color: cardColor,
+                borderRadius: BorderRadius.circular(12),
               ),
-              const Divider(height: 1, color: Colors.white10),
-              for (final r in rows) _OrderBookRow(data: r),
-            ],
-          ),
-        ),
-        const SizedBox(height: 16),
-        Text('왜 올랐을까?', style: TextStyle(color: grey)),
-        const SizedBox(height: 6),
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: cardColor,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
-              Text(
-                'SK하이닉스가 금융 자회사 설립 허용으로 자금조달이 쉬워졌기 때문이에요.',
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          flex: 3,
+                          child: Text('매수잔량', style: TextStyle(color: grey, fontSize: 11)),
+                        ),
+                        Expanded(
+                          flex: 3,
+                          child: Center(child: Text('호가', style: TextStyle(color: grey, fontSize: 11))),
+                        ),
+                        Expanded(
+                          flex: 3,
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: Text('매도잔량', style: TextStyle(color: grey, fontSize: 11)),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const Divider(height: 1, color: Colors.white10),
+                  for (final r in rows) _OrderBookRow(data: r),
+                ],
               ),
-              SizedBox(height: 6),
-              Text('시카트로닉스 외 3개 종목과 연관'),
-            ],
-          ),
-        ),
-        const SizedBox(height: 16),
-        Container(
-          padding: const EdgeInsets.symmetric(
-              horizontal: 16, vertical: 14),
-          decoration: BoxDecoration(
-            color: cardColor,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Row(
-            children: const [
-              Text('주문내역 보기'),
-              Spacer(),
-              Icon(Icons.chevron_right, size: 18),
-            ],
-          ),
-        ),
-        const SizedBox(height: 24),
-      ],
+            ),
+
+            // 아래 영역은 기존 더미 그대로 유지
+            const SizedBox(height: 16),
+            Text('왜 올랐을까?', style: TextStyle(color: grey)),
+            const SizedBox(height: 6),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: cardColor,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: const [
+                  Text('SK하이닉스가 금융 자회사 설립 허용으로 자금조달이 쉬워졌기 때문이에요.'),
+                  SizedBox(height: 6),
+                  Text('시카트로닉스 외 3개 종목과 연관'),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+          ],
+        );
+      },
     );
+  }
+
+  static String _rateText(double? rate) {
+    if (rate == null) return '';
+    final sign = rate > 0 ? '+' : (rate < 0 ? '-' : '');
+    return '$sign${rate.abs().toStringAsFixed(2)}%';
   }
 }
 

@@ -312,6 +312,7 @@ class _DiscoveryStockListState extends State<_DiscoveryStockList> {
                           name: s.name,
                           price: s.price,
                           change: s.changeRate.toString(),
+                          stockCode: s.code,
                         ),
                       ),
                     );
