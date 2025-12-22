@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'screens/home/home_tab.dart';
 import 'screens/favorite/favorite_page.dart';
 import 'screens/discovery/discovery_page.dart';
-import 'screens/boarder/board_main.dart';
+import 'screens/boarder/boarder_main.dart';
 import 'screens/my/my_page.dart';
 
 

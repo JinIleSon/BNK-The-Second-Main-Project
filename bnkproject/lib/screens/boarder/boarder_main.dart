@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
 
-import 'boarder_recommend.dart';
-import 'boarder_following.dart';
-import 'boarder_news.dart';
-import 'boarder_content.dart';
-import 'boarder_profile.dart';
+import 'tabs/boarder_content.dart';
+import 'tabs/boarder_list.dart';
+import 'tabs/boarder_recommend.dart';
+import 'tabs/boarder_following.dart';
+import 'tabs/boarder_news.dart';
+import 'pages/boarder_profile.dart';
+
+/*
+    날짜 : 2025.12.17(수)
+    이름 : 이준우
+    내용 : (게시판)피드 main
+ */
 
 class BoardMain extends StatefulWidget {
   const BoardMain({Key? key}) : super(key: key);
@@ -20,8 +27,8 @@ class _BoardMainState extends State<BoardMain>
   @override
   void initState() {
     super.initState();
-    // 추천 / 팔로잉 / 뉴스 / 콘텐츠 → 4개 탭
-    _tabController = TabController(length: 4, vsync: this);
+    // 추천 / 팔로잉 / 뉴스 / 콘텐츠 → 5개 탭
+    _tabController = TabController(length: 5, vsync: this);
   }
 
   @override
@@ -83,6 +90,7 @@ class _BoardMainState extends State<BoardMain>
           tabs: const [
             Tab(text: '추천'),
             Tab(text: '팔로잉'),
+            Tab(text: '게시판'),
             Tab(text: '뉴스'),
             Tab(text: '콘텐츠'),
           ],
@@ -92,11 +100,12 @@ class _BoardMainState extends State<BoardMain>
         top: false,
         child: TabBarView(
           controller: _tabController,
-          children: const [
-            BoarderRecommend(), // boarder_recommend.dart
-            BoarderFollowing(), // boarder_following.dart
-            BoarderNews(),      // boarder_news.dart
-            BoarderContent(),   // boarder_content.dart
+          children: [
+            BoarderRecommend(),
+            BoarderFollowing(),
+            BoarderList(),
+            BoarderNews(),
+            BoarderContent(),
           ],
         ),
       ),
