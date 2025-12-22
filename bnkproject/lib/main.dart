@@ -5,7 +5,7 @@ import 'screens/favorite/favorite_page.dart';
 import 'screens/discovery/discovery_page.dart';
 import 'screens/boarder/boarder_main.dart';
 import 'screens/my/my_page.dart';
-import 'screens/auth/login_sheet.dart';
+import 'screens/auth/login_main.dart';
 
 void main() {
   runApp(const MyApp());
@@ -44,19 +44,13 @@ class _TossLikeHomePageState extends State<TossLikeHomePage> {
   bool _isLoggedIn = false; // 나중에 인증, 인가 설정
 
   Future<void> _openLogin() async {
-    // ✅ 로그인 성공 여부를 bool로 받음
-    final ok = await showModalBottomSheet<bool>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: const Color(0xFF0B0C10),
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
-      ),
-      builder: (_) => const LoginSheet(),
+    final ok = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(builder: (_) => const LoginPage()),
     );
 
     if (ok == true) {
-      setState(() => _isLoggedIn = true); // ✅ 로그인되면 아이콘 사라짐
+      setState(() => _isLoggedIn = true);
     }
   }
 
