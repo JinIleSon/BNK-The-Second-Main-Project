@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'stock_buy_page.dart';
+import 'stock_sell_page.dart';
 
 /*
   날짜 : 2025.12.18.
@@ -112,28 +113,67 @@ class StockDetailPage extends StatelessWidget {
         bottomNavigationBar: SafeArea(
           child: Container(
             padding: const EdgeInsets.all(16),
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.redAccent,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => StockBuyPage(
-                      name: name,
-                      currentPrice: price,
-                      changePercentText: change, // 예: "20.8" or "-3.2" 형태라고 가정
+            child: Row(
+              children: [
+                // 판매하기(파란색)
+                Expanded(
+                  child: SizedBox(
+                    height: 52,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF3B82F6), // 파란색
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => StockSellPage(
+                              name: name,
+                              currentPrice: price,
+                              changePercentText: change,
+                            ),
+                          ),
+                        );
+                      },
+                      child: const Text('판매하기', style: TextStyle(fontSize: 18)),
                     ),
                   ),
-                );
-              },
-              child: const Text('구매하기', style: TextStyle(fontSize: 18)),
+                ),
+                const SizedBox(width: 12),
+
+                // 구매하기(빨간색)
+                Expanded(
+                  child: SizedBox(
+                    height: 52,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.redAccent,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => StockBuyPage(
+                              name: name,
+                              currentPrice: price,
+                              changePercentText: change,
+                            ),
+                          ),
+                        );
+                      },
+                      child: const Text('구매하기', style: TextStyle(fontSize: 18)),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ),
