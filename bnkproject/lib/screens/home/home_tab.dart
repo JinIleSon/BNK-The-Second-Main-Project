@@ -8,17 +8,25 @@ class HomeTab extends StatelessWidget {
   final Color cardColor;
   final TextTheme textTheme;
 
+  final Future<void> Function() onOpenLogin;
+  final bool isLoggedIn;
+
   const HomeTab({
     super.key,
     required this.cardColor,
     required this.textTheme,
+    required this.onOpenLogin,
+    required this.isLoggedIn,
   });
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const _TopAppBar(),
+        _TopAppBar(
+          onOpenLogin: onOpenLogin,
+          isLoggedIn: isLoggedIn,
+        ),
         Expanded(
           child: SingleChildScrollView(
             padding:
@@ -62,7 +70,13 @@ class HomeTab extends StatelessWidget {
 
 /// 상단 앱바
 class _TopAppBar extends StatelessWidget {
-  const _TopAppBar();
+  final Future<void> Function() onOpenLogin;
+  final bool isLoggedIn;
+
+  const _TopAppBar({
+    required this.onOpenLogin,
+    required this.isLoggedIn,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -85,6 +99,11 @@ class _TopAppBar extends StatelessWidget {
             ),
           ),
           const Spacer(),
+          if (!isLoggedIn)
+            IconButton(
+              onPressed: onOpenLogin, // ✅ 이거 누르면 LoginSheet 뜸
+              icon: const Icon(Icons.login),
+            ),
           IconButton(
             onPressed: () {},
             icon: const Icon(Icons.search),
