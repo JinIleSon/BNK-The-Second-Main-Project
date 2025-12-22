@@ -101,7 +101,7 @@ class _TopAppBar extends StatelessWidget {
           const Spacer(),
           if (!isLoggedIn)
             IconButton(
-              onPressed: onOpenLogin, // ✅ 이거 누르면 LoginSheet 뜸
+              onPressed: onOpenLogin,
               icon: const Icon(Icons.login),
             ),
           IconButton(
