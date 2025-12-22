@@ -10,7 +10,7 @@ spring:
 
 jwt:
   issuer: ${JWT_ISSUER}
-  secret: ${JWT_ISSUER}
+  secret: ${JWT_SECRET}
 
 mybatis:
   mapper-locations: classpath:/mapper/**/*.xml
