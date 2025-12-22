@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'stock_buy_page.dart';
 
 /*
   날짜 : 2025.12.18.
@@ -120,7 +121,18 @@ class StockDetailPage extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => StockBuyPage(
+                      name: name,
+                      currentPrice: price,
+                      changePercentText: change, // 예: "20.8" or "-3.2" 형태라고 가정
+                    ),
+                  ),
+                );
+              },
               child: const Text('구매하기', style: TextStyle(fontSize: 18)),
             ),
           ),
