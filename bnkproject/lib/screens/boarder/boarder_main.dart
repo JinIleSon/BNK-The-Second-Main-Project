@@ -6,6 +6,9 @@ import 'tabs/boarder_recommend.dart';
 import 'tabs/boarder_following.dart';
 import 'tabs/boarder_news.dart';
 import 'pages/boarder_profile.dart';
+import '../face/face_auth_test_screen.dart';
+
+
 
 /*
     날짜 : 2025.12.17(수)
@@ -65,6 +68,18 @@ class _BoardMainState extends State<BoardMain>
           ),
         ),
         actions: [
+          // ✅ 얼굴인증 테스트 버튼 (프로필 옆에 표시됨)
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const FaceAuthTestScreen()),
+              );
+            },
+            icon: const Icon(Icons.face),
+          ),
+
+          // 기존 프로필 버튼
           IconButton(
             onPressed: _goToProfile,
             icon: const CircleAvatar(
@@ -74,6 +89,7 @@ class _BoardMainState extends State<BoardMain>
           ),
           const SizedBox(width: 8),
         ],
+
         bottom: TabBar(
           controller: _tabController,
           isScrollable: true,
