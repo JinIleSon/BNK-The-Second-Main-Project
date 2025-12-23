@@ -11,12 +11,20 @@ import 'package:permission_handler/permission_handler.dart';
 class FaceAuthResult {
   final String path;
   final DateTime capturedAt;
+  final bool turnedLeft;
+  final bool turnedRight;
 
   const FaceAuthResult({
     required this.path,
     required this.capturedAt,
+    required this.turnedLeft,
+    required this.turnedRight,
   });
+
+  bool get demoPass => turnedLeft && turnedRight && path.isNotEmpty;
 }
+
+
 
 class FaceAuthScreen extends StatefulWidget {
   const FaceAuthScreen({super.key});
@@ -57,6 +65,8 @@ class _FaceAuthScreenState extends State<FaceAuthScreen> with WidgetsBindingObse
       options: FaceDetectorOptions(
         performanceMode: FaceDetectorMode.fast,
         enableTracking: true,
+        enableContours: true,
+        enableLandmarks: true, // 선택
       ),
     );
 
@@ -107,16 +117,17 @@ class _FaceAuthScreenState extends State<FaceAuthScreen> with WidgetsBindingObse
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     final c = _controller;
-    if (c == null) return;
+    if (c == null || !c.value.isInitialized) return;
 
-    if (state == AppLifecycleState.inactive || state == AppLifecycleState.paused) {
+    if (state == AppLifecycleState.paused) {
       c.stopImageStream().catchError((_) {});
-      c.dispose().catchError((_) {});
-      _controller = null;
     } else if (state == AppLifecycleState.resumed) {
-      if (!_capturing) _init();
+      if (!_capturing) {
+        c.startImageStream(_onFrame).catchError((_) {});
+      }
     }
   }
+
 
   Future<void> _onFrame(CameraImage image) async {
     if (_busy || _capturing || _controller == null) return;
@@ -230,7 +241,16 @@ class _FaceAuthScreenState extends State<FaceAuthScreen> with WidgetsBindingObse
       await File(file.path).copy(saved.path);
 
       if (!mounted) return;
-      Navigator.pop(context, FaceAuthResult(path: saved.path, capturedAt: DateTime.now()));
+      Navigator.pop(
+        context,
+        FaceAuthResult(
+          path: saved.path,
+          capturedAt: DateTime.now(),
+          turnedLeft: _turnedLeft,
+          turnedRight: _turnedRight,
+        ),
+      );
+
     } catch (_) {
       if (!mounted) return;
       setState(() {
