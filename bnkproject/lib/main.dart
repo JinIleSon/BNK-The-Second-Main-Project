@@ -6,6 +6,8 @@ import 'screens/discovery/discovery_page.dart';
 import 'screens/boarder/boarder_main.dart';
 import 'screens/my/my_page.dart';
 import 'screens/auth/login_main.dart';
+import 'screens/splash/splash_screen.dart';
+
 
 void main() {
   runApp(const MyApp());
@@ -27,7 +29,8 @@ class MyApp extends StatelessWidget {
           displayColor: Colors.white,
         ),
       ),
-      home: const TossLikeHomePage(),
+      home: SplashScreen(next: const TossLikeHomePage()),
+
     );
   }
 }
