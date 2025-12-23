@@ -34,6 +34,7 @@ class _FaceAuthTestScreenState extends State<FaceAuthTestScreen> {
       await f.delete();
     }
     if (!mounted) return;
+
     setState(() => result = null);
   }
 
@@ -53,7 +54,6 @@ class _FaceAuthTestScreenState extends State<FaceAuthTestScreen> {
               child: Text(result == null ? '안면인증 시작' : '다시 촬영'),
             ),
             const SizedBox(height: 16),
-
             if (result == null) ...[
               const Text('결과 없음'),
             ] else ...[
@@ -67,7 +67,8 @@ class _FaceAuthTestScreenState extends State<FaceAuthTestScreen> {
                       child: Image.file(
                         File(path!),
                         fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => const Center(child: Text('이미지 로드 실패')),
+                        errorBuilder: (_, __, ___) =>
+                        const Center(child: Text('이미지 로드 실패')),
                       ),
                     ),
                     Padding(
@@ -75,8 +76,22 @@ class _FaceAuthTestScreenState extends State<FaceAuthTestScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('촬영 성공', style: TextStyle(fontWeight: FontWeight.w700)),
+                          Text(
+                            result!.demoPass ? 'PASS (데모)' : 'FAIL (데모)',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w800,
+                              color: result!.demoPass ? Colors.green : Colors.red,
+                            ),
+                          ),
                           const SizedBox(height: 6),
+                          Row(
+                            children: [
+                              _MiniChip(label: 'LEFT', done: result!.turnedLeft),
+                              const SizedBox(width: 8),
+                              _MiniChip(label: 'RIGHT', done: result!.turnedRight),
+                            ],
+                          ),
+                          const SizedBox(height: 10),
                           Text('시간: ${result!.capturedAt}'),
                           const SizedBox(height: 6),
                           SelectableText('파일: ${result!.path}'),
@@ -103,6 +118,29 @@ class _FaceAuthTestScreenState extends State<FaceAuthTestScreen> {
             ],
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _MiniChip extends StatelessWidget {
+  final String label;
+  final bool done;
+
+  const _MiniChip({required this.label, required this.done});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: done ? Colors.green.withOpacity(0.8) : Colors.black.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: Colors.white.withOpacity(0.8)),
+      ),
+      child: Text(
+        done ? '$label ✓' : label,
+        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
       ),
     );
   }
