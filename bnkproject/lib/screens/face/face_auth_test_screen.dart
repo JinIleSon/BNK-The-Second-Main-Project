@@ -20,9 +20,64 @@ class _FaceAuthTestScreenState extends State<FaceAuthTestScreen> {
     );
     if (!mounted) return;
 
-    setState(() {
-      result = r; // 취소면 null
-    });
+    setState(() => result = r);
+
+    // ✅ 스트림 화면에서 팝업 X. 결과 받은 뒤(=TestScreen)에서 팝업이 안전함.
+    if (r != null) {
+      _showResultDialog(r);
+    }
+  }
+
+  Future<void> _showResultDialog(FaceAuthResult r) async {
+    final ok = r.demoPass;
+    final bg = ok ? const Color(0xFF1B5E20) : const Color(0xFFB71C1C);
+
+    await showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        backgroundColor: bg,
+        title: Text(
+          ok ? '인증 성공' : '인증 실패',
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 22,
+            fontWeight: FontWeight.w900,
+          ),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              ok ? '데모 기준을 통과했습니다.' : '데모 기준을 통과하지 못했습니다.',
+              style: const TextStyle(color: Colors.white, fontSize: 16),
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                _MiniChip(label: 'LEFT', done: r.turnedLeft),
+                const SizedBox(width: 8),
+                _MiniChip(label: 'RIGHT', done: r.turnedRight),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Text(
+              '촬영: ${r.capturedAt}',
+              style: const TextStyle(color: Colors.white, fontSize: 14),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text(
+              '확인',
+              style: TextStyle(color: Colors.white, fontSize: 16),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _deleteFile() async {
@@ -34,7 +89,6 @@ class _FaceAuthTestScreenState extends State<FaceAuthTestScreen> {
       await f.delete();
     }
     if (!mounted) return;
-
     setState(() => result = null);
   }
 
@@ -79,11 +133,12 @@ class _FaceAuthTestScreenState extends State<FaceAuthTestScreen> {
                           Text(
                             result!.demoPass ? 'PASS (데모)' : 'FAIL (데모)',
                             style: TextStyle(
-                              fontWeight: FontWeight.w800,
+                              fontWeight: FontWeight.w900,
+                              fontSize: 18,
                               color: result!.demoPass ? Colors.green : Colors.red,
                             ),
                           ),
-                          const SizedBox(height: 6),
+                          const SizedBox(height: 8),
                           Row(
                             children: [
                               _MiniChip(label: 'LEFT', done: result!.turnedLeft),
@@ -134,13 +189,13 @@ class _MiniChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: done ? Colors.green.withOpacity(0.8) : Colors.black.withOpacity(0.5),
+        color: done ? Colors.green.withOpacity(0.85) : Colors.black.withOpacity(0.55),
         borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: Colors.white.withOpacity(0.8)),
+        border: Border.all(color: Colors.white.withOpacity(0.25)),
       ),
       child: Text(
         done ? '$label ✓' : label,
-        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
       ),
     );
   }
