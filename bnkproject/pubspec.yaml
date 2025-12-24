@@ -10,6 +10,8 @@ dependencies:
   flutter:
     sdk: flutter
 
+  provider: ^6.1.5+1
+
   # ✅ video guide
   video_player: ^2.9.1
 
@@ -37,8 +39,7 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/images/face_guide.png
-    - assets/images/splash.png
+    - assets/images/
     # 필요하면 이미지도 여기에 추가
     # - assets/images/face_guide.png
 

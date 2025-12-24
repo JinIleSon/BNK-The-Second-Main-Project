@@ -8,6 +8,8 @@ import 'screens/my/my_page.dart';
 import 'screens/auth/login_main.dart';
 import 'screens/splash/splash_screen.dart';
 
+import 'screens/auth/signup/signup_flow_provider.dart';
+import 'screens/auth/signup/signup_type_page.dart';
 
 void main() {
   runApp(const MyApp());
