@@ -90,7 +90,6 @@ class _LoginPageState extends State<LoginPage> {
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
                 ),
                 const SizedBox(height: 12),
-
                 ElevatedButton(
                   onPressed: () {
                     Navigator.pop(ctx);
@@ -102,13 +101,14 @@ class _LoginPageState extends State<LoginPage> {
 
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => const PersonalAuthPage()),
+                      MaterialPageRoute(
+                        builder: (_) => const PersonalAuthPage(),
+                      ),
                     );
                   },
                   child: const Text('개인회원'),
                 ),
                 const SizedBox(height: 8),
-
                 ElevatedButton(
                   onPressed: () {
                     Navigator.pop(ctx);
@@ -120,12 +120,13 @@ class _LoginPageState extends State<LoginPage> {
 
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => const CompanyInfoPage()),
+                      MaterialPageRoute(
+                        builder: (_) => const CompanyInfoPage(),
+                      ),
                     );
                   },
                   child: const Text('기업회원'),
                 ),
-
                 const SizedBox(height: 8),
                 TextButton(
                   onPressed: () => Navigator.pop(ctx),
@@ -142,6 +143,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final bottom = MediaQuery.of(context).viewInsets.bottom;
+    final showMascot = bottom == 0; // ✅ 키보드 올라오면 이미지 숨김
 
     return Scaffold(
       appBar: AppBar(
@@ -168,6 +170,20 @@ class _LoginPageState extends State<LoginPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              // ✅ 부기 캐릭터(로그인 폼 상단)
+              if (showMascot) ...[
+                const SizedBox(height: 8),
+                Center(
+                  child: Image.asset(
+                    'assets/images/boogi.png',
+                    width: 300,
+                    height: 300,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+                const SizedBox(height: 12),
+              ],
+
               TextField(
                 controller: _idCtrl,
                 textInputAction: TextInputAction.next,
