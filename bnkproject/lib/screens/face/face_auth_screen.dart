@@ -9,6 +9,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import 'face_auth_result.dart';
+import 'face_overlay_painter.dart';
 
 class FaceAuthScreen extends StatefulWidget {
   const FaceAuthScreen({super.key});
@@ -28,6 +29,12 @@ class _FaceAuthScreenState extends State<FaceAuthScreen> {
   bool _turnedLeft = false;
   bool _turnedRight = false;
 
+  // ✅ 오버레이용 상태
+  List<Face> _faces = [];
+  Size? _imageSize;
+  InputImageRotation? _imageRotation;
+  CameraLensDirection? _lensDirection;
+
   @override
   void initState() {
     super.initState();
@@ -35,6 +42,7 @@ class _FaceAuthScreenState extends State<FaceAuthScreen> {
       options: FaceDetectorOptions(
         performanceMode: FaceDetectorMode.fast,
         enableTracking: true,
+        enableContours: true, // ✅ 윤곽선
       ),
     );
 
@@ -77,7 +85,14 @@ class _FaceAuthScreenState extends State<FaceAuthScreen> {
     _busy = true;
     try {
       final input = _toInputImage(image, ctrl);
+
+      // ✅ 오버레이 메타 저장
+      _imageSize = input.metadata?.size;
+      _imageRotation = input.metadata?.rotation;
+      _lensDirection = ctrl.description.lensDirection;
+
       final faces = await _detector.processImage(input);
+      _faces = faces;
 
       if (faces.isEmpty) {
         _hint = '얼굴이 안 보입니다. 화면 중앙으로';
@@ -87,15 +102,10 @@ class _FaceAuthScreenState extends State<FaceAuthScreen> {
 
       final face = faces.first;
 
-      // =========================
-      // ✅ LEFT/RIGHT 판정 개선
-      // - 프론트 카메라: 좌우가 뒤집히는 경우가 많아 yaw 부호 반전
-      // - 임계치 완화(12 -> 8)
-      // =========================
+      // ✅ yaw 판정(프론트 카메라 반전)
       final rawYaw = face.headEulerAngleY ?? 0.0;
-      final yaw = (ctrl.description.lensDirection == CameraLensDirection.front)
-          ? -rawYaw
-          : rawYaw;
+      final yaw =
+      (ctrl.description.lensDirection == CameraLensDirection.front) ? -rawYaw : rawYaw;
 
       const t = 8.0;
 
@@ -115,7 +125,7 @@ class _FaceAuthScreenState extends State<FaceAuthScreen> {
 
       if (mounted) setState(() {});
     } catch (_) {
-      // MVP: 예외 무시 (실서비스면 로그 필요)
+      // MVP: 예외 무시
     } finally {
       _busy = false;
     }
@@ -156,7 +166,8 @@ class _FaceAuthScreenState extends State<FaceAuthScreen> {
 
       final xfile = await ctrl.takePicture();
       final dir = await getTemporaryDirectory();
-      final savedPath = '${dir.path}/face_${DateTime.now().millisecondsSinceEpoch}.jpg';
+      final savedPath =
+          '${dir.path}/face_${DateTime.now().millisecondsSinceEpoch}.jpg';
       await File(xfile.path).copy(savedPath);
 
       if (!mounted) return;
@@ -196,58 +207,90 @@ class _FaceAuthScreenState extends State<FaceAuthScreen> {
       ),
       body: ctrl == null || !ctrl.value.isInitialized
           ? const Center(child: CircularProgressIndicator())
-          : Stack(
-        children: [
-          CameraPreview(ctrl),
+          : Container(
+        color: Colors.black,
+        child: Stack(
+          children: [
+            // ✅ 찌그러짐 해결: portrait면 aspectRatio 뒤집기
+            Center(
+              child: AspectRatio(
+                aspectRatio: MediaQuery.of(context).orientation ==
+                    Orientation.portrait
+                    ? (1 / ctrl.value.aspectRatio)
+                    : ctrl.value.aspectRatio,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    CameraPreview(ctrl),
 
-          // =========================
-          // ✅ 중앙 오버레이 가이드(복구)
-          // =========================
-          Align(
-            alignment: Alignment.center,
-            child: IgnorePointer(
-              child: Container(
-                width: MediaQuery.of(context).size.width * 0.72,
-                height: MediaQuery.of(context).size.height * 0.45,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(18),
-                  border: Border.all(
-                    color: Colors.white.withOpacity(0.85),
-                    width: 2,
+                    // ✅ Painter도 같은 박스 안에 넣어야 좌표/비율 맞음
+                    if (_imageSize != null &&
+                        _imageRotation != null &&
+                        _lensDirection != null)
+                      IgnorePointer(
+                        child: CustomPaint(
+                          painter: FaceOverlayPainter(
+                            faces: _faces,
+                            imageSize: _imageSize!,
+                            imageRotation: _imageRotation!, // rotation -> imageRotation
+                            cameraLensDirection: _controller!.description.lensDirection,
+                          ),
+
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+
+            // ✅ 중앙 오버레이 가이드(기존 유지)
+            Align(
+              alignment: Alignment.center,
+              child: IgnorePointer(
+                child: Container(
+                  width: MediaQuery.of(context).size.width * 0.72,
+                  height: MediaQuery.of(context).size.height * 0.45,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(18),
+                    border: Border.all(
+                      color: Colors.white.withOpacity(0.85),
+                      width: 2,
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
 
-          Positioned(
-            left: 16,
-            right: 16,
-            bottom: 24,
-            child: Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.55),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(_hint, style: const TextStyle(color: Colors.white)),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      _FlagChip(label: 'LEFT', ok: _turnedLeft),
-                      const SizedBox(width: 8),
-                      _FlagChip(label: 'RIGHT', ok: _turnedRight),
-                    ],
-                  ),
-                ],
+            // ✅ 하단 힌트
+            Positioned(
+              left: 16,
+              right: 16,
+              bottom: 24,
+              child: Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.55),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(_hint, style: const TextStyle(color: Colors.white)),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        _FlagChip(label: 'LEFT', ok: _turnedLeft),
+                        const SizedBox(width: 8),
+                        _FlagChip(label: 'RIGHT', ok: _turnedRight),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -267,7 +310,10 @@ class _FlagChip extends StatelessWidget {
         color: ok ? Colors.green : Colors.red,
         borderRadius: BorderRadius.circular(999),
       ),
-      child: Text(label, style: const TextStyle(color: Colors.white, fontSize: 12)),
+      child: Text(
+        label,
+        style: const TextStyle(color: Colors.white, fontSize: 12),
+      ),
     );
   }
 }
