@@ -232,9 +232,10 @@ class _FaceAuthScreenState extends State<FaceAuthScreen> {
                           painter: FaceOverlayPainter(
                             faces: _faces,
                             imageSize: _imageSize!,
-                            rotation: _imageRotation!,
-                            lensDirection: _lensDirection!,
+                            imageRotation: _imageRotation!, // rotation -> imageRotation
+                            cameraLensDirection: _controller!.description.lensDirection,
                           ),
+
                         ),
                       ),
                   ],
