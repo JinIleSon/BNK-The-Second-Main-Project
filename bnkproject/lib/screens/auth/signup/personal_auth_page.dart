@@ -9,6 +9,8 @@ import 'personal_info_page.dart';
 import '../../face/face_auth_screen.dart';
 import '../../face/face_auth_result.dart';
 
+import '../../../api/verification_api.dart';
+
 class PersonalAuthPage extends StatelessWidget {
   const PersonalAuthPage({super.key});
 
@@ -17,14 +19,13 @@ class PersonalAuthPage extends StatelessWidget {
     final flow = context.watch<SignupFlowProvider>();
 
     return DefaultTabController(
-      length: 3,
+      length: 2,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('개인 인증'),
+          title: const Text('본인 인증'),
           bottom: const TabBar(
             tabs: [
               Tab(text: '휴대폰'),
-              Tab(text: '이메일'),
               Tab(text: '얼굴'),
             ],
           ),
@@ -63,7 +64,6 @@ class PersonalAuthPage extends StatelessWidget {
         body: const TabBarView(
           children: [
             _OtpAuthTab(channel: AuthChannel.phone),
-            _OtpAuthTab(channel: AuthChannel.email),
             _FaceAuthTab(),
           ],
         ),
@@ -111,13 +111,11 @@ class _OtpAuthTabState extends State<_OtpAuthTab>
     final target = _targetCtrl.text.trim();
 
     if (target.isEmpty) {
-      setState(() => _msg = '휴대폰/이메일을 입력하세요.');
+      setState(() => _msg = '휴대폰 번호를 입력하세요.');
       return;
     }
     if (!_isValidTarget(target)) {
-      setState(() => _msg = widget.channel == AuthChannel.phone
-          ? '휴대폰 번호 형식이 올바르지 않습니다.'
-          : '이메일 형식이 올바르지 않습니다.');
+      setState(() => _msg = '휴대폰 번호 형식이 올바르지 않습니다.');
       return;
     }
 
@@ -127,11 +125,14 @@ class _OtpAuthTabState extends State<_OtpAuthTab>
     });
 
     try {
-      // TODO: 실제 API send 호출
-      await Future.delayed(const Duration(milliseconds: 300));
+      // 실제 SMS 발송 API(연동 완료) : verification_api
+      final res = await verificationApi.sendSmsCode(target);
+
       setState(() {
-        _sent = true;
-        _msg = '인증코드를 발송했습니다.';
+        _sent = res.ok;
+        _msg = res.message.isNotEmpty
+            ? res.message
+            : (res.ok ? '인증코드를 발송했습니다.' : '인증코드 발송에 실패했습니다.');
       });
     } catch (e) {
       setState(() => _msg = '발송 실패: $e');
@@ -158,15 +159,24 @@ class _OtpAuthTabState extends State<_OtpAuthTab>
     });
 
     try {
-      // TODO: 실제 API verify 호출
-      await Future.delayed(const Duration(milliseconds: 300));
-
-      context.read<SignupFlowProvider>().setPersonalVerified(
-        channel: widget.channel,
-        target: target,
+      // ✅ 실제 SMS 검증 API
+      final res = await verificationApi.verifySmsCode(
+        phoneNumber: target,
+        code: code,
       );
 
-      setState(() => _msg = '인증이 완료되었습니다.');
+      if (res.ok) {
+        context.read<SignupFlowProvider>().setPersonalVerified(
+          channel: AuthChannel.phone,
+          target: target,
+        );
+      }
+
+      setState(() {
+        _msg = res.message.isNotEmpty
+            ? res.message
+            : (res.ok ? '인증이 완료되었습니다.' : '인증 실패');
+      });
     } catch (e) {
       setState(() => _msg = '인증 실패: $e');
     } finally {

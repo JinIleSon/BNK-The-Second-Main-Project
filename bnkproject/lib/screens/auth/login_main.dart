@@ -109,9 +109,8 @@ class _LoginPageState extends State<LoginPage> {
                 });
               },
               child: Container(
-                height: 72,
-                padding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                constraints: const BoxConstraints(minHeight: 72), // 이미지 깨짐 수정
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12), // 이미지 깨짐 수정
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(18),
                   border: Border.all(color: theme.dividerColor),

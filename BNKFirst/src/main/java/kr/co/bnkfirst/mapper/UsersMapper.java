@@ -39,4 +39,7 @@ public interface UsersMapper {
     // 회원 탈퇴
     int deletePcontractByMid(@Param("mid") String mid);
     int deleteUserByMid(@Param("mid") String mid);
+
+    // 플러터 회원가입
+    int insertUserPersonalMinimal(UsersDTO dto);
 }

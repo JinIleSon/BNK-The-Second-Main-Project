@@ -19,6 +19,7 @@
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'member_api.dart';
 
 class VerificationApiClient {
   /// 예:
@@ -217,3 +218,5 @@ class SmsVerifyResult {
     this.verificationToken,
   });
 }
+
+final verificationApi = VerificationApiClient(baseUrl: baseUrl);
