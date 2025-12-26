@@ -8,6 +8,7 @@ import 'signup/signup_flow_provider.dart';
 import 'signup/personal_auth_page.dart';
 import 'signup/company_info_page.dart';
 
+
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -195,47 +196,40 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 8),
 
-                  // ✅ 개인회원 → PersonalAuthPage 이동 (Provider 유지)
+// ✅ 개인회원 → PersonalAuthPage (Provider 새로 생성)
                   optionCard(
                     icon: Icons.person_outline,
                     title: '개인회원',
                     desc: '휴대폰/이메일 인증 후 가입',
                     onTapAfterClose: () {
-                      final flow = rootContext.read<SignupFlowProvider>();
-                      flow.selectUserType(SignupUserType.personal);
-
                       Navigator.of(rootContext, rootNavigator: true).push(
                         MaterialPageRoute(
-                          builder: (_) => ChangeNotifierProvider.value(
-                            value: flow,
-                            child: const PersonalAuthPage(),
+                          builder: (_) => ChangeNotifierProvider(
+                            create: (_) => SignupFlowProvider()..selectUserType(SignupUserType.personal),
+                            child: const PersonalAuthPage(), // 여기서 "다음" 누르면 PersonalInfoPage로 감
                           ),
                         ),
                       );
                     },
                   ),
 
-                  const SizedBox(height: 12),
-
-                  // ✅ 기업회원 → CompanyInfoPage 이동 (Provider 유지)
+// ✅ 기업회원 → CompanyInfoPage (Provider 새로 생성)
                   optionCard(
                     icon: Icons.business_outlined,
                     title: '기업회원',
                     desc: '기업 정보 입력 후 가입',
                     onTapAfterClose: () {
-                      final flow = rootContext.read<SignupFlowProvider>();
-                      flow.selectUserType(SignupUserType.company);
-
                       Navigator.of(rootContext, rootNavigator: true).push(
                         MaterialPageRoute(
-                          builder: (_) => ChangeNotifierProvider.value(
-                            value: flow,
+                          builder: (_) => ChangeNotifierProvider(
+                            create: (_) => SignupFlowProvider()..selectUserType(SignupUserType.company),
                             child: const CompanyInfoPage(),
                           ),
                         ),
                       );
                     },
                   ),
+
 
                   const SizedBox(height: 12),
                   Text(
