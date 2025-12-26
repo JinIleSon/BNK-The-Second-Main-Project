@@ -46,9 +46,15 @@ class SignupFlowProvider extends ChangeNotifier {
   bool get canGoPersonalInfo {
     if (userType != SignupUserType.personal) return false;
     if (!personalVerified) return false;
+
+    // ✅ face path 빈값 방지까지 포함
     if (authChannel == AuthChannel.face) {
-      return (faceCapturePath != null) && faceTurnedLeft && faceTurnedRight;
+      return (faceCapturePath != null) &&
+          faceCapturePath!.isNotEmpty &&
+          faceTurnedLeft &&
+          faceTurnedRight;
     }
+
     return verifiedTarget != null && verifiedTarget!.isNotEmpty;
   }
 
@@ -72,6 +78,17 @@ class SignupFlowProvider extends ChangeNotifier {
     faceCapturePath = path;
     faceTurnedLeft = turnedLeft;
     faceTurnedRight = turnedRight;
+    notifyListeners();
+  }
+
+  // (선택) 외부에서 초기화하고 싶으면 사용
+  void resetPersonalAuth() {
+    authChannel = null;
+    verifiedTarget = null;
+    personalVerified = false;
+    faceCapturePath = null;
+    faceTurnedLeft = false;
+    faceTurnedRight = false;
     notifyListeners();
   }
 }

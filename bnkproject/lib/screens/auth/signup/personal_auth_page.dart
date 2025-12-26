@@ -1,6 +1,7 @@
 // lib/screens/auth/signup/personal_auth_page.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import 'signup_flow_provider.dart';
 import 'personal_info_page.dart';
 
@@ -28,24 +29,43 @@ class PersonalAuthPage extends StatelessWidget {
             ],
           ),
         ),
-        body: TabBarView(
+        bottomNavigationBar: SafeArea(
+          top: false,
+          child: AnimatedPadding(
+            duration: const Duration(milliseconds: 150),
+            curve: Curves.easeOut,
+            padding: EdgeInsets.fromLTRB(
+              16,
+              12,
+              16,
+              12 + MediaQuery.of(context).viewInsets.bottom,
+            ),
+            child: ElevatedButton(
+              onPressed: flow.canGoPersonalInfo
+                  ? () {
+                // ✅ 다음 페이지에서도 Provider 유지
+                final f = context.read<SignupFlowProvider>();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => ChangeNotifierProvider.value(
+                      value: f,
+                      child: const PersonalInfoPage(),
+                    ),
+                  ),
+                );
+              }
+                  : null,
+              child: const Text('다음'),
+            ),
+          ),
+        ),
+        body: const TabBarView(
           children: [
             _OtpAuthTab(channel: AuthChannel.phone),
             _OtpAuthTab(channel: AuthChannel.email),
             _FaceAuthTab(),
           ],
-        ),
-        bottomNavigationBar: Padding(
-          padding: const EdgeInsets.all(16),
-          child: ElevatedButton(
-            onPressed: flow.canGoPersonalInfo
-                ? () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const PersonalInfoPage()),
-            )
-                : null,
-            child: const Text('다음'),
-          ),
         ),
       ),
     );
@@ -60,7 +80,8 @@ class _OtpAuthTab extends StatefulWidget {
   State<_OtpAuthTab> createState() => _OtpAuthTabState();
 }
 
-class _OtpAuthTabState extends State<_OtpAuthTab> {
+class _OtpAuthTabState extends State<_OtpAuthTab>
+    with AutomaticKeepAliveClientMixin {
   final _targetCtrl = TextEditingController();
   final _codeCtrl = TextEditingController();
 
@@ -69,145 +90,241 @@ class _OtpAuthTabState extends State<_OtpAuthTab> {
   String? _msg;
 
   @override
+  bool get wantKeepAlive => true;
+
+  @override
   void dispose() {
     _targetCtrl.dispose();
     _codeCtrl.dispose();
     super.dispose();
   }
 
+  bool _isValidTarget(String target) {
+    if (widget.channel == AuthChannel.phone) {
+      return RegExp(r'^\d{10,11}$').hasMatch(target);
+    }
+    // email
+    return target.contains('@') && target.contains('.');
+  }
+
+  Future<void> _sendCode() async {
+    final target = _targetCtrl.text.trim();
+
+    if (target.isEmpty) {
+      setState(() => _msg = '휴대폰/이메일을 입력하세요.');
+      return;
+    }
+    if (!_isValidTarget(target)) {
+      setState(() => _msg = widget.channel == AuthChannel.phone
+          ? '휴대폰 번호 형식이 올바르지 않습니다.'
+          : '이메일 형식이 올바르지 않습니다.');
+      return;
+    }
+
+    setState(() {
+      _busy = true;
+      _msg = null;
+    });
+
+    try {
+      // TODO: 실제 API send 호출
+      await Future.delayed(const Duration(milliseconds: 300));
+      setState(() {
+        _sent = true;
+        _msg = '인증코드를 발송했습니다.';
+      });
+    } catch (e) {
+      setState(() => _msg = '발송 실패: $e');
+    } finally {
+      if (!mounted) return;
+      setState(() => _busy = false);
+    }
+  }
+
+  Future<void> _verifyCode() async {
+    final target = _targetCtrl.text.trim();
+    final code = _codeCtrl.text.trim();
+
+    if (!_sent) return;
+
+    if (code.length < 4) {
+      setState(() => _msg = '인증코드를 확인하세요.');
+      return;
+    }
+
+    setState(() {
+      _busy = true;
+      _msg = null;
+    });
+
+    try {
+      // TODO: 실제 API verify 호출
+      await Future.delayed(const Duration(milliseconds: 300));
+
+      context.read<SignupFlowProvider>().setPersonalVerified(
+        channel: widget.channel,
+        target: target,
+      );
+
+      setState(() => _msg = '인증이 완료되었습니다.');
+    } catch (e) {
+      setState(() => _msg = '인증 실패: $e');
+    } finally {
+      if (!mounted) return;
+      setState(() => _busy = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+
     final isPhone = widget.channel == AuthChannel.phone;
 
-    return Padding(
+    return ListView(
       padding: const EdgeInsets.all(16),
-      child: Column(
-        children: [
-          TextField(
-            controller: _targetCtrl,
-            keyboardType: isPhone ? TextInputType.phone : TextInputType.emailAddress,
-            decoration: InputDecoration(
-              labelText: isPhone ? '휴대폰 번호' : '이메일',
-              hintText: isPhone ? '01012345678' : 'test@sample.com',
-            ),
+      children: [
+        Text(
+          isPhone ? '휴대폰 인증' : '이메일 인증',
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+        ),
+        const SizedBox(height: 12),
+        TextField(
+          controller: _targetCtrl,
+          keyboardType:
+          isPhone ? TextInputType.phone : TextInputType.emailAddress,
+          enabled: !_busy,
+          decoration: InputDecoration(
+            labelText: isPhone ? '휴대폰 번호' : '이메일',
+            hintText: isPhone ? '01012345678' : 'test@sample.com',
           ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: _busy
-                      ? null
-                      : () async {
-                    final target = _targetCtrl.text.trim();
-                    if (target.isEmpty) {
-                      setState(() => _msg = 'target을 입력해라');
-                      return;
-                    }
-                    setState(() {
-                      _busy = true;
-                      _msg = null;
-                    });
-                    try {
-                      // TODO: 실제 API 연결 시 SignupApi 주입해서 호출
-                      await Future.delayed(const Duration(milliseconds: 300));
-                      setState(() => _sent = true);
-                      setState(() => _msg = '인증코드 발송됨');
-                    } catch (e) {
-                      setState(() => _msg = '발송 실패: $e');
-                    } finally {
-                      setState(() => _busy = false);
-                    }
-                  },
-                  child: const Text('코드 발송'),
-                ),
-              ),
-            ],
+        ),
+        const SizedBox(height: 12),
+        SizedBox(
+          height: 48,
+          child: ElevatedButton(
+            onPressed: _busy ? null : _sendCode,
+            child: _busy
+                ? const SizedBox(
+              width: 18,
+              height: 18,
+              child: CircularProgressIndicator.adaptive(strokeWidth: 2),
+            )
+                : Text(_sent ? '코드 재발송' : '코드 발송'),
           ),
-          const SizedBox(height: 16),
-          TextField(
-            controller: _codeCtrl,
-            enabled: _sent,
-            keyboardType: TextInputType.number,
-            decoration: const InputDecoration(labelText: '인증코드'),
-          ),
-          const SizedBox(height: 12),
-          ElevatedButton(
-            onPressed: (!_sent || _busy)
-                ? null
-                : () async {
-              final target = _targetCtrl.text.trim();
-              final code = _codeCtrl.text.trim();
-              if (code.length < 4) {
-                setState(() => _msg = '코드가 짧다');
-                return;
-              }
-              setState(() {
-                _busy = true;
-                _msg = null;
-              });
-              try {
-                // TODO: 실제 API verify 호출
-                await Future.delayed(const Duration(milliseconds: 300));
-
-                context.read<SignupFlowProvider>().setPersonalVerified(
-                  channel: widget.channel,
-                  target: target,
-                );
-                setState(() => _msg = '인증 성공');
-              } catch (e) {
-                setState(() => _msg = '인증 실패: $e');
-              } finally {
-                setState(() => _busy = false);
-              }
-            },
+        ),
+        const SizedBox(height: 16),
+        TextField(
+          controller: _codeCtrl,
+          enabled: _sent && !_busy,
+          keyboardType: TextInputType.number,
+          decoration: const InputDecoration(labelText: '인증코드'),
+        ),
+        const SizedBox(height: 12),
+        SizedBox(
+          height: 48,
+          child: ElevatedButton(
+            onPressed: (!_sent || _busy) ? null : _verifyCode,
             child: const Text('인증 확인'),
           ),
-          const SizedBox(height: 12),
-          if (_msg != null) Align(alignment: Alignment.centerLeft, child: Text(_msg!)),
-        ],
-      ),
+        ),
+        const SizedBox(height: 12),
+        if (_msg != null)
+          Text(
+            _msg!,
+            style: TextStyle(color: Theme.of(context).hintColor),
+          ),
+      ],
     );
   }
 }
 
-class _FaceAuthTab extends StatelessWidget {
+class _FaceAuthTab extends StatefulWidget {
   const _FaceAuthTab();
 
   @override
+  State<_FaceAuthTab> createState() => _FaceAuthTabState();
+}
+
+class _FaceAuthTabState extends State<_FaceAuthTab>
+    with AutomaticKeepAliveClientMixin {
+  String? _msg;
+
+  @override
+  bool get wantKeepAlive => true;
+
+  Future<void> _startFaceAuth(BuildContext context) async {
+    setState(() => _msg = null);
+
+    final dynamic result = await Navigator.push<dynamic>(
+      context,
+      MaterialPageRoute(builder: (_) => const FaceAuthScreen()),
+    );
+
+    if (!mounted) return;
+    if (result == null) return;
+
+    // String path 반환 케이스
+    if (result is String) {
+      context.read<SignupFlowProvider>().setFaceResult(
+        path: result,
+        turnedLeft: true,
+        turnedRight: true,
+      );
+      setState(() => _msg = '얼굴 인증 결과를 저장했습니다.');
+      return;
+    }
+
+    // FaceAuthResult 반환 케이스
+    if (result is FaceAuthResult) {
+      context.read<SignupFlowProvider>().setFaceResult(
+        path: result.path,
+        turnedLeft: result.turnedLeft,
+        turnedRight: result.turnedRight,
+      );
+      setState(() => _msg = '얼굴 인증 결과를 저장했습니다.');
+      return;
+    }
+
+    setState(() => _msg = '알 수 없는 결과 타입: ${result.runtimeType}');
+  }
+
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
+
     final flow = context.watch<SignupFlowProvider>();
 
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('현재 상태: ${flow.faceCapturePath == null ? "미완료" : "완료"}'),
-          const SizedBox(height: 12),
-          ElevatedButton(
-            onPressed: () async {
-              // TODO: FaceAuthScreen이 String/Result 반환 형태에 맞춰 수정
-              final result = await Navigator.push<FaceAuthResult>(
-                context,
-                MaterialPageRoute(builder: (_) => const FaceAuthScreen()),
-              );
-              if (result == null) return;
+    final statusText = (flow.faceCapturePath == null)
+        ? '미완료'
+        : (flow.faceTurnedLeft && flow.faceTurnedRight ? '완료' : '부분 완료');
 
-              context.read<SignupFlowProvider>().setFaceResult(
-                path: result.path,
-                turnedLeft: result.turnedLeft,
-                turnedRight: result.turnedRight,
-              );
-            },
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        const Text(
+          '얼굴 인증',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+        ),
+        const SizedBox(height: 12),
+        Text('현재 상태: $statusText'),
+        const SizedBox(height: 12),
+        SizedBox(
+          height: 48,
+          child: ElevatedButton(
+            onPressed: () => _startFaceAuth(context),
             child: const Text('얼굴 인증 시작'),
           ),
+        ),
+        const SizedBox(height: 12),
+        Text('path: ${flow.faceCapturePath ?? "-"}'),
+        Text('turnedLeft: ${flow.faceTurnedLeft}'),
+        Text('turnedRight: ${flow.faceTurnedRight}'),
+        if (_msg != null) ...[
           const SizedBox(height: 12),
-          Text('path: ${flow.faceCapturePath ?? "-"}'),
-          Text('turnedLeft: ${flow.faceTurnedLeft}'),
-          Text('turnedRight: ${flow.faceTurnedRight}'),
+          Text(_msg!, style: TextStyle(color: Theme.of(context).hintColor)),
         ],
-      ),
+      ],
     );
   }
 }
