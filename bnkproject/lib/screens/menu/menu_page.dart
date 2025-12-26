@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../settings/settings_page.dart';
+import 'package:bnkproject/game/game_entry.dart';
 
 class MenuPage extends StatefulWidget {
   const MenuPage({super.key});
@@ -17,9 +18,6 @@ class _MenuPageState extends State<MenuPage> {
     final card = Theme.of(context).cardColor;
     final bodySmall = Theme.of(context).textTheme.bodySmall?.copyWith(
       color: Colors.grey[400],
-    );
-    final titleStyle = Theme.of(context).textTheme.bodyLarge?.copyWith(
-      fontWeight: FontWeight.w700,
     );
 
     return Scaffold(
@@ -50,7 +48,6 @@ class _MenuPageState extends State<MenuPage> {
         child: ListView(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
           children: [
-            // 상단 세그먼트(알림/고객센터)
             Container(
               height: 44,
               decoration: BoxDecoration(
@@ -64,7 +61,7 @@ class _MenuPageState extends State<MenuPage> {
                       selected: selectedTopTab == 0,
                       icon: Icons.notifications_none,
                       label: '알림',
-                      showDot: true, // 스샷처럼 빨간 점 느낌
+                      showDot: true,
                       onTap: () => setState(() => selectedTopTab = 0),
                     ),
                   ),
@@ -83,29 +80,18 @@ class _MenuPageState extends State<MenuPage> {
 
             const SizedBox(height: 18),
 
-            // 큰 메뉴 리스트(상단)
             _BigMenuRow(title: '매일 주식받는 출석체크', onTap: () {}),
-            _BigMenuRow(
-              title: '주식 모으기',
-              trailingText: '수수료 무료',
-              onTap: () {},
-            ),
+            _BigMenuRow(title: '주식 모으기', trailingText: '수수료 무료', onTap: () {}),
             _BigMenuRow(title: '증시 캘린더', onTap: () {}),
-            _BigMenuRow(
-              title: '진행중인 이벤트',
-              trailingText: '4개',
-              onTap: () {},
-            ),
+            _BigMenuRow(title: '진행중인 이벤트', trailingText: '4개', onTap: () {}),
 
             const SizedBox(height: 14),
             const Divider(height: 1, color: Colors.white12),
             const SizedBox(height: 14),
 
             Text('토스증권 서비스', style: bodySmall),
-
             const SizedBox(height: 10),
 
-            // 토스증권 서비스 메뉴들
             _ServiceTile(
               iconBg: const Color(0xFF2A2C33),
               icon: Icons.show_chart,
@@ -145,13 +131,19 @@ class _MenuPageState extends State<MenuPage> {
               subtitle: '프로필 · 주제별 커뮤니티',
               onTap: () {},
             ),
+
+            // ✅ 게임 → GameEntryPage로 이동
             _ServiceTile(
               iconBg: const Color(0xFF2A2C33),
               icon: Icons.sports_esports,
               iconColor: Colors.purpleAccent,
               title: '게임',
               subtitle: '미니게임 · 출석 · 리워드',
-              onTap: () {},
+              onTap: () {
+                Navigator.of(context, rootNavigator: true).push(
+                  MaterialPageRoute(builder: (_) => const GameEntryPage()),
+                );
+              },
             ),
           ],
         ),

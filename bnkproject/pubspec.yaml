@@ -10,6 +10,7 @@ dependencies:
   flutter:
     sdk: flutter
 
+  flame: ^1.15.0
   provider: ^6.1.5+1
 
   # ✅ video guide
@@ -40,6 +41,7 @@ flutter:
 
   assets:
     - assets/images/
+    - assets/game/
     # 필요하면 이미지도 여기에 추가
     # - assets/images/face_guide.png
 
