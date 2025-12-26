@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:video_player/video_player.dart';
 
 import 'dodger_game_screen.dart';
 import '3match_game_screen.dart';
-import 'card_game_screen.dart'; // ✅ 추가
+import 'card_game_screen.dart';
 
 class GameEntryPage extends StatelessWidget {
   const GameEntryPage({super.key});
@@ -25,12 +26,12 @@ class GameEntryPage extends StatelessWidget {
           const _Header(),
           const SizedBox(height: 14),
 
-          // 1) 3매치 금융교육
+          // 1) 3매치 금융교육 (mp4 미리보기)
           _GameCard(
             cardColor: card,
             title: '3매치 금융교육',
             subtitle: 'Match-3 · 금융 개념 학습',
-            assetImagePath: 'assets/game/match3_finance.png',
+            assetPath: 'assets/game/match3_finance.gif',
             badgeText: 'PLAY',
             onPlay: () {
               Navigator.of(context, rootNavigator: true).push(
@@ -41,12 +42,12 @@ class GameEntryPage extends StatelessWidget {
 
           const SizedBox(height: 12),
 
-          // 2) 장애물(씨앗호떡) 피하기
+          // 2) 장애물(씨앗호떡) 피하기 (이미지)
           _GameCard(
             cardColor: card,
             title: '장애물(씨앗호떡) 피하기',
             subtitle: 'Dodge · Survival',
-            assetImagePath: 'assets/game/hotteok_dodge.jpg',
+            assetPath: 'assets/game/hotteok_dodge.jpg',
             badgeText: 'PLAY',
             onPlay: () {
               Navigator.of(context, rootNavigator: true).push(
@@ -57,12 +58,12 @@ class GameEntryPage extends StatelessWidget {
 
           const SizedBox(height: 12),
 
-          // 3) 동백전 카드게임
+          // 3) 동백전 카드게임 (gif)
           _GameCard(
             cardColor: card,
             title: '동백전 카드게임',
             subtitle: '혜택 조합 · 리워드 최적화',
-            assetImagePath: 'assets/game/card_game.gif',
+            assetPath: 'assets/game/card_game.gif',
             badgeText: 'PLAY',
             onPlay: () {
               Navigator.of(context, rootNavigator: true).push(
@@ -104,7 +105,7 @@ class _GameCard extends StatelessWidget {
   final Color cardColor;
   final String title;
   final String subtitle;
-  final String assetImagePath;
+  final String assetPath; // ✅ mp4 / jpg / png / gif 모두 허용
   final String? badgeText;
   final VoidCallback onPlay;
 
@@ -112,7 +113,7 @@ class _GameCard extends StatelessWidget {
     required this.cardColor,
     required this.title,
     required this.subtitle,
-    required this.assetImagePath,
+    required this.assetPath,
     required this.onPlay,
     this.badgeText,
   });
@@ -140,27 +141,23 @@ class _GameCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(18)),
+              borderRadius:
+              const BorderRadius.vertical(top: Radius.circular(18)),
               child: AspectRatio(
                 aspectRatio: 16 / 9,
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                    Image.asset(
-                      assetImagePath,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Container(
-                        color: Colors.white10,
-                        alignment: Alignment.center,
-                        child: const Icon(Icons.image, size: 42, color: Colors.white38),
-                      ),
-                    ),
+                    _MediaPreview(assetPath: assetPath),
+
                     if (badgeText != null)
                       Positioned(
                         top: 12,
                         left: 12,
                         child: _Badge(text: badgeText!),
                       ),
+
+                    // 하단 그라데이션 오버레이
                     Positioned(
                       left: 0,
                       right: 0,
@@ -201,7 +198,8 @@ class _GameCard extends StatelessWidget {
                   ElevatedButton(
                     onPressed: onPlay,
                     style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 14, vertical: 12),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -213,6 +211,80 @@ class _GameCard extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// ✅ mp4면 VideoPlayer로 자동재생, 그 외는 Image.asset
+class _MediaPreview extends StatefulWidget {
+  final String assetPath;
+  const _MediaPreview({required this.assetPath});
+
+  @override
+  State<_MediaPreview> createState() => _MediaPreviewState();
+}
+
+class _MediaPreviewState extends State<_MediaPreview> {
+  VideoPlayerController? _vc;
+
+  bool get _isVideo => widget.assetPath.toLowerCase().endsWith('.mp4');
+
+  @override
+  void initState() {
+    super.initState();
+    if (_isVideo) {
+      _vc = VideoPlayerController.asset(widget.assetPath)
+        ..setLooping(true)
+        ..setVolume(0.0)
+        ..initialize().then((_) {
+          if (!mounted) return;
+          setState(() {});
+          _vc!.play();
+        });
+    }
+  }
+
+  @override
+  void dispose() {
+    _vc?.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_isVideo) {
+      final vc = _vc;
+      if (vc == null || !vc.value.isInitialized) {
+        return Container(
+          color: Colors.white10,
+          alignment: Alignment.center,
+          child: const SizedBox(
+            width: 22,
+            height: 22,
+            child: CircularProgressIndicator(strokeWidth: 2),
+          ),
+        );
+      }
+
+      // cover 느낌으로 꽉 채우기
+      return FittedBox(
+        fit: BoxFit.cover,
+        child: SizedBox(
+          width: vc.value.size.width,
+          height: vc.value.size.height,
+          child: VideoPlayer(vc),
+        ),
+      );
+    }
+
+    return Image.asset(
+      widget.assetPath,
+      fit: BoxFit.cover,
+      errorBuilder: (_, __, ___) => Container(
+        color: Colors.white10,
+        alignment: Alignment.center,
+        child: const Icon(Icons.image, size: 42, color: Colors.white38),
       ),
     );
   }
