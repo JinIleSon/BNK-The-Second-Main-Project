@@ -29,8 +29,6 @@ class PersonalAuthPage extends StatelessWidget {
             ],
           ),
         ),
-
-        // ✅ 키보드 올라와도 "다음" 버튼이 가려지지 않게
         bottomNavigationBar: SafeArea(
           top: false,
           child: AnimatedPadding(
@@ -45,9 +43,16 @@ class PersonalAuthPage extends StatelessWidget {
             child: ElevatedButton(
               onPressed: flow.canGoPersonalInfo
                   ? () {
+                // ✅ 다음 페이지에서도 Provider 유지
+                final f = context.read<SignupFlowProvider>();
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const PersonalInfoPage()),
+                  MaterialPageRoute(
+                    builder: (_) => ChangeNotifierProvider.value(
+                      value: f,
+                      child: const PersonalInfoPage(),
+                    ),
+                  ),
                 );
               }
                   : null,
@@ -55,7 +60,6 @@ class PersonalAuthPage extends StatelessWidget {
             ),
           ),
         ),
-
         body: const TabBarView(
           children: [
             _OtpAuthTab(channel: AuthChannel.phone),
@@ -97,13 +101,10 @@ class _OtpAuthTabState extends State<_OtpAuthTab>
 
   bool _isValidTarget(String target) {
     if (widget.channel == AuthChannel.phone) {
-      // 최소 검증: 숫자만 10~11자리(010xxxxxxxx)
-      final onlyDigits = RegExp(r'^\d{10,11}$');
-      return onlyDigits.hasMatch(target);
-    } else {
-      // 최소 검증: @ 포함
-      return target.contains('@') && target.contains('.');
+      return RegExp(r'^\d{10,11}$').hasMatch(target);
     }
+    // email
+    return target.contains('@') && target.contains('.');
   }
 
   Future<void> _sendCode() async {
@@ -126,7 +127,7 @@ class _OtpAuthTabState extends State<_OtpAuthTab>
     });
 
     try {
-      // TODO: 실제 API 연결 시 send 호출
+      // TODO: 실제 API send 호출
       await Future.delayed(const Duration(milliseconds: 300));
       setState(() {
         _sent = true;
@@ -157,7 +158,7 @@ class _OtpAuthTabState extends State<_OtpAuthTab>
     });
 
     try {
-      // TODO: 실제 API 연결 시 verify 호출
+      // TODO: 실제 API verify 호출
       await Future.delayed(const Duration(milliseconds: 300));
 
       context.read<SignupFlowProvider>().setPersonalVerified(
@@ -188,7 +189,6 @@ class _OtpAuthTabState extends State<_OtpAuthTab>
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
         ),
         const SizedBox(height: 12),
-
         TextField(
           controller: _targetCtrl,
           keyboardType:
@@ -200,7 +200,6 @@ class _OtpAuthTabState extends State<_OtpAuthTab>
           ),
         ),
         const SizedBox(height: 12),
-
         SizedBox(
           height: 48,
           child: ElevatedButton(
@@ -214,9 +213,7 @@ class _OtpAuthTabState extends State<_OtpAuthTab>
                 : Text(_sent ? '코드 재발송' : '코드 발송'),
           ),
         ),
-
         const SizedBox(height: 16),
-
         TextField(
           controller: _codeCtrl,
           enabled: _sent && !_busy,
@@ -224,7 +221,6 @@ class _OtpAuthTabState extends State<_OtpAuthTab>
           decoration: const InputDecoration(labelText: '인증코드'),
         ),
         const SizedBox(height: 12),
-
         SizedBox(
           height: 48,
           child: ElevatedButton(
@@ -232,7 +228,6 @@ class _OtpAuthTabState extends State<_OtpAuthTab>
             child: const Text('인증 확인'),
           ),
         ),
-
         const SizedBox(height: 12),
         if (_msg != null)
           Text(
@@ -261,7 +256,6 @@ class _FaceAuthTabState extends State<_FaceAuthTab>
   Future<void> _startFaceAuth(BuildContext context) async {
     setState(() => _msg = null);
 
-    // ✅ FaceAuthScreen이 String을 리턴하든 FaceAuthResult를 리턴하든 둘 다 처리
     final dynamic result = await Navigator.push<dynamic>(
       context,
       MaterialPageRoute(builder: (_) => const FaceAuthScreen()),
@@ -270,7 +264,7 @@ class _FaceAuthTabState extends State<_FaceAuthTab>
     if (!mounted) return;
     if (result == null) return;
 
-    // 1) String path 리턴 케이스
+    // String path 반환 케이스
     if (result is String) {
       context.read<SignupFlowProvider>().setFaceResult(
         path: result,
@@ -281,7 +275,7 @@ class _FaceAuthTabState extends State<_FaceAuthTab>
       return;
     }
 
-    // 2) FaceAuthResult 리턴 케이스
+    // FaceAuthResult 반환 케이스
     if (result is FaceAuthResult) {
       context.read<SignupFlowProvider>().setFaceResult(
         path: result.path,
@@ -292,7 +286,7 @@ class _FaceAuthTabState extends State<_FaceAuthTab>
       return;
     }
 
-    setState(() => _msg = '알 수 없는 결과 타입입니다: ${result.runtimeType}');
+    setState(() => _msg = '알 수 없는 결과 타입: ${result.runtimeType}');
   }
 
   @override
@@ -313,10 +307,8 @@ class _FaceAuthTabState extends State<_FaceAuthTab>
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
         ),
         const SizedBox(height: 12),
-
         Text('현재 상태: $statusText'),
         const SizedBox(height: 12),
-
         SizedBox(
           height: 48,
           child: ElevatedButton(
@@ -324,18 +316,13 @@ class _FaceAuthTabState extends State<_FaceAuthTab>
             child: const Text('얼굴 인증 시작'),
           ),
         ),
-
         const SizedBox(height: 12),
         Text('path: ${flow.faceCapturePath ?? "-"}'),
         Text('turnedLeft: ${flow.faceTurnedLeft}'),
         Text('turnedRight: ${flow.faceTurnedRight}'),
-
         if (_msg != null) ...[
           const SizedBox(height: 12),
-          Text(
-            _msg!,
-            style: TextStyle(color: Theme.of(context).hintColor),
-          ),
+          Text(_msg!, style: TextStyle(color: Theme.of(context).hintColor)),
         ],
       ],
     );
