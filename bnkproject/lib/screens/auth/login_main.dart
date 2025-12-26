@@ -69,68 +69,151 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  // ✅ 회원가입 유형 선택(개인/기업) 바텀시트 → 신규 플로우 연결
+  // ✅ UX 개선: 엄지로 누르기 편한 카드형 바텀시트 + 안전한 네비게이션(pop 후 push 프레임 분리)
   void _openSignupSelector() {
+    final rootContext = context;
+
     showModalBottomSheet(
-      context: context,
+      context: rootContext,
+      useRootNavigator: true, // ✅ nested navigator 꼬임 방지
+      isScrollControlled: false,
       showDragHandle: true,
+      backgroundColor: Theme.of(rootContext).colorScheme.surface,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      builder: (ctx) {
+      builder: (sheetCtx) {
+        Widget optionCard({
+          required IconData icon,
+          required String title,
+          required String desc,
+          required VoidCallback onTapAfterClose,
+        }) {
+          return Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(18),
+              onTap: () {
+                Navigator.pop(sheetCtx);
+
+                // ✅ pop 직후 push는 프레임 넘겨서 안정화
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  if (!mounted) return;
+                  onTapAfterClose();
+                });
+              },
+              child: Container(
+                height: 72, // ✅ 엄지 타깃 크게
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(color: Theme.of(rootContext).dividerColor),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 44,
+                      height: 44,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(14),
+                        color: Theme.of(rootContext)
+                            .colorScheme
+                            .primary
+                            .withOpacity(0.08),
+                      ),
+                      child: Icon(icon),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            title,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            desc,
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Theme.of(rootContext).hintColor,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Icon(Icons.chevron_right),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }
+
         return SafeArea(
+          top: false,
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.fromLTRB(16, 10, 16, 16),
             child: Column(
               mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Text(
-                  '회원가입 유형 선택',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                Row(
+                  children: [
+                    const Expanded(
+                      child: Text(
+                        '회원가입 유형 선택',
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () => Navigator.pop(sheetCtx),
+                      icon: const Icon(Icons.close),
+                      tooltip: '닫기',
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 12),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(ctx);
+                const SizedBox(height: 8),
 
-                    // ✅ 개인 플로우 선택 + 개인 인증 화면 진입
-                    context
+                optionCard(
+                  icon: Icons.person_outline,
+                  title: '개인회원',
+                  desc: '휴대폰/이메일 인증 후 가입',
+                  onTapAfterClose: () {
+                    rootContext
                         .read<SignupFlowProvider>()
                         .selectUserType(SignupUserType.personal);
 
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const PersonalAuthPage(),
-                      ),
+                    Navigator.of(rootContext, rootNavigator: true).push(
+                      MaterialPageRoute(builder: (_) => const PersonalAuthPage()),
                     );
                   },
-                  child: const Text('개인회원'),
                 ),
-                const SizedBox(height: 8),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(ctx);
-
-                    // ✅ 기업 플로우 선택 + 기업 정보 입력 화면 진입
-                    context
+                const SizedBox(height: 12),
+                optionCard(
+                  icon: Icons.business_outlined,
+                  title: '기업회원',
+                  desc: '기업 정보 입력 후 가입',
+                  onTapAfterClose: () {
+                    rootContext
                         .read<SignupFlowProvider>()
                         .selectUserType(SignupUserType.company);
 
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const CompanyInfoPage(),
-                      ),
+                    Navigator.of(rootContext, rootNavigator: true).push(
+                      MaterialPageRoute(builder: (_) => const CompanyInfoPage()),
                     );
                   },
-                  child: const Text('기업회원'),
                 ),
-                const SizedBox(height: 8),
-                TextButton(
-                  onPressed: () => Navigator.pop(ctx),
-                  child: const Text('취소'),
+
+                const SizedBox(height: 12),
+                Text(
+                  '아래로 스와이프하거나 바깥을 터치하면 닫힙니다.',
+                  style: TextStyle(fontSize: 12, color: Theme.of(rootContext).hintColor),
                 ),
               ],
             ),
@@ -198,7 +281,9 @@ class _LoginPageState extends State<LoginPage> {
                 controller: _pwCtrl,
                 obscureText: true,
                 textInputAction: TextInputAction.done,
-                onSubmitted: (_) => _loading ? null : _doLogin(),
+                onSubmitted: (_) {
+                  if (!_loading) _doLogin();
+                },
                 decoration: const InputDecoration(
                   labelText: "비밀번호",
                   border: OutlineInputBorder(),
