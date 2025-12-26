@@ -242,4 +242,18 @@ public class UsersService {
 
         return true;
     }
+
+    // 플러터 회원가입
+    @Transactional
+    public boolean registerPersonalMinimal(UsersDTO dto) {
+        // 비번 암호화(웹 가입이 BCrypt 쓰면 여기서도 반드시 동일하게)
+        dto.setMpw(passwordEncoder.encode(dto.getMpw()));
+
+        // role 기본값
+        if (dto.getRole() == null || dto.getRole().isBlank()) {
+            dto.setRole("USER");
+        }
+
+        return usersMapper.insertUserPersonalMinimal(dto) == 1;
+    }
 }

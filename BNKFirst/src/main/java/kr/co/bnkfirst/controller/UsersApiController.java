@@ -310,4 +310,53 @@ public class UsersApiController {
         private String tempPw;   // 임시 비밀번호 (ok=false 인 경우 null)
         private String message;  // 에러 메시지
     }
+
+    /*
+        날짜 : 2025.12.26
+        이름 : 이준우
+        내용 : 플러터 관련 회원가입 백엔드 추가
+     */
+
+    @PostMapping("/signup/personal")
+    public ResponseEntity<?> signupPersonal(@RequestBody SignupPersonalRequest req) {
+
+        if (req.getMid() == null || req.getMid().isBlank()
+                || req.getMpw() == null || req.getMpw().isBlank()
+                || req.getMname() == null || req.getMname().isBlank()
+                || req.getMphone() == null || req.getMphone().isBlank()) {
+            return ResponseEntity.badRequest()
+                    .body(new SimpleResult(false, "필수값(mid/mpw/mname/mphone)을 입력하세요."));
+        }
+
+        // 아이디 중복 체크
+        if (usersService.existsByMid(req.getMid())) {
+            return ResponseEntity.ok(new SimpleResult(false, "이미 사용 중인 아이디입니다."));
+        }
+
+        // 최소값만 세팅 (나머지는 서비스에서 기본값/NULL 처리)
+        UsersDTO dto = new UsersDTO();
+        dto.setMid(req.getMid());
+        dto.setMpw(req.getMpw());
+        dto.setMname(req.getMname());
+        dto.setMphone(req.getMphone());
+
+        // role 강제 세팅
+        dto.setRole("USER");
+
+        boolean ok = usersService.registerPersonalMinimal(dto);
+        if (!ok) {
+            return ResponseEntity.ok(new SimpleResult(false, "회원가입 실패"));
+        }
+
+        return ResponseEntity.ok(new SimpleResult(true, "회원가입 완료"));
+    }
+
+    // 내부 DTO
+    @Data
+    public static class SignupPersonalRequest {
+        private String mid;
+        private String mpw;
+        private String mname;
+        private String mphone;
+    }
 }

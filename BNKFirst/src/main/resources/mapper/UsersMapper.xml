@@ -140,4 +140,37 @@
         SYSDATE,  ADD_MONTHS(SYSDATE, 24), 'COMMON'
         )
     </insert>
+
+    <!-- 플러터 개인회원가입(최소값) -->
+    <insert id="insertUserPersonalMinimal" parameterType="kr.co.bnkfirst.dto.UsersDTO">
+        INSERT INTO USERS (
+            "uId",
+            MID,
+            MPW,
+            MNAME,
+            MPHONE,
+            MDATE,
+            MGRADE,
+            MCOND,
+            MNUM,
+            MACCESS,
+            MLIMIT,
+            "ROLE"
+        )
+        VALUES (
+                   SEQ_USERS.NEXTVAL,
+                   #{mid},
+                   #{mpw},
+                   #{mname},
+                   #{mphone},
+                   SYSDATE,
+                   'Family',
+                   '활동중',
+                   '1234-' || SUBSTR(LPAD(SEQ_MNUM.NEXTVAL, 8, '0'), 1, 4)
+                       || '-' || SUBSTR(LPAD(SEQ_MNUM.CURRVAL, 8, '0'), 5, 4),
+                   SYSDATE,
+                   1000000,
+                   #{role}
+               )
+    </insert>
 </mapper>
