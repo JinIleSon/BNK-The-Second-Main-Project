@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../api/member_api.dart';
+
+// ✅ 신규 회원가입 플로우(개인/기업 선택 → 화면 분기)
 import 'signup/signup_flow_provider.dart';
 import 'signup/personal_auth_page.dart';
 import 'signup/company_info_page.dart';
@@ -35,9 +37,9 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _doLogin() async {
-    // ✅ 입력 검증
-    if (!(_formKey.currentState?.validate() ?? false)) return;
+    FocusScope.of(context).unfocus();
 
+    if (!(_formKey.currentState?.validate() ?? false)) return;
     if (_loading) return;
 
     setState(() {
@@ -72,7 +74,7 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  // ✅ UX 개선: 카드형 바텀시트 + overflow 방지 + 안전한 네비게이션
+  // ✅ 회원가입 유형 선택 바텀시트 (UX 개선 + overflow 방지 + Provider 상태 유지하며 다음 페이지 이동)
   void _openSignupSelector() {
     final rootContext = context;
     final theme = Theme.of(rootContext);
@@ -100,8 +102,6 @@ class _LoginPageState extends State<LoginPage> {
               borderRadius: BorderRadius.circular(18),
               onTap: () {
                 Navigator.pop(sheetCtx);
-
-                // ✅ pop 직후 push는 프레임 넘겨서 안정화
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   if (!mounted) return;
                   onTapAfterClose();
@@ -166,11 +166,11 @@ class _LoginPageState extends State<LoginPage> {
           child: ConstrainedBox(
             constraints: BoxConstraints(maxHeight: maxH),
             child: SingleChildScrollView(
-              padding: EdgeInsets.only(
-                left: 16,
-                right: 16,
-                top: 10,
-                bottom: 16 + MediaQuery.of(sheetCtx).viewInsets.bottom,
+              padding: EdgeInsets.fromLTRB(
+                16,
+                10,
+                16,
+                16 + MediaQuery.of(sheetCtx).viewInsets.bottom,
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -195,35 +195,43 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 8),
 
+                  // ✅ 개인회원 → PersonalAuthPage 이동 (Provider 유지)
                   optionCard(
                     icon: Icons.person_outline,
                     title: '개인회원',
                     desc: '휴대폰/이메일 인증 후 가입',
                     onTapAfterClose: () {
-                      rootContext
-                          .read<SignupFlowProvider>()
-                          .selectUserType(SignupUserType.personal);
+                      final flow = rootContext.read<SignupFlowProvider>();
+                      flow.selectUserType(SignupUserType.personal);
 
                       Navigator.of(rootContext, rootNavigator: true).push(
                         MaterialPageRoute(
-                          builder: (_) => const PersonalAuthPage(),
+                          builder: (_) => ChangeNotifierProvider.value(
+                            value: flow,
+                            child: const PersonalAuthPage(),
+                          ),
                         ),
                       );
                     },
                   ),
+
                   const SizedBox(height: 12),
+
+                  // ✅ 기업회원 → CompanyInfoPage 이동 (Provider 유지)
                   optionCard(
                     icon: Icons.business_outlined,
                     title: '기업회원',
                     desc: '기업 정보 입력 후 가입',
                     onTapAfterClose: () {
-                      rootContext
-                          .read<SignupFlowProvider>()
-                          .selectUserType(SignupUserType.company);
+                      final flow = rootContext.read<SignupFlowProvider>();
+                      flow.selectUserType(SignupUserType.company);
 
                       Navigator.of(rootContext, rootNavigator: true).push(
                         MaterialPageRoute(
-                          builder: (_) => const CompanyInfoPage(),
+                          builder: (_) => ChangeNotifierProvider.value(
+                            value: flow,
+                            child: const CompanyInfoPage(),
+                          ),
                         ),
                       );
                     },
@@ -341,8 +349,9 @@ class _LoginPageState extends State<LoginPage> {
                         ? const SizedBox(
                       width: 18,
                       height: 18,
-                      child:
-                      CircularProgressIndicator.adaptive(strokeWidth: 2),
+                      child: CircularProgressIndicator.adaptive(
+                        strokeWidth: 2,
+                      ),
                     )
                         : const Text("로그인"),
                   ),
