@@ -2,27 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../api/member_api.dart';
-
-// ✅ 신규 회원가입 플로우(개인/기업 선택 → 화면 분기)
 import 'signup/signup_flow_provider.dart';
 import 'signup/personal_auth_page.dart';
 import 'signup/company_info_page.dart';
-
-/*
-  날짜 : 2025.12.22(월)
-  이름 : 이준우
-  내용 :
-   - login.main 프론트 생성(home_tab 우측 상단 누르면 이동)
-   - my_page case 3 login 기능 가져와서 page 분리
-
-  날짜 : 2025.12.24(수)
-  이름 : 조지영
-  내용 :
-   - signup 버튼 클릭 시 개인/기업 회원가입 선택 바텀시트 추가
-   - 회원가입 진입 동선 개선(개인/기업 타입 선택 → 가입 페이지 이동)
-   - 회원가입 유형 선택 UI(개인/기업) 및 라우팅 연결
-   - 회원가입 버튼을 유형 선택 모달로 변경(개인/기업 분기)
-*/
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -32,8 +14,13 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final _formKey = GlobalKey<FormState>();
+
   final _idCtrl = TextEditingController();
   final _pwCtrl = TextEditingController();
+
+  final _idFocus = FocusNode();
+  final _pwFocus = FocusNode();
 
   bool _loading = false;
   String? _errorMsg;
@@ -42,46 +29,64 @@ class _LoginPageState extends State<LoginPage> {
   void dispose() {
     _idCtrl.dispose();
     _pwCtrl.dispose();
+    _idFocus.dispose();
+    _pwFocus.dispose();
     super.dispose();
   }
 
   Future<void> _doLogin() async {
+    // ✅ 입력 검증
+    if (!(_formKey.currentState?.validate() ?? false)) return;
+
+    if (_loading) return;
+
     setState(() {
       _loading = true;
       _errorMsg = null;
     });
 
-    final result = await memberApi.login(
-      mid: _idCtrl.text.trim(),
-      mpw: _pwCtrl.text.trim(),
-    );
+    try {
+      final result = await memberApi.login(
+        mid: _idCtrl.text.trim(),
+        mpw: _pwCtrl.text.trim(),
+      );
 
-    if (!mounted) return;
+      if (!mounted) return;
 
-    setState(() => _loading = false);
+      if (result.ok) {
+        Navigator.pop(context, true);
+        return;
+      }
 
-    if (result.ok) {
-      Navigator.pop(context, true);
-    } else {
       setState(() {
         _errorMsg = result.message ?? '로그인에 실패했습니다.';
       });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _errorMsg = '네트워크 오류가 발생했습니다.';
+      });
+    } finally {
+      if (!mounted) return;
+      setState(() => _loading = false);
     }
   }
 
-  // ✅ UX 개선: 엄지로 누르기 편한 카드형 바텀시트 + 안전한 네비게이션(pop 후 push 프레임 분리)
+  // ✅ UX 개선: 카드형 바텀시트 + overflow 방지 + 안전한 네비게이션
   void _openSignupSelector() {
     final rootContext = context;
+    final theme = Theme.of(rootContext);
 
     showModalBottomSheet(
       context: rootContext,
-      useRootNavigator: true, // ✅ nested navigator 꼬임 방지
-      isScrollControlled: false,
+      useRootNavigator: true,
+      isScrollControlled: true, // ✅ 작은 화면/큰 글자에서도 안전
       showDragHandle: true,
-      backgroundColor: Theme.of(rootContext).colorScheme.surface,
+      backgroundColor: theme.colorScheme.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
+      clipBehavior: Clip.antiAlias,
       builder: (sheetCtx) {
         Widget optionCard({
           required IconData icon,
@@ -103,11 +108,12 @@ class _LoginPageState extends State<LoginPage> {
                 });
               },
               child: Container(
-                height: 72, // ✅ 엄지 타깃 크게
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                height: 72,
+                padding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(18),
-                  border: Border.all(color: Theme.of(rootContext).dividerColor),
+                  border: Border.all(color: theme.dividerColor),
                 ),
                 child: Row(
                   children: [
@@ -117,10 +123,7 @@ class _LoginPageState extends State<LoginPage> {
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(14),
-                        color: Theme.of(rootContext)
-                            .colorScheme
-                            .primary
-                            .withOpacity(0.08),
+                        color: theme.colorScheme.primary.withOpacity(0.08),
                       ),
                       child: Icon(icon),
                     ),
@@ -142,7 +145,7 @@ class _LoginPageState extends State<LoginPage> {
                             desc,
                             style: TextStyle(
                               fontSize: 13,
-                              color: Theme.of(rootContext).hintColor,
+                              color: theme.hintColor,
                             ),
                           ),
                         ],
@@ -156,66 +159,83 @@ class _LoginPageState extends State<LoginPage> {
           );
         }
 
+        final maxH = MediaQuery.of(sheetCtx).size.height * 0.75;
+
         return SafeArea(
           top: false,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 10, 16, 16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  children: [
-                    const Expanded(
-                      child: Text(
-                        '회원가입 유형 선택',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxHeight: maxH),
+            child: SingleChildScrollView(
+              padding: EdgeInsets.only(
+                left: 16,
+                right: 16,
+                top: 10,
+                bottom: 16 + MediaQuery.of(sheetCtx).viewInsets.bottom,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    children: [
+                      const Expanded(
+                        child: Text(
+                          '회원가입 유형 선택',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
                       ),
-                    ),
-                    IconButton(
-                      onPressed: () => Navigator.pop(sheetCtx),
-                      icon: const Icon(Icons.close),
-                      tooltip: '닫기',
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
+                      IconButton(
+                        onPressed: () => Navigator.pop(sheetCtx),
+                        icon: const Icon(Icons.close),
+                        tooltip: '닫기',
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
 
-                optionCard(
-                  icon: Icons.person_outline,
-                  title: '개인회원',
-                  desc: '휴대폰/이메일 인증 후 가입',
-                  onTapAfterClose: () {
-                    rootContext
-                        .read<SignupFlowProvider>()
-                        .selectUserType(SignupUserType.personal);
+                  optionCard(
+                    icon: Icons.person_outline,
+                    title: '개인회원',
+                    desc: '휴대폰/이메일 인증 후 가입',
+                    onTapAfterClose: () {
+                      rootContext
+                          .read<SignupFlowProvider>()
+                          .selectUserType(SignupUserType.personal);
 
-                    Navigator.of(rootContext, rootNavigator: true).push(
-                      MaterialPageRoute(builder: (_) => const PersonalAuthPage()),
-                    );
-                  },
-                ),
-                const SizedBox(height: 12),
-                optionCard(
-                  icon: Icons.business_outlined,
-                  title: '기업회원',
-                  desc: '기업 정보 입력 후 가입',
-                  onTapAfterClose: () {
-                    rootContext
-                        .read<SignupFlowProvider>()
-                        .selectUserType(SignupUserType.company);
+                      Navigator.of(rootContext, rootNavigator: true).push(
+                        MaterialPageRoute(
+                          builder: (_) => const PersonalAuthPage(),
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  optionCard(
+                    icon: Icons.business_outlined,
+                    title: '기업회원',
+                    desc: '기업 정보 입력 후 가입',
+                    onTapAfterClose: () {
+                      rootContext
+                          .read<SignupFlowProvider>()
+                          .selectUserType(SignupUserType.company);
 
-                    Navigator.of(rootContext, rootNavigator: true).push(
-                      MaterialPageRoute(builder: (_) => const CompanyInfoPage()),
-                    );
-                  },
-                ),
+                      Navigator.of(rootContext, rootNavigator: true).push(
+                        MaterialPageRoute(
+                          builder: (_) => const CompanyInfoPage(),
+                        ),
+                      );
+                    },
+                  ),
 
-                const SizedBox(height: 12),
-                Text(
-                  '아래로 스와이프하거나 바깥을 터치하면 닫힙니다.',
-                  style: TextStyle(fontSize: 12, color: Theme.of(rootContext).hintColor),
-                ),
-              ],
+                  const SizedBox(height: 12),
+                  Text(
+                    '아래로 스와이프하거나 바깥을 터치하면 닫힙니다.',
+                    style: TextStyle(fontSize: 12, color: theme.hintColor),
+                  ),
+                ],
+              ),
             ),
           ),
         );
@@ -226,7 +246,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final bottom = MediaQuery.of(context).viewInsets.bottom;
-    final showMascot = bottom == 0; // ✅ 키보드 올라오면 이미지 숨김
+    final showMascot = bottom == 0;
 
     return Scaffold(
       appBar: AppBar(
@@ -250,97 +270,116 @@ class _LoginPageState extends State<LoginPage> {
             top: 14,
             bottom: bottom + 16,
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // ✅ 부기 캐릭터(로그인 폼 상단)
-              if (showMascot) ...[
-                const SizedBox(height: 8),
-                Center(
-                  child: Image.asset(
-                    'assets/images/boogi.png',
-                    width: 300,
-                    height: 300,
-                    fit: BoxFit.contain,
-                  ),
-                ),
-                const SizedBox(height: 12),
-              ],
-
-              TextField(
-                controller: _idCtrl,
-                textInputAction: TextInputAction.next,
-                decoration: const InputDecoration(
-                  labelText: "아이디",
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 10),
-
-              TextField(
-                controller: _pwCtrl,
-                obscureText: true,
-                textInputAction: TextInputAction.done,
-                onSubmitted: (_) {
-                  if (!_loading) _doLogin();
-                },
-                decoration: const InputDecoration(
-                  labelText: "비밀번호",
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 12),
-
-              if (_errorMsg != null) ...[
-                Text(
-                  _errorMsg!,
-                  style: const TextStyle(color: Colors.redAccent),
-                ),
-                const SizedBox(height: 8),
-              ],
-
-              ElevatedButton(
-                onPressed: _loading ? null : _doLogin,
-                child: _loading
-                    ? const SizedBox(
-                  width: 18,
-                  height: 18,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
-                    : const Text("로그인"),
-              ),
-              const SizedBox(height: 8),
-
-              TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: const Text("홈으로"),
-              ),
-
-              const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+          child: AutofillGroup(
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  TextButton(
-                    onPressed: () {
-                      // TODO: 아이디 찾기 페이지로 이동
+                  if (showMascot) ...[
+                    const SizedBox(height: 8),
+                    Center(
+                      child: Image.asset(
+                        'assets/images/boogi.png',
+                        width: 300,
+                        height: 300,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                  ],
+
+                  TextFormField(
+                    controller: _idCtrl,
+                    focusNode: _idFocus,
+                    textInputAction: TextInputAction.next,
+                    autofillHints: const [AutofillHints.username],
+                    validator: (v) {
+                      final s = (v ?? '').trim();
+                      if (s.isEmpty) return '아이디를 입력하세요.';
+                      return null;
                     },
-                    child: const Text("아이디 찾기"),
+                    onFieldSubmitted: (_) =>
+                        FocusScope.of(context).requestFocus(_pwFocus),
+                    decoration: const InputDecoration(
+                      labelText: "아이디",
+                      border: OutlineInputBorder(),
+                    ),
                   ),
-                  const Text("|"),
-                  TextButton(
-                    onPressed: () {
-                      // TODO: 비밀번호 찾기 페이지로 이동
+                  const SizedBox(height: 10),
+
+                  TextFormField(
+                    controller: _pwCtrl,
+                    focusNode: _pwFocus,
+                    obscureText: true,
+                    textInputAction: TextInputAction.done,
+                    autofillHints: const [AutofillHints.password],
+                    validator: (v) {
+                      final s = (v ?? '').trim();
+                      if (s.isEmpty) return '비밀번호를 입력하세요.';
+                      return null;
                     },
-                    child: const Text("비밀번호 찾기"),
+                    onFieldSubmitted: (_) => _doLogin(),
+                    decoration: const InputDecoration(
+                      labelText: "비밀번호",
+                      border: OutlineInputBorder(),
+                    ),
                   ),
-                  const Text("|"),
+                  const SizedBox(height: 12),
+
+                  if (_errorMsg != null) ...[
+                    Text(
+                      _errorMsg!,
+                      style: const TextStyle(color: Colors.redAccent),
+                    ),
+                    const SizedBox(height: 8),
+                  ],
+
+                  ElevatedButton(
+                    onPressed: _loading ? null : _doLogin,
+                    child: _loading
+                        ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child:
+                      CircularProgressIndicator.adaptive(strokeWidth: 2),
+                    )
+                        : const Text("로그인"),
+                  ),
+                  const SizedBox(height: 8),
+
                   TextButton(
-                    onPressed: _openSignupSelector,
-                    child: const Text("회원가입"),
+                    onPressed: () => Navigator.pop(context, false),
+                    child: const Text("홈으로"),
+                  ),
+
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          // TODO: 아이디 찾기 페이지로 이동
+                        },
+                        child: const Text("아이디 찾기"),
+                      ),
+                      const Text("|"),
+                      TextButton(
+                        onPressed: () {
+                          // TODO: 비밀번호 찾기 페이지로 이동
+                        },
+                        child: const Text("비밀번호 찾기"),
+                      ),
+                      const Text("|"),
+                      TextButton(
+                        onPressed: _openSignupSelector,
+                        child: const Text("회원가입"),
+                      ),
+                    ],
                   ),
                 ],
               ),
-            ],
+            ),
           ),
         ),
       ),
