@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../settings/settings_page.dart';
 import 'package:bnkproject/game/game_entry.dart';
+import '../travel/travel_page.dart';
+
 
 class MenuPage extends StatefulWidget {
   const MenuPage({super.key});
@@ -89,7 +91,7 @@ class _MenuPageState extends State<MenuPage> {
             const Divider(height: 1, color: Colors.white12),
             const SizedBox(height: 14),
 
-            Text('토스증권 서비스', style: bodySmall),
+            Text('부기증권 서비스', style: bodySmall),
             const SizedBox(height: 10),
 
             _ServiceTile(
@@ -142,6 +144,20 @@ class _MenuPageState extends State<MenuPage> {
               onTap: () {
                 Navigator.of(context, rootNavigator: true).push(
                   MaterialPageRoute(builder: (_) => const GameEntryPage()),
+                );
+              },
+            ),
+
+            // ✅ 여행 → TravelPage로 이동 (추가)
+            _ServiceTile(
+              iconBg: const Color(0xFF2A2C33),
+              icon: Icons.travel_explore,
+              iconColor: Colors.tealAccent,
+              title: '여행',
+              subtitle: '부산 핫플 · 미션 · 스탬프',
+              onTap: () {
+                Navigator.of(context, rootNavigator: true).push(
+                  MaterialPageRoute(builder: (_) => const TravelPage()),
                 );
               },
             ),
