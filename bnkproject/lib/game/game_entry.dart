@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
 import 'dodger_game_screen.dart';
-import '3match_game_screen.dart';
+import 'match3_game_screen.dart';
 import 'card_game_screen.dart';
 
 class GameEntryPage extends StatelessWidget {
@@ -26,7 +26,7 @@ class GameEntryPage extends StatelessWidget {
           const _Header(),
           const SizedBox(height: 14),
 
-          // 1) 3매치 금융교육 (mp4 미리보기)
+          // 1) 3매치 금융교육 (gif / mp4 가능)
           _GameCard(
             cardColor: card,
             title: '3매치 금융교육',
@@ -34,7 +34,7 @@ class GameEntryPage extends StatelessWidget {
             assetPath: 'assets/game/match3_finance.gif',
             badgeText: 'PLAY',
             onPlay: () {
-              Navigator.of(context, rootNavigator: true).push(
+              Navigator.of(context).push(
                 MaterialPageRoute(builder: (_) => const Match3GameScreen()),
               );
             },
@@ -50,7 +50,7 @@ class GameEntryPage extends StatelessWidget {
             assetPath: 'assets/game/hotteok_dodge.jpg',
             badgeText: 'PLAY',
             onPlay: () {
-              Navigator.of(context, rootNavigator: true).push(
+              Navigator.of(context).push(
                 MaterialPageRoute(builder: (_) => const DodgerGameScreen()),
               );
             },
@@ -66,7 +66,7 @@ class GameEntryPage extends StatelessWidget {
             assetPath: 'assets/game/card_game.gif',
             badgeText: 'PLAY',
             onPlay: () {
-              Navigator.of(context, rootNavigator: true).push(
+              Navigator.of(context).push(
                 MaterialPageRoute(builder: (_) => const CardGameScreen()),
               );
             },
@@ -105,7 +105,7 @@ class _GameCard extends StatelessWidget {
   final Color cardColor;
   final String title;
   final String subtitle;
-  final String assetPath; // ✅ mp4 / jpg / png / gif 모두 허용
+  final String assetPath; // mp4 / jpg / png / gif
   final String? badgeText;
   final VoidCallback onPlay;
 
@@ -157,7 +157,6 @@ class _GameCard extends StatelessWidget {
                         child: _Badge(text: badgeText!),
                       ),
 
-                    // 하단 그라데이션 오버레이
                     Positioned(
                       left: 0,
                       right: 0,
@@ -199,7 +198,9 @@ class _GameCard extends StatelessWidget {
                     onPressed: onPlay,
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 14, vertical: 12),
+                        horizontal: 14,
+                        vertical: 12,
+                      ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -216,7 +217,7 @@ class _GameCard extends StatelessWidget {
   }
 }
 
-/// ✅ mp4면 VideoPlayer로 자동재생, 그 외는 Image.asset
+/// mp4면 VideoPlayer, 그 외는 Image.asset
 class _MediaPreview extends StatefulWidget {
   final String assetPath;
   const _MediaPreview({required this.assetPath});
@@ -267,7 +268,6 @@ class _MediaPreviewState extends State<_MediaPreview> {
         );
       }
 
-      // cover 느낌으로 꽉 채우기
       return FittedBox(
         fit: BoxFit.cover,
         child: SizedBox(
