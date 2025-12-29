@@ -37,12 +37,11 @@ class _DodgerGameScreenState extends State<DodgerGameScreen> {
   @override
   Widget build(BuildContext context) {
     final mq = MediaQuery.of(context);
-    const scaffoldBg = Color(0xFFF6F6FA); // 바깥 배경(전체 화면)
-    const gameFrameBg = Colors.white; // 빨간 점선 안(게임 영역) 배경
+    const scaffoldBg = Color(0xFFF6F6FA);
+    const gameFrameBg = Colors.white;
 
     final controlsH = 12 + 56 + 12 + mq.padding.bottom;
-    const titleH = 90.0;
-    final availH = mq.size.height - mq.padding.top - controlsH - titleH - 16;
+    final availH = mq.size.height - mq.padding.top - controlsH - 16;
 
     double w = min(mq.size.width - 24, 400);
     double h = w * 1.5;
@@ -56,38 +55,35 @@ class _DodgerGameScreenState extends State<DodgerGameScreen> {
       appBar: AppBar(
         backgroundColor: scaffoldBg,
         elevation: 0,
-        // ✅ 여기서 "타이틀 글자색"을 강제로 검정으로 박아버림
-        title: const Text(
-          '부기 씨앗호떡 피하기',
-          style: TextStyle(color: Colors.black),
-        ),
-        // ✅ 뒤로가기 아이콘도 검정
+        centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.black),
+
+        // ✅ 툴바 높이 증가
+        toolbarHeight: 72,
+
+        // ✅ 타이틀 이미지 크게
+        title: GestureDetector(
+          onTap: _openTitleLink,
+          child: SizedBox(
+            height: 52, // 여기서 더 키워도 됨(예: 56)
+            child: Image.asset(
+              'assets/images/hotteok-title.png',
+              fit: BoxFit.contain,
+              errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+            ),
+          ),
+        ),
       ),
+
       body: SafeArea(
         child: Stack(
           children: [
             Column(
               children: [
-                const SizedBox(height: 6),
-
-                // ✅ 타이틀 이미지: title.png로 고정 (assets/images/title.png)
-                SizedBox(
-                  width: w,
-                  height: titleH,
-                  child: GestureDetector(
-                    onTap: _openTitleLink,
-                    child: Image.asset(
-                      'assets/images/title.png',
-                      fit: BoxFit.contain,
-                      errorBuilder: (_, __, ___) => const SizedBox.shrink(),
-                    ),
-                  ),
-                ),
-
                 const SizedBox(height: 8),
+                // ✅ 기존 본문 타이틀(이미지) 제거. AppBar에 표시하므로 중복 제거
                 Transform.translate(
-                  offset: const Offset(0, -40),
+                  offset: const Offset(0, -8),
                   child: Center(
                     child: SizedBox(
                       width: w,
@@ -101,7 +97,6 @@ class _DodgerGameScreenState extends State<DodgerGameScreen> {
                           borderRadius: BorderRadius.circular(12),
                           child: DecoratedBox(
                             decoration: BoxDecoration(
-                              // ✅ 빨간 점선 “안쪽” Flutter 레이어 배경
                               color: gameFrameBg,
                               boxShadow: [
                                 BoxShadow(
@@ -172,35 +167,37 @@ class _DodgerGameScreenState extends State<DodgerGameScreen> {
 /// =========================
 
 enum GamePhase { ready, playing, gameOver }
-enum DropKind { hotteok, coin, dongbak }
+
+// ✅ poop = gameover obstacle, booster = speed boost, dongbak = shield
+enum DropKind { poop, booster, dongbak }
 
 class DodgerHudState {
   final int score;
   final int level;
-  final int hotteokAvoided;
-  final int coins;
+  final int poopAvoided;
+  final int boosters;
   final int dongbaks;
 
   const DodgerHudState({
     required this.score,
     required this.level,
-    required this.hotteokAvoided,
-    required this.coins,
+    required this.poopAvoided,
+    required this.boosters,
     required this.dongbaks,
   });
 
   DodgerHudState copyWith({
     int? score,
     int? level,
-    int? hotteokAvoided,
-    int? coins,
+    int? poopAvoided,
+    int? boosters,
     int? dongbaks,
   }) {
     return DodgerHudState(
       score: score ?? this.score,
       level: level ?? this.level,
-      hotteokAvoided: hotteokAvoided ?? this.hotteokAvoided,
-      coins: coins ?? this.coins,
+      poopAvoided: poopAvoided ?? this.poopAvoided,
+      boosters: boosters ?? this.boosters,
       dongbaks: dongbaks ?? this.dongbaks,
     );
   }
@@ -217,11 +214,14 @@ class DodgerGame extends FlameGame with HasCollisionDetection {
     const DodgerHudState(
       score: 0,
       level: 1,
-      hotteokAvoided: 0,
-      coins: 0,
+      poopAvoided: 0,
+      boosters: 0,
       dongbaks: 0,
     ),
   );
+
+  // ✅ 안내문 1회만: 한 번이라도 startGame 호출되면 true
+  bool hasStartedOnce = false;
 
   // input: -1(left), 0, 1(right)
   int direction = 0;
@@ -230,26 +230,30 @@ class DodgerGame extends FlameGame with HasCollisionDetection {
 
   int score = 0;
   int level = 1;
-  int hotteokAvoided = 0;
-  int coinsCollected = 0;
+  int poopAvoided = 0;
+  int boostersCollected = 0;
   int dongbakCollected = 0;
 
   double spawnInterval = 0.70;
-  double hotteokSpeed = 3.0;
-  double coinSpeed = 2.6;
+  double poopSpeed = 3.2;
+  double boosterSpeed = 2.6;
   double dongbakSpeed = 2.4;
 
   static const double shieldDuration = 4.0;
   double shieldLeft = 0.0;
   bool get isShield => shieldLeft > 0;
 
+  static const double boostDuration = 3.0;
+  double boostLeft = 0.0;
+  bool get isBoost => boostLeft > 0;
+
   double _spawnAcc = 0.0;
   double _levelAcc = 0.0;
 
   static const int maxDrops = 6;
 
-  static const double hotteokSize = 42;
-  static const double coinSize = 30;
+  static const double poopSize = 34;
+  static const double boosterSize = 42;
   static const double dongbakSize = 30;
 
   static const double playerSize = 80;
@@ -257,7 +261,6 @@ class DodgerGame extends FlameGame with HasCollisionDetection {
 
   int get _dropCount => children.whereType<DropComponent>().length;
 
-  // ✅ 게임 캔버스 배경(Flame 쪽)도 흰색 고정
   @override
   Color backgroundColor() => Colors.white;
 
@@ -265,19 +268,18 @@ class DodgerGame extends FlameGame with HasCollisionDetection {
   Future<void> onLoad() async {
     camera.viewport = FixedResolutionViewport(resolution: Vector2(400, 600));
 
-    // ✅ prefix 지정 후 파일명만 로드
     images.prefix = 'assets/images/';
 
     await images.loadAll([
       'player.png',
       'porkSoup.png',
-      'coin_icon.png',
+      'poop.png',
       'dongbak.png',
     ]);
 
     _sprites.player = Sprite(images.fromCache('player.png'));
-    _sprites.hotteok = Sprite(images.fromCache('porkSoup.png'));
-    _sprites.coin = Sprite(images.fromCache('coin_icon.png'));
+    _sprites.booster = Sprite(images.fromCache('porkSoup.png'));
+    _sprites.poop = Sprite(images.fromCache('poop.png'));
     _sprites.dongbak = Sprite(images.fromCache('dongbak.png'));
 
     _player = PlayerComponent(sprite: _sprites.player, facingRight: true);
@@ -290,28 +292,27 @@ class DodgerGame extends FlameGame with HasCollisionDetection {
     pauseEngine();
     phase.value = GamePhase.ready;
 
-    children
-        .whereType<DropComponent>()
-        .toList()
-        .forEach((c) => c.removeFromParent());
+    children.whereType<DropComponent>().toList().forEach((c) => c.removeFromParent());
 
     _player.size = Vector2.all(playerSize);
     _player.position = Vector2((size.x - playerSize) / 2, 520);
     _player.facingRight = true;
     _player.shieldActive = false;
+    _player.boostActive = false;
 
     score = 0;
     level = 1;
-    hotteokAvoided = 0;
-    coinsCollected = 0;
+    poopAvoided = 0;
+    boostersCollected = 0;
     dongbakCollected = 0;
 
     spawnInterval = 0.70;
-    hotteokSpeed = 3.0;
-    coinSpeed = 2.6;
+    poopSpeed = 3.2;
+    boosterSpeed = 2.6;
     dongbakSpeed = 2.4;
 
     shieldLeft = 0;
+    boostLeft = 0;
     _spawnAcc = 0;
     _levelAcc = 0;
 
@@ -319,27 +320,29 @@ class DodgerGame extends FlameGame with HasCollisionDetection {
   }
 
   void startGame() {
-    children
-        .whereType<DropComponent>()
-        .toList()
-        .forEach((c) => c.removeFromParent());
+    // ✅ 시작 버튼을 한 번이라도 눌렀으면 안내문은 다시 안 뜬다
+    hasStartedOnce = true;
+
+    children.whereType<DropComponent>().toList().forEach((c) => c.removeFromParent());
 
     _player.position = Vector2((size.x - playerSize) / 2, 520);
     _player.facingRight = true;
     _player.shieldActive = false;
+    _player.boostActive = false;
 
     score = 0;
     level = 1;
-    hotteokAvoided = 0;
-    coinsCollected = 0;
+    poopAvoided = 0;
+    boostersCollected = 0;
     dongbakCollected = 0;
 
     spawnInterval = 0.70;
-    hotteokSpeed = 3.0;
-    coinSpeed = 2.6;
+    poopSpeed = 3.2;
+    boosterSpeed = 2.6;
     dongbakSpeed = 2.4;
 
     shieldLeft = 0;
+    boostLeft = 0;
     _spawnAcc = 0;
     _levelAcc = 0;
 
@@ -353,9 +356,9 @@ class DodgerGame extends FlameGame with HasCollisionDetection {
   void _harder() {
     if (phase.value != GamePhase.playing) return;
     level++;
-    hotteokSpeed += 0.35;
-    coinSpeed += 0.25;
-    dongbakSpeed += 0.2;
+    poopSpeed += 0.40;
+    boosterSpeed += 0.25;
+    dongbakSpeed += 0.20;
     spawnInterval = max(0.22, spawnInterval - 0.06);
     _pushHud();
   }
@@ -370,16 +373,16 @@ class DodgerGame extends FlameGame with HasCollisionDetection {
     late double spdFrame;
     late Sprite sprite;
 
-    if (r < 0.60) {
-      kind = DropKind.hotteok;
-      sizePx = hotteokSize;
-      spdFrame = hotteokSpeed + _rng.nextDouble() * 1.5;
-      sprite = _sprites.hotteok;
-    } else if (r < 0.88) {
-      kind = DropKind.coin;
-      sizePx = coinSize;
-      spdFrame = coinSpeed + _rng.nextDouble() * 1.2;
-      sprite = _sprites.coin;
+    if (r < 0.70) {
+      kind = DropKind.poop;
+      sizePx = poopSize;
+      spdFrame = poopSpeed + _rng.nextDouble() * 1.6;
+      sprite = _sprites.poop;
+    } else if (r < 0.92) {
+      kind = DropKind.booster;
+      sizePx = boosterSize;
+      spdFrame = boosterSpeed + _rng.nextDouble() * 1.2;
+      sprite = _sprites.booster;
     } else {
       kind = DropKind.dongbak;
       sizePx = dongbakSize;
@@ -388,7 +391,7 @@ class DodgerGame extends FlameGame with HasCollisionDetection {
     }
 
     final x = _rng.nextDouble() * (size.x - sizePx);
-    final spd = spdFrame * 60.0; // px/frame -> px/sec (60fps 근사)
+    final spd = spdFrame * 60.0;
 
     final drop = DropComponent(kind: kind, sprite: sprite, speed: spd)
       ..size = Vector2.all(sizePx)
@@ -410,8 +413,16 @@ class DodgerGame extends FlameGame with HasCollisionDetection {
       _player.shieldActive = false;
     }
 
+    if (boostLeft > 0) {
+      boostLeft = max(0, boostLeft - dt);
+      _player.boostActive = true;
+    } else {
+      _player.boostActive = false;
+    }
+
     if (direction != 0) {
-      _player.position.x += direction * playerSpeedPxPerSec * dt;
+      final mult = isBoost ? 1.6 : 1.0;
+      _player.position.x += direction * playerSpeedPxPerSec * mult * dt;
       _player.position.x = _player.position.x.clamp(0, size.x - playerSize);
     }
 
@@ -431,8 +442,8 @@ class DodgerGame extends FlameGame with HasCollisionDetection {
   void onDropPassed(DropKind kind) {
     if (phase.value != GamePhase.playing) return;
 
-    if (kind == DropKind.hotteok) {
-      hotteokAvoided++;
+    if (kind == DropKind.poop) {
+      poopAvoided++;
       score += 1;
       _pushHud();
     }
@@ -441,15 +452,16 @@ class DodgerGame extends FlameGame with HasCollisionDetection {
   void onDropHit(DropKind kind) {
     if (phase.value != GamePhase.playing) return;
 
-    if (kind == DropKind.hotteok) {
+    if (kind == DropKind.poop) {
       if (isShield) return;
       gameOver();
       return;
     }
 
-    if (kind == DropKind.coin) {
-      coinsCollected++;
-      score += 10;
+    if (kind == DropKind.booster) {
+      boostersCollected++;
+      score += 15;
+      boostLeft = boostDuration;
       _pushHud();
       return;
     }
@@ -474,8 +486,8 @@ class DodgerGame extends FlameGame with HasCollisionDetection {
     hud.value = hud.value.copyWith(
       score: score,
       level: level,
-      hotteokAvoided: hotteokAvoided,
-      coins: coinsCollected,
+      poopAvoided: poopAvoided,
+      boosters: boostersCollected,
       dongbaks: dongbakCollected,
     );
   }
@@ -483,8 +495,8 @@ class DodgerGame extends FlameGame with HasCollisionDetection {
 
 class _Sprites {
   late Sprite player;
-  late Sprite hotteok;
-  late Sprite coin;
+  late Sprite poop;
+  late Sprite booster;
   late Sprite dongbak;
 }
 
@@ -497,6 +509,7 @@ class PlayerComponent extends PositionComponent with CollisionCallbacks {
   final Sprite sprite;
   bool facingRight;
   bool shieldActive = false;
+  bool boostActive = false;
 
   @override
   Future<void> onLoad() async {
@@ -505,6 +518,20 @@ class PlayerComponent extends PositionComponent with CollisionCallbacks {
 
   @override
   void render(Canvas canvas) {
+    if (boostActive) {
+      final cx = size.x / 2;
+      final cy = size.y / 2;
+      final r = max(size.x, size.y) * 0.65;
+      final fill = Paint()..color = const Color(0xFFFFD600).withOpacity(0.22);
+      final stroke = Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 3
+        ..color = const Color(0xFFFFB300).withOpacity(0.85);
+
+      canvas.drawCircle(Offset(cx, cy), r, fill);
+      canvas.drawCircle(Offset(cx, cy), r, stroke);
+    }
+
     if (shieldActive) {
       final cx = size.x / 2;
       final cy = size.y / 2;
@@ -610,8 +637,8 @@ class _HudOverlay extends StatelessWidget {
                     Text('Score: ${s.score}'),
                     Text('Level: ${s.level}'),
                     const SizedBox(height: 4),
-                    _hudIconRow('assets/images/porkSoup.png', '${s.hotteokAvoided}'),
-                    _hudIconRow('assets/images/coin_icon.png', '${s.coins}'),
+                    _hudIconRow('assets/images/poop.png', '${s.poopAvoided}'),
+                    _hudIconRow('assets/images/porkSoup.png', '${s.boosters}'),
                     _hudIconRow('assets/images/dongbak.png', '${s.dongbaks}'),
                   ],
                 ),
@@ -647,6 +674,9 @@ class _MenuOverlay extends StatelessWidget {
         builder: (_, ph, __) {
           final isOver = ph == GamePhase.gameOver;
 
+          // ✅ "왼쪽/오른쪽..." 안내는 최초 1회만
+          final showHowTo = (ph == GamePhase.ready) && !game.hasStartedOnce;
+
           return Container(
             color: Colors.black.withOpacity(0.35),
             padding: const EdgeInsets.all(16),
@@ -672,11 +702,20 @@ class _MenuOverlay extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(height: 10),
-                            Text(
-                              isOver ? '다시 도전!' : '왼쪽/오른쪽 버튼으로 이동하세요.',
-                              style: const TextStyle(color: Color(0xFF333333)),
-                              textAlign: TextAlign.center,
-                            ),
+
+                            if (isOver)
+                              const Text(
+                                '다시 도전!',
+                                style: TextStyle(color: Color(0xFF333333)),
+                                textAlign: TextAlign.center,
+                              )
+                            else if (showHowTo)
+                              const Text(
+                                '왼쪽/오른쪽 버튼으로 이동하세요.',
+                                style: TextStyle(color: Color(0xFF333333)),
+                                textAlign: TextAlign.center,
+                              ),
+
                             if (isOver) ...[
                               const SizedBox(height: 12),
                               _statsLine(s),
@@ -736,15 +775,15 @@ class _MenuOverlay extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset('assets/images/porkSoup.png', width: 20, height: 20),
+              Image.asset('assets/images/poop.png', width: 20, height: 20),
               const SizedBox(width: 6),
-              Text('${s.hotteokAvoided}'),
+              Text('${s.poopAvoided}'),
               const SizedBox(width: 12),
               const Text('|'),
               const SizedBox(width: 12),
-              Image.asset('assets/images/coin_icon.png', width: 20, height: 20),
+              Image.asset('assets/images/porkSoup.png', width: 20, height: 20),
               const SizedBox(width: 6),
-              Text('${s.coins}'),
+              Text('${s.boosters}'),
               const SizedBox(width: 12),
               const Text('|'),
               const SizedBox(width: 12),
@@ -838,7 +877,6 @@ class _HoldButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 버튼 색상
     const baseBg = Color(0xFFEEF2FF);
     const activeBg = Color(0xFFE2E8FF);
     const border = Color(0xFFD6DEFF);
@@ -864,7 +902,7 @@ class _HoldButton extends StatelessWidget {
               style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
-                color: Colors.black, // ✅ 글자색 검정
+                color: Colors.black,
               ),
             ),
           ),
