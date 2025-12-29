@@ -1,6 +1,9 @@
+// lib/pages/travel_page.dart
 import 'dart:ui';
+
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 
 class TravelPage extends StatefulWidget {
   const TravelPage({super.key});
@@ -22,40 +25,33 @@ class _TravelPageState extends State<TravelPage> {
 
   int _tabIndex = 0; // 0: mission, 1: reward, 2: map, 3: rank, 4: boogi
 
-  GoogleMapController? _mapController;
-  bool _mapCreated = false;
+  final MapController _mapController = MapController();
+  bool _mapReady = false;
 
-  late final Set<Marker> _markers = {
-    const Marker(
-      markerId: MarkerId('haeundae'),
+  static const _spots = <_Spot>[
+    _Spot(
+      id: 'haeundae',
       position: LatLng(35.1587, 129.1604),
-      infoWindow: InfoWindow(title: '해운대 해수욕장', snippet: '신동백전 결제 미션 가능'),
+      title: '해운대 해수욕장',
+      snippet: '신동백전 결제 미션 가능',
     ),
-    const Marker(
-      markerId: MarkerId('gwanganri'),
+    _Spot(
+      id: 'gwanganri',
       position: LatLng(35.1532, 129.1187),
-      infoWindow: InfoWindow(title: '광안리 해변', snippet: '신동백전 결제 미션 가능'),
+      title: '광안리 해변',
+      snippet: '신동백전 결제 미션 가능',
     ),
-    const Marker(
-      markerId: MarkerId('nampo'),
+    _Spot(
+      id: 'nampo',
       position: LatLng(35.0980, 129.0306),
-      infoWindow: InfoWindow(title: '남포동 BIFF거리', snippet: '신동백전 결제 미션 가능'),
+      title: '남포동 BIFF거리',
+      snippet: '신동백전 결제 미션 가능',
     ),
-  };
-
-  static const _mapStyle = r'''
-[
-  { "featureType": "all", "elementType": "geometry", "stylers": [{ "color": "#1b1f2a" }] },
-  { "featureType": "all", "elementType": "labels.text.fill", "stylers": [{ "color": "#e5e7eb" }] },
-  { "featureType": "poi.business", "stylers": [{ "visibility": "off" }] },
-  { "featureType": "road", "elementType": "geometry", "stylers": [{ "color": "#222838" }] },
-  { "featureType": "water", "elementType": "geometry", "stylers": [{ "color": "#0f2136" }] }
-]
-''';
+  ];
 
   @override
   void dispose() {
-    _mapController?.dispose();
+    _mapController.dispose();
     _scrollCtrl.dispose();
     super.dispose();
   }
@@ -73,12 +69,37 @@ class _TravelPageState extends State<TravelPage> {
     );
   }
 
-  Future<void> _moveToBusanCenter() async {
-    await _mapController?.animateCamera(
-      CameraUpdate.newCameraPosition(
-        const CameraPosition(target: _busanCenter, zoom: 12),
-      ),
-    );
+  void _moveToBusanCenter() {
+    if (!_mapReady) return;
+    _mapController.move(_busanCenter, 12);
+  }
+
+  List<Marker> _buildMarkers() {
+    return _spots.map((s) {
+      return Marker(
+        point: s.position,
+        width: 44,
+        height: 44,
+        child: GestureDetector(
+          onTap: () => _showSnack('${s.title} · ${s.snippet}'),
+          child: Container(
+            decoration: BoxDecoration(
+              color: _boogiMint.withOpacity(0.20),
+              shape: BoxShape.circle,
+              border: Border.all(color: _boogiMint.withOpacity(0.55), width: 2),
+              boxShadow: [
+                BoxShadow(
+                  blurRadius: 14,
+                  spreadRadius: 2,
+                  color: Colors.black.withOpacity(0.25),
+                ),
+              ],
+            ),
+            child: const Icon(Icons.place, color: Colors.white, size: 22),
+          ),
+        ),
+      );
+    }).toList();
   }
 
   @override
@@ -107,7 +128,6 @@ class _TravelPageState extends State<TravelPage> {
               toolbarHeight: 76,
               titleSpacing: 0,
 
-              // ✅ 뒤로가기 버튼
               automaticallyImplyLeading: true,
               leading: IconButton(
                 icon: const Icon(Icons.arrow_back, color: Colors.white),
@@ -128,7 +148,6 @@ class _TravelPageState extends State<TravelPage> {
                 ),
               ),
 
-              // ✅ leading 생겼으니 right padding만 유지
               title: Padding(
                 padding: const EdgeInsets.only(right: 16),
                 child: Row(
@@ -193,7 +212,6 @@ class _TravelPageState extends State<TravelPage> {
               sliver: SliverList(
                 delegate: SliverChildListDelegate(
                   [
-                    // ✅ Hero
                     _GlassCard(
                       radius: 24,
                       padding: const EdgeInsets.all(20),
@@ -265,7 +283,6 @@ class _TravelPageState extends State<TravelPage> {
 
                     const SizedBox(height: 16),
 
-                    // ✅ Top Quick Cards (Home Quick)
                     LayoutBuilder(
                       builder: (context, constraints) {
                         final cols = constraints.maxWidth >= 900 ? 3 : 1;
@@ -311,7 +328,6 @@ class _TravelPageState extends State<TravelPage> {
 
                     const SizedBox(height: 16),
 
-                    // ✅ Tabs (5)
                     _GlassCard(
                       radius: 18,
                       padding: const EdgeInsets.all(6),
@@ -358,7 +374,6 @@ class _TravelPageState extends State<TravelPage> {
 
                     const SizedBox(height: 12),
 
-                    // ✅ Tab Content
                     if (_tabIndex == 0) _buildMissionTab(),
                     if (_tabIndex == 1) _buildRewardTab(),
                     if (_tabIndex == 2) _buildMapTab(),
@@ -538,25 +553,25 @@ class _TravelPageState extends State<TravelPage> {
               height: 260,
               child: Stack(
                 children: [
-                  GoogleMap(
-                    initialCameraPosition: const CameraPosition(
-                      target: _busanCenter,
-                      zoom: 12,
+                  FlutterMap(
+                    mapController: _mapController,
+                    options: MapOptions(
+                      initialCenter: _busanCenter,
+                      initialZoom: 12.0,
+                      onMapReady: () {
+                        if (!mounted) return;
+                        setState(() => _mapReady = true);
+                      },
                     ),
-                    onMapCreated: (c) async {
-                      _mapController = c;
-                      await c.setMapStyle(_mapStyle);
-                      if (mounted) setState(() => _mapCreated = true);
-                    },
-                    markers: _markers,
-                    mapType: MapType.normal,
-                    myLocationButtonEnabled: false,
-                    zoomControlsEnabled: false,
-                    compassEnabled: false,
-                    rotateGesturesEnabled: true,
-                    tiltGesturesEnabled: false,
+                    children: [
+                      TileLayer(
+                        urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                        userAgentPackageName: 'kr.co.bnk.bnkproject',
+                      ),
+                      MarkerLayer(markers: _buildMarkers()),
+                    ],
                   ),
-                  if (!_mapCreated)
+                  if (!_mapReady)
                     Positioned.fill(
                       child: Container(
                         color: Colors.black.withOpacity(0.25),
@@ -577,7 +592,7 @@ class _TravelPageState extends State<TravelPage> {
                               ),
                               const SizedBox(height: 6),
                               Text(
-                                '안 뜨면 API KEY/Maps SDK/Google Play 에뮬레이터 확인',
+                                '안 뜨면 인터넷/타일 URL/에뮬레이터 네트워크 확인',
                                 style: TextStyle(color: Colors.white.withOpacity(0.70), fontSize: 12),
                               ),
                             ],
@@ -868,6 +883,20 @@ class _TravelPageState extends State<TravelPage> {
   }
 }
 
+class _Spot {
+  final String id;
+  final LatLng position;
+  final String title;
+  final String snippet;
+
+  const _Spot({
+    required this.id,
+    required this.position,
+    required this.title,
+    required this.snippet,
+  });
+}
+
 class _GlassCard extends StatelessWidget {
   final Widget child;
   final EdgeInsets padding;
@@ -1088,7 +1117,11 @@ class _MissionProgressCard extends StatelessWidget {
                   ),
                   child: Text(
                     actionText,
-                    style: TextStyle(color: Color.lerp(Colors.white, accent, 0.35), fontSize: 12, fontWeight: FontWeight.w700),
+                    style: TextStyle(
+                      color: Color.lerp(Colors.white, accent, 0.35),
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
               ),
@@ -1306,9 +1339,9 @@ class _OutlinedMintButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(10),
           border: Border.all(color: _mint.withOpacity(0.35)),
         ),
-        child: Text(
-          label,
-          style: const TextStyle(
+        child: const Text(
+          '가까운 가맹점',
+          style: TextStyle(
             color: Color(0xFFBFF8EE),
             fontSize: 12,
             fontWeight: FontWeight.w600,
@@ -1432,8 +1465,6 @@ class _LevelXpBlock extends StatelessWidget {
     required this.progress,
   });
 
-  static const _boogiGold = Color(0xFFFFC93C);
-
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -1457,7 +1488,7 @@ class _LevelXpBlock extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                const _XpBar(progress: 0.62),
+                _XpBar(progress: progress),
                 const SizedBox(height: 4),
                 Text(xpText, style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 10)),
               ],
