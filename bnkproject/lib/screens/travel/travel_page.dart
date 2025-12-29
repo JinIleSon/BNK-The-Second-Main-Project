@@ -174,7 +174,7 @@ class _TravelPageState extends State<TravelPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: const [
                           Text(
-                            '부기 성장 챌린지',
+                            '여행 ~부기 성장 챌린지~',
                             style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.w800,
@@ -184,7 +184,7 @@ class _TravelPageState extends State<TravelPage> {
                           ),
                           SizedBox(height: 2),
                           Text(
-                            'BNK 앱 내 게이미피케이션 · 신동백전 연동',
+                            'BNK 앱 내 관광 미션 · 신동백전 결정 연동',
                             style: TextStyle(
                               color: Color(0xFF94A3B8),
                               fontSize: 11,
@@ -250,7 +250,7 @@ class _TravelPageState extends State<TravelPage> {
                               const SizedBox(height: 10),
                               const Text(
                                 '부산관광공사 인증 명소를 방문하고, 신동백전으로 결제하면 XP가 쌓입니다.\n'
-                                    '미션을 수행하며 보상을 받으세요.',
+                                    '미션을 수행하며 스테이블코인으로 보상을 받으세요.',
                                 style: TextStyle(
                                   color: Color(0xFFC7D2FE),
                                   fontSize: 13,
