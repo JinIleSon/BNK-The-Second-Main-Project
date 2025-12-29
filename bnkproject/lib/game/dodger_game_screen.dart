@@ -109,13 +109,12 @@ class _DodgerGameScreenState extends State<DodgerGameScreen> {
                             child: GameWidget(
                               game: _game,
                               overlayBuilderMap: {
-                                'Hud': (_, DodgerGame game) =>
-                                    _HudOverlay(game: game),
-                                'Menu': (_, DodgerGame game) =>
-                                    _MenuOverlay(game: game),
+                                'Hud': (_, DodgerGame game) => _HudOverlay(game: game),
+                                'Menu': (_, DodgerGame game) => _MenuOverlay(game: game),
                               },
-                              initialActiveOverlays: const ['Hud', 'Menu'],
+                              initialActiveOverlays: const ['Hud'], // ✅ 여기서 'Menu' 제거
                             ),
+
                           ),
                         ),
                       ),
@@ -134,6 +133,7 @@ class _DodgerGameScreenState extends State<DodgerGameScreen> {
                 leftPressed: _leftPressed,
                 rightPressed: _rightPressed,
                 onLeftDown: () {
+                  if (_game.phase.value != GamePhase.playing) _game.startGame(); // ✅ 추가
                   setState(() => _leftPressed = true);
                   _rightPressed = false;
                   _game.setDirection(-1);
@@ -144,6 +144,7 @@ class _DodgerGameScreenState extends State<DodgerGameScreen> {
                   if (_game.direction == -1) _game.setDirection(0);
                 },
                 onRightDown: () {
+                  if (_game.phase.value != GamePhase.playing) _game.startGame(); // ✅ 추가
                   setState(() => _rightPressed = true);
                   _leftPressed = false;
                   _game.setDirection(1);
