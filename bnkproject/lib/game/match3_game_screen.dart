@@ -1,9 +1,5 @@
 import 'dart:math';
-import 'dart:typed_data';
-import 'dart:ui' as ui;
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 class Match3GameScreen extends StatefulWidget {
   const Match3GameScreen({super.key});
@@ -13,88 +9,66 @@ class Match3GameScreen extends StatefulWidget {
 }
 
 class _Match3GameScreenState extends State<Match3GameScreen> {
-  static const int rows = 8;
-  static const int cols = 8;
-  static const int types = 5;
+  // 7행 5열
+  final int rows = 7;
+  final int cols = 5;
 
   final Random _rng = Random();
 
-  // late 터짐 방지: 기본 그리드로 초기화해둠 (initState에서 바로 랜덤 보드로 교체)
-  List<List<int?>> grid =
-  List.generate(rows, (_) => List<int?>.filled(cols, 0));
+  // 삭제(null) 처리를 위해 int? 사용
+  late List<List<int?>> tileGrid;
 
-  List<ui.Image?> images = List<ui.Image?>.filled(types, null);
-  bool imagesReady = false;
-  String statusText = '로딩중…';
+  // 타일 종류(에셋 파일명)
+  final List<String> tileAssets = [
+    'block1.png',
+    'block2.png',
+    'block3.png',
+    'block4.png',
+    'block5.png',
+    'block6.png', // 있으면 사용. 없으면 제거하고 5종으로 맞춰라.
+  ];
 
-  Point<int>? selected; // (c, r)
+  // 선택 상태
+  Point<int>? selected; // (x=c, y=r)
   bool busy = false;
+
   int score = 0;
 
   @override
   void initState() {
     super.initState();
-
-    // 1) 보드는 먼저 만들어서 첫 build에서 크래시 방지
     _restartGame();
-
-    // 2) 이미지는 비동기로 로드 (로드 완료되면 setState)
-    _loadImages().then((_) {
-      if (mounted) setState(() {});
-    });
-  }
-
-  Future<void> _loadImages() async {
-    bool anyFail = false;
-
-    for (int i = 0; i < types; i++) {
-      final path = 'assets/image/block${i + 1}.png';
-      try {
-        final ByteData data = await rootBundle.load(path);
-        final Uint8List bytes = data.buffer.asUint8List();
-        final ui.Codec codec = await ui.instantiateImageCodec(bytes);
-        final ui.FrameInfo frame = await codec.getNextFrame();
-        images[i] = frame.image;
-      } catch (_) {
-        anyFail = true;
-        images[i] = null;
-      }
-    }
-
-    imagesReady = true;
-    statusText = anyFail ? '일부 이미지 실패(색 블럭 대체)' : '준비완료';
   }
 
   void _restartGame() {
     score = 0;
     selected = null;
     _initGridNoMatches();
+    setState(() {});
   }
 
-  int _randomBlock() => _rng.nextInt(types);
-
-  bool _inBounds(int r, int c) => r >= 0 && r < rows && c >= 0 && c < cols;
+  int _randomType() => _rng.nextInt(tileAssets.length);
 
   void _initGridNoMatches() {
-    // 매치 없는 상태로 스타트
+    // 시작 시 매치 없는 보드
     while (true) {
-      grid = List.generate(
+      tileGrid = List.generate(
         rows,
-            (_) => List<int?>.generate(cols, (_) => _randomBlock()),
+            (_) => List<int?>.generate(cols, (_) => _randomType()),
       );
       if (_findMatches().isEmpty) break;
     }
   }
 
   List<Point<int>> _findMatches() {
-    final Set<String> marked = <String>{};
+    final marked = <String>{};
 
     // 가로
     for (int r = 0; r < rows; r++) {
       int run = 1;
       for (int c = 1; c <= cols; c++) {
-        final curr = (c < cols) ? grid[r][c] : null;
-        final prev = grid[r][c - 1];
+        final curr = (c < cols) ? tileGrid[r][c] : null;
+        final prev = tileGrid[r][c - 1];
         if (c < cols && curr != null && prev != null && curr == prev) {
           run++;
         } else {
@@ -112,8 +86,8 @@ class _Match3GameScreenState extends State<Match3GameScreen> {
     for (int c = 0; c < cols; c++) {
       int run = 1;
       for (int r = 1; r <= rows; r++) {
-        final curr = (r < rows) ? grid[r][c] : null;
-        final prev = grid[r - 1][c];
+        final curr = (r < rows) ? tileGrid[r][c] : null;
+        final prev = tileGrid[r - 1][c];
         if (r < rows && curr != null && prev != null && curr == prev) {
           run++;
         } else {
@@ -131,23 +105,23 @@ class _Match3GameScreenState extends State<Match3GameScreen> {
       final parts = s.split(',');
       final r = int.parse(parts[0]);
       final c = int.parse(parts[1]);
-      return Point<int>(c, r); // (c,r)
+      return Point<int>(c, r);
     }).toList();
   }
 
   void _swap(Point<int> a, Point<int> b) {
-    final t = grid[a.y][a.x];
-    grid[a.y][a.x] = grid[b.y][b.x];
-    grid[b.y][b.x] = t;
+    final t = tileGrid[a.y][a.x];
+    tileGrid[a.y][a.x] = tileGrid[b.y][b.x];
+    tileGrid[b.y][b.x] = t;
   }
 
   int _removeMatchesOnce() {
     final matches = _findMatches();
     if (matches.isEmpty) return 0;
 
-    // 제거(null)
+    // 제거
     for (final p in matches) {
-      grid[p.y][p.x] = null;
+      tileGrid[p.y][p.x] = null;
     }
 
     // 낙하 + 리필
@@ -155,15 +129,15 @@ class _Match3GameScreenState extends State<Match3GameScreen> {
       int write = rows - 1;
 
       for (int r = rows - 1; r >= 0; r--) {
-        final v = grid[r][c];
+        final v = tileGrid[r][c];
         if (v != null) {
-          grid[write][c] = v;
+          tileGrid[write][c] = v;
           write--;
         }
       }
 
       for (int r = write; r >= 0; r--) {
-        grid[r][c] = _randomBlock();
+        tileGrid[r][c] = _randomType();
       }
     }
 
@@ -181,11 +155,8 @@ class _Match3GameScreenState extends State<Match3GameScreen> {
     }
   }
 
-  Future<void> _gameOverDialog() async {
-    if (!mounted) return;
-
-    await Future.delayed(const Duration(milliseconds: 50));
-    if (!mounted) return;
+  Future<void> _gameOver() async {
+    busy = true;
 
     await showDialog<void>(
       context: context,
@@ -197,61 +168,55 @@ class _Match3GameScreenState extends State<Match3GameScreen> {
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: const Text('확인'),
-          ),
+          )
         ],
       ),
     );
 
-    _restartGame();
     busy = false;
-    if (mounted) setState(() {});
+    _restartGame();
   }
 
-  Future<void> _onTapBoard(Offset localPos, double boardSize) async {
+  Future<void> _onTapCell(int r, int c) async {
     if (busy) return;
-
-    final double cellSize = boardSize / cols;
-    final int c = (localPos.dx / cellSize).floor();
-    final int r = (localPos.dy / cellSize).floor();
-    if (!_inBounds(r, c)) return;
 
     final cell = Point<int>(c, r);
 
-    // 1) 선택 없음 -> 선택
     if (selected == null) {
       setState(() => selected = cell);
       return;
     }
 
-    // 2) 같은 칸 다시 누르면 선택 해제
+    // 같은 칸 -> 선택 해제
     if (selected!.x == cell.x && selected!.y == cell.y) {
       setState(() => selected = null);
       return;
     }
 
-    // 3) 인접 아니면 선택 이동
+    // 인접 아니면 선택 이동
     final dist = (selected!.x - cell.x).abs() + (selected!.y - cell.y).abs();
     if (dist != 1) {
       setState(() => selected = cell);
       return;
     }
 
-    // 4) 인접이면 스왑 시도
+    // 인접이면 스왑
     busy = true;
     _swap(selected!, cell);
-    setState(() {}); // 즉시 반영
+    setState(() {});
 
+    // 스왑 후 매치 없으면 -> 되돌리고 즉시 게임오버
     if (_findMatches().isEmpty) {
-      // 실패 스왑: 되돌리고 1실패=게임오버
       await Future.delayed(const Duration(milliseconds: 120));
       _swap(selected!, cell);
       selected = null;
       if (mounted) setState(() {});
-      await _gameOverDialog();
+      busy = false;
+      await _gameOver();
       return;
     }
 
-    // 성공 스왑: 연쇄 처리
+    // 매치 있으면 연쇄 처리
     await _resolveChains();
     selected = null;
     busy = false;
@@ -260,147 +225,177 @@ class _Match3GameScreenState extends State<Match3GameScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final bg = const Color(0xFF222222);
-
     return Scaffold(
-      backgroundColor: bg,
-      body: SafeArea(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final double boardSize =
-            min(constraints.maxWidth, constraints.maxHeight);
-
-            return Stack(
-              children: [
-                // HUD
-                Positioned(
-                  top: 12,
-                  left: 12,
-                  child: DefaultTextStyle(
-                    style: const TextStyle(fontSize: 14, height: 1.4),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Text('상태: '),
-                        Text(
-                          statusText,
-                          style: const TextStyle(color: Colors.white),
-                        ),
-                        const Text('  |  점수: '),
-                        Text(
-                          '$score',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                // Board
-                Center(
-                  child: GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTapDown: (d) => _onTapBoard(d.localPosition, boardSize),
-                    child: SizedBox(
-                      width: boardSize,
-                      height: boardSize,
-                      child: CustomPaint(
-                        painter: _GameBoardPainter(
-                          grid: grid,
-                          images: images,
-                          imagesReady: imagesReady,
-                          selected: selected,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            );
-          },
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xFF2E004E), Color(0xFF8E24AA)],
+          ),
+        ),
+        child: SafeArea(
+          child: Column(
+            children: [
+              _buildTopBar(),
+              _buildGameTitle(),
+              Expanded(child: _buildPlayArea()),
+              _buildBottomControls(),
+            ],
+          ),
         ),
       ),
     );
   }
-}
 
-class _GameBoardPainter extends CustomPainter {
-  final List<List<int?>> grid;
-  final List<ui.Image?> images;
-  final bool imagesReady;
-  final Point<int>? selected;
-
-  _GameBoardPainter({
-    required this.grid,
-    required this.images,
-    required this.imagesReady,
-    required this.selected,
-  });
-
-  static const List<Color> fallbackColors = [
-    Color(0xFF6666CC),
-    Color(0xFFCC6666),
-    Color(0xFF66CC66),
-    Color(0xFFCCCC66),
-    Color(0xFF66CCCC),
-  ];
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final int rCount = grid.length;
-    final int cCount = grid[0].length;
-    final double cell = size.width / cCount;
-
-    // 배경
-    canvas.drawRect(
-      Offset.zero & size,
-      Paint()..color = const Color(0xFF111111),
+  // 상단 바 (하트/코인 + 점수)
+  Widget _buildTopBar() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      child: Row(
+        children: [
+          _textBadge('SCORE', '$score'),
+          const Spacer(),
+          _statusBadge('assets/images/heart_icon.png', '5', Colors.pinkAccent),
+          const SizedBox(width: 10),
+          _statusBadge('assets/images/coin_icon.png', '100', Colors.orangeAccent),
+        ],
+      ),
     );
-
-    // 블럭
-    for (int r = 0; r < rCount; r++) {
-      for (int c = 0; c < cCount; c++) {
-        final t = grid[r][c];
-        if (t == null) continue;
-
-        final Rect dst = Rect.fromLTWH(c * cell, r * cell, cell, cell);
-
-        final img =
-        (imagesReady && t >= 0 && t < images.length) ? images[t] : null;
-
-        if (img != null) {
-          final Rect src =
-          Rect.fromLTWH(0, 0, img.width.toDouble(), img.height.toDouble());
-          canvas.drawImageRect(
-            img,
-            src,
-            dst,
-            Paint()..filterQuality = FilterQuality.none,
-          );
-        } else {
-          canvas.drawRect(dst, Paint()..color = fallbackColors[t % 5]);
-          canvas.drawRect(dst, Paint()..color = const Color(0x26000000));
-        }
-      }
-    }
-
-    // 선택 테두리
-    if (selected != null) {
-      final Rect sel =
-      Rect.fromLTWH(selected!.x * cell, selected!.y * cell, cell, cell);
-      canvas.drawRect(
-        sel,
-        Paint()
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 4
-          ..color = Colors.yellow,
-      );
-    }
   }
 
-  @override
-  bool shouldRepaint(covariant _GameBoardPainter oldDelegate) => true;
+  Widget _textBadge(String label, String value) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: Colors.black.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(25),
+        border: Border.all(color: Colors.white70, width: 2),
+      ),
+      child: Row(
+        children: [
+          Text(label, style: const TextStyle(color: Colors.white70, fontWeight: FontWeight.w800)),
+          const SizedBox(width: 8),
+          Text(value, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900)),
+        ],
+      ),
+    );
+  }
+
+  Widget _statusBadge(String assetPath, String value, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: Colors.black.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(25),
+        border: Border.all(color: Colors.white70, width: 2),
+      ),
+      child: Row(
+        children: [
+          Image.asset(
+            assetPath,
+            width: 20,
+            height: 20,
+            errorBuilder: (c, e, s) => Icon(Icons.circle, color: color, size: 20),
+          ),
+          const SizedBox(width: 8),
+          Text(value, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        ],
+      ),
+    );
+  }
+
+  // 타이틀
+  Widget _buildGameTitle() {
+    return const Column(
+      children: [
+        Text(
+          "BNK",
+          style: TextStyle(fontSize: 36, color: Colors.white, fontWeight: FontWeight.w900, letterSpacing: 2),
+        ),
+        Text(
+          "MATCH",
+          style: TextStyle(fontSize: 48, color: Colors.yellowAccent, fontWeight: FontWeight.w900, height: 0.8),
+        ),
+      ],
+    );
+  }
+
+  // 게임판
+  Widget _buildPlayArea() {
+    return Container(
+      padding: const EdgeInsets.all(15),
+      child: GridView.builder(
+        physics: const NeverScrollableScrollPhysics(),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: cols,
+          mainAxisSpacing: 5,
+          crossAxisSpacing: 5,
+        ),
+        itemCount: rows * cols,
+        itemBuilder: (context, index) {
+          final r = index ~/ cols;
+          final c = index % cols;
+          final t = tileGrid[r][c];
+
+          final isSelected = selected != null && selected!.x == c && selected!.y == r;
+
+          return GestureDetector(
+            onTap: () => _onTapCell(r, c),
+            child: Container(
+              decoration: BoxDecoration(
+                color: (r + c) % 2 == 0
+                    ? Colors.green.withOpacity(0.8)
+                    : Colors.purple.withOpacity(0.6),
+                borderRadius: BorderRadius.circular(8),
+                border: isSelected ? Border.all(color: Colors.yellow, width: 3) : null,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: (t == null)
+                    ? const SizedBox.shrink()
+                    : Image.asset(
+                  'assets/images/${tileAssets[t]}',
+                  fit: BoxFit.contain,
+                  errorBuilder: (context, error, stackTrace) => Center(
+                    child: Text("$t", style: const TextStyle(color: Colors.white30)),
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  // 하단 버튼(동작은 아직 없음)
+  Widget _buildBottomControls() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          _circleIconButton(Icons.volume_up, Colors.orange),
+          _circleIconButton(Icons.settings, Colors.blue),
+          _circleIconButton(Icons.shopping_cart, Colors.redAccent),
+        ],
+      ),
+    );
+  }
+
+  Widget _circleIconButton(IconData icon, Color bgColor) {
+    return Container(
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(color: Colors.white, width: 3),
+        boxShadow: const [BoxShadow(color: Colors.black45, blurRadius: 5)],
+      ),
+      child: CircleAvatar(
+        radius: 25,
+        backgroundColor: bgColor,
+        child: Icon(icon, color: Colors.white, size: 30),
+      ),
+    );
+  }
 }
