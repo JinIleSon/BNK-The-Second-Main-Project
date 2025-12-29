@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../settings/settings_page.dart';
 import 'package:bnkproject/game/game_entry.dart';
-import '../travel/travel_page.dart';
+import '../travel/pages/travel_page.dart';
 
 class MenuPage extends StatefulWidget {
   const MenuPage({super.key});
