@@ -3,7 +3,6 @@ import '../settings/settings_page.dart';
 import 'package:bnkproject/game/game_entry.dart';
 import '../travel/travel_page.dart';
 
-
 class MenuPage extends StatefulWidget {
   const MenuPage({super.key});
 
@@ -148,16 +147,17 @@ class _MenuPageState extends State<MenuPage> {
               },
             ),
 
-            // ✅ 여행 → TravelPage로 이동 (추가)
+            // ✅ 여행 → TravelPage로 이동
             _ServiceTile(
               iconBg: const Color(0xFF2A2C33),
-              icon: Icons.travel_explore,
+              icon: Icons.flight_takeoff, // ✈️ 비행기 아이콘
               iconColor: Colors.tealAccent,
               title: '여행',
               subtitle: '부산 핫플 · 미션 · 스탬프',
               onTap: () {
                 Navigator.of(context, rootNavigator: true).push(
-                  MaterialPageRoute(builder: (_) => const TravelPage()),
+                  MaterialPageRoute(builder: (_) => TravelPage()),
+
                 );
               },
             ),
