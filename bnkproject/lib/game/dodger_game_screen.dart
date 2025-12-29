@@ -40,8 +40,14 @@ class _DodgerGameScreenState extends State<DodgerGameScreen> {
     const scaffoldBg = Color(0xFFF6F6FA);
     const gameFrameBg = Colors.white;
 
+    // ✅ 컨트롤 바를 위로 띄우는 값(원하는 만큼 조절)
+    const controlsLift = 80.0;
+
+    // ✅ HUD 바(게임 박스 바깥 위) 높이
+    const hudBarH = 64.0;
+
     final controlsH = 12 + 56 + 12 + mq.padding.bottom;
-    final availH = mq.size.height - mq.padding.top - controlsH - 16;
+    final availH = mq.size.height - mq.padding.top - controlsH - controlsLift - hudBarH - 16;
 
     double w = min(mq.size.width - 24, 400);
     double h = w * 1.5;
@@ -57,15 +63,11 @@ class _DodgerGameScreenState extends State<DodgerGameScreen> {
         elevation: 0,
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.black),
-
-        // ✅ 툴바 높이 증가
         toolbarHeight: 72,
-
-        // ✅ 타이틀 이미지 크게
         title: GestureDetector(
           onTap: _openTitleLink,
           child: SizedBox(
-            height: 52, // 여기서 더 키워도 됨(예: 56)
+            height: 52,
             child: Image.asset(
               'assets/images/hotteok-title.png',
               fit: BoxFit.contain,
@@ -74,14 +76,24 @@ class _DodgerGameScreenState extends State<DodgerGameScreen> {
           ),
         ),
       ),
-
       body: SafeArea(
         child: Stack(
           children: [
             Column(
               children: [
                 const SizedBox(height: 8),
-                // ✅ 기존 본문 타이틀(이미지) 제거. AppBar에 표시하므로 중복 제거
+
+                // ✅ 게임 박스 바깥(위) HUD 바
+                Center(
+                  child: SizedBox(
+                    width: w,
+                    height: hudBarH,
+                    child: _TopHudBar(game: _game),
+                  ),
+                ),
+
+                const SizedBox(height: 8),
+
                 Transform.translate(
                   offset: const Offset(0, -8),
                   child: Center(
@@ -109,12 +121,11 @@ class _DodgerGameScreenState extends State<DodgerGameScreen> {
                             child: GameWidget(
                               game: _game,
                               overlayBuilderMap: {
-                                'Hud': (_, DodgerGame game) => _HudOverlay(game: game),
+                                // ✅ HUD는 Flutter 위젯으로 뺐다
                                 'Menu': (_, DodgerGame game) => _MenuOverlay(game: game),
                               },
-                              initialActiveOverlays: const ['Hud'], // ✅ 여기서 'Menu' 제거
+                              initialActiveOverlays: const [],
                             ),
-
                           ),
                         ),
                       ),
@@ -122,18 +133,18 @@ class _DodgerGameScreenState extends State<DodgerGameScreen> {
                   ),
                 ),
                 const Spacer(),
-                SizedBox(height: controlsH),
+                SizedBox(height: controlsH + controlsLift),
               ],
             ),
             Positioned(
               left: 0,
               right: 0,
-              bottom: 0,
+              bottom: controlsLift,
               child: _ControlsBar(
                 leftPressed: _leftPressed,
                 rightPressed: _rightPressed,
                 onLeftDown: () {
-                  if (_game.phase.value != GamePhase.playing) _game.startGame(); // ✅ 추가
+                  if (_game.phase.value != GamePhase.playing) _game.startGame();
                   setState(() => _leftPressed = true);
                   _rightPressed = false;
                   _game.setDirection(-1);
@@ -144,7 +155,7 @@ class _DodgerGameScreenState extends State<DodgerGameScreen> {
                   if (_game.direction == -1) _game.setDirection(0);
                 },
                 onRightDown: () {
-                  if (_game.phase.value != GamePhase.playing) _game.startGame(); // ✅ 추가
+                  if (_game.phase.value != GamePhase.playing) _game.startGame();
                   setState(() => _rightPressed = true);
                   _leftPressed = false;
                   _game.setDirection(1);
@@ -221,10 +232,8 @@ class DodgerGame extends FlameGame with HasCollisionDetection {
     ),
   );
 
-  // ✅ 안내문 1회만: 한 번이라도 startGame 호출되면 true
   bool hasStartedOnce = false;
 
-  // input: -1(left), 0, 1(right)
   int direction = 0;
   void setDirection(int v) => direction = v;
   void setFacingRight(bool right) => _player.facingRight = right;
@@ -321,7 +330,6 @@ class DodgerGame extends FlameGame with HasCollisionDetection {
   }
 
   void startGame() {
-    // ✅ 시작 버튼을 한 번이라도 눌렀으면 안내문은 다시 안 뜬다
     hasStartedOnce = true;
 
     children.whereType<DropComponent>().toList().forEach((c) => c.removeFromParent());
@@ -604,54 +612,61 @@ class DropComponent extends SpriteComponent
 }
 
 /// =========================
-/// Overlays
+/// HUD (outside game frame)
 /// =========================
 
-class _HudOverlay extends StatelessWidget {
-  const _HudOverlay({required this.game});
+class _TopHudBar extends StatelessWidget {
+  const _TopHudBar({required this.game});
   final DodgerGame game;
 
   @override
   Widget build(BuildContext context) {
-    return Positioned(
-      top: 8,
-      right: 8,
-      child: IgnorePointer(
-        child: ValueListenableBuilder<DodgerHudState>(
-          valueListenable: game.hud,
-          builder: (_, s, __) {
-            return Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.35),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: DefaultTextStyle(
-                style: const TextStyle(
-                  color: Colors.black,
-                  fontSize: 16,
-                  height: 1.4,
+    return IgnorePointer(
+      child: ValueListenableBuilder<DodgerHudState>(
+        valueListenable: game.hud,
+        builder: (_, s, __) {
+          return Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.90),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.black.withOpacity(0.06)),
+              boxShadow: [
+                BoxShadow(
+                  blurRadius: 12,
+                  offset: const Offset(0, 6),
+                  color: Colors.black.withOpacity(0.06),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text('Score: ${s.score}'),
-                    Text('Level: ${s.level}'),
-                    const SizedBox(height: 4),
-                    _hudIconRow('assets/images/poop.png', '${s.poopAvoided}'),
-                    _hudIconRow('assets/images/porkSoup.png', '${s.boosters}'),
-                    _hudIconRow('assets/images/dongbak.png', '${s.dongbaks}'),
-                  ],
-                ),
+              ],
+            ),
+            child: DefaultTextStyle(
+              style: const TextStyle(
+                color: Colors.black,
+                fontSize: 18, // ✅ 글자 키움 (기존 15~16 → 18)
+                height: 1.1,
+                fontWeight: FontWeight.w800,
               ),
-            );
-          },
-        ),
+              child: Row(
+                children: [
+                  Text('Score: ${s.score}'),
+                  const SizedBox(width: 14),
+                  Text('Level: ${s.level}'),
+                  const Spacer(),
+                  _iconStat('assets/images/poop.png', '${s.poopAvoided}'),
+                  const SizedBox(width: 12),
+                  _iconStat('assets/images/porkSoup.png', '${s.boosters}'),
+                  const SizedBox(width: 12),
+                  _iconStat('assets/images/dongbak.png', '${s.dongbaks}'),
+                ],
+              ),
+            ),
+          );
+        },
       ),
     );
   }
 
-  Widget _hudIconRow(String asset, String value) {
+  Widget _iconStat(String asset, String value) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -662,6 +677,10 @@ class _HudOverlay extends StatelessWidget {
     );
   }
 }
+
+/// =========================
+/// Overlays
+/// =========================
 
 class _MenuOverlay extends StatelessWidget {
   const _MenuOverlay({required this.game});
@@ -674,8 +693,6 @@ class _MenuOverlay extends StatelessWidget {
         valueListenable: game.phase,
         builder: (_, ph, __) {
           final isOver = ph == GamePhase.gameOver;
-
-          // ✅ "왼쪽/오른쪽..." 안내는 최초 1회만
           final showHowTo = (ph == GamePhase.ready) && !game.hasStartedOnce;
 
           return Container(
@@ -703,7 +720,6 @@ class _MenuOverlay extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(height: 10),
-
                             if (isOver)
                               const Text(
                                 '다시 도전!',
@@ -716,7 +732,6 @@ class _MenuOverlay extends StatelessWidget {
                                 style: TextStyle(color: Color(0xFF333333)),
                                 textAlign: TextAlign.center,
                               ),
-
                             if (isOver) ...[
                               const SizedBox(height: 12),
                               _statsLine(s),
@@ -741,10 +756,7 @@ class _MenuOverlay extends StatelessWidget {
                                 onPressed: () => game.startGame(),
                                 child: const Text(
                                   '게임 시작',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w800,
-                                  ),
+                                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
                                 ),
                               ),
                             ),
@@ -985,9 +997,6 @@ class _DashedRectPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _DashedRectPainter old) {
-    return old.radius != radius ||
-        old.strokeWidth != strokeWidth ||
-        old.dash != dash ||
-        old.gap != gap;
+    return old.radius != radius || old.strokeWidth != strokeWidth || old.dash != dash || old.gap != gap;
   }
 }
