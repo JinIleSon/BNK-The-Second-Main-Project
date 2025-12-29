@@ -51,6 +51,7 @@ flutter:
     - assets/images/
     - assets/game/
     - assets/icon/
+    - assets/images/places/
     # 필요하면 이미지도 여기에 추가
     # - assets/images/face_guide.png
 
