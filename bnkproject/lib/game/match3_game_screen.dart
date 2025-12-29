@@ -25,7 +25,6 @@ class _Match3GameScreenState extends State<Match3GameScreen> {
     'block3.png',
     'block4.png',
     'block5.png',
-    'block6.png', // 있으면 사용. 없으면 제거하고 5종으로 맞춰라.
   ];
 
   // 선택 상태
@@ -33,6 +32,12 @@ class _Match3GameScreenState extends State<Match3GameScreen> {
   bool busy = false;
 
   int score = 0;
+
+  static const _bgGradient = LinearGradient(
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+    colors: [Color(0xFF2E004E), Color(0xFF8E24AA)],
+  );
 
   @override
   void initState() {
@@ -226,18 +231,21 @@ class _Match3GameScreenState extends State<Match3GameScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
+        backgroundColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(gradient: _bgGradient),
+        ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
         title: Image.asset(
-          'assets/images/title.png',
-          height: 28,
+          'assets/images/match3-title.png',
+          height: 50,
           fit: BoxFit.contain,
           errorBuilder: (_, __, ___) => const Text(
             'MATCH 3',
@@ -246,17 +254,11 @@ class _Match3GameScreenState extends State<Match3GameScreen> {
         ),
       ),
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xFF2E004E), Color(0xFF8E24AA)],
-          ),
-        ),
+        decoration: const BoxDecoration(gradient: _bgGradient),
         child: SafeArea(
+          top: false,
           child: Column(
             children: [
-              const SizedBox(height: kToolbarHeight), // AppBar 영역만큼 내려서 겹침 방지
               _buildTopBar(),
               _buildGameTitle(),
               Expanded(child: _buildPlayArea()),
@@ -268,11 +270,10 @@ class _Match3GameScreenState extends State<Match3GameScreen> {
     );
   }
 
-
   // 상단 바 (하트/코인 + 점수)
   Widget _buildTopBar() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
       child: Row(
         children: [
           _textBadge('SCORE', '$score'),
@@ -281,6 +282,73 @@ class _Match3GameScreenState extends State<Match3GameScreen> {
           const SizedBox(width: 10),
           _statusBadge('assets/images/coin_icon.png', '100', Colors.orangeAccent),
         ],
+      ),
+    );
+  }
+
+  Widget _buildGameTitle() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
+        decoration: BoxDecoration(
+          color: Colors.black.withOpacity(0.25),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: Colors.white24, width: 1.5),
+        ),
+        child: Row(
+          children: [
+            const Icon(Icons.grid_3x3, color: Colors.white70),
+            const SizedBox(width: 10),
+            const Text(
+              'MATCH 3',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w900,
+                letterSpacing: 1.2,
+                fontSize: 18,
+              ),
+            ),
+            const Spacer(),
+
+            // ✅ Tap & swap 자리 -> RESET 버튼으로 교체
+            _resetChip(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _resetChip() {
+    return InkWell(
+      onTap: busy ? null : _restartGame,
+      borderRadius: BorderRadius.circular(999),
+      child: Opacity(
+        opacity: busy ? 0.5 : 1.0,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          decoration: BoxDecoration(
+            color: Colors.black.withOpacity(0.20),
+            borderRadius: BorderRadius.circular(999),
+            border: Border.all(color: Colors.white24, width: 1.2),
+          ),
+          child: const Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.refresh, size: 16, color: Colors.white70),
+              SizedBox(width: 6),
+              Text(
+                'RESET',
+                style: TextStyle(
+                  color: Colors.white70,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 0.6,
+                  fontSize: 12,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -295,9 +363,21 @@ class _Match3GameScreenState extends State<Match3GameScreen> {
       ),
       child: Row(
         children: [
-          Text(label, style: const TextStyle(color: Colors.white70, fontWeight: FontWeight.w800)),
+          Text(
+            label,
+            style: const TextStyle(
+              color: Colors.white70,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
           const SizedBox(width: 8),
-          Text(value, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900)),
+          Text(
+            value,
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w900,
+            ),
+          ),
         ],
       ),
     );
@@ -317,28 +397,19 @@ class _Match3GameScreenState extends State<Match3GameScreen> {
             assetPath,
             width: 20,
             height: 20,
-            errorBuilder: (c, e, s) => Icon(Icons.circle, color: color, size: 20),
+            errorBuilder: (c, e, s) =>
+                Icon(Icons.circle, color: color, size: 20),
           ),
           const SizedBox(width: 8),
-          Text(value, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+          Text(
+            value,
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ],
       ),
-    );
-  }
-
-  // 타이틀
-  Widget _buildGameTitle() {
-    return const Column(
-      children: [
-        Text(
-          "BNK",
-          style: TextStyle(fontSize: 36, color: Colors.white, fontWeight: FontWeight.w900, letterSpacing: 2),
-        ),
-        Text(
-          "MATCH",
-          style: TextStyle(fontSize: 48, color: Colors.yellowAccent, fontWeight: FontWeight.w900, height: 0.8),
-        ),
-      ],
     );
   }
 
@@ -359,7 +430,8 @@ class _Match3GameScreenState extends State<Match3GameScreen> {
           final c = index % cols;
           final t = tileGrid[r][c];
 
-          final isSelected = selected != null && selected!.x == c && selected!.y == r;
+          final isSelected =
+              selected != null && selected!.x == c && selected!.y == r;
 
           return GestureDetector(
             onTap: () => _onTapCell(r, c),
@@ -369,7 +441,9 @@ class _Match3GameScreenState extends State<Match3GameScreen> {
                     ? Colors.green.withOpacity(0.8)
                     : Colors.purple.withOpacity(0.6),
                 borderRadius: BorderRadius.circular(8),
-                border: isSelected ? Border.all(color: Colors.yellow, width: 3) : null,
+                border: isSelected
+                    ? Border.all(color: Colors.yellow, width: 3)
+                    : null,
               ),
               child: Padding(
                 padding: const EdgeInsets.all(4.0),
@@ -379,7 +453,10 @@ class _Match3GameScreenState extends State<Match3GameScreen> {
                   'assets/images/${tileAssets[t]}',
                   fit: BoxFit.contain,
                   errorBuilder: (context, error, stackTrace) => Center(
-                    child: Text("$t", style: const TextStyle(color: Colors.white30)),
+                    child: Text(
+                      "$t",
+                      style: const TextStyle(color: Colors.white30),
+                    ),
                   ),
                 ),
               ),
