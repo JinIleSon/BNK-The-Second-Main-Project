@@ -40,8 +40,12 @@ class _CardGameScreenState extends State<CardGameScreen> {
   static const _bgGradient = LinearGradient(
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
-    colors: [Color(0xFF2E004E), Color(0xFF8E24AA)],
+    colors: [
+      Color(0xFF061A14), // very dark green (top)
+      Color(0xFF0B2D22), // deep green (bottom)
+    ],
   );
+
 
   @override
   void initState() {
