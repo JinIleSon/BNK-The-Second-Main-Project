@@ -54,12 +54,16 @@ class _DodgerGameScreenState extends State<DodgerGameScreen> {
     return Scaffold(
       backgroundColor: scaffoldBg,
       appBar: AppBar(
-        title: const Text('부기 씨앗호떡 피하기'),
         backgroundColor: scaffoldBg,
-        foregroundColor: Colors.black, // ✅ 타이틀/뒤로가기 아이콘 색
         elevation: 0,
+        // ✅ 여기서 "타이틀 글자색"을 강제로 검정으로 박아버림
+        title: const Text(
+          '부기 씨앗호떡 피하기',
+          style: TextStyle(color: Colors.black),
+        ),
+        // ✅ 뒤로가기 아이콘도 검정
+        iconTheme: const IconThemeData(color: Colors.black),
       ),
-
       body: SafeArea(
         child: Stack(
           children: [
@@ -67,14 +71,14 @@ class _DodgerGameScreenState extends State<DodgerGameScreen> {
               children: [
                 const SizedBox(height: 6),
 
-                // ✅ title.png 없어서 에러났음 -> 있는 파일로 변경 (splash.png)
+                // ✅ 타이틀 이미지: title.png로 고정 (assets/images/title.png)
                 SizedBox(
                   width: w,
                   height: titleH,
                   child: GestureDetector(
                     onTap: _openTitleLink,
                     child: Image.asset(
-                      'assets/images/poop.png',
+                      'assets/images/title.png',
                       fit: BoxFit.contain,
                       errorBuilder: (_, __, ___) => const SizedBox.shrink(),
                     ),
@@ -96,8 +100,8 @@ class _DodgerGameScreenState extends State<DodgerGameScreen> {
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(12),
                           child: DecoratedBox(
-                            // ✅ 빨간 점선 안 배경(Flutter 레이어)
                             decoration: BoxDecoration(
+                              // ✅ 빨간 점선 “안쪽” Flutter 레이어 배경
                               color: gameFrameBg,
                               boxShadow: [
                                 BoxShadow(
@@ -127,7 +131,6 @@ class _DodgerGameScreenState extends State<DodgerGameScreen> {
                 SizedBox(height: controlsH),
               ],
             ),
-
             Positioned(
               left: 0,
               right: 0,
@@ -245,7 +248,6 @@ class DodgerGame extends FlameGame with HasCollisionDetection {
 
   static const int maxDrops = 6;
 
-  // PNG 크기 튜닝 포인트
   static const double hotteokSize = 42;
   static const double coinSize = 30;
   static const double dongbakSize = 30;
@@ -255,7 +257,7 @@ class DodgerGame extends FlameGame with HasCollisionDetection {
 
   int get _dropCount => children.whereType<DropComponent>().length;
 
-  // ✅ 빨간 점선 안(게임 캔버스) 배경을 흰색으로 강제
+  // ✅ 게임 캔버스 배경(Flame 쪽)도 흰색 고정
   @override
   Color backgroundColor() => Colors.white;
 
@@ -269,13 +271,13 @@ class DodgerGame extends FlameGame with HasCollisionDetection {
     await images.loadAll([
       'player.png',
       'porkSoup.png',
-      'poop.png',
+      'coin_icon.png',
       'dongbak.png',
     ]);
 
     _sprites.player = Sprite(images.fromCache('player.png'));
-    _sprites.hotteok = Sprite(images.fromCache('poop.png'));
-    _sprites.coin = Sprite(images.fromCache('porkSoup.png'));
+    _sprites.hotteok = Sprite(images.fromCache('porkSoup.png'));
+    _sprites.coin = Sprite(images.fromCache('coin_icon.png'));
     _sprites.dongbak = Sprite(images.fromCache('dongbak.png'));
 
     _player = PlayerComponent(sprite: _sprites.player, facingRight: true);
@@ -288,7 +290,10 @@ class DodgerGame extends FlameGame with HasCollisionDetection {
     pauseEngine();
     phase.value = GamePhase.ready;
 
-    children.whereType<DropComponent>().toList().forEach((c) => c.removeFromParent());
+    children
+        .whereType<DropComponent>()
+        .toList()
+        .forEach((c) => c.removeFromParent());
 
     _player.size = Vector2.all(playerSize);
     _player.position = Vector2((size.x - playerSize) / 2, 520);
@@ -314,7 +319,10 @@ class DodgerGame extends FlameGame with HasCollisionDetection {
   }
 
   void startGame() {
-    children.whereType<DropComponent>().toList().forEach((c) => c.removeFromParent());
+    children
+        .whereType<DropComponent>()
+        .toList()
+        .forEach((c) => c.removeFromParent());
 
     _player.position = Vector2((size.x - playerSize) / 2, 520);
     _player.facingRight = true;
@@ -734,7 +742,7 @@ class _MenuOverlay extends StatelessWidget {
               const SizedBox(width: 12),
               const Text('|'),
               const SizedBox(width: 12),
-              Image.asset('assets/images/poop.png', width: 20, height: 20),
+              Image.asset('assets/images/coin_icon.png', width: 20, height: 20),
               const SizedBox(width: 6),
               Text('${s.coins}'),
               const SizedBox(width: 12),
@@ -830,11 +838,10 @@ class _HoldButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 버튼 색상 (원하는 톤으로 여기만 조절)
-    const baseBg = Color(0xFFEEF2FF);     // 기본
-    const activeBg = Color(0xFFE2E8FF);   // 눌림
-    const border = Color(0xFFD6DEFF);     // 테두리
-    const textColor = Colors.black;       // ✅ 글자색 검정
+    // 버튼 색상
+    const baseBg = Color(0xFFEEF2FF);
+    const activeBg = Color(0xFFE2E8FF);
+    const border = Color(0xFFD6DEFF);
 
     return Listener(
       onPointerDown: (_) => onDown(),
@@ -857,7 +864,7 @@ class _HoldButton extends StatelessWidget {
               style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
-                color: textColor, // ✅ 여기
+                color: Colors.black, // ✅ 글자색 검정
               ),
             ),
           ),
@@ -866,7 +873,6 @@ class _HoldButton extends StatelessWidget {
     );
   }
 }
-
 
 /// =========================
 /// Dashed Border
