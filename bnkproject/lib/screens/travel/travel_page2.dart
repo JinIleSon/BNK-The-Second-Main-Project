@@ -62,19 +62,19 @@ class _TravelPageState extends State<TravelPage> {
       }
 
 
-            final pos = await Geolocator.getCurrentPosition(
-            desiredAccuracy: LocationAccuracy.high,
-            timeLimit: const Duration(seconds: 8),
-          );
+      final pos = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+        timeLimit: const Duration(seconds: 8),
+      );
 
-          final latLng = LatLng(pos.latitude, pos.longitude);
+      final latLng = LatLng(pos.latitude, pos.longitude);
 
-          setState(() {
-            _myPos = latLng;
-          });
+      setState(() {
+        _myPos = latLng;
+      });
 
-          _mapController.move(latLng, 15.0);
-        } catch (e) {
+      _mapController.move(latLng, 15.0);
+    } catch (e) {
       if (!silent) {
         setState(() => _error = '현재 위치를 가져오지 못했습니다: $e');
       }
