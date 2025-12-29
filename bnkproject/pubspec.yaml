@@ -43,6 +43,7 @@ flutter:
   assets:
     - assets/images/
     - assets/game/
+    - assets/icon/
     # 필요하면 이미지도 여기에 추가
     # - assets/images/face_guide.png
 
