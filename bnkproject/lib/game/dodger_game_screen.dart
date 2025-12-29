@@ -121,9 +121,9 @@ class _DodgerGameScreenState extends State<DodgerGameScreen> {
                             child: GameWidget(
                               game: _game,
                               overlayBuilderMap: {
-                                // ✅ HUD는 Flutter 위젯으로 뺐다
                                 'Menu': (_, DodgerGame game) => _MenuOverlay(game: game),
                               },
+                              // ✅ A안: initialActiveOverlays는 비워둬도 됨 (게임쪽에서 ready시에 overlays.add 처리)
                               initialActiveOverlays: const [],
                             ),
                           ),
@@ -298,8 +298,9 @@ class DodgerGame extends FlameGame with HasCollisionDetection {
     _resetToReady();
   }
 
+  // ✅ A안 적용: ready 상태에서도 엔진을 멈추지 않고, 오버레이만 띄운다
   void _resetToReady() {
-    pauseEngine();
+    // pauseEngine(); // ❌ 제거
     phase.value = GamePhase.ready;
 
     children.whereType<DropComponent>().toList().forEach((c) => c.removeFromParent());
@@ -327,6 +328,13 @@ class DodgerGame extends FlameGame with HasCollisionDetection {
     _levelAcc = 0;
 
     _pushHud();
+
+    // ✅ 시작 메뉴 오버레이 표시(ready 상태)
+    // (gameOver에서는 이미 overlays.add('Menu') 하고 있음)
+    overlays.add('Menu');
+
+    // ✅ 혹시라도 이전 상태에서 pause였으면 풀어준다
+    resumeEngine();
   }
 
   void startGame() {
@@ -568,8 +576,7 @@ class PlayerComponent extends PositionComponent with CollisionCallbacks {
   }
 }
 
-class DropComponent extends SpriteComponent
-    with CollisionCallbacks, HasGameRef<DodgerGame> {
+class DropComponent extends SpriteComponent with CollisionCallbacks, HasGameRef<DodgerGame> {
   DropComponent({
     required this.kind,
     required Sprite sprite,
@@ -642,7 +649,7 @@ class _TopHudBar extends StatelessWidget {
             child: DefaultTextStyle(
               style: const TextStyle(
                 color: Colors.black,
-                fontSize: 18, // ✅ 글자 키움 (기존 15~16 → 18)
+                fontSize: 18,
                 height: 1.1,
                 fontWeight: FontWeight.w800,
               ),
