@@ -226,6 +226,25 @@ class _Match3GameScreenState extends State<Match3GameScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Image.asset(
+          'assets/images/title.png',
+          height: 28,
+          fit: BoxFit.contain,
+          errorBuilder: (_, __, ___) => const Text(
+            'MATCH 3',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800),
+          ),
+        ),
+      ),
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -237,6 +256,7 @@ class _Match3GameScreenState extends State<Match3GameScreen> {
         child: SafeArea(
           child: Column(
             children: [
+              const SizedBox(height: kToolbarHeight), // AppBar 영역만큼 내려서 겹침 방지
               _buildTopBar(),
               _buildGameTitle(),
               Expanded(child: _buildPlayArea()),
@@ -247,6 +267,7 @@ class _Match3GameScreenState extends State<Match3GameScreen> {
       ),
     );
   }
+
 
   // 상단 바 (하트/코인 + 점수)
   Widget _buildTopBar() {
