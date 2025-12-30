@@ -1,6 +1,12 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 
+/// Mobile UX/UI goals
+/// - Grid stays square, centered, never overflows on small screens
+/// - Top HUD compact + readable
+/// - Bottom controls moved into a single dock (SafeArea aware)
+/// - Uses 30 card images under: assets/images/game/card/card_01.png ~ card_30.png
+/// - Each round: randomly pick totalPairs images, then duplicate/shuffle to fill grid
 class CardGameScreen extends StatefulWidget {
   const CardGameScreen({super.key});
 
@@ -9,22 +15,19 @@ class CardGameScreen extends StatefulWidget {
 }
 
 class _CardGameScreenState extends State<CardGameScreen> {
-  // ✅ 카드 뒤집기(짝맞추기)는 짝수 장수 필요 (4x4 = 16장)
+  // ✅ 4x4 default. (필요하면 난이도별로 바꿔도 됨)
   final int rows = 4;
   final int cols = 4;
 
   final Random _rng = Random();
 
-  // (선택) 기존 블록 에셋 재활용. 부족하면 숫자로 표시됨.
-  final List<String> tileAssets = [
-    'block1.png',
-    'block2.png',
-    'block3.png',
-    'block4.png',
-    'block5.png',
-  ];
-
   late List<List<_CardCell>> tileGrid;
+
+  // ✅ 30장 전체 풀 (파일명 규칙 기반)
+  late final List<String> allCardAssets;
+
+  // ✅ 이번 판에 사용할 카드(페어) 목록: 길이 = totalPairs
+  late List<String> pairAssets;
 
   // 첫 번째 카드 선택 좌표
   Point<int>? selected; // (x=c, y=r)
@@ -41,15 +44,21 @@ class _CardGameScreenState extends State<CardGameScreen> {
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
     colors: [
-      Color(0xFF061A14), // very dark green (top)
-      Color(0xFF0B2D22), // deep green (bottom)
+      Color(0xFF061A14),
+      Color(0xFF0B2D22),
     ],
   );
-
 
   @override
   void initState() {
     super.initState();
+
+    // assets/images/game/card/card_01.png ~ card_30.png
+    allCardAssets = List.generate(30, (i) {
+      final n = (i + 1).toString().padLeft(2, '0');
+      return 'assets/images/game/card/card_$n.png';
+    });
+
     _restartGame();
   }
 
@@ -65,7 +74,15 @@ class _CardGameScreenState extends State<CardGameScreen> {
   }
 
   void _initGridPairs() {
-    // 0..totalPairs-1 값을 두 장씩 만든 뒤 셔플 → 그리드에 채움
+    if (allCardAssets.length < totalPairs) {
+      throw Exception('Not enough card assets: ${allCardAssets.length} < $totalPairs');
+    }
+
+    // 1) 30장 중 이번 판에 사용할 totalPairs장 랜덤 선택
+    final pool = List<String>.from(allCardAssets)..shuffle(_rng);
+    pairAssets = pool.take(totalPairs).toList();
+
+    // 2) pair id(0..totalPairs-1) 두 장씩 생성 후 셔플하여 그리드 채움
     final values = <int>[];
     for (int i = 0; i < totalPairs; i++) {
       values.add(i);
@@ -107,14 +124,13 @@ class _CardGameScreenState extends State<CardGameScreen> {
 
     setState(() {
       cell.isFaceUp = true;
+      moves++;
     });
-
-    moves++;
 
     final first = tileGrid[selected!.y][selected!.x];
     final second = cell;
 
-    await Future.delayed(const Duration(milliseconds: 550));
+    await Future.delayed(const Duration(milliseconds: 520));
     if (!mounted) return;
 
     if (first.value == second.value) {
@@ -196,38 +212,56 @@ class _CardGameScreenState extends State<CardGameScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         elevation: 0,
         centerTitle: true,
         backgroundColor: Colors.transparent,
         surfaceTintColor: Colors.transparent,
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(gradient: _bgGradient),
-        ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Image.asset(
-          'assets/images/cardgame-title.png',
-          height: 50,
-          fit: BoxFit.contain,
-          errorBuilder: (_, __, ___) => const Text(
-            'CARD FLIP',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800),
-          ),
+        title: const Text(
+          'CARD FLIP',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, letterSpacing: 1.2),
         ),
       ),
       body: Container(
         decoration: const BoxDecoration(gradient: _bgGradient),
         child: SafeArea(
-          top: false,
           child: Column(
             children: [
-              _buildTopBar(),
-              _buildGameTitle(),
-              Expanded(child: _buildPlayArea()),
-              _buildBottomControls(),
+              const SizedBox(height: 6),
+              _buildHud(),
+              const SizedBox(height: 10),
+
+              // ✅ 모바일에서 오버플로우 안 나게: grid를 "정사각형"으로 강제 + 가운데 배치
+              Expanded(
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final maxW = constraints.maxWidth;
+                    final maxH = constraints.maxHeight;
+
+                    // 하단 도크(버튼) 공간 고려: 여기서는 Expanded 내부라 이미 제외되지만,
+                    // 혹시 작은 화면이면 그리드 상하 패딩도 포함해서 안전하게 계산
+                    final pad = 16.0;
+                    final size = min(maxW, maxH) - pad * 2;
+                    final gridSize = max(0.0, size);
+
+                    return Center(
+                      child: SizedBox(
+                        width: gridSize,
+                        height: gridSize,
+                        child: _buildPlayArea(),
+                      ),
+                    );
+                  },
+                ),
+              ),
+
+              // ✅ 모바일 하단 도크: SafeArea bottom + 터치 타겟 크게
+              _buildBottomDock(),
             ],
           ),
         ),
@@ -235,63 +269,81 @@ class _CardGameScreenState extends State<CardGameScreen> {
     );
   }
 
-  // 상단 바 (점수 + 하트(목숨) + 코인(이동))
-  Widget _buildTopBar() {
+  /// 상단 HUD: 한 줄에 들어가게 압축, 글자/패딩 모바일 기준
+  Widget _buildHud() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 14),
       child: Row(
         children: [
-          _textBadge('SCORE', '$score'),
-          const Spacer(),
-          _statusBadge('assets/images/heart_icon.png', '$lives', Colors.pinkAccent),
+          _pillStat(label: 'SCORE', value: '$score'),
           const SizedBox(width: 10),
-          _statusBadge('assets/images/coin_icon.png', '$moves', Colors.orangeAccent),
+          _pillStat(label: 'MOVES', value: '$moves'),
+          const Spacer(),
+          _lifePill(lives: lives),
+          const SizedBox(width: 10),
+          _resetPill(),
         ],
       ),
     );
   }
 
-  Widget _buildGameTitle() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
-        decoration: BoxDecoration(
-          color: Colors.black.withOpacity(0.25),
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: Colors.white24, width: 1.5),
-        ),
-        child: Row(
-          children: [
-            const Icon(Icons.style, color: Colors.white70),
-            const SizedBox(width: 10),
-            const Text(
-              'CARD FLIP',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w900,
-                letterSpacing: 1.2,
-                fontSize: 18,
-              ),
-            ),
-            const Spacer(),
-            _resetChip(),
-          ],
-        ),
+  Widget _pillStat({required String label, required String value}) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+      decoration: BoxDecoration(
+        color: Colors.black.withOpacity(0.35),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: Colors.white24, width: 1.2),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(color: Colors.white70, fontWeight: FontWeight.w800, fontSize: 12),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            value,
+            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 13),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _resetChip() {
+  Widget _lifePill({required int lives}) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+      decoration: BoxDecoration(
+        color: Colors.black.withOpacity(0.35),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: Colors.white24, width: 1.2),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.favorite, color: Colors.pinkAccent, size: 16),
+          const SizedBox(width: 6),
+          Text(
+            '$lives',
+            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 13),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _resetPill() {
     return InkWell(
       onTap: busy ? null : _restartGame,
       borderRadius: BorderRadius.circular(999),
       child: Opacity(
         opacity: busy ? 0.5 : 1.0,
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
           decoration: BoxDecoration(
-            color: Colors.black.withOpacity(0.20),
+            color: Colors.black.withOpacity(0.35),
             borderRadius: BorderRadius.circular(999),
             border: Border.all(color: Colors.white24, width: 1.2),
           ),
@@ -302,12 +354,7 @@ class _CardGameScreenState extends State<CardGameScreen> {
               SizedBox(width: 6),
               Text(
                 'RESET',
-                style: TextStyle(
-                  color: Colors.white70,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: 0.6,
-                  fontSize: 12,
-                ),
+                style: TextStyle(color: Colors.white70, fontWeight: FontWeight.w900, fontSize: 12),
               ),
             ],
           ),
@@ -316,129 +363,93 @@ class _CardGameScreenState extends State<CardGameScreen> {
     );
   }
 
-  Widget _textBadge(String label, String value) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.5),
-        borderRadius: BorderRadius.circular(25),
-        border: Border.all(color: Colors.white70, width: 2),
-      ),
-      child: Row(
-        children: [
-          Text(
-            label,
-            style: const TextStyle(
-              color: Colors.white70,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-          const SizedBox(width: 8),
-          Text(
-            value,
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.w900,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _statusBadge(String assetPath, String value, Color color) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.5),
-        borderRadius: BorderRadius.circular(25),
-        border: Border.all(color: Colors.white70, width: 2),
-      ),
-      child: Row(
-        children: [
-          Image.asset(
-            assetPath,
-            width: 20,
-            height: 20,
-            errorBuilder: (c, e, s) => Icon(Icons.circle, color: color, size: 20),
-          ),
-          const SizedBox(width: 8),
-          Text(
-            value,
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // 게임판(카드 뒤집기)
+  /// ✅ 정사각 영역 안에서 그리드만 렌더링 (스크롤 제거)
   Widget _buildPlayArea() {
-    return Container(
-      padding: const EdgeInsets.all(15),
-      child: GridView.builder(
-        physics: const NeverScrollableScrollPhysics(),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: cols,
-          mainAxisSpacing: 8,
-          crossAxisSpacing: 8,
-        ),
-        itemCount: rows * cols,
-        itemBuilder: (context, index) {
-          final r = index ~/ cols;
-          final c = index % cols;
-          final cell = tileGrid[r][c];
+    final spacing = 8.0;
 
-          final isSelected = selected != null && selected!.x == c && selected!.y == r;
-          final showBack = cell.isFaceUp || cell.isMatched;
+    return GridView.builder(
+      padding: const EdgeInsets.all(10),
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: cols,
+        mainAxisSpacing: spacing,
+        crossAxisSpacing: spacing,
+      ),
+      itemCount: rows * cols,
+      itemBuilder: (context, index) {
+        final r = index ~/ cols;
+        final c = index % cols;
+        final cell = tileGrid[r][c];
 
-          return GestureDetector(
-            onTap: () => _onTapCell(r, c),
-            child: _FlipCard(
-              showBack: showBack,
-              highlight: isSelected,
-              front: _CardFront(disabled: busy),
-              back: _CardBack(
-                value: cell.value,
-                isMatched: cell.isMatched,
-                tileAssets: tileAssets,
-              ),
+        final isSelected = selected != null && selected!.x == c && selected!.y == r;
+        final showBack = cell.isFaceUp || cell.isMatched;
+
+        return GestureDetector(
+          onTap: () => _onTapCell(r, c),
+          child: _FlipCard(
+            showBack: showBack,
+            highlight: isSelected,
+            front: _CardFront(disabled: busy),
+            back: _CardBack(
+              value: cell.value,
+              isMatched: cell.isMatched,
+              pairAssets: pairAssets,
             ),
-          );
-        },
+          ),
+        );
+      },
+    );
+  }
+
+  /// ✅ 하단 도크: 버튼 3개, SafeArea 포함
+  Widget _buildBottomDock() {
+    return SafeArea(
+      top: false,
+      child: Container(
+        margin: const EdgeInsets.fromLTRB(14, 10, 14, 10),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        decoration: BoxDecoration(
+          color: Colors.black.withOpacity(0.25),
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: Colors.white24, width: 1.2),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            _dockIconButton(
+              icon: Icons.volume_up,
+              onTap: () {},
+            ),
+            _dockIconButton(
+              icon: Icons.settings,
+              onTap: () {},
+            ),
+            _dockIconButton(
+              icon: Icons.shopping_cart,
+              onTap: () {},
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  // 하단 버튼(동작은 아직 없음)
-  Widget _buildBottomControls() {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 20),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          _circleIconButton(Icons.volume_up, Colors.orange),
-          _circleIconButton(Icons.settings, Colors.blue),
-          _circleIconButton(Icons.shopping_cart, Colors.redAccent),
-        ],
-      ),
-    );
-  }
-
-  Widget _circleIconButton(IconData icon, Color bgColor) {
-    return Container(
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        border: Border.all(color: Colors.white, width: 3),
-        boxShadow: const [BoxShadow(color: Colors.black45, blurRadius: 5)],
-      ),
-      child: CircleAvatar(
-        radius: 25,
-        backgroundColor: bgColor,
-        child: Icon(icon, color: Colors.white, size: 30),
+  Widget _dockIconButton({
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(14),
+      child: Container(
+        width: 54,
+        height: 44,
+        decoration: BoxDecoration(
+          color: Colors.black.withOpacity(0.28),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: Colors.white24, width: 1.1),
+        ),
+        child: Icon(icon, color: Colors.white, size: 24),
       ),
     );
   }
@@ -479,33 +490,36 @@ class _FlipCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         border: highlight ? Border.all(color: Colors.yellow, width: 3) : null,
       ),
-      child: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 220),
-        switchInCurve: Curves.easeOut,
-        switchOutCurve: Curves.easeIn,
-        transitionBuilder: (child, animation) {
-          final rotate = Tween(begin: pi, end: 0.0).animate(animation);
-          return AnimatedBuilder(
-            animation: rotate,
-            child: child,
-            builder: (context, child) {
-              final isUnder = (child!.key != ValueKey(showBack));
-              var angle = rotate.value;
-              if (isUnder) angle = min(angle, pi / 2);
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 220),
+          switchInCurve: Curves.easeOut,
+          switchOutCurve: Curves.easeIn,
+          transitionBuilder: (child, animation) {
+            final rotate = Tween(begin: pi, end: 0.0).animate(animation);
+            return AnimatedBuilder(
+              animation: rotate,
+              child: child,
+              builder: (context, child) {
+                final isUnder = (child!.key != ValueKey(showBack));
+                var angle = rotate.value;
+                if (isUnder) angle = min(angle, pi / 2);
 
-              return Transform(
-                alignment: Alignment.center,
-                transform: Matrix4.identity()
-                  ..setEntry(3, 2, 0.001)
-                  ..rotateY(angle),
-                child: child,
-              );
-            },
-          );
-        },
-        child: showBack
-            ? KeyedSubtree(key: const ValueKey(true), child: back)
-            : KeyedSubtree(key: const ValueKey(false), child: front),
+                return Transform(
+                  alignment: Alignment.center,
+                  transform: Matrix4.identity()
+                    ..setEntry(3, 2, 0.001)
+                    ..rotateY(angle),
+                  child: child,
+                );
+              },
+            );
+          },
+          child: showBack
+              ? KeyedSubtree(key: const ValueKey(true), child: back)
+              : KeyedSubtree(key: const ValueKey(false), child: front),
+        ),
       ),
     );
   }
@@ -521,7 +535,7 @@ class _CardFront extends StatelessWidget {
       child: Center(
         child: Icon(
           Icons.help_outline,
-          size: 38,
+          size: 34,
           color: disabled ? Colors.white24 : Colors.white70,
         ),
       ),
@@ -532,39 +546,28 @@ class _CardFront extends StatelessWidget {
 class _CardBack extends StatelessWidget {
   final int value;
   final bool isMatched;
-  final List<String> tileAssets;
+  final List<String> pairAssets;
 
   const _CardBack({
     required this.value,
     required this.isMatched,
-    required this.tileAssets,
+    required this.pairAssets,
   });
 
   @override
   Widget build(BuildContext context) {
-    final canUseAsset = value >= 0 && value < tileAssets.length;
+    final path = pairAssets[value];
 
     return _CardShell(
       dim: isMatched,
-      child: Center(
-        child: canUseAsset
-            ? Image.asset(
-          'assets/images/${tileAssets[value]}',
+      child: Padding(
+        padding: const EdgeInsets.all(8),
+        child: Image.asset(
+          path,
           fit: BoxFit.contain,
-          errorBuilder: (_, __, ___) => _fallbackText(),
-        )
-            : _fallbackText(),
-      ),
-    );
-  }
-
-  Widget _fallbackText() {
-    return Text(
-      '${value + 1}',
-      style: TextStyle(
-        fontSize: 34,
-        fontWeight: FontWeight.w900,
-        color: isMatched ? Colors.white24 : Colors.white,
+          // ✅ 숫자 fallback 제거. (에셋 문제면 그냥 비워두고 빨리 발견하게)
+          errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+        ),
       ),
     );
   }
