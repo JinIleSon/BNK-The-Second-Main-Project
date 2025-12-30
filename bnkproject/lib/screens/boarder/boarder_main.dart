@@ -105,7 +105,7 @@ class _BoardMainState extends State<BoardMain> with SingleTickerProviderStateMix
           tabs: const [
             Tab(text: '추천'),
             Tab(text: '팔로잉'),
-            Tab(text: '게시판'),
+            Tab(text: '커뮤니티'),
             Tab(text: '뉴스'),
             Tab(text: '콘텐츠'),
           ],

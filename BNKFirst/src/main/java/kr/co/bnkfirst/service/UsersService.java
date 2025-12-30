@@ -265,10 +265,10 @@ public class UsersService {
         if (dto.getMpw() == null || dto.getMpw().isBlank()) return false;
 
         // 기업 가입에 필요한 값들
-        if (dto.getMname() == null || dto.getMname().isBlank()) return false;   // 회사명/담당자명 (너 정책대로 mname 하나)
-        if (dto.getMjumin() == null || dto.getMjumin().isBlank()) return false; // 사업자번호
-        if (dto.getMemail() == null || dto.getMemail().isBlank()) return false; // 이메일
-        if (dto.getMphone() == null || dto.getMphone().isBlank()) return false; // 연락처
+        if (dto.getMname() == null || dto.getMname().isBlank()) return false;
+        if (dto.getMjumin() == null || dto.getMjumin().isBlank()) return false;
+        if (dto.getMemail() == null || dto.getMemail().isBlank()) return false;
+        if (dto.getMphone() == null || dto.getMphone().isBlank()) return false;
 
         // 1) MID 중복 체크
         if (usersMapper.existsByMid(dto.getMid()) > 0) {
