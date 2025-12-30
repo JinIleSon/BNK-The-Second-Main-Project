@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../settings/settings_page.dart';
 import 'package:bnkproject/game/game_entry.dart';
 import '../travel/pages/travel_page.dart';
+import 'package:bnkproject/screens/sto/pages/sto_season_page.dart';
+
 
 class MenuPage extends StatefulWidget {
   const MenuPage({super.key});
@@ -161,6 +163,20 @@ class _MenuPageState extends State<MenuPage> {
                 );
               },
             ),
+// ✅ STO 시즌 투자 → StoSeasonPage로 이동
+            _ServiceTile(
+              iconBg: const Color(0xFF2A2C33),
+              icon: Icons.sports_baseball,
+              iconColor: Colors.amberAccent,
+              title: 'STO 시즌 투자',
+              subtitle: '야구 시즌처럼 라운드 투자',
+              onTap: () {
+                Navigator.of(context, rootNavigator: true).push(
+                  MaterialPageRoute(builder: (_) => StoSeasonPage()),
+                );
+              },
+            ),
+
           ],
         ),
       ),
