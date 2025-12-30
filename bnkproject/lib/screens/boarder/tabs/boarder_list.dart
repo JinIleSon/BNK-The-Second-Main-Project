@@ -1,13 +1,10 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+
 import '../widgets/feed_item.dart';
 import '../pages/boarder_detail.dart';
-
-/*
-    날짜 : 2025.12.17(수)
-    이름 : 이준우
-    내용 : 게시판 목록 (Board)
-    유형 : Tab 전용 View
- */
+import '../pages/boarder_write.dart';
 
 class BoarderList extends StatefulWidget {
   const BoarderList({super.key});
@@ -17,70 +14,137 @@ class BoarderList extends StatefulWidget {
 }
 
 class _BoarderListState extends State<BoarderList> {
-  // 게시판 더미 데이터
-  final items = <FeedItem>[
-    FeedItem(
-      postId: 101,
-      author: "운영자",
-      timeAgo: "1일 전",
-      title: "[공지] 게시판 이용 안내",
-      body: "본 게시판은 건전한 투자 정보 공유를 목적으로 운영됩니다.",
-      avatarUrl: "https://i.pravatar.cc/200?img=1",
-      likeCount: 3,
-      commentCount: 0,
-      isLiked: false,
-    ),
-    FeedItem(
-      postId: 102,
-      author: "익명",
-      timeAgo: "3시간 전",
-      title: "ETF 장기투자 전략 질문드립니다",
-      body: "연금 계좌에서 ETF 비중을 어떻게 가져가야 할까요?",
-      avatarUrl: "https://i.pravatar.cc/200?img=8",
-      likeCount: 5,
-      commentCount: 2,
-      isLiked: false,
-    ),
-    FeedItem(
-      postId: 103,
-      author: "투자초보",
-      timeAgo: "10분 전",
-      title: "미국 배당주 추천 부탁드립니다",
-      body: "월배당 위주로 보고 있는데 의견 듣고 싶습니다.",
-      avatarUrl: "https://i.pravatar.cc/200?img=14",
-      likeCount: 1,
-      commentCount: 1,
-      isLiked: false,
-    ),
-  ];
+  final List<FeedItem> items = [];
+  bool loading = false;
+  String? errorMsg;
+
+  static const String baseUrl = "http://10.0.2.2:8080/BNK";
+
+  @override
+  void initState() {
+    super.initState();
+    fetchBoardList();
+  }
+
+  Future<void> fetchBoardList() async {
+    setState(() {
+      loading = true;
+      errorMsg = null;
+    });
+
+    try {
+      final uri = Uri.parse("$baseUrl/api/post/board?size=20");
+
+      final res = await http.get(
+        uri,
+        headers: {"X-UID": "1"},
+      );
+
+      if (res.statusCode != 200) {
+        throw Exception("HTTP ${res.statusCode}: ${res.body}");
+      }
+
+      final jsonBody = json.decode(res.body) as Map<String, dynamic>;
+      final list = (jsonBody["items"] as List? ?? []).cast<dynamic>();
+
+      final mapped = list.map((e) {
+        final j = (e as Map).cast<String, dynamic>();
+
+        final postId = (j["postId"] ?? 0) as int;
+        final title = (j["title"] ?? "") as String;
+        final body = (j["body"] ?? "") as String;
+
+        final author = (j["authorNickname"] ?? "익명") as String;
+        final avatarUrl = (j["authorAvatarUrl"] ??
+            "https://i.pravatar.cc/200?u=$postId") as String;
+
+        final likeCount = (j["likeCount"] ?? 0) as int;
+        final commentCount = (j["commentCount"] ?? 0) as int;
+
+        return FeedItem(
+          postId: postId,
+          author: author,
+          timeAgo: "",
+          title: title,
+          body: body,
+          avatarUrl: avatarUrl,
+          likeCount: likeCount,
+          commentCount: commentCount,
+          isLiked: false,
+        );
+      }).toList();
+
+      setState(() {
+        items
+          ..clear()
+          ..addAll(mapped);
+      });
+    } catch (e) {
+      setState(() => errorMsg = e.toString());
+    } finally {
+      if (mounted) setState(() => loading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      children: items.map((it) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: FeedItemCard(
-            item: it,
-            onTap: () async {
-              await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => BoarderDetail(item: it),
-                ),
-              );
-              setState(() {});
-            },
-            onToggleLike: () {
-              setState(() {
-                it.isLiked = !it.isLiked;
-                it.likeCount += it.isLiked ? 1 : -1;
-              });
-            },
-          ),
-        );
-      }).toList(),
+    return Scaffold(
+      body: loading
+          ? const Center(child: CircularProgressIndicator())
+          : (errorMsg != null)
+          ? Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text("불러오기 실패\n$errorMsg", textAlign: TextAlign.center),
+            const SizedBox(height: 12),
+            OutlinedButton(
+              onPressed: fetchBoardList,
+              child: const Text("다시 시도"),
+            ),
+          ],
+        ),
+      )
+          : RefreshIndicator(
+        onRefresh: fetchBoardList,
+        child: ListView(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          children: items.map((it) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: FeedItemCard(
+                item: it,
+                onTap: () async {
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => BoarderDetail(item: it)),
+                  );
+                  setState(() {});
+                },
+                onToggleLike: () {
+                  setState(() {
+                    it.isLiked = !it.isLiked;
+                    it.likeCount += it.isLiked ? 1 : -1;
+                  });
+                },
+              ),
+            );
+          }).toList(),
+        ),
+      ),
+
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          final ok = await Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const BoarderWritePage()),
+          );
+          if (ok == true) {
+            fetchBoardList();
+          }
+        },
+        child: const Icon(Icons.edit),
+      ),
     );
   }
 }
