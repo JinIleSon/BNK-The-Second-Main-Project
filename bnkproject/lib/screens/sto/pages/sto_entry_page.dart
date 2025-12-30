@@ -238,7 +238,7 @@ class StoEntryPage extends StatelessWidget {
         height: 84,
         color: Colors.white.withOpacity(0.06),
         child: Image.asset(
-          'assets/images/sto/baseball.png',
+          'assets/images/sto/boogi_baseball.png',
           fit: BoxFit.cover,
           errorBuilder: (_, __, ___) => const Icon(Icons.sports_baseball, color: Colors.white, size: 44),
         ),
