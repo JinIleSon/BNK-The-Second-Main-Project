@@ -59,7 +59,7 @@ class _DodgerGameScreenState extends State<DodgerGameScreen> {
           child: SizedBox(
             height: 52,
             child: Image.asset(
-              'assets/images/hotteok-title.png',
+              'assets/images/game/dodge/hotteok-title.png',
               fit: BoxFit.contain,
               errorBuilder: (_, __, ___) => const SizedBox.shrink(),
             ),
@@ -308,7 +308,8 @@ class DodgerGame extends FlameGame with HasCollisionDetection {
   Future<void> onLoad() async {
     camera.viewport = FixedResolutionViewport(resolution: Vector2(400, 600));
 
-    images.prefix = 'assets/images/';
+    // ✅ 에셋 기본 경로 변경
+    images.prefix = 'assets/images/game/dodge/';
 
     await images.loadAll([
       'player.png',
@@ -684,11 +685,11 @@ class _TopHudBar extends StatelessWidget {
                   const SizedBox(width: 14),
                   Text('Level: ${s.level}'),
                   const Spacer(),
-                  _iconStat('assets/images/poop.png', '${s.poopAvoided}'),
+                  _iconStat('assets/images/game/dodge/poop.png', '${s.poopAvoided}'),
                   const SizedBox(width: 12),
-                  _iconStat('assets/images/porkSoup.png', '${s.boosters}'),
+                  _iconStat('assets/images/game/dodge/porkSoup.png', '${s.boosters}'),
                   const SizedBox(width: 12),
-                  _iconStat('assets/images/dongbak.png', '${s.dongbaks}'),
+                  _iconStat('assets/images/game/dodge/dongbak.png', '${s.dongbaks}'),
                 ],
               ),
             ),
@@ -829,19 +830,19 @@ class _MenuOverlay extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset('assets/images/poop.png', width: 20, height: 20),
+              Image.asset('assets/images/game/dodge/poop.png', width: 20, height: 20),
               const SizedBox(width: 6),
               Text('${s.poopAvoided}'),
               const SizedBox(width: 12),
               const Text('|'),
               const SizedBox(width: 12),
-              Image.asset('assets/images/porkSoup.png', width: 20, height: 20),
+              Image.asset('assets/images/game/dodge/porkSoup.png', width: 20, height: 20),
               const SizedBox(width: 6),
               Text('${s.boosters}'),
               const SizedBox(width: 12),
               const Text('|'),
               const SizedBox(width: 12),
-              Image.asset('assets/images/dongbak.png', width: 20, height: 20),
+              Image.asset('assets/images/game/dodge/dongbak.png', width: 20, height: 20),
               const SizedBox(width: 6),
               Text('${s.dongbaks}'),
             ],
