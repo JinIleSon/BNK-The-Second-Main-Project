@@ -4,16 +4,30 @@ import '../store/sto_store.dart';
 import '../utils/sto_format.dart';
 
 class StoPortfolioPage extends StatelessWidget {
-  const StoPortfolioPage({super.key, required this.store});
+  const StoPortfolioPage({
+    super.key,
+    required this.store,
+    this.extraBottomPadding = 0, // ✅ 부모가 필요하면 추가로 넣는 여백
+  });
 
   final StoStore store;
+
+  /// ✅ 하단 고정 UI를 Stack으로 덮는 구조인 화면에서만,
+  /// 부모가 실제 하단바 높이만큼을 넘겨줘서 마지막 아이템이 가리지 않게 한다.
+  /// (Scaffold bottomNavigationBar/bottomSheet로 이미 공간을 빼면 0 유지)
+  final double extraBottomPadding;
 
   @override
   Widget build(BuildContext context) {
     final items = store.holdings.values.toList();
 
+    // ✅ 기본 여백만 유지: 과도한 빈 공간 방지
+    final safeBottom = MediaQuery.of(context).padding.bottom;
+    const baseGap = 12.0;
+    final bottomPadding = safeBottom + baseGap + extraBottomPadding;
+
     return ListView(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
+      padding: EdgeInsets.fromLTRB(16, 0, 16, bottomPadding),
       children: [
         const SizedBox(height: 6),
         _card(
@@ -58,14 +72,19 @@ class StoPortfolioPage extends StatelessWidget {
               ),
               child: Row(
                 children: [
+                  _logo(t.logoAsset),
+                  const SizedBox(width: 12),
+
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(t.name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900)),
                         const SizedBox(height: 4),
-                        Text('${h.qty}주 · 평단 ${formatWon(h.avgPrice)}',
-                            style: TextStyle(color: StoTheme.subText, fontWeight: FontWeight.w700)),
+                        Text(
+                          '${h.qty}주 · 평단 ${formatWon(h.avgPrice)}',
+                          style: TextStyle(color: StoTheme.subText, fontWeight: FontWeight.w700),
+                        ),
                       ],
                     ),
                   ),
@@ -119,6 +138,30 @@ class StoPortfolioPage extends StatelessWidget {
         border: Border.all(color: Colors.white.withOpacity(0.06)),
       ),
       child: Text(text, style: TextStyle(color: StoTheme.subText, fontWeight: FontWeight.w700)),
+    );
+  }
+
+  Widget _logo(String? assetPath) {
+    const size = 34.0;
+
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.06),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: Colors.white.withOpacity(0.08)),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: (assetPath == null || assetPath.isEmpty)
+            ? Icon(Icons.shield, color: StoTheme.subText, size: 18)
+            : Image.asset(
+          assetPath,
+          fit: BoxFit.contain,
+          errorBuilder: (_, __, ___) => Icon(Icons.shield, color: StoTheme.subText, size: 18),
+        ),
+      ),
     );
   }
 }
