@@ -9,6 +9,10 @@ class StoTrade {
   final int week;
   final DateTime at;
 
+  /// 리포트용(특히 sell)
+  final int? avgPriceAtTrade;
+  final int? pnl; // sell일 때 (price - avg) * qty
+
   const StoTrade({
     required this.id,
     required this.teamId,
@@ -17,5 +21,7 @@ class StoTrade {
     required this.price,
     required this.week,
     required this.at,
+    this.avgPriceAtTrade,
+    this.pnl,
   });
 }
