@@ -46,16 +46,6 @@ class _DodgerGameScreenState extends State<DodgerGameScreen> {
     // ✅ HUD 바(게임 박스 바깥 위) 높이
     const hudBarH = 64.0;
 
-    final controlsH = 12 + 56 + 12 + mq.padding.bottom;
-    final availH = mq.size.height - mq.padding.top - controlsH - controlsLift - hudBarH - 16;
-
-    double w = min(mq.size.width - 24, 400);
-    double h = w * 1.5;
-    if (h > availH) {
-      h = max(520, availH);
-      w = h * (2 / 3);
-    }
-
     return Scaffold(
       backgroundColor: scaffoldBg,
       appBar: AppBar(
@@ -76,99 +66,139 @@ class _DodgerGameScreenState extends State<DodgerGameScreen> {
           ),
         ),
       ),
-      body: SafeArea(
-        child: Stack(
-          children: [
-            Column(
-              children: [
-                const SizedBox(height: 8),
 
-                // ✅ 게임 박스 바깥(위) HUD 바
-                Center(
-                  child: SizedBox(
-                    width: w,
-                    height: hudBarH,
-                    child: _TopHudBar(game: _game),
-                  ),
-                ),
+      // ✅ SafeArea 제거(= bottom padding 이중 적용 방지)
+      //    대신 _ControlsBar 내부에서 mq.padding.bottom을 책임지게 둔다.
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          // _ControlsBar 내부 padding과 "같은 기준"으로 계산(= mq.padding.bottom 포함)
+          final controlsH = 12.0 + 56.0 + 12.0 + mq.padding.bottom;
+          final reservedBottom = controlsH + controlsLift;
 
-                const SizedBox(height: 8),
+          // 위쪽 고정 영역(간격 포함)
+          const topGap = 8.0;
+          const betweenHudAndGame = 8.0;
 
-                Transform.translate(
-                  offset: const Offset(0, -8),
-                  child: Center(
+          final fixedTop = topGap + hudBarH + betweenHudAndGame;
+          final maxGameH = max(0.0, constraints.maxHeight - fixedTop - reservedBottom);
+
+          // 폭/높이 계산: 절대 maxGameH 초과 금지
+          final maxW = mq.size.width - 24;
+          double w = min(maxW, 400);
+          double h = w * 1.5;
+
+          if (h > maxGameH) {
+            h = maxGameH;
+            w = h * (2 / 3);
+
+            if (w > maxW) {
+              w = maxW;
+              h = min(w * 1.5, maxGameH);
+            }
+          }
+
+          // 극단 화면 방어
+          if (h < 120) {
+            h = maxGameH;
+            w = min(maxW, h * (2 / 3));
+          }
+
+          return Stack(
+            children: [
+              Column(
+                children: [
+                  const SizedBox(height: topGap),
+
+                  // ✅ 게임 박스 바깥(위) HUD 바
+                  Center(
                     child: SizedBox(
                       width: w,
-                      height: h,
-                      child: _DashedBorder(
-                        radius: 12,
-                        strokeWidth: 2,
-                        dash: 6,
-                        gap: 5,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: DecoratedBox(
-                            decoration: BoxDecoration(
-                              color: gameFrameBg,
-                              boxShadow: [
-                                BoxShadow(
-                                  blurRadius: 24,
-                                  offset: const Offset(0, 8),
-                                  color: Colors.black.withOpacity(0.08),
-                                )
-                              ],
-                            ),
-                            child: GameWidget(
-                              game: _game,
-                              overlayBuilderMap: {
-                                'Menu': (_, DodgerGame game) => _MenuOverlay(game: game),
-                              },
-                              // ✅ A안: initialActiveOverlays는 비워둬도 됨 (게임쪽에서 ready시에 overlays.add 처리)
-                              initialActiveOverlays: const [],
+                      height: hudBarH,
+                      child: _TopHudBar(game: _game),
+                    ),
+                  ),
+
+                  const SizedBox(height: betweenHudAndGame),
+
+                  Transform.translate(
+                    offset: const Offset(0, -8),
+                    child: Center(
+                      child: SizedBox(
+                        width: w,
+                        height: h,
+                        child: _DashedBorder(
+                          radius: 12,
+                          strokeWidth: 2,
+                          dash: 6,
+                          gap: 5,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: DecoratedBox(
+                              decoration: BoxDecoration(
+                                color: gameFrameBg,
+                                boxShadow: [
+                                  BoxShadow(
+                                    blurRadius: 24,
+                                    offset: const Offset(0, 8),
+                                    color: Colors.black.withOpacity(0.08),
+                                  )
+                                ],
+                              ),
+                              child: GameWidget(
+                                game: _game,
+                                overlayBuilderMap: {
+                                  'Menu': (_, DodgerGame game) => _MenuOverlay(game: game),
+                                },
+                                initialActiveOverlays: const [],
+                              ),
                             ),
                           ),
                         ),
                       ),
                     ),
                   ),
-                ),
-                const Spacer(),
-                SizedBox(height: controlsH + controlsLift),
-              ],
-            ),
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: controlsLift,
-              child: _ControlsBar(
-                leftPressed: _leftPressed,
-                rightPressed: _rightPressed,
-                onLeftDown: () {
-                  if (_game.phase.value != GamePhase.playing) _game.startGame();
-                  setState(() => _leftPressed = true);
-                  _rightPressed = false;
-                  _game.setDirection(-1);
-                  _game.setFacingRight(false);
-                },
-                onLeftUp: () {
-                  setState(() => _leftPressed = false);
-                  if (_game.direction == -1) _game.setDirection(0);
-                },
-                onRightDown: () {
-                  if (_game.phase.value != GamePhase.playing) _game.startGame();
-                  setState(() => _rightPressed = true);
-                  _leftPressed = false;
-                  _game.setDirection(1);
-                  _game.setFacingRight(true);
-                },
-                onRightUp: () {
-                  setState(() => _rightPressed = false);
-                  if (_game.direction == 1) _game.setDirection(0);
-                },
+
+                  const Spacer(),
+
+                  // ✅ 컨트롤 오버레이 공간 예약
+                  SizedBox(height: reservedBottom),
+                ],
               ),
-            ),
-          ],
-        ),
+
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: controlsLift,
+                child: _ControlsBar(
+                  leftPressed: _leftPressed,
+                  rightPressed: _rightPressed,
+                  onLeftDown: () {
+                    if (_game.phase.value != GamePhase.playing) _game.startGame();
+                    setState(() => _leftPressed = true);
+                    _rightPressed = false;
+                    _game.setDirection(-1);
+                    _game.setFacingRight(false);
+                  },
+                  onLeftUp: () {
+                    setState(() => _leftPressed = false);
+                    if (_game.direction == -1) _game.setDirection(0);
+                  },
+                  onRightDown: () {
+                    if (_game.phase.value != GamePhase.playing) _game.startGame();
+                    setState(() => _rightPressed = true);
+                    _leftPressed = false;
+                    _game.setDirection(1);
+                    _game.setFacingRight(true);
+                  },
+                  onRightUp: () {
+                    setState(() => _rightPressed = false);
+                    if (_game.direction == 1) _game.setDirection(0);
+                  },
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
@@ -298,9 +328,8 @@ class DodgerGame extends FlameGame with HasCollisionDetection {
     _resetToReady();
   }
 
-  // ✅ A안 적용: ready 상태에서도 엔진을 멈추지 않고, 오버레이만 띄운다
+  // ✅ ready 상태에서도 엔진을 멈추지 않고, 오버레이만 띄운다
   void _resetToReady() {
-    // pauseEngine(); // ❌ 제거
     phase.value = GamePhase.ready;
 
     children.whereType<DropComponent>().toList().forEach((c) => c.removeFromParent());
@@ -329,11 +358,7 @@ class DodgerGame extends FlameGame with HasCollisionDetection {
 
     _pushHud();
 
-    // ✅ 시작 메뉴 오버레이 표시(ready 상태)
-    // (gameOver에서는 이미 overlays.add('Menu') 하고 있음)
     overlays.add('Menu');
-
-    // ✅ 혹시라도 이전 상태에서 pause였으면 풀어준다
     resumeEngine();
   }
 
@@ -727,11 +752,18 @@ class _MenuOverlay extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(height: 10),
+
                             if (isOver)
                               const Text(
                                 '다시 도전!',
-                                style: TextStyle(color: Color(0xFF333333)),
                                 textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w900,
+                                  letterSpacing: -0.2,
+                                  height: 1.1,
+                                  color: Colors.black,
+                                ),
                               )
                             else if (showHowTo)
                               const Text(
@@ -739,10 +771,12 @@ class _MenuOverlay extends StatelessWidget {
                                 style: TextStyle(color: Color(0xFF333333)),
                                 textAlign: TextAlign.center,
                               ),
+
                             if (isOver) ...[
                               const SizedBox(height: 12),
                               _statsLine(s),
                             ],
+
                             const SizedBox(height: 14),
                             SizedBox(
                               width: double.infinity,
