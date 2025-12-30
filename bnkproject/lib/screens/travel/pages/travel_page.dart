@@ -125,7 +125,7 @@ class _TravelPageState extends State<TravelPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            '여행 ~부기 성장 챌린지~',
+                            '여행 ~부기 관광 챌린지~',
                             style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.w800,
