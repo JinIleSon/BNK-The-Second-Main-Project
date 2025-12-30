@@ -101,4 +101,51 @@ class SignupApi {
     final json = jsonDecode(res.body) as Map<String, dynamic>;
     return SimpleResult.fromJson(json);
   }
+
+  // ✅ 기업 회원가입: POST /api/member/signup/company
+  Future<SimpleResult> signupCompany({
+    required String mid,
+    required String mpw,
+    required String mname,
+    required String mjumin,
+    required String memail,
+    required String mphone,
+  }) async {
+    final uri = Uri.parse('$baseUrl/api/member/signup/company');
+
+    try {
+      final res = await http.post(
+        uri,
+        headers: {'Content-Type': 'application/json; charset=utf-8'},
+        body: jsonEncode({
+          'mname': mname,
+          'mjumin': mjumin,
+          'memail': memail,
+          'mphone': mphone,
+          'mid': mid,
+          'mpw': mpw,
+        }),
+      );
+
+      final bodyText = utf8.decode(res.bodyBytes);
+
+      if (res.statusCode != 200) {
+        try {
+          final json = jsonDecode(bodyText) as Map<String, dynamic>;
+          return SimpleResult.fromJson(json);
+        } catch (_) {
+          return SimpleResult(ok: false, message: '서버 오류 (${res.statusCode})');
+        }
+      }
+
+      try {
+        final json = jsonDecode(bodyText) as Map<String, dynamic>;
+        return SimpleResult.fromJson(json);
+      } catch (_) {
+        return SimpleResult(ok: false, message: '서버 응답 파싱 실패');
+      }
+    } catch (e) {
+      return SimpleResult(ok: false, message: '서버 연결 실패: $e');
+    }
+  }
 }

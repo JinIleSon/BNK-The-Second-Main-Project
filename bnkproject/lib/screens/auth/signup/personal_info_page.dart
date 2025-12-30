@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'signup_flow_provider.dart';
-import 'signup_done_page.dart';
 import '../login_main.dart';
 import 'package:bnkproject/screens/auth/signup/signup_api.dart';
 import 'package:bnkproject/api/member_api.dart';
@@ -48,7 +47,6 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
           children: [
 
             // 인증수단, 인증대상 Text 삭제 (2025.12.26 이준우)
-
             const SizedBox(height: 16),
 
             TextField(

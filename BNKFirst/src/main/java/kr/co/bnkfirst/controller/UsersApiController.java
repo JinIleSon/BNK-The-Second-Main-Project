@@ -312,7 +312,7 @@ public class UsersApiController {
     }
 
     /*
-        날짜 : 2025.12.26
+        날짜 : 2025.12.26 / 2025.12.29
         이름 : 이준우
         내용 : 플러터 관련 회원가입 백엔드 추가
      */
@@ -358,5 +358,42 @@ public class UsersApiController {
         private String mpw;
         private String mname;
         private String mphone;
+    }
+
+    // 기업 회원가입
+    @PostMapping("/signup/company")
+    public ResponseEntity<?> signupCompany(@RequestBody UsersDTO dto) {
+
+        // 필수값 체크 (기업 가입에서 필요한 최소 컬럼)
+        if (dto.getMid() == null || dto.getMid().isBlank()
+                || dto.getMpw() == null || dto.getMpw().isBlank()
+                || dto.getMname() == null || dto.getMname().isBlank()
+                || dto.getMjumin() == null || dto.getMjumin().isBlank()
+                || dto.getMemail() == null || dto.getMemail().isBlank()
+                || dto.getMphone() == null || dto.getMphone().isBlank()) {
+
+            return ResponseEntity.badRequest()
+                    .body(new SimpleResult(false, "필수값(mid/mpw/mname/mjumin/memail/mphone)을 입력하세요."));
+        }
+
+        // 아이디 중복 체크
+        if (usersService.existsByMid(dto.getMid())) {
+            return ResponseEntity.ok(new SimpleResult(false, "이미 사용 중인 아이디입니다."));
+        }
+
+        try {
+            // ROLE만 기업으로 강제(서비스에서도 강제하지만 여기서 박아도 됨)
+            dto.setRole("COMPANY");
+
+            usersService.registerCompanyMinimal(dto); // BCrypt + insertUserCompanyMinimal
+            return ResponseEntity.ok(new SimpleResult(true, "기업 회원가입 완료"));
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.ok(new SimpleResult(false, e.getMessage()));
+        } catch (Exception e) {
+            log.error("[API] 기업 회원가입 오류", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new SimpleResult(false, "서버 오류"));
+        }
     }
 }
