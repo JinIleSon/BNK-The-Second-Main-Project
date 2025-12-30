@@ -243,7 +243,7 @@ public class UsersService {
         return true;
     }
 
-    // 플러터 회원가입
+    // 플러터 회원가입(개인/기업)
     @Transactional
     public boolean registerPersonalMinimal(UsersDTO dto) {
         // 비번 암호화(웹 가입이 BCrypt 쓰면 여기서도 반드시 동일하게)
@@ -255,5 +255,33 @@ public class UsersService {
         }
 
         return usersMapper.insertUserPersonalMinimal(dto) == 1;
+    }
+
+    @Transactional
+    public boolean registerCompanyMinimal(UsersDTO dto) {
+
+        // 0) 필수값 방어 (컨트롤러에서 해도, 서비스에서도 한 번 더)
+        if (dto.getMid() == null || dto.getMid().isBlank()) return false;
+        if (dto.getMpw() == null || dto.getMpw().isBlank()) return false;
+
+        // 기업 가입에 필요한 값들
+        if (dto.getMname() == null || dto.getMname().isBlank()) return false;   // 회사명/담당자명 (너 정책대로 mname 하나)
+        if (dto.getMjumin() == null || dto.getMjumin().isBlank()) return false; // 사업자번호
+        if (dto.getMemail() == null || dto.getMemail().isBlank()) return false; // 이메일
+        if (dto.getMphone() == null || dto.getMphone().isBlank()) return false; // 연락처
+
+        // 1) MID 중복 체크
+        if (usersMapper.existsByMid(dto.getMid()) > 0) {
+            return false;
+        }
+
+        // 2) 비번 암호화
+        dto.setMpw(passwordEncoder.encode(dto.getMpw()));
+
+        // 3) ROLE 강제
+        dto.setRole("COMPANY");
+
+        // 4) INSERT
+        return usersMapper.insertUserCompanyMinimal(dto) == 1;
     }
 }
