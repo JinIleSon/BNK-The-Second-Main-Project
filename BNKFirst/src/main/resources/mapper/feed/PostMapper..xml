@@ -2,13 +2,160 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.bnkfirst.mapper.feed.PostMapper">
 
-<!--
-     날짜 : 2025.12.24
-     이름 : 이준우
-     내용 : 게시글/좋아요/댓글 SQL 매퍼
--->
+    <!-- 1. 목록 (BOARD/FEED 공용) -->
+    <select id="selectPostList" resultType="kr.co.bnkfirst.dto.feed.PostDTO">
+        SELECT
+        P.POSTID            AS postid,
+        P."AUTHORuId"       AS authoruId,
+        P.POSTTYPE          AS posttype,
+        P.MARKET            AS market,
+        P.TITLE             AS title,
+        NULL                AS body,
+        P.COVERURL          AS coverurl,
+        P.STATUS            AS status,
+        NVL(P.VIEWCOUNT,0)  AS viewcount,
+        P.CREATEDAT         AS createdat,
+        P.UPDATEDAT         AS updatedat,
 
-<mapper namespace="kr.co.bnkfirst.mapper.feed.ContentArticleMapper">
+        UP.NICKNAME         AS authornickname,
+        UP.AVATARURL        AS authoravatarurl,
+
+        NVL(L.LIKE_COUNT, 0)    AS likecount,
+        NVL(C.COMMENT_COUNT, 0) AS commentcount
+
+        FROM POST P
+        LEFT JOIN USERPROFILE UP
+        ON UP."uId" = P."AUTHORuId"
+        LEFT JOIN (
+        SELECT POSTID, COUNT(*) AS LIKE_COUNT
+        FROM POSTLIKE
+        GROUP BY POSTID
+        ) L ON L.POSTID = P.POSTID
+        LEFT JOIN (
+        SELECT POSTID, COUNT(*) AS COMMENT_COUNT
+        FROM POSTCOMMENT
+        WHERE STATUS = 'ACTIVE'
+        GROUP BY POSTID
+        ) C ON C.POSTID = P.POSTID
+
+        WHERE P.STATUS = 'ACTIVE'
+        AND P.POSTTYPE = #{posttype, jdbcType=VARCHAR}
+        <if test="lastPostId != null">
+            AND P.POSTID <![CDATA[ < ]]> #{lastPostId, jdbcType=NUMERIC}
+        </if>
+
+        ORDER BY P.POSTID DESC
+        FETCH FIRST #{size, jdbcType=NUMERIC} ROWS ONLY
+    </select>
+
+    <!-- 2. 상세 (BODY 포함) -->
+    <select id="selectPostDetail" resultType="kr.co.bnkfirst.dto.feed.PostDTO">
+        SELECT
+            P.POSTID            AS postid,
+            P."AUTHORuId"       AS authoruId,
+            P.POSTTYPE          AS posttype,
+            P.MARKET            AS market,
+            P.TITLE             AS title,
+            P.BODY              AS body,
+            P.COVERURL          AS coverurl,
+            P.STATUS            AS status,
+            NVL(P.VIEWCOUNT,0)  AS viewcount,
+            P.CREATEDAT         AS createdat,
+            P.UPDATEDAT         AS updatedat,
+
+            UP.NICKNAME         AS authornickname,
+            UP.AVATARURL        AS authoravatarurl,
+
+            NVL(L.LIKE_COUNT, 0)    AS likecount,
+            NVL(C.COMMENT_COUNT, 0) AS commentcount
+
+        FROM POST P
+                 LEFT JOIN USERPROFILE UP
+                           ON UP."uId" = P."AUTHORuId"
+                 LEFT JOIN (
+            SELECT POSTID, COUNT(*) AS LIKE_COUNT
+            FROM POSTLIKE
+            GROUP BY POSTID
+        ) L ON L.POSTID = P.POSTID
+                 LEFT JOIN (
+            SELECT POSTID, COUNT(*) AS COMMENT_COUNT
+            FROM POSTCOMMENT
+            WHERE STATUS = 'ACTIVE'
+            GROUP BY POSTID
+        ) C ON C.POSTID = P.POSTID
+
+        WHERE P.POSTID = #{postid, jdbcType=NUMERIC}
+          AND P.STATUS = 'ACTIVE'
+          AND P.POSTTYPE = #{posttype, jdbcType=VARCHAR}
+    </select>
+
+    <!-- 3. 조회수 증가 -->
+    <update id="increaseViewCount">
+        UPDATE POST
+        SET VIEWCOUNT = NVL(VIEWCOUNT, 0) + 1
+        WHERE POSTID = #{postid, jdbcType=NUMERIC}
+          AND STATUS = 'ACTIVE'
+    </update>
+
+    <!-- 4. 작성 -->
+    <insert id="insertPost" parameterType="kr.co.bnkfirst.dto.feed.PostDTO">
+        INSERT INTO POST (
+            POSTID,
+            "AUTHORuId",
+            POSTTYPE,
+            MARKET,
+            TITLE,
+            BODY,
+            COVERURL,
+            STATUS,
+            CREATEDAT,
+            UPDATEDAT,
+            VIEWCOUNT
+        ) VALUES (
+                     SEQPOST.NEXTVAL,
+                     #{authoruId, jdbcType=NUMERIC},
+                     #{posttype, jdbcType=VARCHAR},
+                     #{market, jdbcType=VARCHAR},
+                     #{title, jdbcType=VARCHAR},
+                     #{body, jdbcType=CLOB},
+                     #{coverurl, jdbcType=VARCHAR},
+                     'ACTIVE',
+                     SYSTIMESTAMP,
+                     NULL,
+                     0
+                 )
+    </insert>
+
+    <select id="selectPostCurrval" resultType="long">
+        SELECT SEQPOST.CURRVAL FROM DUAL
+    </select>
+
+    <!-- 5. 수정 (작성자만) -->
+    <update id="updatePost" parameterType="kr.co.bnkfirst.dto.feed.PostDTO">
+        UPDATE POST
+        SET
+            TITLE = #{title, jdbcType=VARCHAR},
+            BODY = #{body, jdbcType=CLOB},
+            COVERURL = #{coverurl, jdbcType=VARCHAR},
+            UPDATEDAT = SYSTIMESTAMP
+        WHERE POSTID = #{postid, jdbcType=NUMERIC}
+          AND "AUTHORuId" = #{authoruId, jdbcType=NUMERIC}
+          AND STATUS = 'ACTIVE'
+          AND POSTTYPE = #{posttype, jdbcType=VARCHAR}
+    </update>
+
+    <!-- 6. 삭제 (작성자만, 소프트 삭제) -->
+    <update id="softDeletePost">
+        UPDATE POST
+        SET
+            STATUS = 'DELETED',
+            UPDATEDAT = SYSTIMESTAMP
+        WHERE POSTID = #{postid, jdbcType=NUMERIC}
+          AND "AUTHORuId" = #{authoruId, jdbcType=NUMERIC}
+          AND STATUS = 'ACTIVE'
+          AND POSTTYPE = #{posttype, jdbcType=VARCHAR}
+    </update>
 
 </mapper>
