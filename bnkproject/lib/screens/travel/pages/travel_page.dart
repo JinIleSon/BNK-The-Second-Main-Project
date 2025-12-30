@@ -16,7 +16,6 @@ import '../widgets/quick_card.dart';
 import '../widgets/tab_pill.dart';
 import '../widgets/xp.dart';
 
-
 class TravelPage extends StatefulWidget {
   const TravelPage({super.key});
 
@@ -27,7 +26,7 @@ class TravelPage extends StatefulWidget {
 class _TravelPageState extends State<TravelPage> {
   final ScrollController _scrollCtrl = ScrollController();
 
-  int _tabIndex = 0; // 0: mission, 1: reward, 2: map, 3: rank, 4: boogi
+  int _tabIndex = 0; // 0: mission, 1: reward, 2: map_spot.dart, 3: rank, 4: boogi
   String _categoryId = 'food';
 
   @override
@@ -57,7 +56,6 @@ class _TravelPageState extends State<TravelPage> {
 
   @override
   Widget build(BuildContext context) {
-    // ✅ 구버전 호환: MediaQuery.sizeOf -> MediaQuery.of
     final width = MediaQuery.of(context).size.width;
     final isWide = width >= 640;
 
@@ -147,7 +145,6 @@ class _TravelPageState extends State<TravelPage> {
                     ),
                     if (isWide) ...[
                       const SizedBox(width: 12),
-                      // ✅ LevelXpBlock이 const 생성자 아닐 수도 있어서 const 제거
                       LevelXpBlock(
                         levelText: 'Lv.3 상인 부기',
                         xpText: 'XP 312 / 500',
@@ -232,13 +229,11 @@ class _TravelPageState extends State<TravelPage> {
                       ),
                     ),
                     const SizedBox(height: 16),
-
                     BoogiCategoryBar(
                       selectedId: _categoryId,
                       onSelect: _selectCategory,
                     ),
                     const SizedBox(height: 16),
-
                     LayoutBuilder(
                       builder: (context, constraints) {
                         final cols = constraints.maxWidth >= 900 ? 3 : 1;
@@ -281,9 +276,7 @@ class _TravelPageState extends State<TravelPage> {
                         );
                       },
                     ),
-
                     const SizedBox(height: 16),
-
                     GlassCard(
                       radius: 18,
                       padding: const EdgeInsets.all(6),
@@ -297,12 +290,11 @@ class _TravelPageState extends State<TravelPage> {
                         ],
                       ),
                     ),
-
                     const SizedBox(height: 12),
 
                     if (_tabIndex == 0) MissionTab(onGoTab: _goTab),
                     if (_tabIndex == 1) RewardTab(onSnack: _showSnack, onGoTab: _goTab),
-                    if (_tabIndex == 2) MapTab(onSnack: _showSnack),
+                    if (_tabIndex == 2) MapTab(onSnack: _showSnack, categoryId: _categoryId), // ✅ 변경
                     if (_tabIndex == 3) const RankTab(),
                     if (_tabIndex == 4) BoogiTab(onSnack: _showSnack),
 

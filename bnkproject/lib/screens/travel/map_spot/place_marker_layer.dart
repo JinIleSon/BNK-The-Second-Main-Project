@@ -1,12 +1,12 @@
-import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
 
-import 'spot.dart';
+import 'map_spot.dart';
 import 'place_marker.dart';
 
 class PlaceMarkerLayer extends StatelessWidget {
   final List<Spot> spots;
-  final void Function(Spot spot) onTapSpot;
+  final ValueChanged<Spot> onTapSpot;
 
   const PlaceMarkerLayer({
     super.key,
@@ -16,8 +16,8 @@ class PlaceMarkerLayer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final markers = spots
-        .map(
+    final List<Marker> markers = spots
+        .map<Marker>(
           (s) => Marker(
         point: s.position,
         width: 44,

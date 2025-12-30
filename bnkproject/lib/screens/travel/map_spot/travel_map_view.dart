@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
+import 'map_spot.dart';
 import 'place_marker_layer.dart';
-import 'spot.dart';
 
 class TravelMapView extends StatelessWidget {
   final MapController controller;
@@ -12,7 +12,7 @@ class TravelMapView extends StatelessWidget {
   final VoidCallback onMapReady;
 
   final List<Spot> spots;
-  final void Function(Spot spot) onTapSpot;
+  final ValueChanged<Spot> onTapSpot;
 
   const TravelMapView({
     super.key,
