@@ -25,3 +25,7 @@ export 'widgets/sto_summary_card.dart';
 export 'widgets/sto_team_tile.dart';
 export 'widgets/sto_trade_sheet.dart';
 export 'widgets/sto_price_badge.dart';
+
+export 'models/sto_team_stat.dart';
+export 'models/sto_news_item.dart';
+export 'models/sto_season_report.dart';
