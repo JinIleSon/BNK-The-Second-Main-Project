@@ -8,7 +8,7 @@ import 'tabs/boarder_news.dart';
 import 'pages/boarder_profile.dart';
 
 // ✅ demo_main.dart 진입 위젯 사용
-import 'package:bnkproject/mlkit_face_detection_start/demo_main.dart';
+import 'package:bnkproject/screens/mlkit_face_detection_start/demo_main.dart';
 
 /*
     날짜 : 2025.12.17(수)
