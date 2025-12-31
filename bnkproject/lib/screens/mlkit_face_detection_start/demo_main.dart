@@ -1,3 +1,4 @@
+// lib/mlkit_face_detection_start/demo_main.dart
 import 'package:flutter/material.dart';
 
 import 'face_detector_app.dart';
@@ -25,6 +26,12 @@ class MlkitDemoEntryPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const FaceDetectorApp();
+    return Scaffold(
+      appBar: AppBar(title: const Text('얼굴 인증')),
+      body: FaceDetectorApp(
+        // ✅ 인증 성공 시 이 콜백 호출되게 FaceDetectorApp 수정 필요(아래 3번)
+        onVerified: () => Navigator.pop(context, true),
+      ),
+    );
   }
 }
