@@ -5,11 +5,10 @@ import 'package:provider/provider.dart';
 import 'signup_flow_provider.dart';
 import 'personal_info_page.dart';
 
-// TODO: 너 프로젝트의 FaceAuthScreen/FaceAuthResult import 경로로 수정
-import '../../face/face_auth_screen.dart';
-import '../../face/face_auth_result.dart';
-
 import '../../../api/verification_api.dart';
+
+// ✅ ML Kit 데모 진입 페이지 import
+import '../../mlkit_face_detection_start/demo_main.dart';
 
 class PersonalAuthPage extends StatelessWidget {
   const PersonalAuthPage({super.key});
@@ -266,15 +265,29 @@ class _FaceAuthTabState extends State<_FaceAuthTab>
   Future<void> _startFaceAuth(BuildContext context) async {
     setState(() => _msg = null);
 
+    // ✅ ML Kit 진입 페이지로 push (MaterialApp 절대 push 금지)
     final dynamic result = await Navigator.push<dynamic>(
       context,
-      MaterialPageRoute(builder: (_) => const FaceAuthScreen()),
+      MaterialPageRoute(builder: (_) => const MlkitDemoEntryPage()),
     );
 
     if (!mounted) return;
     if (result == null) return;
 
-    // String path 반환 케이스
+    // ✅ 권장 리턴: bool (성공이면 true)
+    if (result is bool) {
+      if (result == true) {
+        context.read<SignupFlowProvider>().setFaceResult(
+          path: 'mlkit_verified',
+          turnedLeft: true,
+          turnedRight: true,
+        );
+        setState(() => _msg = '얼굴 인증 완료');
+      }
+      return;
+    }
+
+    // (옵션) String path 반환 케이스
     if (result is String) {
       context.read<SignupFlowProvider>().setFaceResult(
         path: result,
@@ -285,12 +298,12 @@ class _FaceAuthTabState extends State<_FaceAuthTab>
       return;
     }
 
-    // FaceAuthResult 반환 케이스
-    if (result is FaceAuthResult) {
+    // (옵션) Map 반환 케이스
+    if (result is Map) {
       context.read<SignupFlowProvider>().setFaceResult(
-        path: result.path,
-        turnedLeft: result.turnedLeft,
-        turnedRight: result.turnedRight,
+        path: (result['path'] ?? 'mlkit_verified') as String,
+        turnedLeft: (result['turnedLeft'] ?? true) as bool,
+        turnedRight: (result['turnedRight'] ?? true) as bool,
       );
       setState(() => _msg = '얼굴 인증 결과를 저장했습니다.');
       return;
