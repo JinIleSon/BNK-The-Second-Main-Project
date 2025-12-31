@@ -14,24 +14,21 @@ class MlkitDemoApp extends StatelessWidget {
     return MaterialApp(
       title: 'ML Kit Demo',
       theme: ThemeData(useMaterial3: true),
-      home: const FaceDetectorApp(),
+      home: const FaceDetectorApp(), // 단독 실행: 자동 pop 없음
     );
   }
 }
 
 /// ✅ 기존 앱(BoardMain)에서 push로 들어갈 "진입 페이지"
-/// MaterialApp 없이 페이지(Scaffold)만 반환해야 함.
+/// ✅ 중복 AppBar 방지: 여기서는 Scaffold/AppBar 만들지 않는다.
+/// FaceDetectorApp의 AppBar(=ML Kit 테스트)만 사용한다.
 class MlkitDemoEntryPage extends StatelessWidget {
   const MlkitDemoEntryPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('얼굴 인증')),
-      body: FaceDetectorApp(
-        // ✅ 인증 성공 시 이 콜백 호출되게 FaceDetectorApp 수정 필요(아래 3번)
-        onVerified: () => Navigator.pop(context, true),
-      ),
+    return FaceDetectorApp(
+      onVerified: () => Navigator.pop(context, true),
     );
   }
 }
