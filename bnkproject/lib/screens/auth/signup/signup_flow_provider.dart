@@ -47,7 +47,7 @@ class SignupFlowProvider extends ChangeNotifier {
     if (userType != SignupUserType.personal) return false;
     if (!personalVerified) return false;
 
-    // ✅ face path 빈값 방지까지 포함
+    // ✅ face_legacy path 빈값 방지까지 포함
     if (authChannel == AuthChannel.face) {
       return (faceCapturePath != null) &&
           faceCapturePath!.isNotEmpty &&

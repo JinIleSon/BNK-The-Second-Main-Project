@@ -65,7 +65,7 @@ class FaceAuthOutcomeScreen extends StatelessWidget {
                     child: OutlinedButton(
                       onPressed: () {
                         // 실패 시: FaceAuthScreen 다시 띄우기
-                        Navigator.pushReplacementNamed(context, '/face-auth');
+                        Navigator.pushReplacementNamed(context, '/face_legacy-auth');
                       },
                       child: const Text('다시 시도'),
                     ),
