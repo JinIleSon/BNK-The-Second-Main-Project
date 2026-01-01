@@ -128,4 +128,11 @@ public class PostService {
         String t = s.trim();
         return t.isBlank() ? null : t;
     }
+
+    // 조회수
+    @Transactional
+    public PostDTO getPostDetail(Long postid, String posttype) {
+        postMapper.increaseViewCount(postid);
+        return postMapper.selectPostDetail(postid, posttype);
+    }
 }

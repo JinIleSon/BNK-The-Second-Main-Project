@@ -105,4 +105,11 @@ public class PostController {
         }
         return null;
     }
+
+    @GetMapping("/{posttype}/{postid}")
+    public PostDTO detail(@PathVariable String posttype,
+                          @PathVariable Long postid) {
+        return postService.getPostDetail(postid, posttype.toUpperCase());
+    }
+
 }
