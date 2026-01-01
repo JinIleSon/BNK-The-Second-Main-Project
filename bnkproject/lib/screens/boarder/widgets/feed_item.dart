@@ -19,6 +19,8 @@ class FeedItem {
   int commentCount;
   bool isLiked;
 
+  int viewCount;
+
   FeedItem({
     required this.postId,
     this.authoruId = 0, // 하드 코딩 지우면 나중에 수정해야할 부분
@@ -30,6 +32,7 @@ class FeedItem {
     this.likeCount = 0,
     this.commentCount = 0,
     this.isLiked = false,
+    this.viewCount = 0,
   });
 }
 
@@ -109,10 +112,12 @@ class FeedItemCard extends StatelessWidget {
                 const Icon(Icons.mode_comment_outlined, color: Colors.white60, size: 20),
                 const SizedBox(width: 6),
                 Text("${item.commentCount}", style: const TextStyle(color: Colors.white60)),
+
                 const Spacer(),
-                const Icon(Icons.ios_share, color: Colors.white60, size: 20),
-                const SizedBox(width: 8),
-                const Icon(Icons.more_horiz, color: Colors.white60),
+
+                const Icon(Icons.visibility_outlined, color: Colors.white60, size: 20),
+                const SizedBox(width: 6),
+                Text("${item.viewCount}", style: const TextStyle(color: Colors.white60)),
               ],
             )
           ],

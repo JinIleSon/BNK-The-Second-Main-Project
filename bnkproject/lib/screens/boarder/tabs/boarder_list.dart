@@ -63,6 +63,8 @@ class _BoarderListState extends State<BoarderList> {
         final likeCount = (j["likecount"] as num?)?.toInt() ?? 0;
         final commentCount = (j["commentcount"] as num?)?.toInt() ?? 0;
 
+        final viewCount = (j["viewcount"] as num?)?.toInt() ?? 0;
+
         return FeedItem(
           postId: postId,
           authoruId: authoruId,
@@ -74,6 +76,7 @@ class _BoarderListState extends State<BoarderList> {
           likeCount: likeCount,
           commentCount: commentCount,
           isLiked: false,
+          viewCount: viewCount,
         );
       }).toList();
 
@@ -123,7 +126,7 @@ class _BoarderListState extends State<BoarderList> {
                     MaterialPageRoute(builder: (_) => BoarderDetail(item: it)),
                   );
 
-                  if (result == "deleted" || result == "updated") {
+                  if (result == null || result == "deleted" || result == "updated") {
                     fetchBoardList();
                   } else {
                     setState(() {});
