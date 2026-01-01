@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +18,10 @@ class CameraView extends StatefulWidget {
   });
 
   final CustomPaint? customPaint;
+
+  /// NOTE: return type 미지정(Function)이라 async 콜백도 들어올 수 있음
   final Function(InputImage inputImage) onImage;
+
   final VoidCallback? onCameraFeedReady;
   final VoidCallback? onDetectorViewModeChanged;
   final Function(CameraLensDirection direction)? onCameraLensDirectionChanged;
@@ -40,6 +44,10 @@ class _CameraViewState extends State<CameraView> {
   bool _changingCameraLens = false;
   String? _error;
 
+  // ✅ 프레임 처리 중복 방지 + dispose 이후 호출 방지
+  bool _isProcessing = false;
+  bool _isDisposed = false;
+
   @override
   void initState() {
     super.initState();
@@ -51,25 +59,28 @@ class _CameraViewState extends State<CameraView> {
       if (_cameras.isEmpty) {
         _cameras = await availableCameras();
       }
+
       for (var i = 0; i < _cameras.length; i++) {
         if (_cameras[i].lensDirection == widget.initialCameraLensDirection) {
           _cameraIndex = i;
           break;
         }
       }
+
       if (_cameraIndex != -1) {
         await _startLiveFeed();
       } else {
-        setState(() => _error = 'No camera found.');
+        if (mounted) setState(() => _error = 'No camera found.');
       }
     } catch (e) {
-      setState(() => _error = 'Camera init failed: $e');
+      if (mounted) setState(() => _error = 'Camera init failed: $e');
     }
   }
 
   @override
   void dispose() {
-    _stopLiveFeed();
+    _isDisposed = true;
+    _stopLiveFeed(); // async지만 dispose에서 await 불가 → 내부 try/catch로 안전 종료
     super.dispose();
   }
 
@@ -80,7 +91,12 @@ class _CameraViewState extends State<CameraView> {
 
   Widget _liveFeedBody() {
     if (_error != null) {
-      return Center(child: Text(_error!, style: const TextStyle(color: Colors.white)));
+      return Center(
+        child: Text(
+          _error!,
+          style: const TextStyle(color: Colors.white),
+        ),
+      );
     }
     if (_cameras.isEmpty) {
       return const Center(child: CircularProgressIndicator());
@@ -147,6 +163,7 @@ class _CameraViewState extends State<CameraView> {
                 activeColor: Colors.white,
                 inactiveColor: Colors.white30,
                 onChanged: (value) async {
+                  if (!mounted) return;
                   setState(() => _currentZoomLevel = value);
                   await _controller?.setZoomLevel(value);
                 },
@@ -173,6 +190,8 @@ class _CameraViewState extends State<CameraView> {
   );
 
   Future<void> _startLiveFeed() async {
+    if (_isDisposed) return;
+
     final camera = _cameras[_cameraIndex];
 
     _controller = CameraController(
@@ -182,36 +201,48 @@ class _CameraViewState extends State<CameraView> {
       imageFormatGroup: Platform.isAndroid ? ImageFormatGroup.nv21 : ImageFormatGroup.bgra8888,
     );
 
-    await _controller!.initialize();
+    try {
+      await _controller!.initialize();
 
-    _minAvailableZoom = await _controller!.getMinZoomLevel();
-    _maxAvailableZoom = await _controller!.getMaxZoomLevel();
-    _currentZoomLevel = _minAvailableZoom;
+      _minAvailableZoom = await _controller!.getMinZoomLevel();
+      _maxAvailableZoom = await _controller!.getMaxZoomLevel();
+      _currentZoomLevel = _minAvailableZoom;
 
-    await _controller!.startImageStream(_processCameraImage);
+      await _controller!.startImageStream(_processCameraImage);
 
-    widget.onCameraFeedReady?.call();
-    widget.onCameraLensDirectionChanged?.call(camera.lensDirection);
+      widget.onCameraFeedReady?.call();
+      widget.onCameraLensDirectionChanged?.call(camera.lensDirection);
 
-    if (mounted) setState(() {});
+      if (mounted) setState(() {});
+    } catch (e) {
+      if (mounted) setState(() => _error = 'Camera start failed: $e');
+    }
   }
 
   Future<void> _stopLiveFeed() async {
     try {
       await _controller?.stopImageStream();
     } catch (_) {}
-    await _controller?.dispose();
+    try {
+      await _controller?.dispose();
+    } catch (_) {}
     _controller = null;
   }
 
   Future<void> _switchLiveCamera() async {
     if (_cameras.length < 2) return;
+    if (!mounted) return;
+    if (_changingCameraLens) return;
 
     setState(() => _changingCameraLens = true);
+
     _cameraIndex = (_cameraIndex + 1) % _cameras.length;
 
     await _stopLiveFeed();
+    if (!mounted) return;
+
     await _startLiveFeed();
+    if (!mounted) return;
 
     setState(() => _changingCameraLens = false);
   }
@@ -224,7 +255,8 @@ class _CameraViewState extends State<CameraView> {
   };
 
   InputImage? _inputImageFromCameraImage(CameraImage image) {
-    if (_controller == null) return null;
+    final ctrl = _controller;
+    if (ctrl == null) return null;
 
     final camera = _cameras[_cameraIndex];
     final sensorOrientation = camera.sensorOrientation;
@@ -234,7 +266,7 @@ class _CameraViewState extends State<CameraView> {
     if (Platform.isIOS) {
       rotation = InputImageRotationValue.fromRawValue(sensorOrientation);
     } else {
-      var rotationCompensation = _orientations[_controller!.value.deviceOrientation];
+      var rotationCompensation = _orientations[ctrl.value.deviceOrientation];
       if (rotationCompensation == null) return null;
 
       if (camera.lensDirection == CameraLensDirection.front) {
@@ -257,8 +289,11 @@ class _CameraViewState extends State<CameraView> {
     if (image.planes.length != 1) return null;
     final plane = image.planes.first;
 
+    // ✅ onImage가 async일 수도 있으니, 버퍼 재사용 이슈 방지 위해 복사
+    final bytes = Uint8List.fromList(plane.bytes);
+
     return InputImage.fromBytes(
-      bytes: plane.bytes,
+      bytes: bytes,
       metadata: InputImageMetadata(
         size: Size(image.width.toDouble(), image.height.toDouble()),
         rotation: rotation,
@@ -268,9 +303,24 @@ class _CameraViewState extends State<CameraView> {
     );
   }
 
+  // startImageStream은 void 콜백만 받는다. (async 금지)
   void _processCameraImage(CameraImage image) {
+    if (_isDisposed || _changingCameraLens) return;
+    if (_isProcessing) return;
+
     final inputImage = _inputImageFromCameraImage(image);
     if (inputImage == null) return;
-    widget.onImage(inputImage);
+
+    _isProcessing = true;
+
+    // ✅ sync/async 모두 안전 처리
+    Future.sync(() => widget.onImage(inputImage))
+        .catchError((e, st) {
+      debugPrint('CameraView onImage crashed: $e');
+      debugPrint('$st');
+    })
+        .whenComplete(() {
+      _isProcessing = false;
+    });
   }
 }
