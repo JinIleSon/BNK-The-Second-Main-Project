@@ -50,19 +50,22 @@ class _BoarderListState extends State<BoarderList> {
       final mapped = list.map((e) {
         final j = (e as Map).cast<String, dynamic>();
 
-        final postId = (j["postId"] ?? 0) as int;
-        final title = (j["title"] ?? "") as String;
-        final body = (j["body"] ?? "") as String;
+        final postId = (j["postid"] as num?)?.toInt() ?? 0;
+        final authoruId = (j["authoruId"] as num?)?.toInt() ?? 0;
 
-        final author = (j["authorNickname"] ?? "익명") as String;
-        final avatarUrl = (j["authorAvatarUrl"] ??
+        final title = (j["title"] ?? "") as String;
+        final body  = (j["body"] ?? "") as String;
+
+        final author = (j["authornickname"] ?? "익명") as String;
+        final avatarUrl = (j["authoravatarurl"] ??
             "https://i.pravatar.cc/200?u=$postId") as String;
 
-        final likeCount = (j["likeCount"] ?? 0) as int;
-        final commentCount = (j["commentCount"] ?? 0) as int;
+        final likeCount = (j["likecount"] as num?)?.toInt() ?? 0;
+        final commentCount = (j["commentcount"] as num?)?.toInt() ?? 0;
 
         return FeedItem(
           postId: postId,
+          authoruId: authoruId,
           author: author,
           timeAgo: "",
           title: title,
@@ -115,11 +118,16 @@ class _BoarderListState extends State<BoarderList> {
               child: FeedItemCard(
                 item: it,
                 onTap: () async {
-                  await Navigator.push(
+                  final result = await Navigator.push(
                     context,
                     MaterialPageRoute(builder: (_) => BoarderDetail(item: it)),
                   );
-                  setState(() {});
+
+                  if (result == "deleted" || result == "updated") {
+                    fetchBoardList();
+                  } else {
+                    setState(() {});
+                  }
                 },
                 onToggleLike: () {
                   setState(() {

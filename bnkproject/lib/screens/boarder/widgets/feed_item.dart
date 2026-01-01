@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 
 class FeedItem {
   final int postId;
+  final int authoruId;
   final String author;
   final String timeAgo;
   final String title;
@@ -20,6 +21,7 @@ class FeedItem {
 
   FeedItem({
     required this.postId,
+    this.authoruId = 0, // 하드 코딩 지우면 나중에 수정해야할 부분
     required this.author,
     required this.timeAgo,
     required this.title,

@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 /*
     날짜 : 2025.12.30
     이름 : 이준우
-    내용 : 백엔드 DB 연동으로 인한 write page 생성
+    내용 : 게시글 작성
  */
 
 class BoarderWritePage extends StatefulWidget {
@@ -122,7 +122,6 @@ class _BoarderWritePageState extends State<BoarderWritePage> {
 
             const SizedBox(height: 12),
 
-            // ✅ 등록 버튼(내용칸 바로 아래)
             SizedBox(
               width: double.infinity,
               height: 48,
