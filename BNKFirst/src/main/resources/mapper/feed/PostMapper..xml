@@ -12,7 +12,7 @@
         P.POSTTYPE          AS posttype,
         P.MARKET            AS market,
         P.TITLE             AS title,
-        NULL                AS body,
+        DBMS_LOB.SUBSTR(P.BODY, 4000, 1) AS body,
         P.COVERURL          AS coverurl,
         P.STATUS            AS status,
         NVL(P.VIEWCOUNT,0)  AS viewcount,

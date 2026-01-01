@@ -28,6 +28,7 @@ class _BoarderRecommendState extends State<BoarderRecommend> {
   ];
 
   // 추천 피드 더미
+
   final items = <FeedItem>[
     FeedItem(
       postId: 1,
