@@ -16,8 +16,13 @@ dependencies:
   flutter_map: ^8.2.2
   latlong2: ^0.9.1
   geolocator: ^14.0.2
+<<<<<<< HEAD
   flutter_local_notifications: ^18.0.1
+=======
+>>>>>>> ea02bc5 (merge: resolve pubspec conflict)
 
+  # ✅ keep aligned with your current lockfile/install (17.x)
+  flutter_local_notifications: ^17.2.4
 
   # webview
   webview_flutter: ^4.7.0
@@ -66,7 +71,6 @@ flutter:
     - assets/images/sto/
     - assets/images/game/card/
     - assets/images/game/dodge/
-    - assets/images/game/dodge/
     # 필요하면 이미지도 여기에 추가
     # - assets/images/face_guide.png
     - assets/chart/lw.html
@@ -77,4 +81,3 @@ flutter_launcher_icons:
   image_path: assets/icon/app_icon.png
   adaptive_icon_background: "#FFFFFF"
   adaptive_icon_foreground: assets/icon/app_icon.png
-
