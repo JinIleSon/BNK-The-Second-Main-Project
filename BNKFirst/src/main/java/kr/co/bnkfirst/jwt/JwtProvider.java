@@ -76,4 +76,19 @@ public class JwtProvider {
                 .parseSignedClaims(token)
                 .getPayload();
     }
+
+    // UID 추출
+    public Long getUidFromToken(String token) {
+        try {
+            Claims claims = parseClaims(token);
+
+            Object uid = claims.get("uid");
+            if (uid == null) return null;
+
+            if (uid instanceof Number n) return n.longValue();
+            return Long.parseLong(uid.toString());
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }

@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import '../widgets/feed_item.dart';
 import '../pages/boarder_detail.dart';
 import '../pages/boarder_write.dart';
+import '../../../utils/auth_guard.dart';
 
 class BoarderList extends StatefulWidget {
   const BoarderList({super.key});
@@ -35,10 +36,7 @@ class _BoarderListState extends State<BoarderList> {
     try {
       final uri = Uri.parse("$baseUrl/api/post/board?size=20");
 
-      final res = await http.get(
-        uri,
-        headers: {"X-UID": "1"},
-      );
+      final res = await http.get(uri);
 
       if (res.statusCode != 200) {
         throw Exception("HTTP ${res.statusCode}: ${res.body}");
@@ -63,12 +61,18 @@ class _BoarderListState extends State<BoarderList> {
         final likeCount = (j["likecount"] as num?)?.toInt() ?? 0;
         final commentCount = (j["commentcount"] as num?)?.toInt() ?? 0;
 
-        final viewCount = (j["viewcount"] as num?)?.toInt() ?? 0;
+        final viewCount = (j["viewcount"] as num?)?.toInt() ?? 0; // 조회수
+
+        final createdAtStr = (j["createdat"] ?? j["createdAt"] ?? j["created_at"])?.toString();
+        final createdAt = (createdAtStr != null && createdAtStr.isNotEmpty)
+            ? DateTime.tryParse(createdAtStr)
+            : null; // 게시일 날짜
 
         return FeedItem(
           postId: postId,
           authoruId: authoruId,
           author: author,
+          createdAt: createdAt,
           timeAgo: "",
           title: title,
           body: body,
@@ -146,10 +150,14 @@ class _BoarderListState extends State<BoarderList> {
 
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
+          final loggedIn = await ensureLoggedIn(context);
+          if (!loggedIn) return;
+
           final ok = await Navigator.push(
             context,
             MaterialPageRoute(builder: (_) => const BoarderWritePage()),
           );
+
           if (ok == true) {
             fetchBoardList();
           }

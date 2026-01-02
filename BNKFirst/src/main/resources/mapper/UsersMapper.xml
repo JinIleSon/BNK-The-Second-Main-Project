@@ -5,18 +5,31 @@
 
 <mapper namespace="kr.co.bnkfirst.mapper.UsersMapper">
     <!-- 로그인(main) -->
-    <select id="findByMid" parameterType="string" resultType="kr.co.bnkfirst.dto.UsersDTO">
+    <resultMap id="UsersLoginMap" type="kr.co.bnkfirst.dto.UsersDTO">
+        <id column="uId" property="uid"/>
+        <result column="MID" property="mid"/>
+        <result column="MPW" property="mpw"/>
+        <result column="MNAME" property="mname"/>
+        <result column="MPHONE" property="mphone"/>
+        <result column="MEMAIL" property="memail"/>
+        <result column="MDATE" property="mdate"/>
+        <result column="MGRADE" property="mgrade"/>
+        <result column="ROLE" property="role"/>
+    </resultMap>
+
+    <select id="findByMid" parameterType="string" resultMap="UsersLoginMap">
         SELECT
-            MID     AS mid,
-            MPW     AS mpw,
-            MNAME   AS mname,
-            MPHONE  AS mphone,
-            MEMAIL  AS memail,
-            MDATE   AS mdate,
-            MGRADE  AS mgrade,
-            "ROLE"    AS role
-        FROM USERS
-        WHERE MID = #{mid}
+            U."uId",
+            U.MID,
+            U.MPW,
+            U.MNAME,
+            U.MPHONE,
+            U.MEMAIL,
+            U.MDATE,
+            U.MGRADE,
+            U."ROLE"
+        FROM USERS U
+        WHERE U.MID = #{mid}
     </select>
 
     <!-- 정보입력 -->
