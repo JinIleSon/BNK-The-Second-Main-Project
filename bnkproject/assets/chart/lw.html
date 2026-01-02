@@ -1,0 +1,66 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <script src="lightweight-charts.js"></script>
+    <style>
+        html, body { margin:0; padding:0; background:#1F2025; }
+        #wrap { width:100%; height:100vh; }
+    </style>
+</head>
+<body>
+<div id="wrap"></div>
+
+<script>
+    console.log('[CHART] LC typeof=', typeof LightweightCharts);
+
+    const container = document.getElementById('wrap');
+
+    const chart = LightweightCharts.createChart(container, {
+      layout: { background: { color: '#1F2025' }, textColor: '#C9D1D9' },
+      grid: { vertLines: { color: 'rgba(255,255,255,0.06)' }, horzLines: { color: 'rgba(255,255,255,0.06)' } },
+      timeScale: { timeVisible: true, secondsVisible: false },
+      rightPriceScale: { borderVisible: false },
+    });
+
+    // ✅ v4/v5 모두 대응해서 시리즈 생성
+    let series = null;
+    try {
+      if (typeof chart.addSeries === 'function' && LightweightCharts.CandlestickSeries) {
+        // v5+
+        series = chart.addSeries(LightweightCharts.CandlestickSeries, {});
+        console.log('[CHART] series via addSeries (v5+)');
+      } else if (typeof chart.addCandlestickSeries === 'function') {
+        // v4
+        series = chart.addCandlestickSeries();
+        console.log('[CHART] series via addCandlestickSeries (v4)');
+      } else {
+        throw new Error('No candlestick series API found');
+      }
+    } catch (e) {
+      console.log('[CHART] ❌ series create error', e);
+    }
+
+    // ✅ Flutter에서 호출되는 함수 (항상 등록)
+    window.setCandlesFromFlutter = function(jsonString) {
+      try {
+        if (!series) return;
+        const data = JSON.parse(jsonString);
+        series.setData(data);
+        chart.timeScale().fitContent();
+        console.log('[CHART] candles:', data.length);
+      } catch (e) {
+        console.log('[CHART] inject error', e);
+      }
+    };
+
+    // resize 대응
+    window.addEventListener('resize', () => {
+      chart.applyOptions({ width: window.innerWidth, height: window.innerHeight });
+    });
+
+    console.log('[CHART] ready');
+</script>
+</body>
+</html>
