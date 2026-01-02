@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import 'dart:convert';
+import 'notifications/local_notification_service.dart';
+
 import 'screens/home/home_tab.dart';
 import 'screens/favorite/favorite_page.dart';
 import 'screens/discovery/discovery_page.dart';
@@ -11,7 +14,9 @@ import 'screens/splash/splash_screen.dart';
 import 'screens/auth/signup/signup_flow_provider.dart';
 import 'screens/auth/signup/signup_type_page.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await LocalNotificationService.instance.init();
   runApp(const MyApp());
 }
 
@@ -47,6 +52,22 @@ class TossLikeHomePage extends StatefulWidget {
 class _TossLikeHomePageState extends State<TossLikeHomePage> {
   int _selectedIndex = 0; // 0: 홈, 1: 관심, 2: 발견, 3: 마이, 4: 피드
   bool _isLoggedIn = false; // 나중에 인증, 인가 설정
+
+  int _prevIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+
+    LocalNotificationService.instance.onTap = (payload) {
+      if (payload == null) return;
+
+      final data = jsonDecode(payload);
+      if (data['tab'] == 4) {
+        setState(() => _selectedIndex = 4);
+      }
+    };
+  }
 
   Future<void> _openLogin() async {
     final ok = await Navigator.push<bool>(
@@ -104,8 +125,17 @@ class _TossLikeHomePageState extends State<TossLikeHomePage> {
       body: SafeArea(child: body),
       bottomNavigationBar: _BottomNavBar(
         selectedIndex: _selectedIndex,
-        onTap: (index) {
-          setState(() => _selectedIndex = index);
+        onTap: (index) async {
+          // 탭 이동
+          setState(() {
+            _prevIndex = _selectedIndex;
+            _selectedIndex = index;
+          });
+
+          // (처음으로) 피드 탭으로 들어갈 때만 알림 1회 보내기
+          if (_prevIndex != 4 && index == 4) {
+            await LocalNotificationService.instance.showFeedPush();
+          }
         },
         onOpenLogin: _openLogin,
         isLoggedIn: _isLoggedIn,
