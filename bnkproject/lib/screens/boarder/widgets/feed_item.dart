@@ -11,6 +11,7 @@ class FeedItem {
   final int authoruId;
   final String author;
   final String timeAgo;
+  final DateTime? createdAt;
   final String title;
   final String body;
   final String? avatarUrl;
@@ -26,6 +27,7 @@ class FeedItem {
     this.authoruId = 0, // 하드 코딩 지우면 나중에 수정해야할 부분
     required this.author,
     required this.timeAgo,
+    this.createdAt,
     required this.title,
     required this.body,
     this.avatarUrl,
@@ -81,7 +83,12 @@ class FeedItemCard extends StatelessWidget {
                     children: [
                       Text(item.author, style: const TextStyle(fontWeight: FontWeight.w800)),
                       const SizedBox(height: 2),
-                      Text(item.timeAgo, style: const TextStyle(color: Colors.white60, fontSize: 12)),
+
+                      if (item.createdAt != null)
+                        Text(
+                          _fmtDateTime(item.createdAt!),
+                          style: const TextStyle(color: Colors.white54, fontSize: 11),
+                        ),
                     ],
                   ),
                 ),
@@ -124,5 +131,13 @@ class FeedItemCard extends StatelessWidget {
         ),
       ),
     );
+  }
+  String _fmtDateTime(DateTime dt) {
+    final y = dt.year.toString().padLeft(4, '0');
+    final m = dt.month.toString().padLeft(2, '0');
+    final d = dt.day.toString().padLeft(2, '0');
+    final hh = dt.hour.toString().padLeft(2, '0');
+    final mm = dt.minute.toString().padLeft(2, '0');
+    return "$y.$m.$d $hh:$mm";
   }
 }

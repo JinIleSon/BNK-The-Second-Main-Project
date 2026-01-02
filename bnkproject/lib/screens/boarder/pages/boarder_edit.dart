@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:bnkproject/api/member_api.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -59,8 +60,8 @@ class _BoarderEditPageState extends State<BoarderEditPage> {
       final res = await http.put(
         uri,
         headers: {
-          "X-UID": "${widget.item.authoruId}",
-          "Content-Type": "application/json",
+          "Content-Type": "application/json; charset=utf-8",
+          if (memberApi.sessionCookie != null) "Cookie": memberApi.sessionCookie!,
         },
         body: json.encode({
           "title": title,

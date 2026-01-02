@@ -1,11 +1,13 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import '../../../api/member_api.dart';
+
 
 /*
-    날짜 : 2025.12.30
+    날짜 : 2025.12.30 / 2026.01.02
     이름 : 이준우
-    내용 : 게시글 작성
+    내용 : 게시글 작성 / 글 작성 로그인 연동
  */
 
 class BoarderWritePage extends StatefulWidget {
@@ -51,8 +53,8 @@ class _BoarderWritePageState extends State<BoarderWritePage> {
       final res = await http.post(
         uri,
         headers: {
-          "Content-Type": "application/json",
-          "X-UID": "1", // ✅ 로그인 아직이면 임시
+          "Content-Type": "application/json; charset=utf-8",
+          if (memberApi.sessionCookie != null) "Cookie": memberApi.sessionCookie!,
         },
         body: jsonEncode({
           "title": title.isEmpty ? null : title,
@@ -60,6 +62,11 @@ class _BoarderWritePageState extends State<BoarderWritePage> {
           "coverUrl": null,
         }),
       );
+
+      if (res.statusCode == 401) {
+        setState(() => _error = "로그인이 필요합니다. 다시 로그인 해주세요.");
+        return;
+      }
 
       if (res.statusCode != 200) {
         throw Exception("HTTP ${res.statusCode}: ${res.body}");

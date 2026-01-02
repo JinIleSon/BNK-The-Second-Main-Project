@@ -14,6 +14,7 @@ import '../models/Login.dart';
 import '../models/UserProfile.dart';
 import '../models/SessionInfo.dart';
 import '../models/FindIdPw.dart';
+import '../screens/auth/signup/authsession.dart';
 
 const String baseUrl = "http://10.0.2.2:8080/BNK";
 
@@ -67,6 +68,11 @@ class MemberApiClient {
       }),
     );
 
+    // 로그인 확인용 로그
+    print('[LOGIN][RES] status=${resp.statusCode}');
+    print('[LOGIN][RES] set-cookie=${resp.headers['set-cookie']}');
+    print('[LOGIN][RES] body=${resp.body}');
+
     // 세션 쿠키 추출 (JSESSIONID)
     final setCookie = resp.headers['set-cookie'];
     if (setCookie != null && setCookie.isNotEmpty) {
@@ -83,6 +89,9 @@ class MemberApiClient {
       final result = LoginResult.fromJson(json);
       if (result.ok && result.token != null) {
         token = result.token;
+
+        authsession.token = result.token;
+
       }
       return result;
     } else {

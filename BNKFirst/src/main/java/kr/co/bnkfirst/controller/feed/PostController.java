@@ -13,6 +13,11 @@ import kr.co.bnkfirst.service.feed.PostService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+// feed 로그인 연동을 위한 import 추가
+import jakarta.servlet.http.HttpSession;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
+
 @RestController
 @RequestMapping("/api/post")
 public class PostController {
@@ -26,7 +31,6 @@ public class PostController {
     //  커뮤니티(BOARD) - 운영용
 
     // 커뮤니티 목록(무한스크롤)
-    // GET /api/post/board?size=20&lastPostId=123
     @GetMapping("/board")
     public ResponseEntity<PostListResponse> boardList(
             @RequestParam(required = false) Long lastPostId,
@@ -77,22 +81,16 @@ public class PostController {
 
     // 로그인 UID 추출 (세션/JWT 혼합 대비)
     private Long resolveUid(HttpServletRequest request) {
-        // 1) 세션 uId
-        try {
-            if (request.getSession(false) != null) {
-                Object v = request.getSession(false).getAttribute("uId");
-                Long uid = toLong(v);
-                if (uid != null) return uid;
-            }
-        } catch (Exception ignored) {}
+        HttpSession session = request.getSession(false);
+        if (session == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다.");
+        }
 
-        // 2) 개발용 헤더(Flutter 빨리 붙일 때)
-        try {
-            Long uid = toLong(request.getHeader("X-UID"));
-            if (uid != null) return uid;
-        } catch (Exception ignored) {}
-
-        return null;
+        Long uid = toLong(session.getAttribute("uId"));
+        if (uid == null || uid <= 0) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다.");
+        }
+        return uid;
     }
 
     private Long toLong(Object v) {
