@@ -211,7 +211,117 @@ class _DiscoveryStockList extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _DiscoveryStockListState();
 }
-class _DiscoveryStockListState extends State<_DiscoveryStockList> {
+class _DiscoveryStockListState extends State<_DiscoveryStockList> with TickerProviderStateMixin{
+  OverlayEntry? _toastEntry;
+  AnimationController? _toastController;
+
+  void _showLowestChangeRateOnce() {
+    if (_shownLowestToast) return;
+    if (_stocks.isEmpty) return;
+
+    final lowest = _stocks.reduce((a, b) => a.changeRate <= b.changeRate ? a : b);
+    _shownLowestToast = true;
+
+    // setState 직후 안전하게 띄우기
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _showSmoothToast('최저 등락률: ${lowest.name}  ${lowest.changeRate}%');
+    });
+  }
+
+  void _showSmoothToast(String message) {
+    // 기존 토스트가 있으면 정리
+    _toastEntry?.remove();
+    _toastEntry = null;
+
+    _toastController?.dispose();
+    _toastController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 260),
+      reverseDuration: const Duration(milliseconds: 220),
+    );
+
+    final anim = CurvedAnimation(
+      parent: _toastController!,
+      curve: Curves.easeOutCubic,
+      reverseCurve: Curves.easeInCubic,
+    );
+
+    final cardColor = Theme.of(context).cardColor;
+    final textStyle = Theme.of(context).textTheme.bodyMedium?.copyWith(
+      fontSize: 15.5,
+      color: Colors.white.withOpacity(0.9),
+      fontWeight: FontWeight.w400,
+      letterSpacing: -0.2,
+    );
+
+    final bottomSafe = MediaQuery.of(context).padding.bottom;
+    final bottom = 16.0 + bottomSafe + 56.0; // 하단바 위로 살짝 띄움(원하면 조절)
+
+    _toastEntry = OverlayEntry(
+      builder: (ctx) {
+        return Positioned(
+          left: 16,
+          right: 16,
+          bottom: bottom,
+          child: Material(
+            color: Colors.transparent,
+            child: FadeTransition(
+              opacity: anim,
+              child: SlideTransition(
+                position: Tween<Offset>(
+                  begin: const Offset(0, 0.25),
+                  end: Offset.zero,
+                ).animate(anim),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+                  decoration: BoxDecoration(
+                    color: cardColor.withOpacity(0.95),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: Colors.white10),
+                    boxShadow: const [
+                      BoxShadow(
+                        blurRadius: 16,
+                        offset: Offset(0, 8),
+                        color: Colors.black45,
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.trending_down, size: 20, color: Colors.white70),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          message,
+                          style: textStyle,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+
+    Overlay.of(context).insert(_toastEntry!);
+    _toastController!.forward();
+
+    Future.delayed(const Duration(seconds: 2), () async {
+      if (!mounted) return;
+      try {
+        await _toastController?.reverse();
+      } finally {
+        _toastEntry?.remove();
+        _toastEntry = null;
+      }
+    });
+  }
   final api = StockRankApiClient(baseUrl: 'http://10.0.2.2:8080/BNK');
 
   List<StockRank> _stocks = [];
@@ -221,6 +331,8 @@ class _DiscoveryStockListState extends State<_DiscoveryStockList> {
 
   // 주기 갱신 중복 호출 방지
   bool _isRefreshing = false;
+
+  bool _shownLowestToast = false;
 
   // 최초 로드
   Future<void> _initialLoad() async {
@@ -232,6 +344,9 @@ class _DiscoveryStockListState extends State<_DiscoveryStockList> {
         _stocks = main.ranks;
         _loading = false;
       });
+
+      // ✅ 거래대금(현재 탭) 데이터 중 "가장 낮은 등락률" 1회 토스트
+      _showLowestChangeRateOnce();
     } catch (e) {
       if (!mounted) return;
       setState(() => _loading = false);
@@ -254,8 +369,11 @@ class _DiscoveryStockListState extends State<_DiscoveryStockList> {
       setState(() {
         _stocks = ranks; // 깜빡임 없이 데이터만 교체
       });
+      // ✅ “한 번만”이라면 refresh에서는 호출하지 않음
+      // (만약 refresh 때도 1번만 띄우고 싶으면 여기서 호출해도 되지만,
+      //  지금 요구사항은 1회만이니 initialLoad에서만)
     } catch (_) {
-      // 주기 갱신 실패는 조용히 무시 (필요하면 로그 작성)
+      // ignore
     } finally {
       _isRefreshing = false;
     }
@@ -277,7 +395,11 @@ class _DiscoveryStockListState extends State<_DiscoveryStockList> {
 
   @override
   void dispose() {
-    _refreshTimer?.cancel(); // 타이머 해제
+    _refreshTimer?.cancel();
+
+    _toastEntry?.remove();
+    _toastController?.dispose();
+
     api.dispose();
     super.dispose();
   }
