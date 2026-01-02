@@ -20,7 +20,11 @@ extension WonFormatter on num {
     return '${formatter.format(this)}원';
   }
 }
-
+/*
+  날짜 : 2026.01.02.
+  이름 : 강민철
+  내용 : 매도/매수 api 연결
+ */
 class StockDetailPage extends StatefulWidget {
   final String name;
   final int price;
@@ -194,6 +198,9 @@ class _StockDetailPageState extends State<StockDetailPage> {
                                   name: widget.name,
                                   currentPrice: livePrice,
                                   changePercentText: widget.change,
+                                  stockCode: widget.stockCode,
+                                  pcuid: 'a123',  // 추후 로그인 연동
+                                  pacc: '321-654-78901',
                                 ),
                               ),
                             );
@@ -222,6 +229,9 @@ class _StockDetailPageState extends State<StockDetailPage> {
                                   name: widget.name,
                                   currentPrice: livePrice,
                                   changePercentText: widget.change,
+                                  stockCode: widget.stockCode,
+                                  pcuid: 'a123',  // 추후 로그인 연동
+                                  pacc: '321-654-78901',
                                 ),
                               ),
                             );
