@@ -5,6 +5,10 @@ import 'stock_sell_page.dart';
 import '../../api/hoga_ws_api.dart';
 import '../../models/order_book.dart';
 
+import '../../widgets/chart_webview_box.dart';
+
+import '../../webview_test_page.dart';
+
 /*
   날짜 : 2025.12.18.
   이름 : 강민철
@@ -148,11 +152,8 @@ class _StockDetailPageState extends State<StockDetailPage> {
               Expanded(
                 child: TabBarView(
                   children: [
-                    _ChartTab(cardColor: cardColor),
-
-                    // ✅ 여기로 stream 전달
+                    _ChartTab(cardColor: cardColor, stockCode: widget.stockCode),
                     _HogaTab(cardColor: cardColor, snapshots: _hogaApi.snapshots),
-
                     _MyStockTab(cardColor: cardColor),
                     _StockInfoTab(cardColor: cardColor),
                     _CommunityTab(cardColor: cardColor),
@@ -242,8 +243,9 @@ class _StockDetailPageState extends State<StockDetailPage> {
 
 class _ChartTab extends StatelessWidget {
   final Color cardColor;
+  final String stockCode;
 
-  const _ChartTab({required this.cardColor});
+  const _ChartTab({required this.cardColor, required this.stockCode});
 
   @override
   Widget build(BuildContext context) {
@@ -276,9 +278,7 @@ class _ChartTab extends StatelessWidget {
             color: cardColor,
             borderRadius: BorderRadius.circular(12),
           ),
-          child: CustomPaint(
-            painter: _FakeChartPainter(),
-          ),
+          child: ChartWebViewBox(stockCode: stockCode),
         ),
         const SizedBox(height: 12),
         Row(
