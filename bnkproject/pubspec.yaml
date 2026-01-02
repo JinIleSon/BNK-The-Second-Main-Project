@@ -16,10 +16,6 @@ dependencies:
   flutter_map: ^8.2.2
   latlong2: ^0.9.1
   geolocator: ^14.0.2
-<<<<<<< HEAD
-  flutter_local_notifications: ^18.0.1
-=======
->>>>>>> ea02bc5 (merge: resolve pubspec conflict)
 
   # ✅ keep aligned with your current lockfile/install (17.x)
   flutter_local_notifications: ^17.2.4
