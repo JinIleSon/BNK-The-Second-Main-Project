@@ -149,12 +149,12 @@ class _MenuPageState extends State<MenuPage> {
               },
             ),
 
-            // ✅ 여행 → TravelPage로 이동
+            // ✅ 여행 에서 일일미션 → TravelPage로 이동
             _ServiceTile(
               iconBg: const Color(0xFF2A2C33),
               icon: Icons.flight_takeoff, // ✈️ 비행기 아이콘
               iconColor: Colors.tealAccent,
-              title: '여행',
+              title: '일일 미션',
               subtitle: '부산 핫플 · 미션 · 스탬프',
               onTap: () {
                 Navigator.of(context, rootNavigator: true).push(

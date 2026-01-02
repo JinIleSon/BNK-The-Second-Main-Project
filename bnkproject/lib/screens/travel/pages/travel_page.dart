@@ -186,7 +186,7 @@ class _TravelPageState extends State<TravelPage> {
                                     height: 1.2,
                                   ),
                                   children: [
-                                    TextSpan(text: '부산 여행하며 '),
+                                    TextSpan(text: '일일 미션하며 '),
                                     TextSpan(
                                       text: '부기를 성장',
                                       style: TextStyle(color: TravelTheme.boogiMint),
