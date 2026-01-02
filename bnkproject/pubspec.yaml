@@ -61,6 +61,7 @@ flutter:
     - assets/images/
     - assets/game/
     - assets/icon/
+    - assets/images/goals/
     - assets/images/places/
     - assets/images/sto/
     - assets/images/game/card/
