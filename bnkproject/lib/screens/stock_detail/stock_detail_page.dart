@@ -222,6 +222,9 @@ class _StockDetailPageState extends State<StockDetailPage> {
                                   name: widget.name,
                                   currentPrice: livePrice,
                                   changePercentText: widget.change,
+                                  stockCode: widget.stockCode,
+                                  pcuid: 'a123',
+                                  pacc: '123-456-78901',
                                 ),
                               ),
                             );

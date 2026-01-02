@@ -1,3 +1,5 @@
+import 'package:bnkproject/api/etf_api.dart';
+import 'package:bnkproject/models/EtfTrade.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'stock_detail_page.dart';
@@ -8,12 +10,19 @@ class StockBuyPage extends StatefulWidget {
   final String name;
   final int currentPrice;
   final String changePercentText;
+  final String stockCode;
+
+  final String pcuid;
+  final String pacc;
 
   const StockBuyPage({
     super.key,
     required this.name,
     required this.currentPrice,
     required this.changePercentText,
+    required this.stockCode,
+    required this.pcuid,
+    required this.pacc
   });
 
   @override
@@ -21,6 +30,68 @@ class StockBuyPage extends StatefulWidget {
 }
 
 class _StockBuyPageState extends State<StockBuyPage> with TickerProviderStateMixin {
+  bool _isBuying = false;
+
+  Future<void> _buyEtf({
+    required String code,
+    required String name,
+    required int qty,
+    required int price,
+  }) async {
+    if (_isBuying) return;
+
+    setState(() => _isBuying = true);
+
+    try {
+      final total = qty * price;
+
+      final req = EtfBuy(
+        pcuid: widget.pcuid,
+        pstock: qty,
+        pprice: price,
+        psum: total,
+        pname: widget.name,
+        pacc: widget.pacc,
+        code: widget.stockCode,
+      );
+
+      final result = await api.buyEtf(req);
+
+      // ✅ ApiResult 형태에 맞춘 성공 판정
+      if (result.result.toLowerCase() != 'buy') {
+        throw Exception('매수 실패(result=${result.result})');
+      }
+
+      // ✅ 성공 UI 흐름
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('${widget.name} ${qty}주 구매... 주당 ${price.won}에 구매했어요.'),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: const Color(0xFF2A2B31),
+          margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+          duration: const Duration(seconds: 0),
+        ),
+      );
+
+      _showOrderCompleteSheet(
+        context: context,
+        name: name,
+        qty: qty,
+        price: price,
+      );
+    } catch (e) {
+      // ✅ 실패 처리
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('매수 실패: $e'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _isBuying = false);
+    }
+  }
+
   void _showOrderCompleteSheet({
     required BuildContext context,
     required String name,
@@ -104,9 +175,19 @@ class _StockBuyPageState extends State<StockBuyPage> with TickerProviderStateMix
           price: price,
           total: total,
           onClose: () => Navigator.pop(context),
-          onConfirm: () {
+          onConfirm: () async {
             // ✅ 여기(=2번) 넣으면 됨
             Navigator.pop(context); // 1) 확인 시트 닫기
+
+            final qty = _qty;
+            final price = _price;
+
+            await _buyEtf(
+            code: widget.stockCode,
+            name: widget.name,
+            qty: qty,
+            price: price,
+            );
 
             // 2) 상단 토스트(SnackBar)
             ScaffoldMessenger.of(context).showSnackBar(
@@ -138,10 +219,19 @@ class _StockBuyPageState extends State<StockBuyPage> with TickerProviderStateMix
   int get _qty => int.tryParse(_qtyText.isEmpty ? '0' : _qtyText) ?? 0;
   int get _total => _qty * _price;
 
+  late final EtfApiClient api;
+
   @override
   void initState() {
     super.initState();
     _price = widget.currentPrice; // 초기: 현재가로 세팅
+    api = EtfApiClient(baseUrl: 'http://10.0.2.2:8080/BNK');
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    api.dispose();
   }
 
   bool get _isUp => !widget.changePercentText.trim().startsWith('-');
@@ -421,24 +511,32 @@ class _StockBuyPageState extends State<StockBuyPage> with TickerProviderStateMix
                               borderRadius: BorderRadius.circular(14),
                             ),
                           ),
-                          onPressed: () {
-                            final qty = _qty;
+                          onPressed: _isBuying
+                            ? null
+                            : () {
+                                final qty = _qty;
 
-                            if (qty <= 0) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('수량을 입력해 주세요.')),
-                              );
-                              return;
-                            }
+                                if (qty <= 0) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text('수량을 입력해 주세요.')),
+                                  );
+                                  return;
+                                }
 
-                            _showBuyConfirmSheet(
-                              context: context,
-                              name: widget.name,
-                              qty: qty,
-                              price: _price,
-                            );
-                          },
-                          child: const Text('구매하기', style: TextStyle(fontSize: 18)),
+                                _showBuyConfirmSheet(
+                                  context: context,
+                                  name: widget.name,
+                                  qty: qty,
+                                  price: _price,
+                                );
+                              },
+                          child: _isBuying
+                            ? const SizedBox(
+                              width: 22,
+                              height: 22,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                              )
+                            : const Text('구매하기', style: TextStyle(fontSize: 18)),
                         ),
                       ),
                     ),
