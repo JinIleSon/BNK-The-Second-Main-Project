@@ -16,8 +16,8 @@ dependencies:
   flutter_map: ^8.2.2
   latlong2: ^0.9.1
   geolocator: ^14.0.2
+  flutter_local_notifications: ^18.0.1
 
-  flutter_local_notifications: ^17.0.0
 
   # webview
   webview_flutter: ^4.7.0

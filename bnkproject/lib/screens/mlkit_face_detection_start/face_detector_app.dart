@@ -2,9 +2,9 @@
 //
 // ✅ Entry(회원가입) 보안 강화 요구사항 반영
 // 1) 미션 3개 고정: blink + turnLeft + turnRight (순서 고정)
-// 2) 타임아웃: 15초 내 미션 완료 못하면 실패 처리하지 않고 "재시도"로 리셋
+// 2) 타임아웃: 15초 내 미션 완료 못하면 "실패 종료"가 아니라 "재시도 리셋"
 // 3) 개인정보/보안 UX
-//    - Android: FLAG_SECURE로 스크린샷/화면녹화 차단
+//    - Android: FLAG_SECURE로 스크린샷/화면녹화 차단(✅ MethodChannel 사용)
 //      ※ flutter_windowmanager 플러그인 제거(AGP namespace 이슈)
 //      ※ 대신 MainActivity.kt의 MethodChannel로 네이티브 FLAG_SECURE 토글
 //    - 앱이 백그라운드(paused/inactive)로 가면 즉시 실패 처리(Entry이면 pop 반환)
@@ -58,21 +58,14 @@ class FaceDetectorApp extends StatefulWidget {
   State<FaceDetectorApp> createState() => _FaceDetectorAppState();
 }
 
-class _FaceDetectorAppState extends State<FaceDetectorApp>
-    with WidgetsBindingObserver {
+class _FaceDetectorAppState extends State<FaceDetectorApp> with WidgetsBindingObserver {
   // ===========================================================================
   // 0) Native secure screen(MethodChannel)
   // ===========================================================================
   // ⚠️ MainActivity.kt에 구현한 채널/메서드 이름과 반드시 일치시켜야 한다.
-  //
-  // 예시(MainActivity.kt):
   // MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "bnk/secure_screen")
-  //   .setMethodCallHandler { call, result ->
-  //     if (call.method == "enable") window.addFlags(FLAG_SECURE)
-  //     if (call.method == "disable") window.clearFlags(FLAG_SECURE)
-  //   }
-  static const MethodChannel _secureChannel =
-  MethodChannel('bnk/secure_screen');
+  //   call.method == "enable" / "disable"
+  static const MethodChannel _secureChannel = MethodChannel('bnk/secure_screen');
 
   // ===========================================================================
   // 1) ML Kit Detectors
@@ -80,11 +73,11 @@ class _FaceDetectorAppState extends State<FaceDetectorApp>
   late final FaceDetector _faceDetector = FaceDetector(
     options: FaceDetectorOptions(
       performanceMode: FaceDetectorMode.fast,
-      enableLandmarks: true,
-      enableContours: true,
+      enableLandmarks: true, // ✅ 전체 얼굴 최소 체크에 사용
+      enableContours: true, // ✅ 전체 얼굴 최소 체크에 사용
       enableClassification: true, // ✅ blink(eye prob) 사용 필수
       enableTracking: true,
-      minFaceSize: 0.1,
+      minFaceSize: 0.15, // ✅ 너무 멀리 있는 얼굴을 덜 잡게(튜닝 가능)
     ),
   );
 
@@ -150,13 +143,13 @@ class _FaceDetectorAppState extends State<FaceDetectorApp>
   // ===========================================================================
   // 4) Tuning Constants
   // ===========================================================================
-  static const int _kFullFaceStreakTarget = 8; // "얼굴 품질" 안정화 프레임 수
+  static const int _kFullFaceStreakTarget = 8; // 얼굴 품질 안정화 프레임 수
 
   static const int _kYawHoldTarget = 5; // yaw 조건 유지 프레임 수
   static const double _kYawThreshold = 15.0; // 좌/우 회전 각도 임계값(도)
 
   static const double _kMarginRatio = 0.06; // 프레임 가장자리 여백 비율(얼굴 전체 체크)
-  static const double _kMinAreaRatio = 0.12; // 얼굴 bbox 면적 / 이미지 면적 최소비(너무 멀면 실패)
+  static const double _kMinAreaRatio = 0.12; // 얼굴 bbox 면적/이미지 면적 최소비(너무 멀면 실패)
 
   // blink thresholds (hysteresis)
   static const double _kEyeClosedTh = 0.20; // 두 눈이 이 값 이하이면 "감김"
@@ -168,14 +161,50 @@ class _FaceDetectorAppState extends State<FaceDetectorApp>
   static const Duration _kMissionTimeout = Duration(seconds: 15);
 
   // ===========================================================================
-  // 5) Lifecycle
+  // 5) Toast(SnackBar)
+  // ===========================================================================
+  void _toast(String message) {
+    if (!mounted) return;
+
+    final now = DateTime.now();
+    if (_lastToastMessage == message &&
+        _lastToastAt != null &&
+        now.difference(_lastToastAt!).inMilliseconds < 800) {
+      return;
+    }
+    _lastToastMessage = message;
+    _lastToastAt = now;
+
+    ScaffoldMessenger.of(context)
+      ..clearSnackBars()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(message),
+          duration: const Duration(milliseconds: 900),
+          behavior: SnackBarBehavior.floating,
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        ),
+      );
+  }
+
+  void _toastMissionIfNeeded() {
+    if (!_isEntryFlow) return;
+    if (_missionIndex == _lastToastedMissionIndex) return;
+
+    _lastToastedMissionIndex = _missionIndex;
+    if (_missionIndex >= _missions.length) return;
+
+    _toast('미션 ${_missionIndex + 1}/${_missions.length}: ${_missionLabel(_missions[_missionIndex])}');
+  }
+
+  // ===========================================================================
+  // 6) Lifecycle
   // ===========================================================================
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
 
-    // Entry면 보안 UX 적용(캡처 방지) + 안내 문구
     if (_isEntryFlow) {
       _applySecureScreen(true);
       _info = '얼굴 전체가 프레임 안에 들어오게 맞추세요.';
@@ -187,6 +216,7 @@ class _FaceDetectorAppState extends State<FaceDetectorApp>
     WidgetsBinding.instance.removeObserver(this);
 
     _cancelTimeout();
+
     if (_isEntryFlow) {
       _applySecureScreen(false);
     }
@@ -203,8 +233,7 @@ class _FaceDetectorAppState extends State<FaceDetectorApp>
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (!_isEntryFlow || _done) return;
 
-    if (state == AppLifecycleState.paused ||
-        state == AppLifecycleState.inactive) {
+    if (state == AppLifecycleState.paused || state == AppLifecycleState.inactive) {
       _failAndExit(
         code: 'APP_BACKGROUND',
         reason: '앱이 백그라운드로 전환되어 인증이 중단되었습니다.',
@@ -213,57 +242,17 @@ class _FaceDetectorAppState extends State<FaceDetectorApp>
   }
 
   // ===========================================================================
-  // 6) Security UX: Screenshot/Recording Block (Android)
+  // 7) Security UX: Screenshot/Recording Block (Android)
   // ===========================================================================
   Future<void> _applySecureScreen(bool enable) async {
-    // iOS는 네이티브/별도 처리 필요. 여기서는 Android만 확실하게 통제.
     if (!Platform.isAndroid) return;
 
     try {
-      // MethodChannel 방식(플러그인 제거)
       await _secureChannel.invokeMethod(enable ? 'enable' : 'disable');
     } catch (_) {
-      // 네이티브 구현 누락/오류가 있어도 앱은 계속 동작해야 한다.
-      // (실서비스면 여기서 로깅/모니터링 포인트가 된다)
+      // 네이티브 누락/오류여도 앱은 계속 동작해야 한다.
+      // (실서비스면 여기서 로깅/모니터링 포인트)
     }
-  }
-
-  // ===========================================================================
-  // 7) Toast(SnackBar) Helpers
-  // ===========================================================================
-  void _toast(String message) {
-    if (!mounted) return;
-
-    // 같은 메시지를 프레임마다 뿌리는 스팸 방지(최소 800ms 간격)
-    final now = DateTime.now();
-    if (_lastToastMessage == message &&
-        _lastToastAt != null &&
-        now.difference(_lastToastAt!).inMilliseconds < 800) {
-      return;
-    }
-    _lastToastMessage = message;
-    _lastToastAt = now;
-
-    ScaffoldMessenger.of(context)
-      ..clearSnackBars()
-      ..showSnackBar(
-        SnackBar(
-          content: Text(message),
-          duration: const Duration(milliseconds: 900),
-          behavior: SnackBarBehavior.floating, // 토스트 느낌
-          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        ),
-      );
-  }
-
-  void _toastMissionIfNeeded() {
-    if (!_isEntryFlow) return;
-    if (_missionIndex == _lastToastedMissionIndex) return;
-
-    _lastToastedMissionIndex = _missionIndex;
-
-    if (_missionIndex >= _missions.length) return;
-    _toast('미션: ${_missionLabel(_missions[_missionIndex])}');
   }
 
   // ===========================================================================
@@ -290,6 +279,8 @@ class _FaceDetectorAppState extends State<FaceDetectorApp>
 
   void _resetForRetry({required String reason}) {
     // 요구사항: 타임아웃/품질 불량은 "실패 pop"이 아니라 "재시도" 리셋
+    if (!mounted) return;
+
     setState(() {
       _fullFaceStreak = 0;
       _missionIndex = 0;
@@ -304,7 +295,6 @@ class _FaceDetectorAppState extends State<FaceDetectorApp>
       _info = reason;
     });
 
-    // 사용자가 인지할 수 있게 토스트(과도한 스팸은 _toast에서 방지)
     if (_isEntryFlow) _toast(reason);
   }
 
@@ -314,7 +304,6 @@ class _FaceDetectorAppState extends State<FaceDetectorApp>
 
     _cancelTimeout();
 
-    // 프레임 처리 중 pop 충돌 방지(다음 프레임에 콜백)
     WidgetsBinding.instance.addPostFrameCallback((_) {
       widget.onVerified?.call();
     });
@@ -352,6 +341,7 @@ class _FaceDetectorAppState extends State<FaceDetectorApp>
     _timeoutDeadline = DateTime.now().add(_kMissionTimeout);
     _timeoutTimer = Timer(_kMissionTimeout, () {
       if (!mounted || _done) return;
+      _toast('시간 초과(15초). 다시 시도하세요.');
       _resetForRetry(reason: '시간 초과(15초). 다시 시도하세요.');
     });
   }
@@ -370,19 +360,18 @@ class _FaceDetectorAppState extends State<FaceDetectorApp>
   }
 
   // ===========================================================================
-  // 10) Face Quality Gate (사전 조건)
+  // 10) Face Quality Gate
   // ===========================================================================
-  /// 얼굴 bbox가 화면 가장자리 여백 밖으로 삐져나가면 "얼굴 전체"로 보지 않는다.
   bool _isFaceFullyInFrame(Rect bb, Size img) {
     final mx = img.width * _kMarginRatio;
     final my = img.height * _kMarginRatio;
+
     return bb.left > mx &&
         bb.top > my &&
         bb.right < (img.width - mx) &&
         bb.bottom < (img.height - my);
   }
 
-  /// 얼굴 bbox 면적이 너무 작으면(너무 멀면) 실패(재시도)
   bool _isFaceBigEnough(Rect bb, Size img) {
     final imgArea = img.width * img.height;
     if (imgArea <= 0) return false;
@@ -391,10 +380,36 @@ class _FaceDetectorAppState extends State<FaceDetectorApp>
     return (faceArea / imgArea) >= _kMinAreaRatio;
   }
 
-  /// front camera는 미러링이 걸려있어서 yaw 부호가 사용자 기준과 반대일 수 있다.
-  /// 사용자 체감(왼쪽/오른쪽)을 안정적으로 맞추기 위해 보정.
-  double _normYaw(double yaw) =>
-      _lensDirection == CameraLensDirection.front ? -yaw : yaw;
+  bool _hasRequiredLandmarks(Face face) {
+    const req = <FaceLandmarkType>[
+      FaceLandmarkType.leftEye,
+      FaceLandmarkType.rightEye,
+      FaceLandmarkType.noseBase,
+      FaceLandmarkType.bottomMouth,
+      FaceLandmarkType.leftCheek,
+      FaceLandmarkType.rightCheek,
+    ];
+
+    for (final t in req) {
+      if (face.landmarks[t] == null) return false;
+    }
+    return true;
+  }
+
+  bool _hasRequiredContours(Face face) {
+    final faceC = face.contours[FaceContourType.face]?.points;
+    final leftEyeC = face.contours[FaceContourType.leftEye]?.points;
+    final rightEyeC = face.contours[FaceContourType.rightEye]?.points;
+
+    if (faceC == null || faceC.length < 15) return false;
+    if (leftEyeC == null || leftEyeC.isEmpty) return false;
+    if (rightEyeC == null || rightEyeC.isEmpty) return false;
+
+    return true;
+  }
+
+  /// front camera는 미러링이 걸려서 yaw 부호가 사용자 기준과 반대일 수 있음
+  double _normYaw(double yaw) => _lensDirection == CameraLensDirection.front ? -yaw : yaw;
 
   // ===========================================================================
   // 11) Missions (fixed 3)
@@ -414,8 +429,6 @@ class _FaceDetectorAppState extends State<FaceDetectorApp>
     final yaw = _normYaw(face.headEulerAngleY ?? 0.0);
     final ok = left ? (yaw <= -_kYawThreshold) : (yaw >= _kYawThreshold);
 
-    // "한 프레임"만 임계값 넘는 걸 성공으로 보지 않고,
-    // 일정 프레임 유지(hold)로 안정화한다.
     if (ok) {
       _yawHold++;
     } else {
@@ -439,16 +452,13 @@ class _FaceDetectorAppState extends State<FaceDetectorApp>
     if (l == null || r == null) {
       final remain = _remainingSeconds();
       final timeText = remain == null ? '' : ' / 남은 ${remain}s';
-      _info =
-      '미션 ${_missionIndex + 1}/${_missions.length}: 눈 인식 중... 정면을 봐주세요$timeText';
+      _info = '미션 ${_missionIndex + 1}/${_missions.length}: 눈 인식 중... 정면을 봐주세요$timeText';
       return false;
     }
 
-    // 히스테리시스(닫힘/열림 임계값을 분리)로 흔들림 완화
     final bothClosed = (l <= _kEyeClosedTh) && (r <= _kEyeClosedTh);
     final bothOpen = (l >= _kEyeOpenTh) && (r >= _kEyeOpenTh);
 
-    // phase 0: "열려있다가" 닫히는 이벤트를 기다림
     if (_blinkPhase == 0) {
       final remain = _remainingSeconds();
       final timeText = remain == null ? '' : ' / 남은 ${remain}s';
@@ -461,7 +471,6 @@ class _FaceDetectorAppState extends State<FaceDetectorApp>
       return false;
     }
 
-    // phase 1: 닫힘을 조금 유지(눈이 순간 노이즈로 튀는 걸 방지)
     if (_blinkPhase == 1) {
       if (bothClosed) {
         _blinkClosedHold++;
@@ -482,7 +491,6 @@ class _FaceDetectorAppState extends State<FaceDetectorApp>
       return false;
     }
 
-    // phase 2: 다시 열림 복귀를 확인(깜빡임 완료)
     if (bothOpen) {
       _blinkOpenHold++;
     } else {
@@ -501,11 +509,14 @@ class _FaceDetectorAppState extends State<FaceDetectorApp>
   void _advanceMission() {
     _missionIndex++;
 
-    // 다음 미션을 위해 카운터 초기화
     _yawHold = 0;
     _blinkPhase = 0;
     _blinkClosedHold = 0;
     _blinkOpenHold = 0;
+
+    if (_isEntryFlow && _missionIndex < _missions.length) {
+      _toast('미션 ${_missionIndex + 1}/${_missions.length}: ${_missionLabel(_missions[_missionIndex])}');
+    }
   }
 
   void _runMissions(Face face) {
@@ -536,12 +547,10 @@ class _FaceDetectorAppState extends State<FaceDetectorApp>
         _info = 'Verified';
         _success();
       } else {
-        // 다음 미션 안내(텍스트 + 토스트)
         final next = _missions[_missionIndex];
         final remain = _remainingSeconds();
         final timeText = remain == null ? '' : ' / 남은 ${remain}s';
-        _info =
-        '미션 ${_missionIndex + 1}/${_missions.length}: ${_missionLabel(next)}$timeText';
+        _info = '미션 ${_missionIndex + 1}/${_missions.length}: ${_missionLabel(next)}$timeText';
         _toastMissionIfNeeded();
       }
     }
@@ -554,7 +563,6 @@ class _FaceDetectorAppState extends State<FaceDetectorApp>
     if (!_isEntryFlow || _done) return;
     if (_imageSize == Size.zero) return;
 
-    // 1) 얼굴 1명만 허용(다중 얼굴은 부정 가능성/오탐 증가)
     if (faces.length != 1) {
       _resetForRetry(reason: '얼굴 1명만 인식되게 맞추세요.');
       return;
@@ -563,30 +571,31 @@ class _FaceDetectorAppState extends State<FaceDetectorApp>
     final face = faces.first;
     final bb = face.boundingBox;
 
-    // 2) 얼굴 전체 + 충분한 크기(거리) 사전 조건
-    final fullOk =
-        _isFaceFullyInFrame(bb, _imageSize) && _isFaceBigEnough(bb, _imageSize);
+    final fullOk = _isFaceFullyInFrame(bb, _imageSize) &&
+        _isFaceBigEnough(bb, _imageSize) &&
+        _hasRequiredLandmarks(face) &&
+        _hasRequiredContours(face);
 
     if (!fullOk) {
       _resetForRetry(reason: '얼굴 전체가 프레임 안에 들어오게 맞추세요.');
       return;
     }
 
-    // 3) 연속 프레임 안정화
-    //    - 한 프레임의 우연한 검출/노이즈로 성공하는 걸 막는다.
     _fullFaceStreak++;
     if (_fullFaceStreak < _kFullFaceStreakTarget) {
-      // 미션 구간 전에는 타임아웃을 돌리지 않는다(UX 망가짐 방지)
       _cancelTimeout();
       _info = '얼굴 고정 (${_fullFaceStreak}/$_kFullFaceStreakTarget)';
       return;
     }
 
-    // 4) 미션 구간 진입: 타임아웃 시작 + 미션 토스트 1회
+    // streak 통과 “그 순간”에만 미션 1 안내 토스트
+    if (_fullFaceStreak == _kFullFaceStreakTarget) {
+      _toast('미션 1/${_missions.length}: ${_missionLabel(_missions[0])}');
+    }
+
     _startTimeoutIfNeeded();
     _toastMissionIfNeeded();
 
-    // 5) 미션 수행
     _runMissions(face);
   }
 
@@ -599,7 +608,6 @@ class _FaceDetectorAppState extends State<FaceDetectorApp>
       appBar: AppBar(
         title: const Text('ML Kit 테스트'),
         actions: [
-          // Entry에서는 모드 변경 차단(우회 방지)
           if (!_isEntryFlow)
             DropdownButtonHideUnderline(
               child: DropdownButton<_DetectorMode>(
@@ -680,19 +688,16 @@ class _FaceDetectorAppState extends State<FaceDetectorApp>
     try {
       if (!mounted) return;
 
-      // 메타 업데이트(좌표 변환/품질게이트에 필요)
       final meta = inputImage.metadata;
       if (meta?.size != null) _imageSize = meta!.size;
       if (meta?.rotation != null) _rotation = meta!.rotation;
 
-      // Entry에서는 무조건 FaceDetector로만 판정(우회 방지)
       final effectiveMode = _isEntryFlow ? _DetectorMode.face : _mode;
 
       switch (effectiveMode) {
         case _DetectorMode.face:
           final faces = await _faceDetector.processImage(inputImage);
 
-          // 시각화(박스/랜드마크)
           _customPaint = CustomPaint(
             painter: FaceDetectorPainter(
               faces,
