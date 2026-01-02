@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+
 import '../settings/settings_page.dart';
 import 'package:bnkproject/game/game_entry.dart';
 import '../travel/pages/travel_page.dart';
 import 'package:bnkproject/screens/sto/pages/sto_season_page.dart';
 
+// ✅ goals 진입점(Entry) import
+import 'package:bnkproject/screens/goals/retirement_trip/retirement_trip_entry.dart';
 
 class MenuPage extends StatefulWidget {
   const MenuPage({super.key});
@@ -80,7 +83,6 @@ class _MenuPageState extends State<MenuPage> {
                 ],
               ),
             ),
-
             const SizedBox(height: 18),
 
             _BigMenuRow(title: '매일 주식받는 출석체크', onTap: () {}),
@@ -135,7 +137,7 @@ class _MenuPageState extends State<MenuPage> {
               onTap: () {},
             ),
 
-            // ✅ 게임 → GameEntryPage로 이동
+            // ✅ 게임
             _ServiceTile(
               iconBg: const Color(0xFF2A2C33),
               icon: Icons.sports_esports,
@@ -149,21 +151,35 @@ class _MenuPageState extends State<MenuPage> {
               },
             ),
 
-            // ✅ 여행 에서 일일미션 → TravelPage로 이동
+            // ✅ 일일 미션 (FLAG)
             _ServiceTile(
               iconBg: const Color(0xFF2A2C33),
-              icon: Icons.flight_takeoff, // ✈️ 비행기 아이콘
+              icon: Icons.flag_outlined,
               iconColor: Colors.tealAccent,
               title: '일일 미션',
               subtitle: '부산 핫플 · 미션 · 스탬프',
               onTap: () {
                 Navigator.of(context, rootNavigator: true).push(
                   MaterialPageRoute(builder: (_) => TravelPage()),
-
                 );
               },
             ),
-// ✅ STO 시즌 투자 → StoSeasonPage로 이동
+
+            // ✅ 은퇴 후 여행 계획 (goals entry)
+            _ServiceTile(
+              iconBg: const Color(0xFF2A2C33),
+              icon: Icons.flight_takeoff,
+              iconColor: Colors.lightBlueAccent,
+              title: '은퇴 후 여행 계획',
+              subtitle: '목표 설정 · 예산 · 적립 플랜',
+              onTap: () {
+                Navigator.of(context, rootNavigator: true).push(
+                  MaterialPageRoute(builder: (_) => const RetirementTripEntryPage()),
+                );
+              },
+            ),
+
+            // ✅ STO 시즌 투자
             _ServiceTile(
               iconBg: const Color(0xFF2A2C33),
               icon: Icons.sports_baseball,
@@ -176,13 +192,14 @@ class _MenuPageState extends State<MenuPage> {
                 );
               },
             ),
-
           ],
         ),
       ),
     );
   }
 }
+
+// ===== 아래부터 헬퍼 위젯들 (이게 없어서 네가 터진 거임) =====
 
 class _TopSegmentButton extends StatelessWidget {
   final bool selected;
