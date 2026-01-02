@@ -54,6 +54,7 @@ public class UsersApiController {
         // 세션 저장 (웹이랑 동일 구조)
         session.setAttribute("jwtToken", token);
         session.setAttribute("loginUser", dto);
+        session.setAttribute("uId", (long) dto.getUid());
         long now = System.currentTimeMillis();
         session.setAttribute("sessionStart", now);
         session.setMaxInactiveInterval(1200); // 20분

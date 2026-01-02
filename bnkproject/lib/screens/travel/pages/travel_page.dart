@@ -26,7 +26,7 @@ class TravelPage extends StatefulWidget {
 class _TravelPageState extends State<TravelPage> {
   final ScrollController _scrollCtrl = ScrollController();
 
-  int _tabIndex = 0; // 0: mission, 1: reward, 2: map_spot.dart, 3: rank, 4: boogi
+  int _tabIndex = 0; // 0: mission, 1: reward, 2: map, 3: rank, 4: boogi
   String _categoryId = 'food';
 
   @override
@@ -37,7 +37,7 @@ class _TravelPageState extends State<TravelPage> {
 
   void _selectCategory(String id) {
     setState(() => _categoryId = id);
-    // TODO: 여기서 미션/스팟/리스트를 카테고리로 필터링 연결
+    // TODO: 미션/스팟/리스트 카테고리 필터 연결
   }
 
   void _showSnack(String msg) {
@@ -51,6 +51,82 @@ class _TravelPageState extends State<TravelPage> {
       0,
       duration: const Duration(milliseconds: 250),
       curve: Curves.easeOut,
+    );
+  }
+
+  Widget _buildQuickCards(BoxConstraints constraints) {
+    final cols = constraints.maxWidth >= 900 ? 3 : 1;
+
+    final cards = <Widget>[
+      QuickCard(
+        title: '오늘의 미션',
+        badgeText: '+50 XP',
+        badgeColor: TravelTheme.boogiMint,
+        desc: '신동백전으로 결제 1회 · 전통시장 방문',
+        buttonText: '미션 보드로 이동',
+        buttonColor: TravelTheme.boogiMint,
+        onTap: () => _goTab(0),
+      ),
+      QuickCard(
+        title: '보상 수령',
+        badgeText: '신동백전 1,200P',
+        badgeColor: TravelTheme.boogiGold,
+        desc: '완료 보상 3건이 대기 중입니다.',
+        buttonText: '리워드 보관함',
+        buttonColor: TravelTheme.boogiGold,
+        onTap: () => _goTab(1),
+      ),
+      QuickCard(
+        title: '현재 랭킹',
+        badgeText: '서면 지역 #12',
+        badgeColor: const Color(0xFFCBD5E1),
+        desc: 'TOP 10 진입까지 180 XP 남음',
+        buttonText: '랭킹 보드',
+        buttonColor: const Color(0xFF818CF8),
+        onTap: () => _goTab(3),
+      ),
+    ];
+
+    // ✅ 1열에서는 GridView 금지(높이 강제되어 오버플로우 자주 발생)
+    if (cols == 1) {
+      return Column(
+        children: [
+          cards[0],
+          const SizedBox(height: 12),
+          cards[1],
+          const SizedBox(height: 12),
+          cards[2],
+        ],
+      );
+    }
+
+    return GridView.count(
+      crossAxisCount: cols,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      crossAxisSpacing: 12,
+      mainAxisSpacing: 12,
+      childAspectRatio: 1.35,
+      children: cards,
+    );
+  }
+
+  Widget _buildTabs() {
+    // ✅ Row+Expanded로 5개를 한 줄 강제하면 작은 화면에서 깨짐 → Wrap으로 안전 처리
+    return GlassCard(
+      radius: 18,
+      padding: const EdgeInsets.all(6),
+      child: Wrap(
+        spacing: 8,
+        runSpacing: 8,
+        children: [
+          TabPill(label: '🎯 미션', active: _tabIndex == 0, onTap: () => _goTab(0)),
+          TabPill(label: '💰 리워드', active: _tabIndex == 1, onTap: () => _goTab(1)),
+          TabPill(label: '📍 지도', active: _tabIndex == 2, onTap: () => _goTab(2)),
+          TabPill(label: '🏆 랭킹', active: _tabIndex == 3, onTap: () => _goTab(3)),
+          TabPill(label: '🐳 내 부기', active: _tabIndex == 4, onTap: () => _goTab(4)),
+        ],
+      ),
     );
   }
 
@@ -117,13 +193,15 @@ class _TravelPageState extends State<TravelPage> {
                       ),
                     ),
                     const SizedBox(width: 12),
-                    const Expanded(
+                    Expanded(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
+                        children: const [
                           Text(
                             '일일 미션 ~방구석에 있으면 뭐하노~',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.w800,
@@ -134,6 +212,8 @@ class _TravelPageState extends State<TravelPage> {
                           SizedBox(height: 2),
                           Text(
                             'BNK 앱 내 관광 미션 · 신동백전 결제 연동',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                               color: Color(0xFF94A3B8),
                               fontSize: 11,
@@ -217,6 +297,7 @@ class _TravelPageState extends State<TravelPage> {
                               ],
                             );
                           }
+
                           return Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
@@ -229,72 +310,27 @@ class _TravelPageState extends State<TravelPage> {
                       ),
                     ),
                     const SizedBox(height: 16),
+
                     BoogiCategoryBar(
                       selectedId: _categoryId,
                       onSelect: _selectCategory,
                     ),
+
                     const SizedBox(height: 16),
+
                     LayoutBuilder(
-                      builder: (context, constraints) {
-                        final cols = constraints.maxWidth >= 900 ? 3 : 1;
-                        return GridView.count(
-                          crossAxisCount: cols,
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          crossAxisSpacing: 12,
-                          mainAxisSpacing: 12,
-                          childAspectRatio: cols == 1 ? 3.0 : 1.35,
-                          children: [
-                            QuickCard(
-                              title: '오늘의 미션',
-                              badgeText: '+50 XP',
-                              badgeColor: TravelTheme.boogiMint,
-                              desc: '신동백전으로 결제 1회 · 전통시장 방문',
-                              buttonText: '미션 보드로 이동',
-                              buttonColor: TravelTheme.boogiMint,
-                              onTap: () => _goTab(0),
-                            ),
-                            QuickCard(
-                              title: '보상 수령',
-                              badgeText: '신동백전 1,200P',
-                              badgeColor: TravelTheme.boogiGold,
-                              desc: '완료 보상 3건이 대기 중입니다.',
-                              buttonText: '리워드 보관함',
-                              buttonColor: TravelTheme.boogiGold,
-                              onTap: () => _goTab(1),
-                            ),
-                            QuickCard(
-                              title: '현재 랭킹',
-                              badgeText: '서면 지역 #12',
-                              badgeColor: const Color(0xFFCBD5E1),
-                              desc: 'TOP 10 진입까지 180 XP 남음',
-                              buttonText: '랭킹 보드',
-                              buttonColor: const Color(0xFF818CF8),
-                              onTap: () => _goTab(3),
-                            ),
-                          ],
-                        );
-                      },
+                      builder: (context, constraints) => _buildQuickCards(constraints),
                     ),
+
                     const SizedBox(height: 16),
-                    GlassCard(
-                      radius: 18,
-                      padding: const EdgeInsets.all(6),
-                      child: Row(
-                        children: [
-                          Expanded(child: TabPill(label: '🎯 미션', active: _tabIndex == 0, onTap: () => _goTab(0))),
-                          Expanded(child: TabPill(label: '💰 리워드', active: _tabIndex == 1, onTap: () => _goTab(1))),
-                          Expanded(child: TabPill(label: '📍 지도', active: _tabIndex == 2, onTap: () => _goTab(2))),
-                          Expanded(child: TabPill(label: '🏆 랭킹', active: _tabIndex == 3, onTap: () => _goTab(3))),
-                          Expanded(child: TabPill(label: '🐳 내 부기', active: _tabIndex == 4, onTap: () => _goTab(4))),
-                        ],
-                      ),
-                    ),
+
+                    _buildTabs(),
+
                     const SizedBox(height: 12),
 
                     if (_tabIndex == 0) MissionTab(onGoTab: _goTab),
                     if (_tabIndex == 1) RewardTab(onSnack: _showSnack, onGoTab: _goTab),
-                    if (_tabIndex == 2) MapTab(onSnack: _showSnack, categoryId: _categoryId), // ✅ 변경
+                    if (_tabIndex == 2) MapTab(onSnack: _showSnack, categoryId: _categoryId),
                     if (_tabIndex == 3) const RankTab(),
                     if (_tabIndex == 4) BoogiTab(onSnack: _showSnack),
 

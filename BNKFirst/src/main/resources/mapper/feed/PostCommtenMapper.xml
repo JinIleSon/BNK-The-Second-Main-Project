@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.bnkfirst.mapper.feed.PostCommentMapper">
+
+    <resultMap id="PostCommentMap" type="kr.co.bnkfirst.dto.feed.PostCommentDTO">
+        <id property="commentId" column="COMMENTID"/>
+        <result property="postId" column="POSTID"/>
+        <result property="uId" column="uId"/>
+        <result property="body" column="BODY"/>
+        <result property="status" column="STATUS"/>
+        <result property="createdAt" column="CREATEDAT"/>
+        <result property="nickname" column="NICKNAME"/>
+        <result property="avatarUrl" column="AVATARURL"/>
+    </resultMap>
+
+    <select id="selectByPostId" resultMap="PostCommentMap">
+        SELECT
+        pc.COMMENTID,
+        pc.POSTID,
+        pc."uId" AS "uId",
+        pc.BODY,
+        pc.STATUS,
+        pc.CREATEDAT,
+        up.NICKNAME,
+        up.AVATARURL
+        FROM POSTCOMMENT pc
+        LEFT JOIN USERPROFILE up
+        ON up."uId" = pc."uId"
+        WHERE pc.POSTID = #{postId}
+        AND pc.STATUS IN ('ACTIVE','DELETED')
+        <if test="lastCommentId != null">
+            AND pc.COMMENTID &lt; #{lastCommentId}
+        </if>
+        ORDER BY pc.COMMENTID DESC
+        FETCH FIRST #{size} ROWS ONLY
+    </select>
+
+    <insert id="insertComment">
+        INSERT INTO POSTCOMMENT (COMMENTID, POSTID, "uId", BODY, STATUS, CREATEDAT)
+        VALUES (SEQCOMMENT.NEXTVAL, #{postId}, #{uId}, #{body}, 'ACTIVE', SYSTIMESTAMP)
+    </insert>
+
+    <!-- 운영 안전: owner 조건을 SQL에서 강제 -->
+    <update id="updateBodyByOwner">
+        UPDATE POSTCOMMENT
+        SET BODY = #{body}
+        WHERE COMMENTID = #{commentId}
+          AND "uId" = #{uId}
+          AND STATUS = 'ACTIVE'
+    </update>
+
+    <update id="softDeleteByOwner">
+        UPDATE POSTCOMMENT
+        SET STATUS = 'DELETED'
+        WHERE COMMENTID = #{commentId}
+          AND "uId" = #{uId}
+          AND STATUS = 'ACTIVE'
+    </update>
+</mapper>

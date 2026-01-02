@@ -5,6 +5,8 @@ import 'package:http/http.dart' as http;
 import '../widgets/boarder_comment.dart';
 import '../widgets/feed_item.dart';
 import 'boarder_edit.dart';
+import '../../../api/member_api.dart';
+import '../../../utils/auth_guard.dart';
 
 /*
     날짜 : 2025.12.17 / 2025.12.31 / 2025.01.01
@@ -44,8 +46,8 @@ class _BoarderDetailState extends State<BoarderDetail> {
       final res = await http.get(
         uri,
         headers: {
-          "X-UID": "1",
-          // 임시 : 로그인 방식 바꾸면 나중에 수정
+          "Content-Type": "application/json; charset=utf-8",
+          if (memberApi.sessionCookie != null) "Cookie": memberApi.sessionCookie!,
         },
       );
 
@@ -74,6 +76,9 @@ class _BoarderDetailState extends State<BoarderDetail> {
         actions: [
           TextButton(
             onPressed: () async {
+              final loggedIn = await ensureLoggedIn(context);
+              if (!loggedIn) return;
+
               final updated = await Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => BoarderEditPage(item: widget.item)),
@@ -87,23 +92,55 @@ class _BoarderDetailState extends State<BoarderDetail> {
           ),
           TextButton(
             onPressed: () async {
-              final uri = Uri.parse("$baseUrl/api/post/board/${widget.item.postId}");
+              final loggedIn = await ensureLoggedIn(context);
+              if (!loggedIn) return;
 
+              final confirm = await showDialog<bool>(
+                context: context,
+                builder: (ctx) => AlertDialog(
+                  title: const Text("삭제할까요?"),
+                  content: const Text("삭제하면 되돌릴 수 없습니다."),
+                  actions: [
+                    TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text("취소")),
+                    TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text("삭제")),
+                  ],
+                ),
+              );
+              if (confirm != true) return;
+
+              final uri = Uri.parse("$baseUrl/api/post/board/${widget.item.postId}");
               final res = await http.delete(
                 uri,
                 headers: {
-                  "X-UID": "1",
+                  "Content-Type": "application/json; charset=utf-8",
+                  if (memberApi.sessionCookie != null) "Cookie": memberApi.sessionCookie!,
                 },
               );
 
-              if (res.statusCode == 200 && context.mounted) {
+              if (!context.mounted) return;
+
+              if (res.statusCode == 200) {
                 Navigator.pop(context, "deleted");
-              } else {
-                if (!context.mounted) return;
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text("삭제 실패: ${res.statusCode}")),
-                );
+                return;
               }
+
+              if (res.statusCode == 401) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("로그인이 필요합니다.")),
+                );
+                return;
+              }
+
+              if (res.statusCode == 403) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("작성자만 삭제할 수 있습니다.")),
+                );
+                return;
+              }
+
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text("삭제 실패: ${res.statusCode}")),
+              );
             },
             child: const Text("삭제", style: TextStyle(color: Colors.white)),
           ),
@@ -131,13 +168,13 @@ class _BoarderDetailState extends State<BoarderDetail> {
                 const SizedBox(height: 12),
 
                 Text(
-                  "Title : ${widget.item.title}",
+                  "${widget.item.title}",
                   style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
                 ),
                 const SizedBox(height: 10),
 
                 Text(
-                  "Body : ${widget.item.body}",
+                  "${widget.item.body}",
                   style: const TextStyle(height: 1.35, color: Colors.white70),
                 ),
 
