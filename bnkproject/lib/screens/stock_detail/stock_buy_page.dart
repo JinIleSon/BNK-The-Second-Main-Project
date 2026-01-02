@@ -5,6 +5,11 @@ import 'package:intl/intl.dart';
 import 'stock_detail_page.dart';
 import 'package:characters/characters.dart';
 
+/*
+  날짜 : 2026.01.02.
+  이름 : 강민철
+  내용 : 매수 api 연결
+ */
 
 class StockBuyPage extends StatefulWidget {
   final String name;

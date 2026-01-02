@@ -1,17 +1,31 @@
+import 'package:bnkproject/api/etf_api.dart';
+import 'package:bnkproject/models/EtfTrade.dart';
 import 'package:flutter/material.dart';
 import 'package:characters/characters.dart';
 import 'stock_detail_page.dart'; // won extension 쓰려고
+
+/*
+  날짜 : 2026.01.02.
+  이름 : 강민철
+  내용 : 매도 api 연결
+ */
 
 class StockSellPage extends StatefulWidget {
   final String name;
   final int currentPrice;
   final String changePercentText;
+  final String stockCode;
+  final String pcuid;
+  final String pacc;
 
   const StockSellPage({
     super.key,
     required this.name,
     required this.currentPrice,
     required this.changePercentText,
+    required this.stockCode,
+    required this.pcuid,
+    required this.pacc,
   });
 
   @override
@@ -19,6 +33,9 @@ class StockSellPage extends StatefulWidget {
 }
 
 class _StockSellPageState extends State<StockSellPage> with TickerProviderStateMixin {
+  late final EtfApiClient api;
+  bool _isSelling = false;
+
   int _selectedPriceTab = 0; // 0: 판매할 가격, 1: 현재가, 2: 시장가
   late int _price;
   String _qtyText = '';
@@ -32,8 +49,72 @@ class _StockSellPageState extends State<StockSellPage> with TickerProviderStateM
   @override
   void initState() {
     super.initState();
+    api = EtfApiClient(baseUrl: 'http://10.0.2.2:8080/BNK');
     _price = widget.currentPrice;
   }
+
+  @override
+  void dispose() {
+    api.dispose();
+    super.dispose();
+  }
+
+  Future<void> _sellEtf({
+    required int qty,
+    required int price,
+  }) async {
+    if (_isSelling) return;
+
+    setState(() => _isSelling = true);
+
+    try {
+      final total = qty * price;
+
+      final req = EtfSell(
+        psum: total,              // ✅ 모델상 매도는 총액만 보냄
+        pacc: widget.pacc,
+        pname: widget.name,
+        pcuid: widget.pcuid,
+        code: widget.stockCode,
+      );
+
+      final result = await api.sellEtf(req);
+
+      // ✅ ApiResult.result가 "sell" 이면 성공이라는 가정
+      if (result.result.toLowerCase() != 'sell') {
+        throw Exception('매도 실패(result=${result.result})');
+      }
+
+      // ✅ 성공 UI (토스트 + 완료시트)
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('${widget.name} ${qty}주 판매...  주당 ${price.won}에 판매했어요.'),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: const Color(0xFF2A2B31),
+          margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+          duration: const Duration(seconds: 1),
+        ),
+      );
+
+      _showOrderCompleteSheet(
+        context: context,
+        name: widget.name,
+        qty: qty,
+        price: price,
+        isSell: true,
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('매도 실패: $e'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _isSelling = false);
+    }
+  }
+
 
   void _tapKey(String key) {
     setState(() {
@@ -68,15 +149,16 @@ class _StockSellPageState extends State<StockSellPage> with TickerProviderStateM
       backgroundColor: Colors.transparent,
       isDismissible: true,
       enableDrag: true,
-      builder: (_) {
+      builder: (sheetContext) {
         return _SellConfirmSheet(
           name: name,
           qty: qty,
           price: price,
           total: total,
           onClose: () => Navigator.pop(context),
-          onConfirm: () {
-            Navigator.pop(context); // 1) 확인 시트 닫기
+          onConfirm: () async {
+            Navigator.pop(sheetContext); // 1) 확인 시트 닫기
+            await _sellEtf(qty: qty, price: price);
 
             // 2) 토스트(판매)
             ScaffoldMessenger.of(context).showSnackBar(
@@ -369,21 +451,23 @@ class _StockSellPageState extends State<StockSellPage> with TickerProviderStateM
                             foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                           ),
-                          onPressed: () {
-                            final qty = _qty;
-                            if (qty <= 0) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('수량을 입력해 주세요.')),
-                              );
-                              return;
-                            }
-                            _showSellConfirmSheet(
-                              context: context,
-                              name: widget.name,
-                              qty: qty,
-                              price: _price,
-                            );
-                          },
+                          onPressed: _isSelling
+                            ? null
+                            : () {
+                                final qty = _qty;
+                                if (qty <= 0) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text('수량을 입력해 주세요.')),
+                                  );
+                                  return;
+                                }
+                                _showSellConfirmSheet(
+                                  context: context,
+                                  name: widget.name,
+                                  qty: qty,
+                                  price: _price,
+                                );
+                              },
                           child: const Text('판매하기', style: TextStyle(fontSize: 18)),
                         ),
                       ),
