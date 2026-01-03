@@ -159,7 +159,7 @@ class _BoarderDetailState extends State<BoarderDetail> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  (widget.item.author.trim().isEmpty) ? "익명" : widget.item.author,
+                  (widget.item.author.trim().isEmpty) ? "사용자" : widget.item.author,
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w900,

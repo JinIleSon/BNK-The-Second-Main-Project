@@ -55,7 +55,7 @@ public class QUsers extends EntityPathBase<Users> {
 
     public final StringPath role = createString("role");
 
-    public final NumberPath<Integer> uid = createNumber("uid", Integer.class);
+    public final NumberPath<Long> uid = createNumber("uid", Long.class);
 
     public QUsers(String variable) {
         super(Users.class, forVariable(variable));

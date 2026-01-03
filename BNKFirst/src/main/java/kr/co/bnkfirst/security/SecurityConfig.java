@@ -49,7 +49,7 @@ public class SecurityConfig {
                         "/qna/**", "/stock/**", "/tologo/**",
                         "/ws/**", "/retirement-renew/**", "/mypage/calc/**",
                         "/corporate/**","/irp/**","/auth/qr/**",
-                        "/api/post/**"
+                        "/api/post/**", "api/profile/**"
                 ).permitAll()
                 .requestMatchers("/mypage/**").hasAnyRole("ADMIN", "USER")
                 .requestMatchers("/admin/**").hasRole("ADMIN")

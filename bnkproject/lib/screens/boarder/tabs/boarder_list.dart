@@ -54,7 +54,17 @@ class _BoarderListState extends State<BoarderList> {
         final title = (j["title"] ?? "") as String;
         final body  = (j["body"] ?? "") as String;
 
-        final author = (j["authornickname"] ?? "익명") as String;
+        final author = (j["authorNickname"] ??
+            j["authornickname"] ??
+            j["nickname"] ??
+            j["NICKNAME"] ??
+            j["author"] ??
+            "")
+            .toString()
+            .trim();
+
+        final showAuthor = author.isEmpty ? "사용자" : author;
+
         final avatarUrl = (j["authoravatarurl"] ??
             "https://i.pravatar.cc/200?u=$postId") as String;
 
@@ -71,7 +81,7 @@ class _BoarderListState extends State<BoarderList> {
         return FeedItem(
           postId: postId,
           authoruId: authoruId,
-          author: author,
+          author: showAuthor,
           createdAt: createdAt,
           timeAgo: "",
           title: title,

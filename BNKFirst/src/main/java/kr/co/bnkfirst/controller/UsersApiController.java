@@ -251,7 +251,7 @@ public class UsersApiController {
     @AllArgsConstructor
     @Builder
     public static class LoginUserResponse {
-        private int uid;
+        private long uid;
         private String mid;
         private String mname;
         private String memail;
