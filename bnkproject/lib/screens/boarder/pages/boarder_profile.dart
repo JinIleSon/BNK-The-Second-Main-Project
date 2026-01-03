@@ -1,9 +1,16 @@
+import 'dart:convert';
+import 'package:bnkproject/screens/auth/login_main.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+
+import '../../auth/signup/authsession.dart';
+
+String? getToken() => authsession.token;
 
 /*
-    날짜 : 2025.12.17(수)
+    날짜 : 2026.01.03
     이름 : 이준우
-    내용 : 프로필
+    내용 : 프로필(실데이터 연동)
  */
 
 class BoarderProfile extends StatefulWidget {
@@ -14,15 +21,20 @@ class BoarderProfile extends StatefulWidget {
 }
 
 class _BoarderProfileState extends State<BoarderProfile> {
-  // 설정값(하드코딩 → 나중에 API/저장으로 교체)
-  String nickname = "응애";
-  int avatarIndex = 0;
+  static const baseUrl = "http://10.0.2.2:8080/BNK";
 
-  int mutualFollow = 0; // 맞팔로우
-  int followers = 0;
-  int following = 2;
+  bool loading = true;
+  String? errorMsg;
 
-  int filterIndex = 0; // 전체/게시글/남긴 글/좋아요
+  String nickname = "";
+  String bio = "";
+  String avatarUrl = "icon:0";
+
+  int postCount = 0;
+  int commentCount = 0;
+  int likeCount = 0;
+
+  int filterIndex = 0; // 0=게시글, 1=댓글, 2=좋아요
 
   final List<IconData> avatarIcons = const [
     Icons.headset_mic_rounded,
@@ -35,11 +47,147 @@ class _BoarderProfileState extends State<BoarderProfile> {
     Icons.face_rounded,
   ];
 
-  final List<String> filters = const ["전체", "게시글", "댓글", "좋아요 누른 글"];
+  final List<String> filters = const ["게시글", "댓글", "좋아요"];
+
+  List<dynamic> items = [];
+  bool listLoading = false;
+
+  int _avatarIndexFromUrl(String url) {
+    if (url.startsWith("icon:")) {
+      final idx = int.tryParse(url.split(":").last);
+      if (idx != null && idx >= 0 && idx < avatarIcons.length) return idx;
+    }
+    return 0;
+  }
+
+  Map<String, String> _authHeaders() {
+    final t = getToken();
+    debugPrint("[PROFILE][INIT] token=${t == null ? 'null' : '${t.substring(0, 12)}...'} len=${t?.length}");
+    if (t == null || t.isEmpty) return {"Content-Type": "application/json"};
+    return {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer $t",
+    };
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final t = getToken();
+      debugPrint("[PROFILE][INIT] token=${t?.substring(0, 15)}... len=${t?.length}"); // 로그
+      if (t == null || t.isEmpty) {
+        _goLogin();
+        return;
+      }
+      await fetchProfile();
+    });
+  }
+
+  Future<void> fetchProfile() async {
+    setState(() {
+      loading = true;
+      errorMsg = null;
+    });
+
+    try {
+      final uri = Uri.parse("$baseUrl/api/profile/me");
+      debugPrint("[PROFILE][REQ] headers=${_authHeaders()}");
+      final res = await http.get(uri, headers: _authHeaders());
+      debugPrint("[PROFILE][RES] status=${res.statusCode} body=${res.body}");
+
+      if (res.statusCode == 401 || res.statusCode == 403) {
+        _goLogin();
+        return;
+      }
+
+      if (res.statusCode != 200) {
+        throw Exception("프로필 조회 실패: ${res.statusCode} ${res.body}");
+      }
+
+      final data = jsonDecode(res.body);
+      final p = data["profile"] ?? {};
+
+      setState(() {
+        nickname = (p["nickname"] ?? "") as String;
+        bio = (p["bio"] ?? "") as String;
+        avatarUrl = (p["avatarUrl"] ?? "icon:0") as String;
+
+        postCount = (data["postCount"] ?? 0) as int;
+        commentCount = (data["commentCount"] ?? 0) as int;
+        likeCount = (data["likeCount"] ?? 0) as int;
+      });
+
+      await fetchTabList();
+    } catch (e) {
+      setState(() => errorMsg = "$e");
+    } finally {
+      if (mounted) setState(() => loading = false);
+    }
+  }
+
+  Future<void> fetchTabList() async {
+    setState(() {
+      listLoading = true;
+      items = [];
+    });
+
+    try {
+      final path = switch (filterIndex) {
+        0 => "/api/profile/me/posts",
+        1 => "/api/profile/me/comments",
+        _ => "/api/profile/me/likes",
+      };
+
+      final uri = Uri.parse("$baseUrl$path?size=20");
+      final res = await http.get(uri, headers: _authHeaders());
+      debugPrint("[PROFILE][TAB][RES] status=${res.statusCode} body=${res.body}");
+
+      if (res.statusCode == 401 || res.statusCode == 403) {
+        _goLogin();
+        return;
+      }
+
+      if (res.statusCode != 200) {
+        throw Exception("목록 조회 실패: ${res.statusCode} ${res.body}");
+      }
+
+      final list = jsonDecode(res.body);
+      setState(() => items = (list as List));
+    } catch (e) {
+      setState(() => errorMsg = "$e");
+    } finally {
+      if (mounted) setState(() => listLoading = false);
+    }
+  }
+
+  Future<void> updateProfile({required String newNick, required int newAvatar, required String newBio}) async {
+    final body = jsonEncode({
+      "nickname": newNick,
+      "avatarUrl": "icon:$newAvatar",
+      "bio": newBio,
+    });
+
+    final uri = Uri.parse("$baseUrl/api/profile/me");
+    final res = await http.put(uri, headers: _authHeaders(), body: body);
+
+    if (res.statusCode == 401 || res.statusCode == 403) {
+      _goLogin();
+      return;
+    }
+
+    if (res.statusCode != 200 && res.statusCode != 204) {
+      throw Exception("프로필 수정 실패: ${res.statusCode} ${res.body}");
+    }
+
+    await fetchProfile();
+  }
 
   void openEditSheet() {
     final nickCtrl = TextEditingController(text: nickname);
-    int tempAvatar = avatarIndex;
+    final bioCtrl = TextEditingController(text: bio);
+    int tempAvatar = _avatarIndexFromUrl(avatarUrl);
 
     showModalBottomSheet(
       context: context,
@@ -62,10 +210,7 @@ class _BoarderProfileState extends State<BoarderProfile> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    "프로필 편집",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
-                  ),
+                  const Text("프로필 편집", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900)),
                   const SizedBox(height: 14),
 
                   const Text("아이콘 선택", style: TextStyle(color: Colors.white70)),
@@ -92,7 +237,16 @@ class _BoarderProfileState extends State<BoarderProfile> {
                   TextField(
                     controller: nickCtrl,
                     decoration: const InputDecoration(
-                      labelText: "닉네임 변경",
+                      labelText: "닉네임",
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  TextField(
+                    controller: bioCtrl,
+                    maxLines: 2,
+                    decoration: const InputDecoration(
+                      labelText: "소개",
                       border: OutlineInputBorder(),
                     ),
                   ),
@@ -102,13 +256,20 @@ class _BoarderProfileState extends State<BoarderProfile> {
                   SizedBox(
                     width: double.infinity,
                     child: FilledButton(
-                      onPressed: () {
+                      onPressed: () async {
                         final nn = nickCtrl.text.trim();
-                        setState(() {
-                          if (nn.isNotEmpty) nickname = nn;
-                          avatarIndex = tempAvatar;
-                        });
+                        final bb = bioCtrl.text.trim();
+
+                        if (nn.isEmpty) return;
+
                         Navigator.pop(context);
+                        try {
+                          await updateProfile(newNick: nn, newAvatar: tempAvatar, newBio: bb);
+                        } catch (e) {
+                          if (mounted) {
+                            setState(() => errorMsg = "$e");
+                          }
+                        }
                       },
                       child: const Text("저장"),
                     ),
@@ -122,22 +283,30 @@ class _BoarderProfileState extends State<BoarderProfile> {
     );
   }
 
+  void _goLogin() {
+    if (!mounted) return;
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (_) => const LoginPage()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final avatarIdx = _avatarIndexFromUrl(avatarUrl);
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
           onPressed: () => Navigator.pop(context),
           icon: const Icon(Icons.arrow_back),
         ),
-        actions: const [
-          Padding(
-            padding: EdgeInsets.only(right: 10),
-            child: Icon(Icons.more_horiz),
-          )
-        ],
       ),
-      body: ListView(
+      body: loading
+          ? const Center(child: CircularProgressIndicator())
+          : errorMsg != null
+          ? Center(child: Text(errorMsg!, style: const TextStyle(color: Colors.redAccent)))
+          : ListView(
         padding: const EdgeInsets.fromLTRB(16, 10, 16, 24),
         children: [
           // 1줄: 닉네임 / 아이콘
@@ -145,25 +314,30 @@ class _BoarderProfileState extends State<BoarderProfile> {
             children: [
               Expanded(
                 child: Text(
-                  nickname,
+                  nickname.isEmpty ? "닉네임 없음" : nickname,
                   style: const TextStyle(fontSize: 42, fontWeight: FontWeight.w900),
                 ),
               ),
               CircleAvatar(
                 radius: 42,
                 backgroundColor: Colors.white12,
-                child: Icon(avatarIcons[avatarIndex], size: 38, color: Colors.white),
+                child: Icon(avatarIcons[avatarIdx], size: 38, color: Colors.white),
               ),
             ],
           ),
+          const SizedBox(height: 10),
+
+          if (bio.isNotEmpty)
+            Text(bio, style: const TextStyle(color: Colors.white70, height: 1.3)),
+
           const SizedBox(height: 14),
 
-          // 2줄: 맞팔로우 / 팔로워 / 팔로잉
+          // ✅ 스탯: 게시글/댓글/좋아요
           Row(
             children: [
-              _stat("맞팔로우", mutualFollow),
-              _stat("팔로워", followers, arrow: true),
-              _stat("팔로잉", following, arrow: true),
+              _stat("게시글", postCount),
+              _stat("댓글", commentCount),
+              _stat("좋아요", likeCount),
             ],
           ),
           const SizedBox(height: 14),
@@ -181,7 +355,7 @@ class _BoarderProfileState extends State<BoarderProfile> {
           ),
           const SizedBox(height: 18),
 
-          // 3줄: 전체 / 게시글 / 남긴 글 / 좋아요 누른 글 (필터)
+          // 탭
           SizedBox(
             height: 44,
             child: ListView.separated(
@@ -192,7 +366,10 @@ class _BoarderProfileState extends State<BoarderProfile> {
                 final selected = i == filterIndex;
                 return ChoiceChip(
                   selected: selected,
-                  onSelected: (_) => setState(() => filterIndex = i),
+                  onSelected: (_) async {
+                    setState(() => filterIndex = i);
+                    await fetchTabList();
+                  },
                   label: Text(filters[i]),
                   backgroundColor: Colors.white10,
                   selectedColor: Colors.white12,
@@ -206,27 +383,50 @@ class _BoarderProfileState extends State<BoarderProfile> {
           ),
           const SizedBox(height: 14),
 
-          // 아래는 “느낌 잡는” 더미 목록
-          ...List.generate(6, (idx) {
-            return Container(
-              margin: const EdgeInsets.only(bottom: 10),
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: const Color(0xFF121318),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Text(
-                "${filters[filterIndex]} 더미 항목 #${idx + 1}",
-                style: const TextStyle(color: Colors.white70),
-              ),
-            );
-          }),
+          if (listLoading)
+            const Center(child: Padding(
+              padding: EdgeInsets.all(20),
+              child: CircularProgressIndicator(),
+            ))
+          else
+            ...items.map((it) => _buildItemCard(it)).toList(),
         ],
       ),
     );
   }
 
-  Widget _stat(String label, int value, {bool arrow = false}) {
+  Widget _buildItemCard(dynamic it) {
+    // 게시글: {postId, title, body}
+    // 댓글:  {commentId, postId, postTitle, body}
+    // 좋아요:{postId, title, body}
+    final title = (it["title"] ?? it["postTitle"] ?? "") as String;
+    final body = (it["body"] ?? "") as String;
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: const Color(0xFF121318),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (title.isNotEmpty)
+            Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
+          if (title.isNotEmpty) const SizedBox(height: 8),
+          Text(
+            body,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(color: Colors.white70, height: 1.35),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _stat(String label, int value) {
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 10),
@@ -235,15 +435,7 @@ class _BoarderProfileState extends State<BoarderProfile> {
           children: [
             Text(label, style: const TextStyle(color: Colors.white60, fontSize: 16)),
             const SizedBox(height: 8),
-            Row(
-              children: [
-                Text("$value", style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w900)),
-                if (arrow) ...[
-                  const SizedBox(width: 6),
-                  const Icon(Icons.chevron_right, color: Colors.white60),
-                ],
-              ],
-            ),
+            Text("$value", style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w900)),
           ],
         ),
       ),

@@ -52,8 +52,8 @@ public class MyUserDetails implements UserDetails {
         return user.getMid();
     }
 
-    public int getUid(){
-        return user.getUid();
+    public Long getUid() {
+        return (long) user.getUid();
     }
 
     // 계정 상태

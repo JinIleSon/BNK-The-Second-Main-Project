@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 public class UsersDTO {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int uid;
+    private long uid;
     private String mid;
     private String mpw;
     private String mname;

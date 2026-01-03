@@ -43,7 +43,7 @@
         VALUES (SEQCOMMENT.NEXTVAL, #{postId}, #{uId}, #{body}, 'ACTIVE', SYSTIMESTAMP)
     </insert>
 
-    <!-- 운영 안전: owner 조건을 SQL에서 강제 -->
+    <!-- 댓글 수정 & 삭제(소프트) -->
     <update id="updateBodyByOwner">
         UPDATE POSTCOMMENT
         SET BODY = #{body}

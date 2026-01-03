@@ -3,12 +3,110 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<!--
-     날짜 : 2025.12.24
-     이름 : 이준우
-     내용 : 사용자 프로필 SQL 매퍼
--->
+<mapper namespace="kr.co.bnkfirst.mapper.feed.UserProfileMapper">
 
-<mapper namespace="kr.co.bnkfirst.mapper.feed.ContentArticleMapper">
+    <!-- 프로필 조회 -->
+    <select id="selectByUid" parameterType="long" resultType="kr.co.bnkfirst.dto.feed.UserProfileDTO">
+        SELECT
+            up."uId"     AS "uId",
+            up.NICKNAME  AS nickname,
+            up.AVATARURL AS avatarUrl,
+            up.BIO       AS bio,
+            up.UPTAT     AS uptat
+        FROM USERPROFILE up
+        WHERE up."uId" = #{uId}
+    </select>
 
+    <!-- 프로필 기본 row 생성 -->
+    <insert id="insertDefault">
+        INSERT INTO USERPROFILE ("uId", NICKNAME, AVATARURL, BIO, UPTAT)
+        VALUES (#{uId}, NULL, NULL, NULL, SYSTIMESTAMP)
+    </insert>
+
+    <!-- 프로필 수정 -->
+    <update id="updateProfile" parameterType="kr.co.bnkfirst.dto.feed.UserProfileDTO">
+        UPDATE USERPROFILE
+        SET
+            NICKNAME  = #{nickname},
+            AVATARURL = #{avatarUrl},
+            BIO       = #{bio},
+            UPTAT     = SYSTIMESTAMP
+        WHERE "uId" = #{uId}
+    </update>
+
+    <!-- 카운트 -->
+    <select id="countMyPosts" resultType="int">
+        SELECT COUNT(*)
+        FROM POST
+        WHERE "AUTHORuId" = #{uId}
+          AND STATUS = 'ACTIVE'
+    </select>
+
+    <select id="countMyComments" resultType="int">
+        SELECT COUNT(*)
+        FROM POSTCOMMENT
+        WHERE "uId" = #{uId}
+         AND STATUS = 'ACTIVE'
+    </select>
+
+    <select id="countMyLikes" resultType="int">
+        SELECT COUNT(*)
+        FROM POSTLIKE
+        WHERE "uId" = #{uId}
+    </select>
+
+    <!-- 내 게시글 -->
+    <select id="selectMyPosts" resultType="kr.co.bnkfirst.dto.feed.MyPostItemDTO">
+        SELECT
+        POSTID    AS postId,
+        TITLE     AS title,
+        BODY      AS body,
+        CREATEDAT AS createdAt
+        FROM POST
+        WHERE "AUTHORuId" = #{uId}
+        AND STATUS = 'ACTIVE'
+        <if test="lastPostId != null">
+            AND POSTID &lt; #{lastPostId}
+        </if>
+        ORDER BY POSTID DESC
+        FETCH FIRST #{size} ROWS ONLY
+    </select>
+
+    <!-- 내 댓글 + 원글 제목 -->
+    <select id="selectMyComments" resultType="kr.co.bnkfirst.dto.feed.MyCommentItemDTO">
+        SELECT
+        c.COMMENTID AS commentId,
+        c.POSTID    AS postId,
+        p.TITLE     AS postTitle,
+        c.BODY      AS body,
+        c.CREATEDAT AS createdAt
+        FROM POSTCOMMENT c
+        JOIN POST p ON p.POSTID = c.POSTID
+        WHERE c."uId" = #{uId}
+        AND c.STATUS = 'ACTIVE'
+        AND p.STATUS = 'ACTIVE'
+        <if test="lastCommentId != null">
+            AND c.COMMENTID &lt; #{lastCommentId}
+        </if>
+        ORDER BY c.COMMENTID DESC
+        FETCH FIRST #{size} ROWS ONLY
+    </select>
+
+    <!-- 내가 좋아요 누른 글 -->
+    <select id="selectMyLikedPosts" resultType="kr.co.bnkfirst.dto.feed.MyLikeItemDTO">
+        SELECT
+        p.POSTID   AS postId,
+        p.TITLE    AS title,
+        p.BODY     AS body,
+        l.LIKEDAT  AS likedAt
+        FROM POSTLIKE l
+        JOIN POST p ON p.POSTID = l.POSTID
+        WHERE l."uId" = #{uId}
+        AND p.STATUS = 'ACTIVE'
+        <if test="lastLikeId != null">
+            AND l.POSTID &lt; #{lastLikeId}
+        </if>
+        ORDER BY l.LIKEDAT DESC
+        FETCH FIRST #{size} ROWS ONLY
+    </select>
 </mapper>

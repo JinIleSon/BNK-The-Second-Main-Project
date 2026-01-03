@@ -6,9 +6,9 @@ import 'package:http/http.dart' as http;
 String? getToken() => authsession.token;
 
 /*
-    날짜 : 2026.01.02
+    날짜 : 2026.01.02, 01.03
     이름 : 이준우
-    내용 : 댓글 GET/POST + JWT 연동
+    내용 : 댓글 JWT 연동, 시간 UI 수정, 수정 삭제 기능 추가
 */
 
 class BoarderComment extends StatefulWidget {
@@ -36,6 +36,9 @@ class _BoarderCommentState extends State<BoarderComment> {
   int? _lastCommentId;
   bool _hasMore = true;
 
+  int? _editingCommentId;
+  final _editCtrl = TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -45,6 +48,7 @@ class _BoarderCommentState extends State<BoarderComment> {
   @override
   void dispose() {
     _ctrl.dispose();
+    _editCtrl.dispose();
     super.dispose();
   }
 
@@ -61,11 +65,24 @@ class _BoarderCommentState extends State<BoarderComment> {
       h['Authorization'] = 'Bearer $token';
     }
 
-    // ✅ 확정 디버그
-    print("TOKEN=$token");
-    print("AUTH=${h['Authorization']}");
-
     return h;
+  }
+
+  // 시간 출력 수정
+  String _fmtKstMinute(String? raw) {
+    if (raw == null || raw.trim().isEmpty) return "";
+
+    final normalized = raw.trim().replaceFirst(' ', 'T');
+
+    try {
+      var dt = DateTime.parse(normalized).toLocal();
+
+      String two(int v) => v.toString().padLeft(2, '0');
+      return "${dt.year}.${two(dt.month)}.${two(dt.day)} "
+          "${two(dt.hour)}:${two(dt.minute)}";
+    } catch (_) {
+      return raw;
+    }
   }
 
   Future<void> _loadInitial() async {
@@ -79,11 +96,11 @@ class _BoarderCommentState extends State<BoarderComment> {
     });
 
     try {
-      final items = await _fetchComments();
+      final r = await _fetchComments(size: 20);
       setState(() {
-        _comments.addAll(items);
+        _comments.addAll(r.items);
         _lastCommentId = _comments.isNotEmpty ? _comments.last.commentId : null;
-        _hasMore = items.isNotEmpty;
+        _hasMore = r.hasMoreRaw;
       });
     } catch (e) {
       setState(() => _error = e.toString());
@@ -92,7 +109,7 @@ class _BoarderCommentState extends State<BoarderComment> {
     }
   }
 
-  Future<List<_CommentVm>> _fetchComments({int size = 20}) async {
+  Future<({List<_CommentVm> items, bool hasMoreRaw})> _fetchComments({int size = 20}) async {
     final qp = <String, String>{'size': '$size'};
     if (_lastCommentId != null) qp['lastCommentId'] = '$_lastCommentId';
 
@@ -105,9 +122,15 @@ class _BoarderCommentState extends State<BoarderComment> {
     }
 
     final List<dynamic> data = jsonDecode(utf8.decode(res.bodyBytes));
-    return data
+
+    final rawHasMore = data.length == size;
+
+    final items = data
         .map((e) => _CommentVm.fromJson(e as Map<String, dynamic>))
+        .where((c) => c.status.toUpperCase() != 'DELETED')
         .toList();
+
+    return (items: items, hasMoreRaw: rawHasMore);
   }
 
   Future<void> _loadMore() async {
@@ -115,11 +138,11 @@ class _BoarderCommentState extends State<BoarderComment> {
     setState(() => _loading = true);
 
     try {
-      final items = await _fetchComments(size: 20);
+      final r = await _fetchComments(size: 20);
       setState(() {
-        _comments.addAll(items);
+        _comments.addAll(r.items);
         _lastCommentId = _comments.isNotEmpty ? _comments.last.commentId : null;
-        _hasMore = items.length == 20;
+        _hasMore = r.hasMoreRaw;
       });
     } catch (e) {
       setState(() => _error = e.toString());
@@ -152,7 +175,6 @@ class _BoarderCommentState extends State<BoarderComment> {
       _ctrl.clear();
       widget.onAddComment();
 
-      // 운영형: 등록 후 최신 댓글 다시 불러오기(가장 안전)
       await _loadInitial();
     } catch (e) {
       setState(() => _error = e.toString());
@@ -163,6 +185,90 @@ class _BoarderCommentState extends State<BoarderComment> {
       setState(() => _loading = false);
     }
   }
+
+  Future<void> _openCommentActions(_CommentVm c) async {
+    if (c.status.toUpperCase() == 'DELETED') return;
+
+    await showModalBottomSheet(
+      context: context,
+      builder: (_) => SafeArea(
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.edit),
+              title: const Text("수정"),
+              onTap: () {
+                Navigator.pop(context);
+                _startEdit(c);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.delete),
+              title: const Text("삭제"),
+              onTap: () async {
+                Navigator.pop(context);
+                await _deleteComment(c.commentId);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _startEdit(_CommentVm c) {
+    setState(() {
+      _editingCommentId = c.commentId;
+      _editCtrl.text = c.body;
+    });
+  }
+
+  void _cancelEdit() {
+    setState(() => _editingCommentId = null);
+  }
+
+  Future<void> _updateComment(int commentId, String body) async {
+    final safe = body.trim();
+    if (safe.isEmpty) return;
+
+    setState(() => _loading = true);
+    try {
+      final uri = Uri.parse('$baseUrl/api/comments/$commentId');
+      final res = await http.put(
+        uri,
+        headers: _headers(),
+        body: jsonEncode({'body': safe}),
+      );
+
+      if (res.statusCode != 200) {
+        return;
+      }
+      _cancelEdit();
+      await _loadInitial();
+    } catch (e) {
+    } finally {
+      setState(() => _loading = false);
+    }
+  }
+
+  Future<void> _deleteComment(int commentId) async {
+    setState(() => _loading = true);
+    try {
+      final uri = Uri.parse('$baseUrl/api/comments/$commentId');
+      final res = await http.delete(uri, headers: _headers(json: false));
+
+      if (res.statusCode != 200) {
+        return;
+      }
+
+      await _loadInitial();
+    } catch (e) {
+
+    } finally {
+      setState(() => _loading = false);
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -206,8 +312,10 @@ class _BoarderCommentState extends State<BoarderComment> {
                   )
                       : const SizedBox.shrink();
                 }
-
                 final c = _comments[i];
+                final nick = (c.nickname ?? "").toString().trim();
+                final showNick = nick.isEmpty ? "사용자" : nick;
+
                 return Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
@@ -217,16 +325,59 @@ class _BoarderCommentState extends State<BoarderComment> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        c.nickname ?? "익명",
-                        style: const TextStyle(fontWeight: FontWeight.w700),
+                      Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 14,
+                            backgroundColor: Colors.white10,
+                            child: const Icon(Icons.person, size: 16, color: Colors.white70),
+                          ),
+                          const SizedBox(width: 8),
+
+                          Expanded(child: Text(showNick)),
+
+                          if (c.mine && c.status.toUpperCase() != 'DELETED')
+                            IconButton(
+                              icon: const Icon(Icons.more_vert, size: 18),
+                              onPressed: _loading ? null : () => _openCommentActions(c),
+                            ),
+                        ],
                       ),
+
                       const SizedBox(height: 6),
-                      Text(c.body),
+                      if (_editingCommentId == c.commentId && c.status.toUpperCase() != 'DELETED')
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextField(
+                                controller: _editCtrl,
+                                minLines: 1,
+                                maxLines: 4,
+                                decoration: const InputDecoration(
+                                  isDense: true,
+                                  border: OutlineInputBorder(),
+                                ),
+                              ),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.check, size: 18),
+                              onPressed: _loading ? null : () => _updateComment(c.commentId, _editCtrl.text),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.close, size: 18),
+                              onPressed: _loading ? null : _cancelEdit,
+                            ),
+                          ],
+                        )
+                      else
+                        Text(c.body),
                       const SizedBox(height: 6),
-                      Text(
-                        c.createdAt ?? "",
-                        style: const TextStyle(fontSize: 12, color: Colors.white54),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: Text(
+                          _fmtKstMinute(c.createdAt),
+                          style: const TextStyle(fontSize: 12, color: Colors.white54),
+                        ),
                       ),
                     ],
                   ),
@@ -304,8 +455,18 @@ class _CommentVm {
       uId: _asInt(j['uId'] ?? j['uid'] ?? j['UID']),
       body: (j['body'] ?? j['BODY'] ?? '') as String,
       status: (j['status'] ?? j['STATUS'] ?? 'ACTIVE') as String,
-      nickname: _asStr(j['nickname'] ?? j['NICKNAME']),
-      avatarUrl: _asStr(j['avatarUrl'] ?? j['AVATARURL']),
+      nickname: _asStr(
+          j['nickname'] ??
+              j['authorNickname'] ??
+              j['AUTHOR_NICKNAME'] ??
+              j['NICKNAME']
+      ),
+      avatarUrl: _asStr(
+          j['avatarUrl'] ??
+              j['authorAvatarUrl'] ??
+              j['AUTHOR_AVATARURL'] ??
+              j['AVATARURL']
+      ),
       createdAt: _asStr(j['createdAt'] ?? j['CREATEDAT']),
       mine: (j['mine'] ?? false) as bool,
     );

@@ -38,6 +38,27 @@ class FeedItem {
   });
 }
 
+const List<IconData> _avatarIcons = [
+  Icons.headset_mic_rounded,
+  Icons.android_rounded,
+  Icons.savings_rounded,
+  Icons.auto_graph_rounded,
+  Icons.rocket_launch_rounded,
+  Icons.pets_rounded,
+  Icons.sports_esports_rounded,
+  Icons.face_rounded,
+];
+
+bool _isHttpUrl(String s) => s.startsWith("http://") || s.startsWith("https://");
+
+int _iconIdx(String s) {
+  if (s.startsWith("icon:")) {
+    final idx = int.tryParse(s.split(":").last);
+    if (idx != null && idx >= 0 && idx < _avatarIcons.length) return idx;
+  }
+  return 0;
+}
+
 class FeedItemCard extends StatelessWidget {
   final FeedItem item;
   final VoidCallback onTap;
@@ -52,6 +73,7 @@ class FeedItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final a = (item.avatarUrl ?? "").trim();
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(16),
@@ -69,12 +91,14 @@ class FeedItemCard extends StatelessWidget {
                 CircleAvatar(
                   radius: 21,
                   backgroundColor: const Color(0xFF1C1D22),
-                  backgroundImage: (item.avatarUrl != null && item.avatarUrl!.isNotEmpty)
-                      ? NetworkImage(item.avatarUrl!)
+
+                  backgroundImage: (a.startsWith("http://") || a.startsWith("https://"))
+                      ? NetworkImage(a)
                       : null,
-                  child: (item.avatarUrl == null || item.avatarUrl!.isEmpty)
-                      ? const Icon(Icons.person, color: Colors.white70)
-                      : null,
+
+                  child: a.startsWith("icon:")
+                      ? Icon(_avatarIcons[_iconIdx(a)], size: 20, color: Colors.white)
+                      : ((!_isHttpUrl(a)) ? const Icon(Icons.person, color: Colors.white70) : null),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
