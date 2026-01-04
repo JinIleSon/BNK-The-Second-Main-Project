@@ -15,6 +15,12 @@ import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -25,6 +31,7 @@ public class UsersApiController {
 
     private final JwtProvider jwtProvider;
     private final UsersService usersService;
+    private final AuthenticationManager authenticationManager;
 
     // ===================== 로그인 =====================
 
@@ -50,6 +57,20 @@ public class UsersApiController {
         Users user = dto.toEntity();
         String role = dto.getRole();
         String token = jwtProvider.createToken(user, role);
+
+        // ✅ Spring Security 인증 생성 + SecurityContext에 저장 + 세션에 저장
+        Authentication auth = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(req.getMid(), req.getMpw())
+        );
+
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(auth);
+        SecurityContextHolder.setContext(context);
+
+        session.setAttribute(
+                HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
+                context
+        );
 
         // 세션 저장 (웹이랑 동일 구조)
         session.setAttribute("jwtToken", token);
