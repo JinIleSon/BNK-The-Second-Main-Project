@@ -158,4 +158,62 @@
           AND POSTTYPE = #{posttype, jdbcType=VARCHAR}
     </update>
 
+    <!-- 팔로우 관련 -->
+    <select id="selectFollowingFeed" resultType="kr.co.bnkfirst.dto.feed.PostDTO">
+        SELECT *
+        FROM (
+        SELECT
+        P.POSTID            AS postid,
+        P."AUTHORuId"       AS authoruId,
+        P.POSTTYPE          AS posttype,
+        P.MARKET            AS market,
+        P.TITLE             AS title,
+        DBMS_LOB.SUBSTR(P.BODY, 4000, 1) AS body,
+        P.COVERURL          AS coverurl,
+        P.STATUS            AS status,
+        NVL(P.VIEWCOUNT,0)  AS viewcount,
+        P.CREATEDAT         AS createdat,
+        P.UPDATEDAT         AS updatedat,
+
+        UP.NICKNAME         AS authornickname,
+        UP.AVATARURL        AS authoravatarurl,
+
+        NVL(L.LIKE_COUNT, 0)    AS likecount,
+        NVL(C.COMMENT_COUNT, 0) AS commentcount
+
+        FROM POST P
+        JOIN FOLLOW F
+        ON P."AUTHORuId" = F."FOLLOWINGuId"
+
+        LEFT JOIN USERPROFILE UP
+        ON UP."uId" = P."AUTHORuId"
+
+        LEFT JOIN (
+        SELECT POSTID, COUNT(*) AS LIKE_COUNT
+        FROM POSTLIKE
+        GROUP BY POSTID
+        ) L ON L.POSTID = P.POSTID
+
+        LEFT JOIN (
+        SELECT POSTID, COUNT(*) AS COMMENT_COUNT
+        FROM POSTCOMMENT
+        WHERE STATUS = 'ACTIVE'
+        GROUP BY POSTID
+        ) C ON C.POSTID = P.POSTID
+
+        WHERE F."FOLLOWERuId" = #{uid}
+        AND P.STATUS = 'ACTIVE'
+
+        <if test="market != null and market != ''">
+            AND P.MARKET = #{market}
+        </if>
+
+        <if test="lastPostId != null">
+            AND P.POSTID <![CDATA[ < ]]> #{lastPostId}
+        </if>
+
+        ORDER BY P.POSTID DESC
+        )
+        WHERE ROWNUM <![CDATA[ <= ]]> #{size}
+    </select>
 </mapper>

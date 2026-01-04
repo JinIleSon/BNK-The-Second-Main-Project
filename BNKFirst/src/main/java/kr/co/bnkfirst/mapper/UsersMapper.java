@@ -42,7 +42,7 @@ public interface UsersMapper {
 
     // 플러터 회원가입
     int insertUserPersonalMinimal(UsersDTO dto);
-    int insertUserCompanyMinimal(UsersDTO dto); // 기업 회원가입 2025.12.29 이준우
+    int insertUserCompanyMinimal(UsersDTO dto);
 
-    Long selectUidByMid(String mid);
+    Long selectUidByMid(@Param("mid") String mid);
 }

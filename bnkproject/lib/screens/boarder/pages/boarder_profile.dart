@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'package:bnkproject/screens/auth/login_main.dart';
+import 'package:bnkproject/screens/auth/signup/authsession.dart';
+import 'package:bnkproject/screens/boarder/boarder_main.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:bnkproject/api/member_api.dart';
 
-import '../../auth/signup/authsession.dart';
 
 String? getToken() => authsession.token;
 
@@ -62,7 +64,6 @@ class _BoarderProfileState extends State<BoarderProfile> {
 
   Map<String, String> _authHeaders() {
     final t = getToken();
-    debugPrint("[PROFILE][INIT] token=${t == null ? 'null' : '${t.substring(0, 12)}...'} len=${t?.length}");
     if (t == null || t.isEmpty) return {"Content-Type": "application/json"};
     return {
       "Content-Type": "application/json",
@@ -76,7 +77,6 @@ class _BoarderProfileState extends State<BoarderProfile> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final t = getToken();
-      debugPrint("[PROFILE][INIT] token=${t?.substring(0, 15)}... len=${t?.length}"); // 로그
       if (t == null || t.isEmpty) {
         _goLogin();
         return;
@@ -93,9 +93,7 @@ class _BoarderProfileState extends State<BoarderProfile> {
 
     try {
       final uri = Uri.parse("$baseUrl/api/profile/me");
-      debugPrint("[PROFILE][REQ] headers=${_authHeaders()}");
       final res = await http.get(uri, headers: _authHeaders());
-      debugPrint("[PROFILE][RES] status=${res.statusCode} body=${res.body}");
 
       if (res.statusCode == 401 || res.statusCode == 403) {
         _goLogin();
@@ -142,7 +140,6 @@ class _BoarderProfileState extends State<BoarderProfile> {
 
       final uri = Uri.parse("$baseUrl$path?size=20");
       final res = await http.get(uri, headers: _authHeaders());
-      debugPrint("[PROFILE][TAB][RES] status=${res.statusCode} body=${res.body}");
 
       if (res.statusCode == 401 || res.statusCode == 403) {
         _goLogin();
@@ -182,6 +179,29 @@ class _BoarderProfileState extends State<BoarderProfile> {
     }
 
     await fetchProfile();
+  }
+
+  // 로그아웃 함수 추가
+  Future<void> _logout() async {
+    final ok = await memberApi.logout();
+
+    authsession.token = null;
+    memberApi.token = null;
+    memberApi.sessionCookie = null;
+  }
+
+  // 로그아웃 완료시 피드 메인으로 이동
+  Future<void> _logoutAndGoBoardMain() async {
+    final nav = Navigator.of(context, rootNavigator: true);
+
+    await _logout();
+
+    if (!mounted) return;
+
+    nav.pushAndRemoveUntil(
+      MaterialPageRoute(builder: (_) => const BoardMain()),
+          (_) => false,
+    );
   }
 
   void openEditSheet() {
@@ -301,6 +321,49 @@ class _BoarderProfileState extends State<BoarderProfile> {
           onPressed: () => Navigator.pop(context),
           icon: const Icon(Icons.arrow_back),
         ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(8),
+              onTap: () async {
+                final ok = await showDialog<bool>(
+                  context: context,
+                  builder: (_) => AlertDialog(
+                    title: const Text("로그아웃"),
+                    content: const Text("로그아웃 하시겠습니까?"),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, false),
+                        child: const Text("취소"),
+                      ),
+                      FilledButton(
+                        onPressed: () => Navigator.pop(context, true),
+                        child: const Text("확인"),
+                      ),
+                    ],
+                  ),
+                );
+                if (ok == true) {
+                  await _logoutAndGoBoardMain();
+                }
+              },
+              onLongPress: () {
+                Navigator.pop(context);
+              },
+              child: const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                child: Text(
+                  "로그아웃",
+                  style: TextStyle(
+                    color: Colors.white70,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
       body: loading
           ? const Center(child: CircularProgressIndicator())
@@ -332,7 +395,7 @@ class _BoarderProfileState extends State<BoarderProfile> {
 
           const SizedBox(height: 14),
 
-          // ✅ 스탯: 게시글/댓글/좋아요
+          // 게시글/댓글/좋아요
           Row(
             children: [
               _stat("게시글", postCount),
@@ -347,12 +410,39 @@ class _BoarderProfileState extends State<BoarderProfile> {
             width: double.infinity,
             child: FilledButton.tonal(
               onPressed: openEditSheet,
-              style: FilledButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-              ),
+              onLongPress: () async {
+                final ok = await showDialog<bool>(
+                  context: context,
+                  builder: (_) => AlertDialog(
+                    title: const Text("로그아웃"),
+                    content: const Text("로그아웃 하시겠습니까?"),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, false),
+                        child: const Text("취소"),
+                      ),
+                      FilledButton(
+                        onPressed: () => Navigator.pop(context, true),
+                        child: const Text("확인"),
+                      ),
+                    ],
+                  ),
+                );
+
+                if (ok == true) {
+                  await _logout();
+                  if (!mounted) return;
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (_) => const LoginPage()),
+                        (_) => false,
+                  );
+                }
+              },
               child: const Text("프로필 편집", style: TextStyle(fontWeight: FontWeight.w900)),
             ),
           ),
+
           const SizedBox(height: 18),
 
           // 탭

@@ -135,4 +135,11 @@ public class PostService {
         postMapper.increaseViewCount(postid);
         return postMapper.selectPostDetail(postid, posttype);
     }
+
+    // 팔로잉 피드(내가 팔로우한 사람 글만)
+    @Transactional(readOnly = true)
+    public List<PostDTO> getFollowingFeed(long uid, String market, int size, Long lastPostId) {
+        int pageSize = Math.min(Math.max(size, 1), 50);
+        return postMapper.selectFollowingFeed(uid, market, lastPostId, pageSize);
+    }
 }

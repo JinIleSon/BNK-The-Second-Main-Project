@@ -228,4 +228,10 @@
     <select id="countByMid" parameterType="string" resultType="int">
         SELECT COUNT(*) FROM USERS WHERE MID = #{mid}
     </select>
+
+    <select id="selectUidByMid" parameterType="string" resultType="long">
+        SELECT U."uId"
+        FROM USERS U
+        WHERE U.MID = #{mid}
+    </select>
 </mapper>

@@ -3,12 +3,49 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<!--
-     날짜 : 2025.12.24
-     이름 : 이준우
-     내용 : 팔로우 관계 SQL 매퍼
--->
+<mapper namespace="kr.co.bnkfirst.mapper.feed.FollowMapper">
 
-<mapper namespace="kr.co.bnkfirst.mapper.feed.ContentArticleMapper">
+    <!-- 중복 팔로우 방지: MERGE -->
+    <insert id="upsertFollow">
+        MERGE INTO FOLLOW f
+            USING (
+                SELECT
+                    #{followerUid} AS "FOLLOWERuId",
+                    #{followingUid} AS "FOLLOWINGuId"
+                FROM dual
+            ) src
+            ON (
+                f."FOLLOWERuId" = src."FOLLOWERuId"
+                    AND f."FOLLOWINGuId" = src."FOLLOWINGuId"
+                )
+            WHEN NOT MATCHED THEN
+                INSERT ("FOLLOWERuId", "FOLLOWINGuId", CREATEDAT)
+                    VALUES (src."FOLLOWERuId", src."FOLLOWINGuId", SYSTIMESTAMP)
+    </insert>
+
+    <delete id="deleteFollow">
+        DELETE FROM FOLLOW
+        WHERE "FOLLOWERuId" = #{followerUid}
+          AND "FOLLOWINGuId" = #{followingUid}
+    </delete>
+
+    <select id="existsFollow" resultType="int">
+        SELECT COUNT(*)
+        FROM FOLLOW
+        WHERE "FOLLOWERuId" = #{followerUid}
+          AND "FOLLOWINGuId" = #{followingUid}
+    </select>
+
+    <select id="countFollowing" resultType="int">
+        SELECT COUNT(*)
+        FROM FOLLOW
+        WHERE "FOLLOWERuId" = #{uid}
+    </select>
+
+    <select id="countFollowers" resultType="int">
+        SELECT COUNT(*)
+        FROM FOLLOW
+        WHERE "FOLLOWINGuId" = #{uid}
+    </select>
 
 </mapper>
