@@ -1,3 +1,5 @@
+import 'package:bnkproject/api/member_api.dart';
+import 'package:bnkproject/api/mypage_api.dart';
 import 'package:flutter/material.dart';
 
 import 'dart:convert';
@@ -56,9 +58,13 @@ class _TossLikeHomePageState extends State<TossLikeHomePage> {
 
   int _prevIndex = 0;
 
+  late final MypageApiClient api;
+
   @override
   void initState() {
     super.initState();
+
+    api = MypageApiClient(baseUrl: 'http://10.0.2.2:8080/BNK');
 
     LocalNotificationService.instance.onTap = (payload) {
       if (payload == null) return;
@@ -70,6 +76,12 @@ class _TossLikeHomePageState extends State<TossLikeHomePage> {
     };
   }
 
+  @override
+  void dispose() {
+    api.dispose();
+    super.dispose();
+  }
+
   Future<void> _openLogin() async {
     final ok = await Navigator.push<bool>(
       context,
@@ -77,6 +89,8 @@ class _TossLikeHomePageState extends State<TossLikeHomePage> {
     );
 
     if (ok == true) {
+      api.sessionCookie = memberApi.sessionCookie;
+      api.token = memberApi.token;
       setState(() => _isLoggedIn = true);
     }
   }
@@ -94,6 +108,7 @@ class _TossLikeHomePageState extends State<TossLikeHomePage> {
             textTheme: textTheme,
             onOpenLogin: _openLogin,
             isLoggedIn: _isLoggedIn,
+            fetchMypageMain: api.fetchMypageMain,
         );
         break;
       case 1:
@@ -105,6 +120,8 @@ class _TossLikeHomePageState extends State<TossLikeHomePage> {
       case 3:
         body = MyPage(
           onLogout: () {
+            api.token = null;
+            api.sessionCookie = null;
             setState(() => _isLoggedIn = false);
           },
         );
@@ -119,6 +136,7 @@ class _TossLikeHomePageState extends State<TossLikeHomePage> {
             textTheme: textTheme,
             onOpenLogin: _openLogin,
             isLoggedIn: _isLoggedIn,
+            fetchMypageMain: api.fetchMypageMain,
         );
     }
 

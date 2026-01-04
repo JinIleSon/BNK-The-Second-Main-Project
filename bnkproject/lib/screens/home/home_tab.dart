@@ -1,15 +1,21 @@
+import 'package:bnkproject/models/MypageMain.dart';
+import 'package:bnkproject/models/Pcontract.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../account/account_detail_page.dart';
 
 import '../menu/menu_page.dart';
 
-class HomeTab extends StatelessWidget {
+class HomeTab extends StatefulWidget {
   final Color cardColor;
   final TextTheme textTheme;
 
   final Future<void> Function() onOpenLogin;
   final bool isLoggedIn;
+
+  // ✅ 추가: API 주입 (부모에서 api.fetchMypageMain 넘겨주면 됨)
+  final Future<MypageMain> Function() fetchMypageMain;
 
   const HomeTab({
     super.key,
@@ -17,20 +23,67 @@ class HomeTab extends StatelessWidget {
     required this.textTheme,
     required this.onOpenLogin,
     required this.isLoggedIn,
+    required this.fetchMypageMain,
   });
 
   @override
+  State<HomeTab> createState() => _HomeTabState();
+}
+
+class _HomeTabState extends State<HomeTab> {
+  Future<MypageMain>? _mainFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.isLoggedIn) {
+      _mainFuture = widget.fetchMypageMain();
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant HomeTab oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    // ✅ 로그인 상태가 false -> true 로 바뀌면 한 번 로드
+    if (!oldWidget.isLoggedIn && widget.isLoggedIn) {
+      _mainFuture = widget.fetchMypageMain();
+      setState(() {});
+    }
+
+    // true -> false (로그아웃)
+    if (oldWidget.isLoggedIn && !widget.isLoggedIn) {
+      _mainFuture = null;
+      setState(() {});
+    }
+  }
+
+  Future<void> _reload() async {
+    if (!widget.isLoggedIn) return;
+    setState(() {
+      _mainFuture = widget.fetchMypageMain();
+    });
+    try {
+      await _mainFuture;
+    } catch (_) {
+
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final cardColor = widget.cardColor;
+    final textTheme = widget.textTheme;
+
     return Column(
       children: [
         _TopAppBar(
-          onOpenLogin: onOpenLogin,
-          isLoggedIn: isLoggedIn,
+          onOpenLogin: widget.onOpenLogin,
+          isLoggedIn: widget.isLoggedIn,
         ),
         Expanded(
           child: SingleChildScrollView(
-            padding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -38,7 +91,16 @@ class HomeTab extends StatelessWidget {
                 const SizedBox(height: 16),
                 _AccountSummary(cardColor: cardColor),
                 const SizedBox(height: 16),
-                _MyHolding(cardColor: cardColor),
+
+                // ✅ 여기만 교체
+                _MyHolding(
+                  cardColor: cardColor,
+                  isLoggedIn: widget.isLoggedIn,
+                  onOpenLogin: widget.onOpenLogin,
+                  future: _mainFuture,
+                  onReload: _reload,
+                ),
+
                 const SizedBox(height: 16),
                 _TwoRowMenu(
                   cardColor: cardColor,
@@ -277,7 +339,18 @@ class _AccountSummary extends StatelessWidget {
 class _MyHolding extends StatelessWidget {
   final Color cardColor;
 
-  const _MyHolding({required this.cardColor});
+  final bool isLoggedIn;
+  final Future<void> Function() onOpenLogin;
+  final Future<MypageMain>? future;
+  final Future<void> Function() onReload;
+
+  const _MyHolding({
+    required this.cardColor,
+    required this.isLoggedIn,
+    required this.onOpenLogin,
+    required this.future,
+    required this.onReload,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -288,81 +361,260 @@ class _MyHolding extends StatelessWidget {
       fontWeight: FontWeight.bold,
     );
 
+    // ✅ 로그인 전: 안내 카드
+    if (!isLoggedIn) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const _SectionHeader(title: '내 종목보기'),
+          const SizedBox(height: 8),
+          Container(
+            decoration: BoxDecoration(
+              color: cardColor,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text('로그인 후 보유 ETF를 확인할 수 있어요.', style: subStyle),
+                ),
+                TextButton(
+                  onPressed: onOpenLogin,
+                  child: const Text('로그인'),
+                ),
+              ],
+            ),
+          ),
+        ],
+      );
+    }
+
+    final f = future;
+    if (f == null) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const _SectionHeader(title: '내 종목보기'),
+          const SizedBox(height: 8),
+          Container(
+            decoration: BoxDecoration(
+              color: cardColor,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+                const SizedBox(width: 12),
+                Text('불러오는 중...', style: subStyle),
+              ],
+            ),
+          ),
+        ],
+      );
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const _SectionHeader(title: '내 종목보기'),
         const SizedBox(height: 8),
-        Container(
-          decoration: BoxDecoration(
-            color: cardColor,
-            borderRadius: BorderRadius.circular(12),
+        FutureBuilder<MypageMain>(
+          future: f,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return _loadingCard(cardColor, '보유 ETF 불러오는 중...');
+            }
+            if (snapshot.hasError) {
+              return _errorCard(cardColor, snapshot.error.toString(), onReload);
+            }
+
+            final data = snapshot.data!;
+            final etfs = List<Pcontract>.from(data.etfList);
+
+            // 보기 좋게: 평가금액 큰 순(psum)으로 정렬
+            etfs.sort((a, b) => (b.psum ?? 0).compareTo(a.psum ?? 0));
+
+            // ✅ 총합 계산
+            int totalEval = 0; // psum 합(평가금액으로 가정)
+            int totalBuy = 0;  // pstock*pprice 합(매수금액)
+            for (final e in etfs) {
+              final stock = e.pstock ?? 0;
+              final buyPrice = e.pprice ?? 0;
+              final eval = e.psum ?? 0;
+
+              totalEval += eval;
+              totalBuy += stock * buyPrice;
+            }
+
+            final totalPnl = totalEval - totalBuy;
+            final totalRate = (totalBuy == 0) ? 0.0 : (totalPnl / totalBuy) * 100.0;
+
+            final pnlColor = totalPnl >= 0 ? Colors.redAccent : Colors.blue[200];
+
+            return Container(
+              decoration: BoxDecoration(
+                color: cardColor,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              padding: const EdgeInsets.only(left: 16, right: 16, top: 12, bottom: 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // ✅ 상단 합계(스크린샷 큰 숫자)
+                  Text(_won(totalEval), style: valueStyle),
+                  const SizedBox(height: 2),
+                  Text(
+                    '${totalPnl >= 0 ? '+' : ''}${_won(totalPnl)} (${totalRate.toStringAsFixed(1)}%)',
+                    style: subStyle?.copyWith(color: pnlColor),
+                  ),
+
+                  const SizedBox(height: 12),
+                  const Divider(height: 1, color: Colors.white12),
+                  const SizedBox(height: 12),
+
+                  // ✅ 리스트
+                  if (etfs.isEmpty)
+                    Text('보유 ETF가 없습니다.', style: subStyle)
+                  else
+                    Column(
+                      children: [
+                        // 너무 길어지면 3개만 보여주고 싶으면 .take(3)
+                        for (final e in etfs)
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 10),
+                            child: _HoldingRow(contract: e),
+                          ),
+                      ],
+                    ),
+                ],
+              ),
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _loadingCard(Color cardColor, String msg) {
+    return Container(
+      decoration: BoxDecoration(
+        color: cardColor,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        children: [
+          const SizedBox(
+            width: 16,
+            height: 16,
+            child: CircularProgressIndicator(strokeWidth: 2),
           ),
-          padding: const EdgeInsets.only(
-            left: 16,
-            right: 16,
-            top: 12,
-            bottom: 12,
+          const SizedBox(width: 12),
+          Text(msg, style: const TextStyle(color: Colors.white70)),
+        ],
+      ),
+    );
+  }
+
+  Widget _errorCard(Color cardColor, String msg, Future<void> Function() onReload) {
+    return Container(
+      decoration: BoxDecoration(
+        color: cardColor,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              '조회 실패: $msg',
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(color: Colors.white70),
+            ),
           ),
+          TextButton(onPressed: onReload, child: const Text('다시시도')),
+        ],
+      ),
+    );
+  }
+}
+
+class _HoldingRow extends StatelessWidget {
+  final Pcontract contract;
+
+  const _HoldingRow({required this.contract});
+
+  @override
+  Widget build(BuildContext context) {
+    final subStyle = Theme.of(context).textTheme.bodySmall?.copyWith(
+      color: Colors.grey[400],
+    );
+
+    final name = contract.pname ?? contract.fname ?? contract.code ?? '이름없음';
+
+    final qty = contract.pstock ?? 0;
+    final buyPrice = contract.pprice ?? 0;
+    final evalAmount = contract.psum ?? 0;
+
+    final buyAmount = qty * buyPrice;
+
+    // ✅ 현재가(추정): 평가금액 / 수량
+    final nowPrice = (qty <= 0) ? 0 : (evalAmount / qty).round();
+
+    // ✅ 손익률(추정): (평가-매수)/매수
+    final pnl = evalAmount - buyAmount;
+    final rate = (buyAmount == 0) ? 0.0 : (pnl / buyAmount) * 100.0;
+
+    final rateColor = rate >= 0 ? Colors.redAccent : Colors.blue[200];
+
+    return Row(
+      children: [
+        Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('948,500원', style: valueStyle),
-              const SizedBox(height: 2),
               Text(
-                '-12,000원 (1.2%)',
-                style: subStyle?.copyWith(
-                  color: Colors.blue[200],
+                name,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
                 ),
               ),
-              const SizedBox(height: 12),
-              const Divider(height: 1, color: Colors.white12),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '리카겐바이오',
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyMedium
-                              ?.copyWith(fontWeight: FontWeight.w600),
-                        ),
-                        const SizedBox(height: 2),
-                        Text('내 평균 192,100원', style: subStyle),
-                      ],
-                    ),
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        '189,500원',
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyMedium
-                            ?.copyWith(fontWeight: FontWeight.w600),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        '+3.4%',
-                        style:
-                        subStyle?.copyWith(color: Colors.redAccent),
-                      ),
-                    ],
-                  )
-                ],
-              ),
+              const SizedBox(height: 2),
+              Text('내 평균 ${_won(buyPrice)}', style: subStyle),
             ],
           ),
+        ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Text(
+              _won(nowPrice),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              '${rate >= 0 ? '+' : ''}${rate.toStringAsFixed(1)}%',
+              style: subStyle?.copyWith(color: rateColor),
+            ),
+          ],
         ),
       ],
     );
   }
 }
+
+/// ---- money helpers ----
+final _wonFormatter = NumberFormat('#,###', 'ko_KR');
+String _won(num v) => '${_wonFormatter.format(v)}원';
 
 /// 주문내역 / 판매수익 2열 메뉴
 class _TwoRowMenu extends StatelessWidget {

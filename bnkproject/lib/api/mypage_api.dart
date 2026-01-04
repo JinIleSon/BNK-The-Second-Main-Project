@@ -33,11 +33,14 @@ class MypageApiClient {
   /// 실제로는 'JSESSIONID=...' 한 줄만 있어도 됨.
   String? sessionCookie;
 
+  String? token;
+
   final http.Client _client;
 
   MypageApiClient({
     required this.baseUrl,
     this.sessionCookie,
+    this.token,
     http.Client? client,
   }) : _client = client ?? http.Client();
 
@@ -48,6 +51,9 @@ class MypageApiClient {
     };
     if (sessionCookie != null && sessionCookie!.isNotEmpty) {
       headers['Cookie'] = sessionCookie!;
+    }
+    if (token != null && token!.isNotEmpty) {
+      headers['Authorization'] = 'Bearer $token';
     }
     return headers;
   }
@@ -145,6 +151,9 @@ class MypageApiClient {
   Future<MypageMain> fetchMypageMain() async {
     final uri = Uri.parse('$baseUrl/api/mypage/main');
     final resp = await _client.get(uri, headers: _jsonHeaders());
+    // 디버그 로그
+    print('[MYPAGE][REQ] cookie=$sessionCookie');
+    print('[MYPAGE][REQ] token=${token != null ? "YES" : "NO"}');
 
     if (resp.statusCode != 200) {
       throw Exception(
