@@ -9,6 +9,7 @@ package kr.co.bnkfirst.controller.feed;
 import jakarta.servlet.http.HttpServletRequest;
 import kr.co.bnkfirst.dto.feed.PostDTO;
 import kr.co.bnkfirst.dto.feed.PostListResponse;
+import kr.co.bnkfirst.security.LoginUidProvider;
 import kr.co.bnkfirst.service.feed.PostService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,14 +19,18 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/post")
 public class PostController {
 
     private final PostService postService;
+    private final LoginUidProvider loginUidProvider;
 
-    public PostController(PostService postService) {
+    public PostController(PostService postService, LoginUidProvider loginUidProvider) {
         this.postService = postService;
+        this.loginUidProvider = loginUidProvider;
     }
 
     //  커뮤니티(BOARD) - 운영용
@@ -110,4 +115,13 @@ public class PostController {
         return postService.getPostDetail(postid, posttype.toUpperCase());
     }
 
+    @GetMapping("/following")
+    public List<PostDTO> following(
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(required = false) String market,
+            @RequestParam(required = false) Long lastPostId
+    ) {
+        long uid = loginUidProvider.requireUid();
+        return postService.getFollowingFeed(uid, market, size, lastPostId);
+    }
 }

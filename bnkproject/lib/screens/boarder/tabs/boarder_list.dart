@@ -6,6 +6,9 @@ import '../widgets/feed_item.dart';
 import '../pages/boarder_detail.dart';
 import '../pages/boarder_write.dart';
 import '../../../utils/auth_guard.dart';
+import 'package:bnkproject/screens/auth/signup/authsession.dart';
+
+String? getToken() => authsession.token;
 
 class BoarderList extends StatefulWidget {
   const BoarderList({super.key});
@@ -106,6 +109,35 @@ class _BoarderListState extends State<BoarderList> {
     }
   }
 
+  Future<void> _toggleFollowServer(FeedItem it) async {
+    final token = getToken();
+    if (token == null) throw Exception("로그인이 필요합니다.");
+
+    // authoruId가 0이면 DB에 못 넣음 (대상 uid가 없음)
+    if (it.authoruId <= 0) throw Exception("authoruId가 비정상: ${it.authoruId}");
+
+    final prev = it.isFollowing;
+
+    // UI 선반영
+    setState(() => it.isFollowing = !it.isFollowing);
+
+    try {
+      final uri = Uri.parse("$baseUrl/api/follow/${it.authoruId}");
+
+      final res = it.isFollowing
+          ? await http.post(uri, headers: {"Authorization": "Bearer $token"})
+          : await http.delete(uri, headers: {"Authorization": "Bearer $token"});
+
+      if (res.statusCode != 200) {
+        throw Exception("팔로우 실패: ${res.statusCode} ${res.body}");
+      }
+    } catch (e) {
+      // 실패 시 롤백
+      setState(() => it.isFollowing = prev);
+      rethrow;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -146,11 +178,21 @@ class _BoarderListState extends State<BoarderList> {
                     setState(() {});
                   }
                 },
-                onToggleLike: () {
+                onToggleLike: () async {
                   setState(() {
                     it.isLiked = !it.isLiked;
                     it.likeCount += it.isLiked ? 1 : -1;
                   });
+                },
+                onToggleFollow: () async {
+                  try {
+                    await _toggleFollowServer(it);
+                  } catch (e) {
+                    if (!mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(e.toString())),
+                    );
+                  }
                 },
               ),
             );

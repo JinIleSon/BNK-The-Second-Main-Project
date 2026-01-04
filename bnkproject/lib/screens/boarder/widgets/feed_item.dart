@@ -22,6 +22,9 @@ class FeedItem {
 
   int viewCount;
 
+  // 팔로우 상태
+  bool isFollowing;
+
   FeedItem({
     required this.postId,
     this.authoruId = 0, // 하드 코딩 지우면 나중에 수정해야할 부분
@@ -35,6 +38,7 @@ class FeedItem {
     this.commentCount = 0,
     this.isLiked = false,
     this.viewCount = 0,
+    this.isFollowing = false,
   });
 }
 
@@ -59,16 +63,20 @@ int _iconIdx(String s) {
   return 0;
 }
 
+typedef AsyncVoidCallback = Future<void> Function();
+
 class FeedItemCard extends StatelessWidget {
   final FeedItem item;
   final VoidCallback onTap;
-  final VoidCallback onToggleLike;
+  final AsyncVoidCallback onToggleLike;
+  final AsyncVoidCallback? onToggleFollow;
 
   const FeedItemCard({
     super.key,
     required this.item,
     required this.onTap,
     required this.onToggleLike,
+    this.onToggleFollow,
   });
 
   @override
@@ -116,7 +124,11 @@ class FeedItemCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                TextButton(onPressed: () {}, child: const Text("팔로우")),
+                if (onToggleFollow != null)
+                TextButton(
+                  onPressed: () async => await onToggleFollow!(),
+                  child: Text(item.isFollowing ? "팔로잉" : "팔로우"),
+                ),
               ],
             ),
             const SizedBox(height: 12),
@@ -132,7 +144,7 @@ class FeedItemCard extends StatelessWidget {
             Row(
               children: [
                 IconButton(
-                  onPressed: onToggleLike,
+                  onPressed: () async => await onToggleLike(),
                   icon: Icon(
                     item.isLiked ? Icons.favorite : Icons.favorite_border,
                     color: item.isLiked ? Colors.redAccent : Colors.white60,

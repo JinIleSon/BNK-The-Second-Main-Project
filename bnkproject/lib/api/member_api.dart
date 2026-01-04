@@ -11,10 +11,9 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import '../models/Login.dart';
-import '../models/UserProfile.dart';
 import '../models/SessionInfo.dart';
 import '../models/FindIdPw.dart';
-import '../screens/auth/signup/authsession.dart';
+import 'package:bnkproject/screens/auth/signup/authsession.dart';
 
 const String baseUrl = "http://10.0.2.2:8080/BNK";
 
@@ -69,9 +68,9 @@ class MemberApiClient {
     );
 
     // 로그인 확인용 로그
-    print('[LOGIN][RES] status=${resp.statusCode}');
-    print('[LOGIN][RES] set-cookie=${resp.headers['set-cookie']}');
-    print('[LOGIN][RES] body=${resp.body}');
+    // print('[LOGIN][RES] status=${resp.statusCode}');
+    // print('[LOGIN][RES] set-cookie=${resp.headers['set-cookie']}');
+    // print('[LOGIN][RES] body=${resp.body}');
 
     // 세션 쿠키 추출 (JSESSIONID)
     final setCookie = resp.headers['set-cookie'];
@@ -116,19 +115,14 @@ class MemberApiClient {
 
   Future<bool> logout() async {
     final uri = Uri.parse('$baseUrl/api/member/logout');
-    final resp = await _client.post(
-      uri,
-      headers: _jsonHeaders(),
-    );
+    final headers = _jsonHeaders();
+    final resp = await _client.post(uri, headers: headers);
 
-    // 클라이언트 쪽 토큰/세션 제거
     token = null;
     sessionCookie = null;
+    authsession.token = null;
 
-    if (resp.statusCode == 200) {
-      return true;
-    }
-    return false;
+    return resp.statusCode == 200;
   }
 
   // ======================== 내 정보 ========================

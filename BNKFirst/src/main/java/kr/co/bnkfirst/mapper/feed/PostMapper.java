@@ -39,4 +39,13 @@ public interface PostMapper {
             @Param("authoruId") Long authoruId,
             @Param("posttype") String posttype
     );
+
+    // 팔로우 관련
+    List<PostDTO> selectFollowingFeed(
+            @Param("uid") long uid,
+            @Param("market") String market,
+            @Param("lastPostId") Long lastPostId,
+            @Param("size") int size
+    );
+
 }

@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-import '../auth/signup/authsession.dart';
+import 'package:bnkproject/screens/auth/signup/authsession.dart';
 import 'tabs/boarder_content.dart';
 import 'tabs/boarder_list.dart';
 import 'tabs/boarder_recommend.dart';

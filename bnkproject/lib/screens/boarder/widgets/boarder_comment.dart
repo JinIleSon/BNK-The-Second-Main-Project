@@ -1,5 +1,5 @@
 import 'dart:convert';
-import '../../auth/signup/authsession.dart';
+import 'package:bnkproject/screens/auth/signup/authsession.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
