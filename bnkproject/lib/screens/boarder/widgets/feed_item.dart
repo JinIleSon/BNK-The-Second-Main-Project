@@ -15,6 +15,7 @@ class FeedItem {
   final String title;
   final String body;
   final String? avatarUrl;
+  final bool showLike;
 
   int likeCount;
   int commentCount;
@@ -27,7 +28,7 @@ class FeedItem {
 
   FeedItem({
     required this.postId,
-    this.authoruId = 0, // 하드 코딩 지우면 나중에 수정해야할 부분
+    this.authoruId = 0,
     required this.author,
     required this.timeAgo,
     this.createdAt,
@@ -39,6 +40,7 @@ class FeedItem {
     this.isLiked = false,
     this.viewCount = 0,
     this.isFollowing = false,
+    this.showLike = true,
   });
 }
 
@@ -143,26 +145,38 @@ class FeedItemCard extends StatelessWidget {
             const SizedBox(height: 10),
             Row(
               children: [
-                IconButton(
-                  onPressed: () async => await onToggleLike(),
-                  icon: Icon(
-                    item.isLiked ? Icons.favorite : Icons.favorite_border,
-                    color: item.isLiked ? Colors.redAccent : Colors.white60,
+                if (item.showLike) ...[
+                  IconButton(
+                    onPressed: () async => await onToggleLike(),
+                    icon: Icon(
+                      item.isLiked ? Icons.favorite : Icons.favorite_border,
+                      color: item.isLiked ? Colors.redAccent : Colors.white60,
+                    ),
                   ),
-                ),
-                Text("${item.likeCount}", style: const TextStyle(color: Colors.white60)),
-                const SizedBox(width: 10),
+                  Text(
+                    "${item.likeCount}",
+                    style: const TextStyle(color: Colors.white60),
+                  ),
+                  const SizedBox(width: 10),
+                ],
+
                 const Icon(Icons.mode_comment_outlined, color: Colors.white60, size: 20),
                 const SizedBox(width: 6),
-                Text("${item.commentCount}", style: const TextStyle(color: Colors.white60)),
+                Text(
+                  "${item.commentCount}",
+                  style: const TextStyle(color: Colors.white60),
+                ),
 
                 const Spacer(),
 
                 const Icon(Icons.visibility_outlined, color: Colors.white60, size: 20),
                 const SizedBox(width: 6),
-                Text("${item.viewCount}", style: const TextStyle(color: Colors.white60)),
+                Text(
+                  "${item.viewCount}",
+                  style: const TextStyle(color: Colors.white60),
+                ),
               ],
-            )
+            ),
           ],
         ),
       ),

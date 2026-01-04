@@ -183,9 +183,12 @@ class _BoarderProfileState extends State<BoarderProfile> {
 
   // 로그아웃 함수 추가
   Future<void> _logout() async {
-    final ok = await memberApi.logout();
+    try {
+      await memberApi.logout();
+    } catch (_) {}
 
-    authsession.token = null;
+    authsession.clear();
+    likeCache.clear();
     memberApi.token = null;
     memberApi.sessionCookie = null;
   }
@@ -199,7 +202,7 @@ class _BoarderProfileState extends State<BoarderProfile> {
     if (!mounted) return;
 
     nav.pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => const BoardMain()),
+      MaterialPageRoute(builder: (_) => BoardMain(key: UniqueKey())),
           (_) => false,
     );
   }

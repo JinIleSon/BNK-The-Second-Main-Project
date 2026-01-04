@@ -13,3 +13,11 @@ class authsession {
     role = null;
   }
 }
+
+class LikeSnap {
+  final bool liked;
+  final int count;
+  LikeSnap(this.liked, this.count);
+}
+
+final Map<int, LikeSnap> likeCache = {};

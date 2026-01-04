@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.bnkfirst.mapper.feed.PostRecommendMapper">
+
+    <select id="selectRecommend" resultType="kr.co.bnkfirst.dto.feed.PostRecommendRow">
+        SELECT
+            p.POSTID                AS postId,
+            p."AUTHORuId"           AS authorUid,
+            p.POSTTYPE              AS postType,
+            p.TITLE                 AS title,
+            p.BODY                  AS body,
+            p.COVERURL              AS coverUrl,
+            p.STATUS                AS status,
+            p.CREATEDAT             AS createdAt,
+            NVL(lk.likeCount, 0)    AS likeCount,
+            CASE
+                WHEN #{uId, jdbcType=NUMERIC} IS NULL THEN 0
+                WHEN EXISTS (
+                    SELECT 1 FROM POSTLIKE pl
+                    WHERE pl.POSTID = p.POSTID AND pl."uId" = #{uId, jdbcType=NUMERIC}
+                ) THEN 1 ELSE 0
+                END AS likedByMe
+        FROM POST p
+                 LEFT JOIN (
+            SELECT POSTID, COUNT(*) AS likeCount
+            FROM POSTLIKE
+            GROUP BY POSTID
+        ) lk ON lk.POSTID = p.POSTID
+        WHERE p.STATUS = 'ACTIVE'
+          AND p.POSTTYPE = 'BOARD'
+        ORDER BY NVL(lk.likeCount, 0) DESC, p.CREATEDAT DESC, p.POSTID DESC
+            FETCH FIRST #{size} ROWS ONLY
+    </select>
+
+</mapper>

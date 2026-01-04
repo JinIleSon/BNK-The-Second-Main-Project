@@ -11,7 +11,7 @@ import '../../../utils/auth_guard.dart';
 /*
     날짜 : 2025.12.17 / 2025.12.31 / 2025.01.01
     이름 : 이준우
-    내용 : 게시글 상세 / 수정 & 삭제 추가 / 조회수(임시)
+    내용 : 게시글 상세 / 수정 & 삭제 추가 / 조회수
  */
 
 class BoarderDetail extends StatefulWidget {
