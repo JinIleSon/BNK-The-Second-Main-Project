@@ -1,9 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-
+import 'package:bnkproject/screens/auth/login_main.dart';
 import 'package:bnkproject/screens/auth/signup/authsession.dart';
-import '../widgets/category_tab.dart';
 import '../widgets/feed_item.dart';
 import '../pages/boarder_detail.dart';
 
@@ -26,6 +25,7 @@ class _BoarderFollowingState extends State<BoarderFollowing> {
   String? _error;
   String? _lastPostId;
   bool _hasMore = true;
+  bool _needLogin = false;
 
   @override
   void initState() {
@@ -33,11 +33,109 @@ class _BoarderFollowingState extends State<BoarderFollowing> {
     _fetch(reset: true);
   }
 
+  @override
+  Widget build(BuildContext context) {
+    if (_needLogin) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.lock_outline, size: 48, color: Colors.white70),
+              const SizedBox(height: 12),
+              const Text(
+                "로그인 후 사용 가능합니다",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+              ),
+              const SizedBox(height: 6),
+              const Text(
+                "팔로잉 탭은 내가 팔로우한 사람들의 글을 보여줘요.",
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.white70, height: 1.3),
+              ),
+              const SizedBox(height: 14),
+              FilledButton(
+                onPressed: () async {
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const LoginPage()),
+                  );
+
+                  if (!mounted) return;
+                  _fetch(reset: true);
+                },
+                child: const Text("로그인 하러가기"),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return Stack(
+      children: [
+        RefreshIndicator(
+          onRefresh: () => _fetch(reset: true),
+          child: ListView(
+            padding: const EdgeInsets.only(bottom: 110),
+            children: [
+              const SizedBox(height: 10),
+              const SizedBox(height: 10),
+
+              if (_loading)
+                const Padding(
+                  padding: EdgeInsets.all(24),
+                  child: Center(child: CircularProgressIndicator()),
+                ),
+
+              if (_error != null)
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Text(_error!, style: const TextStyle(color: Colors.redAccent)),
+                ),
+
+              ...items.map((it) => Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: FeedItemCard(
+                  item: it,
+                  onTap: () async {
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => BoarderDetail(item: it)),
+                    );
+                    setState(() {});
+                  },
+                  onToggleLike: () => _toggleLike(it),
+                ),
+              )),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
   Future<void> _fetch({required bool reset}) async {
     final token = getToken();
-    if (token == null) {
-      setState(() => _error = "로그인이 필요합니다.");
+    if (token == null || token.isEmpty) {
+      if (mounted) {
+        setState(() {
+          _needLogin = true;
+          _error = null;
+          _loading = false;
+          if (reset) {
+            items.clear();
+            _lastPostId = null;
+            _hasMore = true;
+          }
+        });
+      }
       return;
+    }
+
+    if (mounted && _needLogin) {
+      setState(() => _needLogin = false);
     }
 
     if (_loading) return;
@@ -65,9 +163,6 @@ class _BoarderFollowingState extends State<BoarderFollowing> {
         "Content-Type": "application/json",
       });
 
-      if (res.statusCode == 401 || res.statusCode == 403) {
-        throw Exception("로그인이 필요합니다.");
-      }
       if (res.statusCode != 200) {
         throw Exception("팔로잉 피드 조회 실패: ${res.statusCode}");
       }
@@ -108,6 +203,7 @@ class _BoarderFollowingState extends State<BoarderFollowing> {
           likeCount: likeCnt,
           commentCount: commentCnt,
           isLiked: (e["isLiked"] ?? e["isliked"] ?? 0) == 1,
+          showLike: false,
         );
       }).toList();
 
@@ -138,7 +234,7 @@ class _BoarderFollowingState extends State<BoarderFollowing> {
 
   Future<void> _toggleLike(FeedItem it) async {
     final token = getToken();
-    if (token == null) return;
+    if (token == null || token.isEmpty) return;
 
     final prevLiked = it.isLiked;
 
@@ -161,49 +257,5 @@ class _BoarderFollowingState extends State<BoarderFollowing> {
       });
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
     }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        RefreshIndicator(
-          onRefresh: () => _fetch(reset: true),
-          child: ListView(
-            padding: const EdgeInsets.only(bottom: 110),
-            children: [
-              const SizedBox(height: 10),
-              const SizedBox(height: 10),
-              if (_loading)
-                const Padding(
-                  padding: EdgeInsets.all(24),
-                  child: Center(child: CircularProgressIndicator()),
-                ),
-
-              if (_error != null)
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Text(_error!, style: const TextStyle(color: Colors.redAccent)),
-                ),
-
-              ...items.map((it) => Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: FeedItemCard(
-                  item: it,
-                  onTap: () async {
-                    await Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => BoarderDetail(item: it)),
-                    );
-                    setState(() {});
-                  },
-                  onToggleLike: () => _toggleLike(it),
-                ),
-              )),
-            ],
-          ),
-        ),
-      ],
-    );
   }
 }

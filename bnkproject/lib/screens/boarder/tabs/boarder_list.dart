@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-import '../widgets/feed_item.dart';
+import 'package:bnkproject/screens/boarder/widgets/feed_item.dart';
 import '../pages/boarder_detail.dart';
 import '../pages/boarder_write.dart';
 import '../../../utils/auth_guard.dart';
@@ -28,114 +28,6 @@ class _BoarderListState extends State<BoarderList> {
   void initState() {
     super.initState();
     fetchBoardList();
-  }
-
-  Future<void> fetchBoardList() async {
-    setState(() {
-      loading = true;
-      errorMsg = null;
-    });
-
-    try {
-      final uri = Uri.parse("$baseUrl/api/post/board?size=20");
-
-      final res = await http.get(uri);
-
-      if (res.statusCode != 200) {
-        throw Exception("HTTP ${res.statusCode}: ${res.body}");
-      }
-
-      final jsonBody = json.decode(res.body) as Map<String, dynamic>;
-      final list = (jsonBody["items"] as List? ?? []).cast<dynamic>();
-
-      final mapped = list.map((e) {
-        final j = (e as Map).cast<String, dynamic>();
-
-        final postId = (j["postid"] as num?)?.toInt() ?? 0;
-        final authoruId = (j["authoruId"] as num?)?.toInt() ?? 0;
-
-        final title = (j["title"] ?? "") as String;
-        final body  = (j["body"] ?? "") as String;
-
-        final author = (j["authorNickname"] ??
-            j["authornickname"] ??
-            j["nickname"] ??
-            j["NICKNAME"] ??
-            j["author"] ??
-            "")
-            .toString()
-            .trim();
-
-        final showAuthor = author.isEmpty ? "사용자" : author;
-
-        final avatarUrl = (j["authoravatarurl"] ??
-            "https://i.pravatar.cc/200?u=$postId") as String;
-
-        final likeCount = (j["likecount"] as num?)?.toInt() ?? 0;
-        final commentCount = (j["commentcount"] as num?)?.toInt() ?? 0;
-
-        final viewCount = (j["viewcount"] as num?)?.toInt() ?? 0; // 조회수
-
-        final createdAtStr = (j["createdat"] ?? j["createdAt"] ?? j["created_at"])?.toString();
-        final createdAt = (createdAtStr != null && createdAtStr.isNotEmpty)
-            ? DateTime.tryParse(createdAtStr)
-            : null; // 게시일 날짜
-
-        return FeedItem(
-          postId: postId,
-          authoruId: authoruId,
-          author: showAuthor,
-          createdAt: createdAt,
-          timeAgo: "",
-          title: title,
-          body: body,
-          avatarUrl: avatarUrl,
-          likeCount: likeCount,
-          commentCount: commentCount,
-          isLiked: false,
-          viewCount: viewCount,
-        );
-      }).toList();
-
-      setState(() {
-        items
-          ..clear()
-          ..addAll(mapped);
-      });
-    } catch (e) {
-      setState(() => errorMsg = e.toString());
-    } finally {
-      if (mounted) setState(() => loading = false);
-    }
-  }
-
-  Future<void> _toggleFollowServer(FeedItem it) async {
-    final token = getToken();
-    if (token == null) throw Exception("로그인이 필요합니다.");
-
-    // authoruId가 0이면 DB에 못 넣음 (대상 uid가 없음)
-    if (it.authoruId <= 0) throw Exception("authoruId가 비정상: ${it.authoruId}");
-
-    final prev = it.isFollowing;
-
-    // UI 선반영
-    setState(() => it.isFollowing = !it.isFollowing);
-
-    try {
-      final uri = Uri.parse("$baseUrl/api/follow/${it.authoruId}");
-
-      final res = it.isFollowing
-          ? await http.post(uri, headers: {"Authorization": "Bearer $token"})
-          : await http.delete(uri, headers: {"Authorization": "Bearer $token"});
-
-      if (res.statusCode != 200) {
-        throw Exception("팔로우 실패: ${res.statusCode} ${res.body}");
-      }
-    } catch (e) {
-      // 실패 시 롤백
-      setState(() => it.isFollowing = prev);
-      rethrow;
-    }
   }
 
   @override
@@ -178,12 +70,25 @@ class _BoarderListState extends State<BoarderList> {
                     setState(() {});
                   }
                 },
+
+                // ✅ 좋아요: "한 번만" + 새로고침해도 유지
                 onToggleLike: () async {
+                  if (it.isLiked) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("이미 좋아요한 글입니다.")),
+                    );
+                    return;
+                  }
+
                   setState(() {
-                    it.isLiked = !it.isLiked;
-                    it.likeCount += it.isLiked ? 1 : -1;
+                    it.isLiked = true;
+                    it.likeCount += 1;
                   });
+
+                  // ✅ 핵심: 캐시에 박아두기 (새로고침해도 안 풀림)
+                  likeCache[it.postId] = LikeSnap(true, it.likeCount);
                 },
+
                 onToggleFollow: () async {
                   try {
                     await _toggleFollowServer(it);
@@ -199,7 +104,6 @@ class _BoarderListState extends State<BoarderList> {
           }).toList(),
         ),
       ),
-
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           final loggedIn = await ensureLoggedIn(context);
@@ -217,5 +121,115 @@ class _BoarderListState extends State<BoarderList> {
         child: const Icon(Icons.edit),
       ),
     );
+  }
+
+  Future<void> fetchBoardList() async {
+    setState(() {
+      loading = true;
+      errorMsg = null;
+    });
+
+    try {
+      final uri = Uri.parse("$baseUrl/api/post/board?size=20");
+      final res = await http.get(uri);
+
+      if (res.statusCode != 200) {
+        throw Exception("HTTP ${res.statusCode}: ${res.body}");
+      }
+
+      final jsonBody = json.decode(res.body) as Map<String, dynamic>;
+      final list = (jsonBody["items"] as List? ?? []).cast<dynamic>();
+
+      final mapped = list.map((e) {
+        final j = (e as Map).cast<String, dynamic>();
+
+        final postId = (j["postid"] as num?)?.toInt() ?? 0;
+        final authoruId = (j["authoruId"] as num?)?.toInt() ?? 0;
+
+        final title = (j["title"] ?? "") as String;
+        final body = (j["body"] ?? "") as String;
+
+        final author = (j["authorNickname"] ??
+            j["authornickname"] ??
+            j["nickname"] ??
+            j["NICKNAME"] ??
+            j["author"] ??
+            "")
+            .toString()
+            .trim();
+
+        final showAuthor = author.isEmpty ? "사용자" : author;
+
+        final avatarUrl =
+        (j["authoravatarurl"] ?? "https://i.pravatar.cc/200?u=$postId") as String;
+
+        final serverLikeCount = (j["likecount"] as num?)?.toInt() ?? 0;
+        final commentCount = (j["commentcount"] as num?)?.toInt() ?? 0;
+        final viewCount = (j["viewcount"] as num?)?.toInt() ?? 0;
+
+        final createdAtStr = (j["createdat"] ?? j["createdAt"] ?? j["created_at"])?.toString();
+        final createdAt =
+        (createdAtStr != null && createdAtStr.isNotEmpty) ? DateTime.tryParse(createdAtStr) : null;
+
+        // ✅ 핵심: 새로고침 시 캐시값으로 isLiked/likeCount 복구
+        final snap = likeCache[postId];
+        final cachedLiked = snap?.liked ?? false;
+        final cachedCount = snap?.count;
+
+        return FeedItem(
+          postId: postId,
+          authoruId: authoruId,
+          author: showAuthor,
+          createdAt: createdAt,
+          timeAgo: "",
+          title: title,
+          body: body,
+          avatarUrl: avatarUrl,
+
+          // ✅ 서버 count가 더 커졌을 수도 있으니, 캐시가 있으면 "max"로 잡아줌
+          likeCount: (cachedCount == null) ? serverLikeCount : (serverLikeCount > cachedCount ? serverLikeCount : cachedCount),
+
+          commentCount: commentCount,
+          isLiked: cachedLiked,
+          viewCount: viewCount,
+        );
+      }).toList();
+
+      setState(() {
+        items
+          ..clear()
+          ..addAll(mapped);
+      });
+    } catch (e) {
+      setState(() => errorMsg = e.toString());
+    } finally {
+      if (mounted) setState(() => loading = false);
+    }
+  }
+
+  Future<void> _toggleFollowServer(FeedItem it) async {
+    final token = getToken();
+    if (token == null) throw Exception("로그인이 필요합니다.");
+
+    if (it.authoruId <= 0) throw Exception("authoruId가 비정상: ${it.authoruId}");
+
+    final prev = it.isFollowing;
+
+    setState(() => it.isFollowing = !it.isFollowing);
+
+    try {
+      final uri = Uri.parse("$baseUrl/api/follow/${it.authoruId}");
+
+      final res = it.isFollowing
+          ? await http.post(uri, headers: {"Authorization": "Bearer $token"})
+          : await http.delete(uri, headers: {"Authorization": "Bearer $token"});
+
+      if (res.statusCode != 200) {
+        throw Exception("팔로우 실패: ${res.statusCode} ${res.body}");
+      }
+    } catch (e) {
+      setState(() => it.isFollowing = prev);
+      rethrow;
+    }
   }
 }
