@@ -12,7 +12,6 @@ class BoogiCategoryBar extends StatelessWidget {
     required this.onSelect,
   });
 
-  // ✅ 6x4 = 24개 슬롯 예시 (필요한 것만 남기고/교체하면 됨)
   static const _cats = <_Cat>[
     _Cat('food', '맛집', Icons.restaurant),
     _Cat('cafe', '카페', Icons.coffee),
@@ -35,7 +34,6 @@ class BoogiCategoryBar extends StatelessWidget {
     _Cat('flower', '꽃집', Icons.local_florist),
     _Cat('book', '서점', Icons.menu_book),
 
-    // ✅ BNK 콜라보 축(여기서 스토리 만들면 됨)
     _Cat('dongbaek', '동백전', Icons.card_membership),
     _Cat('bnk_partner', 'BNK제휴', Icons.handshake),
     _Cat('good_shop', '착한가게', Icons.volunteer_activism),
@@ -61,28 +59,36 @@ class BoogiCategoryBar extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 10),
-          // ✅ 6x4 그리드
-          GridView.count(
-            primary: false,                 // ✅ 자동 safe-area padding/primary 스크롤 끔
-            padding: EdgeInsets.zero,        // ✅ 위쪽 여백 제거
-            crossAxisCount: 6,
-            mainAxisSpacing: 10,
-            crossAxisSpacing: 10,
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            childAspectRatio: 0.78,
-            children: [
-              for (final c in _cats)
-                _CategoryItem(
-                  label: c.label,
-                  icon: c.icon,
-                  active: selectedId == c.id,
-                  onTap: () => onSelect(c.id),
-                  compact: true,
-                ),
-            ],
-          )
 
+          // ✅ 모바일 폭에서는 6열 고정이 과밀 → 4/5/6열 반응형
+          LayoutBuilder(
+            builder: (context, c) {
+              final w = c.maxWidth;
+              final cols = w >= 720 ? 6 : (w >= 520 ? 5 : 4);
+              final compact = cols >= 5;
+
+              return GridView.count(
+                primary: false,
+                padding: EdgeInsets.zero,
+                crossAxisCount: cols,
+                mainAxisSpacing: 10,
+                crossAxisSpacing: 10,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                childAspectRatio: compact ? 0.78 : 0.92,
+                children: [
+                  for (final cat in _cats)
+                    _CategoryItem(
+                      label: cat.label,
+                      icon: cat.icon,
+                      active: selectedId == cat.id,
+                      onTap: () => onSelect(cat.id),
+                      compact: compact,
+                    ),
+                ],
+              );
+            },
+          ),
         ],
       ),
     );
@@ -101,8 +107,6 @@ class _CategoryItem extends StatelessWidget {
   final IconData icon;
   final bool active;
   final VoidCallback onTap;
-
-  // ✅ 6열 대응: 컴팩트 모드
   final bool compact;
 
   const _CategoryItem({
