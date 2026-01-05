@@ -71,22 +71,8 @@ class _BoarderListState extends State<BoarderList> {
                   }
                 },
 
-                // ✅ 좋아요: "한 번만" + 새로고침해도 유지
                 onToggleLike: () async {
-                  if (it.isLiked) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("이미 좋아요한 글입니다.")),
-                    );
-                    return;
-                  }
-
-                  setState(() {
-                    it.isLiked = true;
-                    it.likeCount += 1;
-                  });
-
-                  // ✅ 핵심: 캐시에 박아두기 (새로고침해도 안 풀림)
-                  likeCache[it.postId] = LikeSnap(true, it.likeCount);
+                  await _toggleLikeServer(it);
                 },
 
                 onToggleFollow: () async {
@@ -230,6 +216,49 @@ class _BoarderListState extends State<BoarderList> {
     } catch (e) {
       setState(() => it.isFollowing = prev);
       rethrow;
+    }
+  }
+
+  Future<void> _toggleLikeServer(FeedItem it) async {
+    final token = getToken();
+    if (token == null) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text("로그인이 필요합니다.")));
+      return;
+    }
+
+    final prevLiked = it.isLiked;
+    final prevCount = it.likeCount;
+
+    setState(() {
+      it.isLiked = !it.isLiked;
+      it.likeCount += it.isLiked ? 1 : -1;
+    });
+
+    try {
+      final uri = Uri.parse("$baseUrl/api/post/${it.postId}/like");
+
+      final res = it.isLiked
+          ? await http.post(uri, headers: {
+        "Authorization": "Bearer $token",
+      })
+          : await http.delete(uri, headers: {
+        "Authorization": "Bearer $token",
+      });
+
+      if (res.statusCode != 200) {
+        throw Exception("좋아요 실패 ${res.statusCode}");
+      }
+
+      likeCache[it.postId] = LikeSnap(it.isLiked, it.likeCount);
+    } catch (e) {
+      setState(() {
+        it.isLiked = prevLiked;
+        it.likeCount = prevCount;
+      });
+
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(e.toString())));
     }
   }
 }

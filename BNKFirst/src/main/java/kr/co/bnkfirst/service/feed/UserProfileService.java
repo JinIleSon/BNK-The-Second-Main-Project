@@ -2,6 +2,7 @@ package kr.co.bnkfirst.service.feed;
 
 import java.util.List;
 
+import kr.co.bnkfirst.mapper.feed.PostLikeMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,9 +19,11 @@ import kr.co.bnkfirst.mapper.feed.UserProfileMapper;
 public class UserProfileService {
 
     private final UserProfileMapper userProfileMapper;
+    private final PostLikeMapper postLikeMapper;
 
-    public UserProfileService(UserProfileMapper userProfileMapper) {
+    public UserProfileService(UserProfileMapper userProfileMapper, PostLikeMapper postLikeMapper) {
         this.userProfileMapper = userProfileMapper;
+        this.postLikeMapper = postLikeMapper;
     }
 
     // 없으면 기본 row 생성
@@ -41,6 +44,8 @@ public class UserProfileService {
         view.setPostCount(userProfileMapper.countMyPosts(uId));
         view.setCommentCount(userProfileMapper.countMyComments(uId));
         view.setLikeCount(userProfileMapper.countMyLikes(uId));
+        view.setLikeCount(postLikeMapper.countByUserId(uId));
+
         return view;
     }
 

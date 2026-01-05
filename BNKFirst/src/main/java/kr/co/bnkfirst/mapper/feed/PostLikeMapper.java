@@ -9,4 +9,5 @@ public interface PostLikeMapper {
     int insert(@Param("postId") long postId, @Param("uId") long uId);
     int delete(@Param("postId") long postId, @Param("uId") long uId);
     long countByPostId(@Param("postId") long postId);
+    long countByUserId(@Param("uId") Long uId);
 }

@@ -194,17 +194,13 @@ class _BoarderProfileState extends State<BoarderProfile> {
   }
 
   // 로그아웃 완료시 피드 메인으로 이동
-  Future<void> _logoutAndGoBoardMain() async {
-    final nav = Navigator.of(context, rootNavigator: true);
-
+  Future<void> _logoutAndBackToFeed() async {
     await _logout();
 
     if (!mounted) return;
 
-    nav.pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => BoardMain(key: UniqueKey())),
-          (_) => false,
-    );
+    // 그냥 이전 화면(BoardMain)으로 돌아감
+    Navigator.pop(context);
   }
 
   void openEditSheet() {
@@ -348,7 +344,7 @@ class _BoarderProfileState extends State<BoarderProfile> {
                   ),
                 );
                 if (ok == true) {
-                  await _logoutAndGoBoardMain();
+                  await _logoutAndBackToFeed();
                 }
               },
               onLongPress: () {
