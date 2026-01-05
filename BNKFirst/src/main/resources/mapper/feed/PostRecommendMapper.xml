@@ -15,23 +15,50 @@
             p.COVERURL              AS coverUrl,
             p.STATUS                AS status,
             p.CREATEDAT             AS createdAt,
+            p.VIEWCOUNT             AS viewCount,
             NVL(lk.likeCount, 0)    AS likeCount,
+
+            /*
+                추천 점수 알고리즘 (계산법 예시)
+                score = (좋아요 * 5) + 조회수 + 최신성 보너스
+                예시1)좋아요 10, 조회수 100, 1일 이내 → 250점
+                예시2)좋아요 30, 조회수 500, 5일 이내 → (30*5) + 500 + 40  = 690점
+             */
+
+            (
+                NVL(lk.likeCount, 0) * 5
+                    + p.VIEWCOUNT * 1
+                    + CASE
+                          WHEN p.CREATEDAT >= SYSDATE - 1 THEN 100
+                          WHEN p.CREATEDAT >= SYSDATE - 3 THEN 70
+                          WHEN p.CREATEDAT >= SYSDATE - 7 THEN 40
+                          ELSE 10
+                    END
+                ) AS recommendScore,
+
             CASE
                 WHEN #{uId, jdbcType=NUMERIC} IS NULL THEN 0
                 WHEN EXISTS (
                     SELECT 1 FROM POSTLIKE pl
-                    WHERE pl.POSTID = p.POSTID AND pl."uId" = #{uId, jdbcType=NUMERIC}
+                    WHERE pl.POSTID = p.POSTID
+                      AND pl."uId" = #{uId, jdbcType=NUMERIC}
                 ) THEN 1 ELSE 0
                 END AS likedByMe
+
         FROM POST p
                  LEFT JOIN (
             SELECT POSTID, COUNT(*) AS likeCount
             FROM POSTLIKE
             GROUP BY POSTID
         ) lk ON lk.POSTID = p.POSTID
+
         WHERE p.STATUS = 'ACTIVE'
           AND p.POSTTYPE = 'BOARD'
-        ORDER BY NVL(lk.likeCount, 0) DESC, p.CREATEDAT DESC, p.POSTID DESC
+
+        ORDER BY recommendScore DESC,
+                 p.CREATEDAT DESC,
+                 p.POSTID DESC
+
             FETCH FIRST #{size} ROWS ONLY
     </select>
 

@@ -29,4 +29,10 @@
         WHERE POSTID = #{postId}
     </select>
 
+    <select id="countByUserId" resultType="long">
+        SELECT COUNT(*)
+        FROM POSTLIKE
+        WHERE "uId" = #{uId}
+    </select>
+
 </mapper>

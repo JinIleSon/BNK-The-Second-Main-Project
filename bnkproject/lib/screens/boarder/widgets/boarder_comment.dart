@@ -302,7 +302,7 @@ class _BoarderCommentState extends State<BoarderComment> {
             child: ListView.separated(
               padding: const EdgeInsets.all(16),
               itemCount: _comments.length + (_hasMore ? 1 : 0),
-              separatorBuilder: (_, __) => const SizedBox(height: 10),
+              separatorBuilder: (_, __) => const SizedBox(height: 8),
               itemBuilder: (_, i) {
                 if (i == _comments.length) {
                   return _loading
@@ -317,7 +317,7 @@ class _BoarderCommentState extends State<BoarderComment> {
                 final showNick = nick.isEmpty ? "사용자" : nick;
 
                 return Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
                   decoration: BoxDecoration(
                     color: const Color(0xFF121318),
                     borderRadius: BorderRadius.circular(12),
@@ -327,13 +327,6 @@ class _BoarderCommentState extends State<BoarderComment> {
                     children: [
                       Row(
                         children: [
-                          CircleAvatar(
-                            radius: 14,
-                            backgroundColor: Colors.white10,
-                            child: const Icon(Icons.person, size: 16, color: Colors.white70),
-                          ),
-                          const SizedBox(width: 8),
-
                           Expanded(child: Text(showNick)),
 
                           if (c.mine && c.status.toUpperCase() != 'DELETED')
@@ -344,7 +337,7 @@ class _BoarderCommentState extends State<BoarderComment> {
                         ],
                       ),
 
-                      const SizedBox(height: 6),
+                      const SizedBox(height: 4),
                       if (_editingCommentId == c.commentId && c.status.toUpperCase() != 'DELETED')
                         Row(
                           children: [
@@ -371,7 +364,7 @@ class _BoarderCommentState extends State<BoarderComment> {
                         )
                       else
                         Text(c.body),
-                      const SizedBox(height: 6),
+                      const SizedBox(height: 4),
                       Align(
                         alignment: Alignment.centerRight,
                         child: Text(

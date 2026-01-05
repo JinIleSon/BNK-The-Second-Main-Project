@@ -18,5 +18,5 @@ public class UserProfileViewDTO {
     private UserProfileDTO profile;
     private int postCount;
     private int commentCount;
-    private int likeCount;
+    private long likeCount;
 }
