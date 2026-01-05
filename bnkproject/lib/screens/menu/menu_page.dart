@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../settings/settings_page.dart';
 import 'package:bnkproject/game/game_entry.dart';
-import '../travel/pages/travel_page.dart';
+import '../daily_mission/pages/travel_page.dart';
 import 'package:bnkproject/screens/sto/pages/sto_season_page.dart';
 
 // ✅ goals 진입점(Entry) import

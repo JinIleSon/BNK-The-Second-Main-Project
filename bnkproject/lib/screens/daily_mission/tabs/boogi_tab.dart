@@ -52,7 +52,7 @@ class BoogiTab extends StatelessWidget {
                             border: Border.all(color: TravelTheme.boogiMint.withOpacity(0.35), width: 2),
                           ),
                         ),
-                        Image.asset('assets/images/travel.png', width: 70, height: 70, fit: BoxFit.contain),
+                        Image.asset('assets/images/daily_mission.png', width: 70, height: 70, fit: BoxFit.contain),
                         Positioned(
                           bottom: 6,
                           child: Container(

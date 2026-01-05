@@ -1,4 +1,4 @@
-// lib/screens/travel/pages/travel_page.dart
+// lib/screens/daily_mission/pages/travel_page.dart
 import 'dart:ui';
 import 'package:flutter/material.dart';
 
@@ -185,7 +185,7 @@ class _TravelPageState extends State<TravelPage> {
                           color: Colors.white.withOpacity(0.06),
                         ),
                         child: Image.asset(
-                          'assets/images/travel.png',
+                          'assets/images/daily_mission.png',
                           width: 36,
                           height: 36,
                           fit: BoxFit.contain,
@@ -248,7 +248,7 @@ class _TravelPageState extends State<TravelPage> {
                           final heroWide = constraints.maxWidth >= 720;
 
                           final image = Image.asset(
-                            'assets/images/travel.png',
+                            'assets/images/daily_mission.png',
                             width: 120,
                             height: 120,
                             fit: BoxFit.contain,

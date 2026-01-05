@@ -1,3 +1,4 @@
+// screens/daily_mission/widgets/quick_card.dart
 import 'package:flutter/material.dart';
 import 'glass_card.dart';
 
@@ -27,6 +28,7 @@ class QuickCard extends StatelessWidget {
       radius: 18,
       padding: const EdgeInsets.all(14),
       child: Column(
+        mainAxisSize: MainAxisSize.min, // ✅ 핵심: 내용만큼만 높이
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
@@ -50,7 +52,7 @@ class QuickCard extends StatelessWidget {
             desc,
             style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 12, height: 1.35),
           ),
-          const Spacer(),
+          const SizedBox(height: 12), // ✅ Spacer 대신 고정 여백
           InkWell(
             borderRadius: BorderRadius.circular(14),
             onTap: onTap,
